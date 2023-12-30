@@ -1,6 +1,5 @@
-const fs = require('node:fs');
-const { createLongPosition, createShortPosition } = require('../../api/create-order/index');
-const logger = require('../../logger');
+const { createLongPosition, createShortPosition } = require('../api/create-order/index');
+const logger = require('../logger');
 
 class SimpleStrategy {
 
