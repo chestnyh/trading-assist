@@ -1,39 +1,48 @@
 const fs = require('node:fs');
+const { createLongPosition, createShortPosition } = require('../../api/create-order/index');
+const logger = require('../../logger');
 
 const fileToLog = `logs`
 
 class SimpleStrategy {
 
-    #checkInterval = 60 * 1000
+    #checkInterval = 60 * 1000;
     #coinFollower;
-    
-    constructor({coinFollower}){
+
+    #state = {
+        startTrackingTime: Date.now(),
+        topPointPrice: 0,
+        lowPointPrice: 0,
+        currentPrice: 0,
+    }
+
+    constructor({ coinFollower }) {
         this.#coinFollower = coinFollower;
     }
 
-    isRising(prices){
+    #isRising(prices) {
         let raisingAmount = 0;
         let previous = 0;
         prices.forEach(price => {
 
             price = parseFloat(price);
 
-            if (previous === 0){
+            if (previous === 0) {
                 previous = price;
                 return;
             }
-                
-            if(price > previous){
+
+            if (price > previous) {
                 raisingAmount++;
             }
         });
 
-        if(raisingAmount >= 10){
+        if (raisingAmount >= 10) {
             return true;
         }
     }
 
-    isDowning(prices){
+    #isDowning(prices) {
 
         let downingAmount = 0;
         let previous = 0;
@@ -57,30 +66,46 @@ class SimpleStrategy {
 
     }
 
-    run(){
-        setInterval(() => {
+    run() {
+        setInterval(async () => {
 
             const candles = this.#coinFollower.candlesArr;
-            const checkSet = candles.slice(-11);
 
-            if (this.isRising(checkSet)){
-                fs.appendFileSync(fileToLog, "---SHOULD BE SHORT HERE---\n");
-                fs.appendFileSync(fileToLog, JSON.stringify(checkSet) + '\n');
-                fs.appendFileSync(fileToLog, "---SHOULD BE SHORT HERE---\n");
-                console.log("---SHOULD BE SHORT HERE---");
-                console.log(JSON.stringify(checkSet))
-                console.log("---SHOULD BE SHORT HERE---");
+            this.#state.currentPrice = parseFloat(candles[candles.length - 1]);
+
+            if (this.#state.topPointPrice === 0) {
+                this.#state.topPointPrice = this.#state.currentPrice;
             }
 
-            if (this.isDowning(checkSet)) {
-                fs.appendFileSync(fileToLog, "---SHOULD BE LONG HERE---\n");
-                fs.appendFileSync(fileToLog, JSON.stringify(checkSet) + '\n');
-                fs.appendFileSync(fileToLog, "---SHOULD BE LONG HERE---\n");
-                console.log("---SHOULD BE LONG HERE---");
-                console.log(JSON.stringify(checkSet))
-                console.log("---SHOULD BE LONG HERE---");
+            if (this.#state.lowPointPrice === 0) {
+                this.#state.lowPointPrice = this.#state.currentPrice;
             }
-            
+
+            if (this.#state.currentPrice > this.#state.topPointPrice) {
+                this.#state.topPointPrice = this.#state.currentPrice
+            }
+
+            if (this.#state.currentPrice < this.#state.lowPointPrice) {
+                this.#state.lowPointPrice = this.#state.currentPrice
+            }
+
+            logger.log(`STATE = ${JSON.stringify(this.#state)}`);
+
+            if (this.#state.currentPrice - this.#state.lowPointPrice > 3000) {
+                const result = await createShortPosition({ symbol: 'BTCUSDT', quantity: 0.005 });
+                this.#state.topPointPrice = 0
+                this.#state.lowPointPrice = 0
+                this.#state.currentPrice = 0
+                logger.log(`SHORT POSITION CREATED = ${JSON.stringify(result)}`);
+            }
+            if (this.#state.currentPrice - this.#state.topPointPrice < -3000) {
+                const result = await createLongPosition({ symbol: 'BTCUSDT', quantity: 0.005 });
+                this.#state.topPointPrice = 0
+                this.#state.lowPointPrice = 0
+                this.#state.currentPrice = 0
+                logger.log(`LONG POSITION CREATED = ${JSON.stringify(result)}`);
+            }
+
             // If last 10 rising doing short
             // If last 10 doening doing long
         }, this.#checkInterval);

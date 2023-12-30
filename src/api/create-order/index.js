@@ -1,42 +1,9 @@
 const axios = require('axios');
 const createSignature = require('../../authorization/create-signature');
+const config = require("../../../config");
 
-let queryArray = [
-    {
-        name: "symbol",
-        value: "BTCUSDT"
-    },
-    // {
-    //     name: "stopPrice",
-    //     value: "38000"
-    // },
-    {
-        name: "side", 
-        value: "SELL"
-    },
-    {
-        name: "type",
-        value: "MARKET"
-    },
-    {
-        name: "quantity",
-        value: 0.01
-    },
-    {
-        name: "timestamp",
-        value: Date.now()
-    }
-];
-
-function setValue (key, newValue) {
-
-    return queryArray.map(({name, value}) => ({name, value: name === key ? newValue : value})) 
-
-}
-
-function addValue(name, value){
-    queryArray.push({name, value})
-}
+const SECRET_KEY = config.SECRET_KEY;
+const API_KEY = config.API_KEY;
 
 
 async function createOrder(queryArray){
@@ -46,12 +13,12 @@ async function createOrder(queryArray){
     let testEndpoint = 'https://testnet.binancefuture.com/fapi/v1/order'
     testEndpoint += '?';
     testEndpoint += queryString 
-    testEndpoint += `&signature= ${createSignature(queryString, secretKey)}`
+    testEndpoint += `&signature= ${createSignature(queryString, SECRET_KEY)}`
 
 
     const params = {
         headers: {
-            "X-MBX-APIKEY": apiKey
+            "X-MBX-APIKEY": API_KEY
         }
     };
 
@@ -59,27 +26,29 @@ async function createOrder(queryArray){
 
 }
 
-const main = async () => {
+module.exports = createOrder
 
-    const positionOrder = await createOrder(queryArray);
+// const main = async () => {
 
-    console.log(positionOrder.status, positionOrder.data);
+//     const positionOrder = await createOrder(queryArray);
 
-    queryArray = setValue("side", 'BUY');
-    queryArray = setValue("type", 'TAKE_PROFIT_MARKET');
-    addValue("stopPrice", 37000)
+//     console.log(positionOrder.status, positionOrder.data);
 
-    const takeProfit = await createOrder(queryArray);
+//     queryArray = setValue("side", 'BUY');
+//     queryArray = setValue("type", 'TAKE_PROFIT_MARKET');
+//     addValue("stopPrice", 37000)
 
-    console.log(takeProfit.status, takeProfit.data);
+//     const takeProfit = await createOrder(queryArray);
 
-    queryArray = setValue("type", 'STOP_MARKET');
-    queryArray = setValue("stopPrice", 38000);
+//     console.log(takeProfit.status, takeProfit.data);
 
-    const stopMarket = await createOrder(queryArray)
+//     queryArray = setValue("type", 'STOP_MARKET');
+//     queryArray = setValue("stopPrice", 38000);
 
-    console.log(stopMarket.status, stopMarket.data);
+//     const stopMarket = await createOrder(queryArray)
 
-}
+//     console.log(stopMarket.status, stopMarket.data);
 
-main();
+// }
+
+// main();
