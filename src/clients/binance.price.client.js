@@ -6,18 +6,23 @@ class BinanceWebsocketClient {
     #url;
     #wsClient;
     #currentMessage = '';
+    #connection = null;
 
     constructor({
         url,
     }) {
         this.#url = url,
 
-            this.#wsClient = new WebSocketClient();
-
         this.#init();
     }
 
-    #init() {
+    set connection(connection){
+        this.#connection = connection;
+    }
+
+    #connect(){
+
+        this.#wsClient = new WebSocketClient();
 
         const _this = this;
 
@@ -25,8 +30,10 @@ class BinanceWebsocketClient {
             logger.log('Connect Error: ' + error.toString());
         });
 
-        this.#wsClient.on('connect', function (connection) {
+        this.#wsClient.on('connect', (connection) => {
             logger.log('WebSocket Client Connected');
+
+            _this.connection = connection;
 
             connection.on('error', function (error) {
                 logger.log("Connection Error: " + error.toString());
@@ -34,7 +41,13 @@ class BinanceWebsocketClient {
             connection.on('close', function () {
                 logger.log('Connection Closed');
             });
-            connection.on('message', (message) => {
+            connection.on('newListener', (...params) => {
+                logger.log('New Listener' + params.toString());
+            });
+            connection.on('removeListener', (...params) => {
+                logger.log('Remove Listener' + params.toString());
+            });
+            connection.on('message', function (message) {
                 _this.#currentMessage = message.utf8Data;
             });
         });
@@ -43,9 +56,17 @@ class BinanceWebsocketClient {
             logger.log(error.toString())
         })
 
-
         this.#wsClient.connect(this.#url);
+        
+    }
 
+    #init() {
+
+        this.#connect();
+
+        setInterval(() => {
+            this.#connect()
+        }, 10 * 60 * 60 * 2000);
     }
 
     async getCurrentPrice() {
