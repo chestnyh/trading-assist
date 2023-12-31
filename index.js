@@ -1,17 +1,12 @@
-const WebSocketClient = require('./src/coin-follower/clients/websocket-client');
-const WebFollowerSocketClient = require('./src/coin-follower/index');
+const BinancePriceClient = require('./src/clients/binance.price.client');
 const SimpleStrategy = require('./src/stratedies/simple.strategy');
 
-const websocket = new WebSocketClient({
+const priceClient = new BinancePriceClient({
     url: 'wss://fstream.binance.com/ws/btcusdt@aggTrade'
-})
-
-const wfsk = new WebFollowerSocketClient({
-    client: websocket
-})
+});
 
 const sS = new SimpleStrategy({
-    coinFollower: wfsk
+    priceClient
 });
 
 sS.run()

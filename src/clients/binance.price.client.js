@@ -1,6 +1,7 @@
 const WebSocketClient = require('websocket').client;
+const logger = require('../logger/index');
 
-class WebFollowerSocketClient {
+class BinanceWebsocketClient {
 
     #url;
     #wsClient;
@@ -11,7 +12,7 @@ class WebFollowerSocketClient {
     }) {
         this.#url = url,
 
-        this.#wsClient = new WebSocketClient();
+            this.#wsClient = new WebSocketClient();
 
         this.#init();
     }
@@ -21,16 +22,17 @@ class WebFollowerSocketClient {
         const _this = this;
 
         this.#wsClient.on('connectFailed', function (error) {
-            console.log('Connect Error: ' + error.toString());
+            logger.log('Connect Error: ' + error.toString());
         });
 
         this.#wsClient.on('connect', function (connection) {
-            console.log('WebSocket Client Connected');
+            logger.log('WebSocket Client Connected');
+
             connection.on('error', function (error) {
-                console.log("Connection Error: " + error.toString());
+                logger.log("Connection Error: " + error.toString());
             });
             connection.on('close', function () {
-                console.log('echo-protocol Connection Closed');
+                logger.log('Connection Closed');
             });
             connection.on('message', (message) => {
                 _this.#currentMessage = message.utf8Data;
@@ -38,7 +40,7 @@ class WebFollowerSocketClient {
         });
 
         this.#wsClient.on('error', (error) => {
-            console.error(error)
+            logger.log(error.toString())
         })
 
 
@@ -46,10 +48,17 @@ class WebFollowerSocketClient {
 
     }
 
-    getCurrentPrice(){
-        return JSON.parse(this.#currentMessage)
+    async getCurrentPrice() {
+        const {
+            p: price,
+            T: timestamp
+        } = JSON.parse(this.#currentMessage);
+        return {
+            price: parseFloat(price),
+            timestamp,   
+        }
     }
 
 }
 
-module.exports = WebFollowerSocketClient;
+module.exports = BinanceWebsocketClient;
