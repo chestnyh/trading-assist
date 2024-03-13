@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 
-const fileName = 'logs';
+const fileName = process.env.LOG_FILE_NAME || 'logs';
 
 const log = (info) => {
     console.log(info);

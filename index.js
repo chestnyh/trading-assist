@@ -1,3 +1,4 @@
+require('dotenv').config();
 const BinancePriceClient = require('./src/clients/binance.price.client');
 const SimpleStrategy = require('./src/stratedies/simple.strategy');
 
