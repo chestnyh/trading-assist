@@ -1,0 +1,13 @@
+name: AWS Deployment
+run-name: Deploy to AWS starts
+on: [push]
+jobs:
+  deploy-to-aws:
+    name: Deploy to AWS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '14'
+      - run: npm install
+      - run: npm run test
