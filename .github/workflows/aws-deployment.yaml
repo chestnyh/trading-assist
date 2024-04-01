@@ -9,6 +9,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '14'
-      - run: cd trading-bot    
+      - run: pwd
+      - run: ls    
       - run: npm install
       - run: npm run test
