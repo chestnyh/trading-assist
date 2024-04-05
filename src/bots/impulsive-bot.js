@@ -1,7 +1,3 @@
-
-const path = require("path");
-require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') })
-
 const { UMFutures } = require("@binance/futures-connector");
 const bot = require("./bot");
 const codes = require('../../data/codes.js');

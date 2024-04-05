@@ -1,6 +1,9 @@
-const TelegramBot = require('node-telegram-bot-api');
+const path = require("path");
+require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') })
 
-console.log("process.env.TELEGRAM_BOT_TOKEN=", process.env.TELEGRAM_BOT_TOKEN)
+console.log("Running...");
+
+const TelegramBot = require('node-telegram-bot-api');
 
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN);
