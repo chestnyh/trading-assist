@@ -13,6 +13,7 @@
     "@binance/futures-connector": "^0.1.0",
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
+    "node-telegram-bot-api": "^0.65.1",
     "websocket": "^1.0.34",
     "websocket.io": "^0.2.1"
   },
