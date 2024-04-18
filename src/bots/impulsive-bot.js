@@ -1,6 +1,7 @@
 const { UMFutures } = require("@binance/futures-connector");
 const bot = require("./bot");
 const codes = require('../../data/codes.js');
+const getCurrentPrice = require('../lib/get-current-price.js')
 
 const CHAT_ID = 230667485;
 const threshold = 0.5;
@@ -18,8 +19,7 @@ codes.forEach((code) => {
     const arrayPrices = [];
 
     setInterval(async () => {
-        const response = await umFuturesClient.getPriceTicker(code);
-        const price = response.data.price;
+        const price = await getCurrentPrice(umFuturesClient, code);
         arrayPrices.push(price);
 
         if (arrayPrices.length > 4) {
@@ -36,11 +36,13 @@ codes.forEach((code) => {
         }
 
         if (diff1 > 0 && diff2 > 0 && diff3 > 0) {
-            return bot.sendMessage(CHAT_ID, `${code} is impulsive: ${diff1}% ${diff2}% ${diff3}%`);
+            return bot.sendMessage(CHAT_ID, `${code} is impulsive: ${diff1}% ${diff2}% ${diff3}% 
+BTC price - ${await getCurrentPrice(umFuturesClient, 'BTCUSDT')}`);
         }
 
         if (diff1 < 0 && diff2 < 0 && diff3 < 0) {
-            return bot.sendMessage(CHAT_ID, `${code} is impulsive: ${diff1}% ${diff2}% ${diff3}%`);
+            return bot.sendMessage(CHAT_ID, `${code} is impulsive: ${diff1}% ${diff2}% ${diff3}%
+BTC price - ${await getCurrentPrice(umFuturesClient, 'BTCUSDT')}`);
         }
 
     }, 20000);
