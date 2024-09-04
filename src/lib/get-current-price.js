@@ -9,4 +9,4 @@ const getCurrentPrice = async (umFuturesClient, code) => {
     return price
 }
 
-module.exports = getCurrentPrice;
+export default getCurrentPrice;

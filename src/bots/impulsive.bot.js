@@ -1,7 +1,7 @@
-const { UMFutures } = require("@binance/futures-connector");
-const bot = require("./bot");
-const codes = require('../../data/codes.js');
-const getCurrentPrice = require('../lib/get-current-price.js')
+import { UMFutures } from "@binance/futures-connector";
+import bot from "./bot.js";
+import codes from '../../data/codes.js';
+import getCurrentPrice from '../lib/get-current-price.js';
 
 const CHAT_ID = 230667485;
 const threshold = 0.5;

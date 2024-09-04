@@ -1,6 +1,7 @@
-import api from './src/api/binance-api/websocket-client/feature-websocket-streams/index.js'
-
-const miniTicker = api.miniTicker;
+/**
+ * This file used to run tests on api in index file
+ */
+import {miniTicker} from './index.js'
 
 async function generate() {
 
@@ -13,6 +14,6 @@ async function generate() {
     for await (const val of client.messageGenerator()) {
         console.log(JSON.parse(val));
     }
-  }
+}
   
-  generate();
+generate();

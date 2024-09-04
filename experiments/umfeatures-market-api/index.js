@@ -13,7 +13,7 @@ const main = async () => {
     // console.log(response.data); // { serverTime: 1710445183804 }
 
     // Get exchange info
-    // const response = await umFuturesClient.getExchangeInfo({});
+    // const response = await umFuturesClient.getExchangeInfo();
     // console.log(response.data);
 
     // Some information about trading volume order book
@@ -59,8 +59,8 @@ const main = async () => {
     // Kline/candlestick bars for the mark price of a symbol.
     // Klines are uniquely identified by their open time.
     // getMarkPriceKlines(symbol, interval, startTime, endTime, limit)
-    const response = await umFuturesClient.getMarkPriceKlines('HOTUSDT', '5m', null, null, 1000);
-    console.log(response.data);
+    // const response = await umFuturesClient.getMarkPriceKlines('HOTUSDT', '1m', null, null, 1000);
+    // console.log(response.data);
 
 }
 

@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "mocha src/**/*.test.js"
+    "test": "mocha src/**/*.test.js",
+    "start:bot:impulsive": "node src/bots/impulsive.bot.js",
+    "start:bot:trading-advice": "node src/bots/trading-advice.bot.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,7 +15,9 @@
     "@binance/connector": "^3.2.0",
     "@binance/futures-connector": "^0.1.0",
     "axios": "^1.6.2",
+    "bybit-api": "^3.10.4",
     "dotenv": "^16.3.1",
+    "node-cron": "^3.0.3",
     "node-telegram-bot-api": "^0.65.1",
     "websocket": "^1.0.34",
     "websocket.io": "^0.2.1"
