@@ -21,7 +21,10 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/binance-api-imitation-e2e/**/*"]
+      "exclude": [
+        "apps/binance-api-imitation-e2e/**/*",
+        "apps/binance-api-info-collector-e2e/**/*"
+      ]
     }
   ]
 }
