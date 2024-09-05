@@ -1,7 +1,7 @@
 {
-  "name": "binance-bot",
+  "name": "bot",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/binance-bot/src",
+  "sourceRoot": "apps/bot/src",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -10,15 +10,15 @@
       "defaultConfiguration": "development",
       "dependsOn": ["build"],
       "options": {
-        "buildTarget": "binance-bot:build",
+        "buildTarget": "bot:build",
         "runBuildTargetDependencies": false
       },
       "configurations": {
         "development": {
-          "buildTarget": "binance-bot:build:development"
+          "buildTarget": "bot:build:development"
         },
         "production": {
-          "buildTarget": "binance-bot:build:production"
+          "buildTarget": "bot:build:production"
         }
       }
     }

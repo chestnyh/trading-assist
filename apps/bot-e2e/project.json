@@ -1,17 +1,17 @@
 {
-  "name": "binance-bot-e2e",
+  "name": "bot-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "implicitDependencies": ["binance-bot"],
+  "implicitDependencies": ["bot"],
   "targets": {
     "e2e": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
       "options": {
-        "jestConfig": "apps/binance-bot-e2e/jest.config.ts",
+        "jestConfig": "apps/bot-e2e/jest.config.ts",
         "passWithNoTests": true
       },
-      "dependsOn": ["binance-bot:build"]
+      "dependsOn": ["bot:build"]
     }
   }
 }

@@ -1,6 +1,6 @@
 /* eslint-disable */
 export default {
-  displayName: 'binance-bot-e2e',
+  displayName: 'bot-e2e',
   preset: '../../jest.preset.cjs',
   globalSetup: '<rootDir>/src/support/global-setup.ts',
   globalTeardown: '<rootDir>/src/support/global-teardown.ts',
@@ -15,5 +15,5 @@ export default {
     ],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/binance-bot-e2e',
+  coverageDirectory: '../../coverage/bot-e2e',
 };
