@@ -1,7 +1,7 @@
 {
-  "name": "bot",
+  "name": "api",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/bot/src",
+  "sourceRoot": "apps/api/src",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -10,15 +10,15 @@
       "defaultConfiguration": "development",
       "dependsOn": ["build"],
       "options": {
-        "buildTarget": "bot:build",
+        "buildTarget": "api:build",
         "runBuildTargetDependencies": false
       },
       "configurations": {
         "development": {
-          "buildTarget": "bot:build:development"
+          "buildTarget": "api:build:development"
         },
         "production": {
-          "buildTarget": "bot:build:production"
+          "buildTarget": "api:build:production"
         }
       }
     }
