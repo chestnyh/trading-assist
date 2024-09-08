@@ -24,7 +24,8 @@
       "exclude": [
         "apps/binance-api-imitation-e2e/**/*",
         "apps/binance-api-info-collector-e2e/**/*",
-        "apps/api-e2e/**/*"
+        "apps/api-e2e/**/*",
+        "apps/auto-trader-e2e/**/*"
       ]
     }
   ]
