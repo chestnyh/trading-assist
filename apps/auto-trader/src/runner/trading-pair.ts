@@ -1,10 +1,22 @@
-// import { Injectable } from '@nestjs/common';
-import { RestBinanceMarket } from "binance-api";
+import { CryptocurrencyExchanges } from "../../enums";
 
 interface TradingPairParams {
-    code: string; // TODO add description;
-    price: number; // TODO add description;
-    restBinanceMarketClient: RestBinanceMarket // TODO add description 
+    code: string;
+    currentPrices: CurrentPrices;
+}
+
+interface TradingPairPrice {
+    value: number;
+    lastUpdateTimestamp: number;
+}
+
+interface SetCurrentPriceParams {
+    cryptocurrencyExchange: CryptocurrencyExchanges;
+    currentPrice: TradingPairPrice;
+}
+
+interface CurrentPrices {
+    [exchange: string]: TradingPairPrice;
 }
 
 /**
@@ -13,27 +25,35 @@ interface TradingPairParams {
  */
 export class TradingPair {
 
-    private code;
-    private price: number;
-    private isInformationFetched: boolean;
-    private currentPrice; // Shows a current price of a pair
-    private restBinanceMarketClient: RestBinanceMarket;
+    /**
+     * The code of a trading pair. initialized during creation and never changed.
+     */
+    private readonly _code: string;
+    /**
+     * The map of current prices on different exchanges.
+     */
+    private _currentPrices: CurrentPrices;
 
     constructor(params: TradingPairParams){
-        this.code = params.code;
-        this.price = 0;
-        this.restBinanceMarketClient = params.restBinanceMarketClient || new RestBinanceMarket("key", "secret");
+        this._code = params.code;
+        this._currentPrices = params.currentPrices;
     }
 
-    static async create(code: string): Promise<TradingPair>{
-        const restBinanceMarketClient = new RestBinanceMarket("key", "secret");
-        const result = await restBinanceMarketClient.getPrice(code);
-        console.log(result);
-        return new TradingPair({code, restBinanceMarketClient, price: result.price});
+    get code(): string {
+        return this._code;
     }
 
-    private async fetchInformation(){
-        const result = await this.restBinanceMarketClient.getPrice(this.code);
-        console.log(result);
+    get currentPrices(): CurrentPrices {
+        return this._currentPrices;
     }
+
+    set currentPrices(currentPrices: CurrentPrices) {
+        this._currentPrices = currentPrices;
+    }
+
+    set currentPrice(params: SetCurrentPriceParams) {
+        const { cryptocurrencyExchange, currentPrice } = params;
+        this._currentPrices[cryptocurrencyExchange] = currentPrice;
+    }
+
 }

@@ -27,4 +27,16 @@ export class RestBinanceMarket {
         return data;
     }
 
+    /**
+     * Get prices of all pairs
+     * @returns 
+     */
+    public async getPrices(): Promise<Price[]> {
+        const { data } = await this.client.getPriceTickerV2();
+        return data.map((price: any): Price => {
+            price.price = parseFloat(price.price);
+            return price;
+        });
+    }
+
 }

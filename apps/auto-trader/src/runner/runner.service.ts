@@ -1,19 +1,59 @@
+import { RestBinanceMarket } from "binance-api";
 import { TradingPair } from "./trading-pair";
-import codes from "../../data/codes";
+import { CryptocurrencyExchanges } from "../../enums";
+
+interface TradingPairs {
+    [code: string]: TradingPair;
+}
 
 export class RunnerService {
 
-    private tradingPairs: TradingPair[] = [];
+    private tradingPairs: TradingPairs = {};
+    private restBinanceMarketClient: RestBinanceMarket;
+    private tickTime: number = 2000; // TODO make this configurable
+    private allInformationFetched: boolean = false;
 
     constructor(){
         this.init()
-        
+    }
+
+    private updatePrices(exchange: CryptocurrencyExchanges, prices: any){
+        prices.forEach((price: any) => {
+
+            if(!this.tradingPairs[price.symbol]){
+                this.tradingPairs[price.symbol] = new TradingPair({
+                    code: price.symbol,
+                    currentPrices: {
+                        [exchange]: {
+                            value: price.price,
+                            lastUpdateTimestamp: price.time
+                        }
+                    }
+                });
+            }
+
+            this.tradingPairs[price.symbol].currentPrices[exchange] = {
+                value: price.price,
+                lastUpdateTimestamp: price.time
+            };
+        });
     }
 
     private async init (){
-        for(let code of codes){
-            this.tradingPairs.push(await TradingPair.create(code))    
+        this.restBinanceMarketClient = new RestBinanceMarket("key", "secret");
+        const prices = await this.restBinanceMarketClient.getPrices();
+        this.updatePrices(CryptocurrencyExchanges.BINANCE, prices);
+        await new Promise(resolve => setTimeout(resolve, this.tickTime));
+        while(true){
+            await this.tick();
+            await new Promise(resolve => setTimeout(resolve, this.tickTime));
         }
-        console.log(this.tradingPairs);
     }
+
+    private async tick(){
+        const restBinanceMarketClient = new RestBinanceMarket("key", "secret");
+        const prices = await restBinanceMarketClient.getPrices();
+        this.updatePrices(CryptocurrencyExchanges.BINANCE, prices);
+    }
+    
 }    
