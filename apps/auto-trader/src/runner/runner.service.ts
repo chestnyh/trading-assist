@@ -1,8 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { TradingPair } from "./trading-pair";
+import codes from "../../data/codes";
 
-@Injectable()
 export class RunnerService {
+
+    private tradingPairs: TradingPair[] = [];
+
     constructor(){
-        console.log("runner-service");
+        this.init()
+        
+    }
+
+    private async init (){
+        for(let code of codes){
+            this.tradingPairs.push(await TradingPair.create(code))    
+        }
+        console.log(this.tradingPairs);
     }
 }    

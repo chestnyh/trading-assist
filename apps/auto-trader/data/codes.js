@@ -1,3 +1,5 @@
+// TODO: MOVE THIS FILE TO THE CONFIGURATION
+
 export default [
     "BTCUSDT",
     "ETHUSDT",
