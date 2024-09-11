@@ -1,2 +1,2 @@
 # Links
-* [Trading bot DSL](../DSL.md)
+* [Trading bot DSL](DSL.md)
