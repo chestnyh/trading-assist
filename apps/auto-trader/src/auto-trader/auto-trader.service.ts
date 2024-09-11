@@ -1,10 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { CollectorService } from '../collector/collector.service';
 
-import { RunnerService } from '../runner/runner.service';
-
-@Injectable()
 export class AutoTraderService {
-    constructor(private runnerService: RunnerService){
+    constructor(private runnerService: CollectorService){
         this.startApiConsuming();
     }
 

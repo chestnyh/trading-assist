@@ -33,10 +33,10 @@ dependencies:
     specifier: ^0.1.13
     version: 0.1.13
   rxjs:
-    specifier: ^7.8.0
+    specifier: ^7.8.1
     version: 7.8.1
   tslib:
-    specifier: ^2.3.0
+    specifier: ^2.7.0
     version: 2.7.0
   websocket:
     specifier: ^1.0.34
@@ -125,7 +125,7 @@ devDependencies:
     specifier: 10.9.1
     version: 10.9.1(@swc/core@1.5.7)(@types/node@18.16.9)(typescript@5.5.4)
   typescript:
-    specifier: ~5.5.2
+    specifier: ~5.5.4
     version: 5.5.4
   webpack-cli:
     specifier: ^5.1.4

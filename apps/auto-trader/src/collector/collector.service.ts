@@ -6,19 +6,17 @@ interface TradingPairs {
     [code: string]: TradingPair;
 }
 
-export class RunnerService {
+export class CollectorService {
 
     private tradingPairs: TradingPairs = {};
     private restBinanceMarketClient: RestBinanceMarket;
     private tickTime: number = 1000; // TODO make this configurable
-    private allInformationFetched: boolean = false;
 
     constructor(){
         this.init()
     }
 
     private updatePrices(exchange: CryptocurrencyExchanges, prices: any){
-        console.log("---RunnerService.updatePrices---")
         prices.forEach((price: any) => {
             if(!this.tradingPairs[price.symbol]){
                 this.tradingPairs[price.symbol] = new TradingPair({
@@ -42,7 +40,6 @@ export class RunnerService {
     }
 
     private async init (){
-        console.log("---RunnerService.init---")
         this.restBinanceMarketClient = new RestBinanceMarket("key", "secret");
         const prices = await this.restBinanceMarketClient.getPrices();
         this.updatePrices(CryptocurrencyExchanges.BINANCE, prices);

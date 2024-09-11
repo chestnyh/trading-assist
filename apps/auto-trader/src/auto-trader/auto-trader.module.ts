@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 
-import { RunnerModule } from '../runner/runner.module';
+import { CollectorModule } from '../collector/collector.module';
 
 import { AutoTraderService } from './auto-trader.service';
 
 
 @Module({
-  imports: [RunnerModule],
+  imports: [CollectorModule],
   controllers: [],
   providers: [
     AutoTraderService,
