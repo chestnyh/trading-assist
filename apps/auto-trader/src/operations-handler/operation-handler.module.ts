@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
+
+import { OperationHubModule } from '../operations-hub/operations-hub.module';
+
 import { OperationHandlerService } from './operation-handler.service';
 
 @Module({
-  imports: [],
+  imports: [OperationHubModule],
   exports: [OperationHandlerService],
   controllers: [],
   providers: [

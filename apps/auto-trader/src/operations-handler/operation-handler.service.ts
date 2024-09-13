@@ -1,3 +1,5 @@
+import { OperationHubService } from "../operations-hub/operations-hub.service";
+
 function getVersions(){
     return ["1.0.0"];
 }
@@ -25,16 +27,14 @@ function isParallelItem(item: any): boolean {
 
 export class OperationHandlerService {
     
-    constructor(){
+    constructor(private readonly operationHubService: OperationHubService){}
 
-    }
-
-    run(operation: any){
+    async run(operation: any){
         const { version, flow } = operation;
         if(!getVersions().includes(version)){
             throw new Error("Unsupported version");
         }
-        this.executeItem(flow);
+        await this.executeItem(flow);
     }
 
     private executeItem(item: any){
@@ -61,31 +61,45 @@ export class OperationHandlerService {
             throw new Error("Invalid operation item");
         }
         const { operation, args } = item;
-        console.log(operation, args);
-        
+        this.operationHubService.call(operation, args);
     }
 
     private executeCondition(condition: any){
-        // const { condition, then, else } = condition;
+        if(!isConditionItem(condition)){
+            throw new Error("Invalid condition item");
+        }
+        const { __if, __then } = condition;
     }
 
-    private executeSequence(sequence: any){
+    private async executeSequence(sequence: any){
         
         if(!isSequenceItem(sequence)){
             throw new Error("Invalid sequence item");
         }
 
-        sequence.items.forEach(item => {
-            this.executeItem(item);
-        });
-
+        for (const item of sequence.items) {
+            await this.executeItem(item);
+        }
     }
 
-    private executeParallel(parallel: any){
-        // const { items } = parallel;
+    private async executeParallel(parallel: any){
+
+        // TODO review how to execute in parallel correctly
+        // What should be returned? and should we return anything?
+        // Should we wait for all the operations to finish?
+        // What happens if one fails, should we continue?
+        // Should we have a limit of concurrent operations?
+        // etc
+
+        if(!isParallelItem(parallel)){
+            throw new Error("Invalid parallel item");
+        }
+
+        const promises = [];
+        for (const item of parallel.items) {
+            promises.push(this.executeItem(item));
+        }
+        await Promise.all(promises);
+        return;
     }
-
-    
-    
-
 }
