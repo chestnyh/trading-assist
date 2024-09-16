@@ -5,19 +5,19 @@ const getValueByPath = (obj: any, path: string): any => {
 
 const conditionHandlers = {
     '__eq': (params: { value: string; equalTo: any }, checkObj: any): boolean => {
-      const { value, equalTo } = params;
-      const objValue = getValueByPath(checkObj, value);
-      return objValue === equalTo;
+        const { value, equalTo } = params;
+        const objValue = getValueByPath(checkObj, value);
+        return objValue === equalTo;
     },
     '__neq': (params: { value: string; notEqualTo: any }, checkObj: any): boolean => {
-      const { value, notEqualTo } = params;
-      const objValue = getValueByPath(checkObj, value);
-      return objValue !== notEqualTo;
+        const { value, notEqualTo } = params;
+        const objValue = getValueByPath(checkObj, value);
+        return objValue !== notEqualTo;
     },
     '__gt': (params: { value: string; greaterThan: number }, checkObj: any): boolean => {
-      const { value, greaterThan } = params;
-      const objValue = getValueByPath(checkObj, value);
-      return objValue > greaterThan;
+        const { value, greaterThan } = params;
+        const objValue = getValueByPath(checkObj, value);
+        return objValue > greaterThan;
     },
     '__gte': (params: { value: string; greaterThanOrEqualTo: number }, checkObj: any): boolean => {
         const { value, greaterThanOrEqualTo } = params;
@@ -38,16 +38,16 @@ const conditionHandlers = {
 
 export const logicalConnectors = {
     '__and': (params: any[], checkObj: any, evaluateCondition: Function): boolean => {
-      return params.every((cond) => evaluateCondition(cond, checkObj));
+        return params.every((cond) => evaluateCondition(cond, checkObj));
     },
-  
+
     '__or': (params: any[], checkObj: any, evaluateCondition: Function): boolean => {
-      return params.some((cond) => evaluateCondition(cond, checkObj));
+        return params.some((cond) => evaluateCondition(cond, checkObj));
     },
 }
 
 const allHandlers = {
-    ...conditionHandlers, 
+    ...conditionHandlers,
     ...logicalConnectors
 };
 
@@ -56,31 +56,31 @@ export class ConditionsHubService {
     private logicalConnectorsNames: string[] = Object.keys(logicalConnectors);
 
     public evaluate(conditions: any, checkObj: any): boolean {
-      return this.evaluateCondition(conditions, checkObj);
+        return this.evaluateCondition(conditions, checkObj);
     }
-  
+
     private evaluateCondition(condition: any, checkObj: any): boolean {
-      const operatorKeys = Object.keys(condition);
-  
-      if (operatorKeys.length !== 1) {
-        throw new Error('Each condition must contain exactly one operator.');
-      }
-  
-      const operatorKey = operatorKeys[0];
-      const operatorFunc = allHandlers[operatorKey];
-  
-      if (!operatorFunc) {
-        throw new Error(`Operator ${operatorKey} is not defined.`);
-      }
-  
-      const params = condition[operatorKey];
-  
-      if (this.logicalConnectorsNames.includes(operatorKey)) {
-        // TODO check why we are doing bind here
-        return operatorFunc(params, checkObj, this.evaluateCondition.bind(this));
-      } else {
-        // For comparison operators
-        return operatorFunc(params, checkObj);
-      }
+        const operatorKeys = Object.keys(condition);
+
+        if (operatorKeys.length !== 1) {
+            throw new Error('Each condition must contain exactly one operator.');
+        }
+
+        const operatorKey = operatorKeys[0];
+        const operatorFunc = allHandlers[operatorKey];
+
+        if (!operatorFunc) {
+            throw new Error(`Operator ${operatorKey} is not defined.`);
+        }
+
+        const params = condition[operatorKey];
+
+        if (this.logicalConnectorsNames.includes(operatorKey)) {
+            // TODO check why we are doing bind here
+            return operatorFunc(params, checkObj, this.evaluateCondition.bind(this));
+        } else {
+            // For comparison operators
+            return operatorFunc(params, checkObj);
+        }
     }
-  }
+}
