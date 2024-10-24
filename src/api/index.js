@@ -1,8 +1,0 @@
-class Api {
-
-    constructor({client}){
-        
-    }
-
-
-}
