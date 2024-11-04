@@ -108,6 +108,7 @@ describe('TradingDataService', () => {
       };
     });
 
+    // TODO move this section array items to "Combinations testing" section
     describe('object properties', () => {
       describe('first level properties', () => {
 
@@ -157,7 +158,7 @@ describe('TradingDataService', () => {
 
       });
 
-      describe('property paths with array indices', () => {
+      describe('property paths with array at the top level', () => {
 
         describe('first level is array', () => {
           describe('one level deep', () => {
@@ -279,18 +280,335 @@ describe('TradingDataService', () => {
               expect(service.get('[].[].[0].price')).toBe(12);
             });
 
-            // TODO add tests for non-existent elements
-          });
-        });
+            it('should return undefined for a non-existent element', () => {
+              expect(service.get('[3].[2].[2].price')).toBeUndefined();
+              expect(service.get('[].[2].[5].price')).toBeUndefined();
+              expect(service.get('[].[].[100].price')).toBeUndefined();
+              expect(service.get('[2].[2].[2].nonexistent')).toBeUndefined();
+              expect(service.get('[].[].[0].nonexistent')).toBeUndefined();
+              expect(service.get('[].[].[].nonexistent')).toBeUndefined();
+            });
 
-        describe('first level is an object', () => {
-          // TODO add tests here
+            it('should return a default value for a non-existent element', () => {
+              expect(service.get('[3].[2].[2].price', 'some_default')).toBe('some_default');
+              expect(service.get('[].[2].[5].price', 'some_default')).toBe('some_default');
+              expect(service.get('[].[].[100].price', 'some_default')).toBe('some_default');
+              expect(service.get('[2].[2].[2].nonexistent', 'some_default')).toBe('some_default');
+              expect(service.get('[].[].[0].nonexistent', 'some_default')).toBe('some_default');
+              expect(service.get('[].[].[].nonexistent', 'some_default')).toBe('some_default');
+            });
+
+          });
         });
 
       });
     });
 
-   
+    /** 
+     * Combinations testing
+    */
+    describe('nesting level 1', () => {
+
+      describe('object_property', () => {
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+      });
+
+      describe('array_item', () => {
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+      });
+
+    });
+
+    describe('nesting level 2', () => {
+      describe('object_property.object_property', () => {
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+      });
+
+      describe('object_property.array_item', () => {
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+      });
+
+      describe('array_item.object_property', () => {
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+      });
+
+      describe('array_item.array_item', () => {
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+      }); 
+
+    });
+
+    describe('nesting level 3', () => {
+      describe('object_property.object_property.object_property', () => {
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+      });
+
+      describe('object_property.object_property.array_item', () => {
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+      });
+
+      describe('object_property.array_item.object_property', () => {
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+      });
+
+      describe('array_item.object_property.object_property', () => {
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+      });
+
+      describe('array_item.object_property.array_item', () => {
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+      });
+
+      describe('array_item.array_item.object_property', () => {
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+      });
+
+      describe('array_item.array_item.array_item', () => {
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+      });
+
+    });
+
+    describe('nesting level 4', () => {
+
+      describe('object_property.object_property.object_property.object_property', () => {
+
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+
+      });
+
+      describe('object_property.object_property.object_property.array_item', () => {
+
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+
+      });
+
+      describe('order object_property.object_property.array_item.object_property', () => {
+
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+
+      });
+
+      describe('order object_property.array_item.object_property.object_property', () => {
+
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+
+      });
+
+      describe('order array_item.object_property.object_property.object_property', () => {
+
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+
+      });
+
+
+      describe('order array_item.object_property.object_property.array_item', () => {
+
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+
+      });
+
+      describe('order array_item.object_property.array_item.object_property', () => {
+
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+
+      });
+
+      describe('order array_item.array_item.object_property.object_property', () => {
+
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+
+      });
+
+      describe('order array_item.array_item.object_property.array_item', () => {
+
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+
+      });
+
+
+      describe('order array_item.array_item.array_item.object_property', () => {
+
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+
+      });
+
+      describe('order array_item.array_item.array_item.array_item', () => {
+
+        it('should get a specified value', () => {
+        });
+
+        it('should return undefined for a non-existent', () => {
+        });
+        
+        it('should return a specified default value for a non-existent', () => {
+        });
+
+      });
+
+    });
+
 
     it('should get a nested property', () => {
       service['data'] = {
