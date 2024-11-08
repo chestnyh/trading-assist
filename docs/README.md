@@ -10,8 +10,12 @@ Crypto Insight Hub is a dynamic platform that gathers live data from top cryptoc
 
 2) **Actions Hub**. The Actions Hub serves as the central repository for all possible actions that users can trigger within the platform. It provides a structured catalog of pre-defined actions, such as placing buy/sell orders, sending notifications. Each action is thoroughly defined, including parameters, requirements, and potential outcomes, ensuring users understand how each action behaves when executed.
 
-3) **DSL(Domain Specific Language)** TODO
+3) **DSL(Domain Specific Language) Handler**. The DSL (Domain-Specific Language) Handler is the customization core of the platform, providing users with a flexible way to define specific actions based on market conditions. This language is tailored for the platform's unique purpose—enabling users to create rule-based strategies without needing extensive coding knowledge.
 
-4) **Main Handler** TODO
+Through the DSL, users can write conditions that specify how the platform should respond to changes in key parameters, such as price movements, trading volume, or volatility. The syntax is straightforward, allowing users to set logical operators (e.g., "AND," "OR") and threshold values to dictate when and how actions should be triggered. For instance, a user could set a rule like "If Bitcoin price increases by 5% within 24 hours AND volume exceeds a certain level, then trigger a buy action.".
 
-* [Trading bot DSL](DSL.md)
+The DSL Handler acts as a bridge between the **Info Collector** and **Actions Hub** components. It continuously processes the real-time market data received from the Info Collector, evaluates user-defined 
+conditions against this data, and when conditions are met, triggers the corresponding actions from the Actions Hub. This integration enables automated responses to market conditions, allowing the platform 
+to execute predefined strategies without manual intervention. 
+
+For a comprehensive guide to our DSL syntax, operators, and examples, please refer to our [DSL Documentation](./DSL/main.md).
