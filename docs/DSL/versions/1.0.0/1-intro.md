@@ -6,7 +6,7 @@ The language parts:
 
 ## Root
 
-Root level is an array. That consist sequence of items.
+Root level is an array. That consist sequence of items.(probably not reconsider this part)
 
 ## Item
 
