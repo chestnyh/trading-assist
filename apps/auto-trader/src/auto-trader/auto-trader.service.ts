@@ -4,15 +4,28 @@ import { ActionsRunnerService } from "../actions-runner/actions-runner.service";
 const config = {
     "name": "Test simple config",
     "description": "TODO add description",
-    "type": "timeout",
+    "type": "parallel",
     "arguments": {
-        "do": {
-            "type": "log",
-            "arguments": {
-                "message": "Timeout"
+        "do": [
+            {
+                "type": "log",
+                "arguments": {
+                    "message": "Timeout message 1"
+                },
+            },
+            {
+                "type": "log",
+                "arguments": {
+                    "message": "Timeout message 2"
+                },
+            },
+            {
+                "type": "log",
+                "arguments": {
+                    "message": "Timeout message 3"
+                },
             }
-        },
-        "timeout": 1000
+        ]
     }
 };
 
