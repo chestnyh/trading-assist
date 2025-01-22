@@ -10,4 +10,4 @@ import { TradingDataService } from './trading-data.service';
     TradingDataService
   ],
 })
-export class AutoTraderModule {}
+export class TradingDataModule {}

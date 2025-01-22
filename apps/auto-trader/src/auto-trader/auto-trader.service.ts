@@ -1,12 +1,28 @@
-import { CollectorService } from '../collector/collector.service';
+import { Injectable } from '@nestjs/common';
+import { ActionsRunnerService } from "../actions-runner/actions-runner.service";
 
-export class AutoTraderService {
-    constructor(private runnerService: CollectorService){
-        this.startApiConsuming();
+const config = {
+    name: "Test simple config",
+    type: "interval",
+    arguments: {
+        do: {
+            type: "log",
+            arguments: {
+                message: "Some message"
+            }
+        },
+        interval: 10000
     }
+};
 
-    startApiConsuming(){
-        console.log(this.runnerService);
-        console.log("auto-trader-service");
+@Injectable()
+export class AutoTraderService {
+    constructor(
+        private actionsRunnerService: ActionsRunnerService
+    ){
+        this.init();
+    }
+    init(){
+        this.actionsRunnerService.run(config);
     }
 }    
