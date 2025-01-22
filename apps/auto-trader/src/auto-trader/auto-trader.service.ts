@@ -2,16 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { ActionsRunnerService } from "../actions-runner/actions-runner.service";
 
 const config = {
-    name: "Test simple config",
-    type: "interval",
-    arguments: {
-        do: {
-            type: "log",
-            arguments: {
-                message: "Some message"
+    "name": "Test simple config",
+    "description": "TODO add description",
+    "type": "timeout",
+    "arguments": {
+        "do": {
+            "type": "log",
+            "arguments": {
+                "message": "Timeout"
             }
         },
-        interval: 10000
+        "timeout": 1000
     }
 };
 

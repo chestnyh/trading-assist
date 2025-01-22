@@ -1,0 +1,14 @@
+{
+    "name": "Test simple config",
+    "description": "TODO add description",
+    "type": "interval",
+    "arguments": {
+        "do": {
+            "type": "log",
+            "arguments": {
+                "message": "Some message"
+            }
+        },
+        "interval": 1000
+    }
+}
