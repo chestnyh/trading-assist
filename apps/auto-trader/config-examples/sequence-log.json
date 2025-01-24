@@ -1,0 +1,27 @@
+{
+    "name": "Test simple config",
+    "description": "TODO add description",
+    "type": "sequence",
+    "arguments": {
+        "do": [
+            {
+                "type": "log",
+                "arguments": {
+                    "message": "Timeout message 1"
+                }
+            },
+            {
+                "type": "log",
+                "arguments": {
+                    "message": "Timeout message 2"
+                }
+            },
+            {
+                "type": "log",
+                "arguments": {
+                    "message": "Timeout message 3"
+                }
+            }
+        ]
+    }
+}
