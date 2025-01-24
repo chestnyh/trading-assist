@@ -4,7 +4,13 @@
  * @param heap 
  * @param dependencies 
  */
-export default function log (args: any, heap: any, dependencies: any) {
+export default function log (
+    args: any, 
+    {
+        heap,
+        dependencies,
+        sequenceContext
+    }) {
 
     const { 
         message,  

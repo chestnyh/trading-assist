@@ -5,19 +5,20 @@
  * @param dependencies 
  * @returns 
  */
-export default function condition (
+export default async function binance_get_ticker (
     args: any, 
     {
         heap, 
         dependencies, 
         sequenceContext
-    }): boolean {
-
+    }
+) {
     const {
-        condition
+        symbol
     } = args;
 
-    // TODO make this work with conditions
+    // TODO add function logic.
 
-    return true;
-}
+    sequenceContext[symbol] = 100000;
+
+};

@@ -4,7 +4,13 @@
  * @param heap 
  * @param dependencies 
  */
-export default async function parallel (args: any, heap: any, dependencies: any) {
+export default async function parallel (
+    args: any, 
+    {
+        sequenceContext, 
+        heap, 
+        dependencies
+    }) {
     
     const { 
         do: actions,  
@@ -12,7 +18,11 @@ export default async function parallel (args: any, heap: any, dependencies: any)
 
     const promises = actions.map(action => {
         const actionType = action.type;
-        this[actionType](action.arguments, heap, dependencies);
+        this[actionType](action.arguments, {
+            sequenceContext,
+            heap,
+            dependencies
+        });
     });
 
     await Promise.all(promises)

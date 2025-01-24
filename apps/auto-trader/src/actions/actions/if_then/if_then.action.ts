@@ -5,7 +5,13 @@
  * @param dependencies 
  */
 
-export default function if_then(args, heap, dependencies): void {
+export default function if_then(
+    args: any, 
+    {
+        heap, 
+        dependencies,
+        sequenceContext
+    }): void {
     const { 
         if: condition, 
         then 
@@ -21,8 +27,19 @@ export default function if_then(args, heap, dependencies): void {
         arguments: thenArguments,
     } = then;
 
-    if(this[conditionType](conditionArguments, heap, dependencies)) {
-        this[thenType](thenArguments, heap, dependencies);
+    if(this[conditionType](
+        conditionArguments, 
+        { 
+            heap, 
+            dependencies, 
+            sequenceContext 
+        })){ 
+        this[thenType](
+            thenArguments, 
+            {
+                heap, 
+                dependencies, 
+                sequenceContext});
     }
 
 }

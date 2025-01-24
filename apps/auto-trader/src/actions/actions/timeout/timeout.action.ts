@@ -4,7 +4,13 @@
  * @param heap 
  * @param dependencies 
  */
-export default async function timeout (args: any, heap: any, dependencies: any) {
+export default async function timeout (
+    args: any, 
+    {
+        sequenceContext, 
+        heap, 
+        dependencies
+    }) {
     
     const { 
         do: action, 
@@ -14,5 +20,9 @@ export default async function timeout (args: any, heap: any, dependencies: any) 
     await new Promise(resolve => setTimeout(resolve, timeout));
 
     const actionType = action.type;
-    await this[actionType](action.arguments, heap, dependencies);
+    await this[actionType](action.arguments, {
+        sequenceContext,
+        heap,
+        dependencies
+    });
 }

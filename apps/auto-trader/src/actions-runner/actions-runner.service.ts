@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Dependencies, Injectable } from '@nestjs/common';
 
 import { ActionsService } from '../actions/actions.service';
 
@@ -15,8 +15,16 @@ export class ActionsRunnerService {
             type, 
             arguments: args
         } = config;
+
+        const heap = {};
+        const dependencies = {};
         
-        this.actionsService[type](args);
+        this.actionsService[type](
+            args, 
+            {
+                heap,
+                dependencies
+            });
 
     }
 

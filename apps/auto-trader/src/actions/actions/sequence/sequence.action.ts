@@ -4,7 +4,16 @@
  * @param heap 
  * @param dependencies 
  */
-export default async function sequence (args: any, heap: any, dependencies: any) {
+export default async function sequence (
+    args: any, 
+    {
+        heap, 
+        dependencies
+    }) {
+
+    const sequenceContext = {};
+
+    console.log(heap);
     
     const { 
         do: actions,  
@@ -12,7 +21,13 @@ export default async function sequence (args: any, heap: any, dependencies: any)
 
     for(let action of actions){
         const actionType = action.type;
-        await this[actionType](action.arguments, heap, dependencies);
+        await this[actionType](
+            action.arguments, 
+            {
+                heap, 
+                dependencies, 
+                sequenceContext
+            });
     }
 
 }

@@ -4,13 +4,23 @@
  * @param heap 
  * @param dependencies 
  */
-export default function interval (args: any, heap: any, dependencies: any) {
+export default function interval (
+    args: any, 
+    {
+        heap, 
+        dependencies, 
+        sequenceContext
+    }) {
     const { 
         do: action, 
         interval 
     } = args;
     setInterval(() => {
         const actionType = action.type;
-        this[actionType](action.arguments, heap, dependencies);
+        this[actionType](action.arguments, {
+            sequenceContext,
+            heap,
+            dependencies
+        });
     }, interval);
 }
