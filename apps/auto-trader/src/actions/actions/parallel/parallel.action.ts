@@ -7,9 +7,7 @@
 export default async function parallel (
     args: any, 
     {
-        sequenceContext, 
-        heap, 
-        dependencies
+        sequenceContext,
     }) {
     
     const { 
@@ -20,8 +18,6 @@ export default async function parallel (
         const actionType = action.type;
         this[actionType](action.arguments, {
             sequenceContext,
-            heap,
-            dependencies
         });
     });
 

@@ -7,9 +7,7 @@
 export default async function timeout (
     args: any, 
     {
-        sequenceContext, 
-        heap, 
-        dependencies
+        sequenceContext
     }) {
     
     const { 
@@ -21,8 +19,6 @@ export default async function timeout (
 
     const actionType = action.type;
     await this[actionType](action.arguments, {
-        sequenceContext,
-        heap,
-        dependencies
+        sequenceContext
     });
 }

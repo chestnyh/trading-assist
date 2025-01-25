@@ -8,8 +8,6 @@
 export default function condition (
     args: any, 
     {
-        heap, 
-        dependencies, 
         sequenceContext
     }): boolean {
 

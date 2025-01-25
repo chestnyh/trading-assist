@@ -1,4 +1,4 @@
-import { Dependencies, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { ActionsService } from '../actions/actions.service';
 
@@ -6,7 +6,7 @@ import { ActionsService } from '../actions/actions.service';
 export class ActionsRunnerService {
 
     constructor(
-        private actionsService: ActionsService
+        private actionsService: ActionsService,
     ){}
 
     run(config){
@@ -16,13 +16,14 @@ export class ActionsRunnerService {
             arguments: args
         } = config;
 
-        const heap = {};
+        // console.log("Storage Service: ", this.heapService);
+        // const heap = {};
         const dependencies = {};
         
         this.actionsService[type](
             args, 
             {
-                heap,
+                // heap,
                 dependencies
             });
 

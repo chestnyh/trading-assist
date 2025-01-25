@@ -6,9 +6,7 @@
  */
 export default function interval (
     args: any, 
-    {
-        heap, 
-        dependencies, 
+    { 
         sequenceContext
     }) {
     const { 
@@ -19,8 +17,6 @@ export default function interval (
         const actionType = action.type;
         this[actionType](action.arguments, {
             sequenceContext,
-            heap,
-            dependencies
         });
     }, interval);
 }

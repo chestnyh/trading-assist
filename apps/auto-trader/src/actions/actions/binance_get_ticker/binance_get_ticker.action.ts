@@ -8,8 +8,6 @@
 export default async function binance_get_ticker (
     args: any, 
     {
-        heap, 
-        dependencies, 
         sequenceContext
     }
 ) {

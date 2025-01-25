@@ -5,15 +5,9 @@
  * @param dependencies 
  */
 export default async function sequence (
-    args: any, 
-    {
-        heap, 
-        dependencies
-    }) {
+    args: any) {
 
     const sequenceContext = {};
-
-    console.log(heap);
     
     const { 
         do: actions,  
@@ -24,8 +18,6 @@ export default async function sequence (
         await this[actionType](
             action.arguments, 
             {
-                heap, 
-                dependencies, 
                 sequenceContext
             });
     }

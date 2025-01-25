@@ -8,8 +8,6 @@
 export default function if_then(
     args: any, 
     {
-        heap, 
-        dependencies,
         sequenceContext
     }): void {
     const { 
@@ -30,16 +28,13 @@ export default function if_then(
     if(this[conditionType](
         conditionArguments, 
         { 
-            heap, 
-            dependencies, 
             sequenceContext 
         })){ 
         this[thenType](
             thenArguments, 
             {
-                heap, 
-                dependencies, 
-                sequenceContext});
+                sequenceContext
+            });
     }
 
 }

@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
 import actions from './actions';
+import { HeapService } from '../heap/heap.service';
 
 @Injectable()
 export class ActionsService {
-    constructor() {
+    constructor(
+        private heapService: HeapService
+    ) {
         this.loadActions();
     }
     private loadActions() {

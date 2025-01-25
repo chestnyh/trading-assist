@@ -5,7 +5,7 @@ import { ActionsModule } from '../actions/actions.module';
 
 @Module({
   imports: [
-    ActionsModule
+    ActionsModule,
   ],
   controllers: [],
   providers: [
