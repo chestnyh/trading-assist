@@ -1,0 +1,38 @@
+{
+    "type": "interval",
+    "arguments": {
+        "do": {
+            "name": "Test simple config",
+            "description": "TODO add description",
+            "type": "sequence",
+            "arguments": {
+                "do": [
+                    {
+                        "type": "binance_get_ticker",
+                        "arguments": {
+                            "symbol": "BTCUSDT"
+                        }
+                    },
+                    {
+                        "type": "add_to_heap",
+                        "arguments": {
+                            "items": [
+                                {
+                                    "key": "s.s.s",
+                                    "value": "__sequenceContext__.BTCUSDT"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "type": "log",
+                        "arguments": {
+                            "message": "BTCUSDT: ${__heap__.s.s.s}"
+                        }
+                    }
+                ]
+            }
+        },
+        "interval": 1000
+    }
+}

@@ -13,7 +13,7 @@ const config = {
                     {
                         "type": "binance_get_ticker",
                         "arguments": {
-                            "symbol": "BTCUSDT"
+                            "symbol": "ETHUSDT"
                         }
                     },
                     {
@@ -21,16 +21,39 @@ const config = {
                         "arguments": {
                             "items": [
                                 {
-                                    "key": "test1",
-                                    "value": "test2"
+                                    "key": "binance.ETHUSDT.[]",
+                                    "value": "__sequenceContext__.ETHUSDT"
                                 },
-                                {
-                                    "key": "test1",
-                                    "value": "test2"
-                                }
                             ]
                         }
                     },
+                    {
+                        "type": "if_then",
+                        "arguments": {
+                            "if": {
+                                "type": "condition",
+                                "arguments": {
+                                    "condition":
+                                    {
+                                        "__gt": {
+                                            "left": {
+                                                "__var": "__heap__.binance.ETHUSDT"
+                                            },
+                                            "right": {
+                                                "__const": 1000
+                                            },
+                                        }
+                                    },
+                                }
+                            },
+                            "then": {
+                                "type": "telegram_send_message",
+                                "arguments": {
+                                    "message": "ETHUSDT is greater than 1000"
+                                }
+                            }
+                        }
+                    }
                 ]
             }
         },
