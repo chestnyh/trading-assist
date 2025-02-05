@@ -3,8 +3,6 @@ import { Spot } from '@binance/connector';
 
 import { HeapService } from '../heap/heap.service';
 
-// import resolver from "./actions/condition/resolver/resolver";
-
 import ConditionResolver from './condition-resolver/condition-resolver';
 
 import getValue from './utils/get-value.util';
