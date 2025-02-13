@@ -1,0 +1,19 @@
+{
+  "name": "object-navigator",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/object-navigator/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/object-navigator",
+        "main": "libs/object-navigator/src/index.ts",
+        "tsConfig": "libs/object-navigator/tsconfig.lib.json",
+        "assets": ["libs/object-navigator/*.md"]
+      }
+    }
+  }
+}
