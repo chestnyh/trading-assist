@@ -1,13 +1,21 @@
 class ObjectNavigator {
-  constructor() { }
-
+  
   private data: any = {};
+  
+  constructor(data?: any) {
+    this.data = data ?? {};
+  }
 
   static setValue (key: string, value: any, current: { [key: string]: any } | any[] & { [key: string]: any }){ // TODO check this type
 
     const isArrayKey = /^\[\d*\]$/.test(key);
 
     if(!isArrayKey){
+
+      if(Array.isArray(current)){
+        throw new Error("Can't set property to an array");  
+      }
+
       current[key] = value;
       return;
     }
@@ -36,6 +44,10 @@ class ObjectNavigator {
     const isCurrentKeyArrayElement = /^\[\d*\]$/.test(currentKey);
     const isNextKeyArrayElement = /^\[\d*\]$/.test(nextKey);
 
+    console.log("currentKey =", currentKey);
+    console.log("nextKey =", nextKey);
+    console.log("current =", current);
+
     if(!isCurrentKeyArrayElement){
 
       if(Array.isArray(current)){
@@ -50,10 +62,9 @@ class ObjectNavigator {
       return current[currentKey];
 
     }
-
     // Work with current Array
     if(!Array.isArray(current)){
-      throw new Error("Can't set property to array");
+      throw new Error("Can't set array to not array");
     } 
 
     if(currentKey === '[]'){
@@ -68,6 +79,9 @@ class ObjectNavigator {
     }
 
     const index = parseInt(match[0], 10);
+    if(current[index] === undefined){
+      throw new Error("Index does not exist");
+    };
     return current[index];
   }
 
