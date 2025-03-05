@@ -5,14 +5,21 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha src/**/*.test.js",
+    "projects:show": "nx show projects",
     "start:bot:impulsive": "node src/bots/impulsive.bot.js",
     "start:bot:trading-advice": "node src/bots/trading-advice.bot.js",
-    "test:auto-trader": "nx test auto-trader",
-    "test:auto-trader:watch": "nx test auto-trader --watch"
+    "auto-trader:test": "nx test auto-trader",
+    "auto-trader:test:watch": "nx test auto-trader --watch",
+    "auto-trader:start": "nx run auto-trader:serve",
+    "object-navigator:show": "nx show project object-navigator",
+    "object-navigator:test": "nx run object-navigator:test",
+    "monorepo:show": "nx show projects",
+    "monorepo:graph": "nx graph"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@binance/connector": "^3.6.1",
     "@nestjs/common": "^10.0.2",
     "@nestjs/core": "^10.0.2",
     "@nestjs/platform-express": "^10.0.2",

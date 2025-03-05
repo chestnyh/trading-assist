@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "binance-api": ["libs/binance-api/src/index.ts"]
+      "object-navigator": ["libs/object-navigator/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
