@@ -1,17 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Spot } from '@binance/connector';
 
-import { HeapService } from '../heap/heap.service';
-
 import ConditionResolver from './condition-resolver/condition-resolver';
+import ObjectNavigator from 'libs/object-navigator/src/lib/object-navigator';
 
 import getValue from './utils/get-value.util';
 
 @Injectable()
 export class ActionsService {
-    constructor(
-        private heapService: HeapService
-    ) {}
+
+    private heap = new ObjectNavigator();
 
     /**
      * TODO add description
@@ -24,16 +22,32 @@ export class ActionsService {
             sequenceContext
         }
     ) {
-        const {
-            items
-        } = args;
+        const { items } = args;
     
         items.forEach(item => {
             const { key, value } = item;
-            const res = getValue(value, {heap: this.heapService, sequenceContext});
-            this.heapService.set(key, res);
+            const res = getValue(value, {heap: this.heap, sequenceContext});
+            this.heap.set(key, res);
         });
+    };
     
+    /**
+     * 
+     * @param args 
+     * @param param1 
+     */
+    delete_from_heap(
+        args: any,
+        {
+            sequenceContext
+        }
+    ) {
+
+        const { keys } = args;
+        keys.forEach(key => {
+            this.heap.delete(key);
+        });
+
     };
     
     /**
@@ -53,7 +67,7 @@ export class ActionsService {
     
         const client = new Spot();
         const { data } = await client.tickerPrice(symbol);
-        sequenceContext[symbol] = data.price;
+        sequenceContext.set(symbol, data.price);
     };
 
     /**
@@ -138,14 +152,16 @@ export class ActionsService {
         let { 
             message,  
         } = args;
+
+        console.dir(this.heap, {depth: 8});
     
-        const matches = message.match(/\${(.*?)}/g);
+        // const matches = message.match(/\${(.*?)}/g);
     
-        matches.forEach(match  => {
-            const valueKey = match.replace('${', '').replace('}', '');
-            const value = getValue(valueKey, {heap: this.heapService, sequenceContext});
-            message = message.replace(match, value);
-        });
+        // matches.forEach(match  => {
+        //     const valueKey = match.replace('${', '').replace('}', '');
+        //     const value = getValue(valueKey, {heap: this.heap, sequenceContext});
+        //     message = message.replace(match, value);
+        // });
     }
 
     /**
@@ -185,7 +201,7 @@ export class ActionsService {
             heap
         }) {
 
-        const sequenceContext = {};
+        const sequenceContext = new ObjectNavigator();
         
         const { 
             do: actions,  
@@ -202,7 +218,6 @@ export class ActionsService {
         }
 
     }
-    
     
     /**
      * TODO add description
@@ -221,7 +236,7 @@ export class ActionsService {
             condition
         } = args;
 
-        const conditionResolver = new ConditionResolver(condition, this.heapService, sequenceContext);
+        const conditionResolver = new ConditionResolver(condition, this.heap, sequenceContext);
 
         return conditionResolver.resolve();
     

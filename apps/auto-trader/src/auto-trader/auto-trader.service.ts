@@ -13,7 +13,7 @@ const config = {
                     {
                         "type": "binance_get_ticker",
                         "arguments": {
-                            "symbol": "ETHUSDT"
+                            "symbol": "TRUMPUSDT"
                         }
                     },
                     {
@@ -21,8 +21,8 @@ const config = {
                         "arguments": {
                             "items": [
                                 {
-                                    "key": "binance.ETHUSDT.[]",
-                                    "value": "__sequenceContext__.ETHUSDT"
+                                    "key": "binance.TRUMPUSDT.[]",
+                                    "value": "__sequenceContext__.TRUMPUSDT"
                                 },
                             ]
                         }
@@ -37,27 +37,122 @@ const config = {
                                     {
                                         "__gt": {
                                             "left": {
-                                                "__var": "__heap__.binance.ETHUSDT"
+                                                "__var": "__heap__.binance.TRUMPUSDT.[3]"
                                             },
                                             "right": {
-                                                "__const": 1000
+                                                "__const": 0
                                             },
                                         }
                                     },
                                 }
                             },
                             "then": {
-                                "type": "telegram_send_message",
+                                "type": "delete_from_heap",
                                 "arguments": {
-                                    "message": "ETHUSDT is greater than 1000"
+                                    "keys": [
+                                        "binance.TRUMPUSDT.[0]"
+                                    ]
                                 }
                             }
+                        }
+                    },
+                    {
+                        "type": "if_then",
+                        "arguments": {
+                            "if": {
+                                "type": "condition",
+                                "arguments": {
+                                    "condition":
+                                    {   
+                                        "__and": [
+                                            {
+                                                "__gt": {
+                                                    "left": {
+                                                        "__var": "__heap__.binance.TRUMPUSDT.[2]"
+                                                    },
+                                                    "right": {
+                                                        "__const": 0
+                                                    },
+                                                }
+                                            },
+                                            {
+                                                "__gt": {
+                                                    "left": {
+                                                        "__absolute": {
+                                                            "value": {
+                                                                "__divide": {
+                                                                    "left": {
+                                                                        "__minus": {
+                                                                            "left": {
+                                                                                "__var": "__heap__.binance.TRUMPUSDT.[2]"
+                                                                            },
+                                                                            "right": {
+                                                                                "__var": "__heap__.binance.TRUMPUSDT.[1]"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "right": {
+                                                                        "__var": "__heap__.binance.TRUMPUSDT.[2]"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "right": {
+                                                        "__const": 0.05 // 5%
+                                                    },
+                                                }
+                                            },
+                                            {
+                                                "__gt": {
+                                                    "left": {
+                                                        "__absolute": {
+                                                            "value": {
+                                                                "__divide": {
+                                                                    "left": {
+                                                                        "__minus": {
+                                                                            "left": {
+                                                                                "__var": "__heap__.binance.TRUMPUSDT.[1]"
+                                                                            },
+                                                                            "right": {
+                                                                                "__var": "__heap__.binance.TRUMPUSDT.[0]"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "right": {
+                                                                        "__var": "__heap__.binance.TRUMPUSDT.[2]"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "right": {
+                                                        "__const": 0.05 // 5%
+                                                    },
+                                                }
+                                            }
+                                        ]
+                                    },
+                                }
+                            },
+                            "then": {
+                                "type": "telegram_send_message",
+                                "arguments": {
+                                    "message": "TRUMPUSDT is greater than 12"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "type": "log",
+                        "arguments": {
+                            "message": "SOME LOG"
                         }
                     }
                 ]
             }
         },
-        "interval": 1000
+        "interval": 5000
     }
 };
 

@@ -1,7 +1,7 @@
 const comparisonOperators = {
     __strict_eq (operands): boolean {
         let {left, right} = operands;
-        return this.resolve(left) === this.resolver(right);
+        return this.resolve(left) === this.resolve(right);
     },
     __eq (operands): boolean {   
         let {left, right} = operands;

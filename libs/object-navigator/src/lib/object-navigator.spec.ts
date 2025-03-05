@@ -170,7 +170,7 @@ describe('TradingDataService', () => {
           const value = 'Alice';
           service = new ObjectNavigator({});
           service.set(key, value);
-          expect(service['data']).toEqua123l({ user: { profile: { name: value } } });
+          expect(service['data']).toEqual({ user: { profile: { name: value } } });
         });
 
         it('should replace existed value', () => {
@@ -315,13 +315,13 @@ describe('TradingDataService', () => {
           const key = '[1].[1].name';
           const value = 'Bob';
           service = new ObjectNavigator([
-        [{ name: 'Alice' }, { name: 'Charlie' }],
-        [{ name: 'Dave' }, { name: 'Eve' }]
+            [{ name: 'Alice' }, { name: 'Charlie' }],
+            [{ name: 'Dave' }, { name: 'Eve' }]
           ]);
           service.set(key, value);
           expect(service['data']).toEqual([
-        [{ name: 'Alice' }, { name: 'Charlie' }],
-        [{ name: 'Dave' }, { name: value }]
+            [{ name: 'Alice' }, { name: 'Charlie' }],
+            [{ name: 'Dave' }, { name: value }]
           ]);
         });
 
@@ -344,25 +344,25 @@ describe('TradingDataService', () => {
           const key = '[1].[1].[1]';
           const value = 'Bob';
           service = new ObjectNavigator([
-        [
-          ['Alice', 'Charlie'],
-          ['Dave', 'Eve']
-        ],
-        [
-          ['Frank', 'Grace'],
-          ['Hank', 'Ivy']
-        ]
+            [
+              ['Alice', 'Charlie'],
+              ['Dave', 'Eve']
+            ],
+            [
+              ['Frank', 'Grace'],
+              ['Hank', 'Ivy']
+            ]
           ]);
           service.set(key, value);
           expect(service['data']).toEqual([
-        [
-          ['Alice', 'Charlie'],
-          ['Dave', 'Eve']
-        ],
-        [
-          ['Frank', 'Grace'],
-          ['Hank', value]
-        ]
+            [
+              ['Alice', 'Charlie'],
+              ['Dave', 'Eve']
+            ],
+            [
+              ['Frank', 'Grace'],
+              ['Hank', value]
+            ]
           ]);
         });
 
@@ -625,7 +625,7 @@ describe('TradingDataService', () => {
               [
                 { user: { profile: { name: 'Alice' } } }
               ],
-              [ 
+              [
                 { user: { profile: { name: 'Charlie' } } }
               ]
             ]
@@ -663,7 +663,7 @@ describe('TradingDataService', () => {
         it('should replace existed value', () => {
           const key = 'user.[0].[0].[0]';
           const value = 'Bob';
-          service = new ObjectNavigator({ user: [[[ 'Alice' ]]] });
+          service = new ObjectNavigator({ user: [[['Alice']]] });
           service.set(key, value);
           expect(service['data']).toEqual({ user: [[[value]]] });
         });
@@ -687,7 +687,7 @@ describe('TradingDataService', () => {
         it('should replace existed value', () => {
           const key = '[0].user.[0].[0]';
           const value = 'Bob';
-          service = new ObjectNavigator([{ user: [[ 'Alice' ]] }]);
+          service = new ObjectNavigator([{ user: [['Alice']] }]);
           service.set(key, value);
           expect(service['data']).toEqual([{ user: [[value]] }]);
         });
@@ -734,25 +734,25 @@ describe('TradingDataService', () => {
           const key = '[1].[1].[1].name';
           const value = 'Bob';
           service = new ObjectNavigator([
-        [
-          [{ name: 'Alice' }, { name: 'Charlie' }],
-          [{ name: 'Dave' }, { name: 'Eve' }]
-        ],
-        [
-          [{ name: 'Frank' }, { name: 'Grace' }],
-          [{ name: 'Hank' }, { name: 'Ivy' }]
-        ]
+            [
+              [{ name: 'Alice' }, { name: 'Charlie' }],
+              [{ name: 'Dave' }, { name: 'Eve' }]
+            ],
+            [
+              [{ name: 'Frank' }, { name: 'Grace' }],
+              [{ name: 'Hank' }, { name: 'Ivy' }]
+            ]
           ]);
           service.set(key, value);
           expect(service['data']).toEqual([
-        [
-          [{ name: 'Alice' }, { name: 'Charlie' }],
-          [{ name: 'Dave' }, { name: 'Eve' }]
-        ],
-        [
-          [{ name: 'Frank' }, { name: 'Grace' }],
-          [{ name: 'Hank' }, { name: value }]
-        ]
+            [
+              [{ name: 'Alice' }, { name: 'Charlie' }],
+              [{ name: 'Dave' }, { name: 'Eve' }]
+            ],
+            [
+              [{ name: 'Frank' }, { name: 'Grace' }],
+              [{ name: 'Hank' }, { name: value }]
+            ]
           ]);
         });
 
@@ -779,49 +779,49 @@ describe('TradingDataService', () => {
             [
               [
                 [
-                  ['Alice'], 
+                  ['Alice'],
                   ['Charlie']
                 ],
                 [
-                  ['Dave'], 
+                  ['Dave'],
                   ['Eve']
                 ]
               ],
               [
                 [
-                  ['Frank'], 
+                  ['Frank'],
                   ['Grace']
                 ],
                 [
-                  ['Hank'], 
+                  ['Hank'],
                   ['Ivy']
                 ]
               ]
             ]);
           service.set(key, value);
           expect(service['data'])
-          .toEqual(
-            [
+            .toEqual(
               [
                 [
-                  ['Alice'], 
-                  ['Charlie']
+                  [
+                    ['Alice'],
+                    ['Charlie']
+                  ],
+                  [
+                    ['Dave'],
+                    ['Eve']]
                 ],
                 [
-                  ['Dave'], 
-                  ['Eve']]
-              ],
-              [
-                [
-                  ['Frank'], 
-                  ['Grace']
-                ],
-                [
-                  ['Hank'], 
-                  [value]
+                  [
+                    ['Frank'],
+                    ['Grace']
+                  ],
+                  [
+                    ['Hank'],
+                    [value]
+                  ]
                 ]
-              ]
-            ]);
+              ]);
         });
 
         it('should throw an error if trying to set up in wrong type', () => {
@@ -861,13 +861,13 @@ describe('TradingDataService', () => {
       describe('array_item', () => {
 
         beforeEach(() => {
-          service['data'] = [
+          service = new ObjectNavigator([
             { value: 8 },
             { value: 14 },
             { value: "text" },
             { value: true },
             { value: null }
-          ];
+          ]);
         });
 
         it('should get a specified value', () => {
@@ -898,6 +898,12 @@ describe('TradingDataService', () => {
           expect(service.get('nonexistent.this.and.this.and.this', 'some_default')).toBe('some_default');
           expect(service.get('nonexistent.[].value', 'some_default')).toBe('some_default');
           expect(service.get('[].nonexistent', 'some_default')).toBe('some_default');
+        });
+
+        it('should get item array with negative index', () => {
+          expect(service.get('[-3]')).toEqual({ value: "text" });
+          expect(service.get('[-2]')).toEqual({ value: true });
+          expect(service.get('[-1]')).toEqual({ value: null });
         });
       });
 
@@ -1459,6 +1465,57 @@ describe('TradingDataService', () => {
 
     });
 
+  });
+
+  describe.only('delete()', () => {
+
+    describe('nesting level 1', () => {
+
+      describe('object_property', () => {
+
+        it('should delete object property', () => {
+          service = new ObjectNavigator({
+            name: 'Alice',
+            age: 30,
+            isActive: true
+          });
+
+          service.delete('isActive');
+
+          expect(service['data']).toEqual({
+            name: 'Alice',
+            age: 30
+          });
+
+        });
+
+      });
+
+      describe('array_item', () => {
+
+        it('should delete array item by index', () => {
+          service = new ObjectNavigator([1, 2, 3, 4, 5]);
+
+          service.delete('[2]');
+
+          expect(service['data']).toEqual([1, 2, 4, 5]);
+        })
+
+      });
+
+    });
+
+    describe('nesting level 2', () => {
+
+    });
+
+    describe('nesting level 3', () => {
+
+    });
+
+    describe('nesting level 4', () => {
+
+    });
   });
 
   describe.skip('edge cases', () => {
