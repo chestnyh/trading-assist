@@ -21,8 +21,27 @@ To get started with the trading bot, follow these steps:
 
 ## Monorepo
 
+Add project: 
+```
+nx g @nx/nest:app apps/<project-name>
+```
+
 Remove project: 
 
 ```
 nx generate remove <project_name>
+```
+
+Create shared lib:
+```
+
+```
+
+## Migrations
+
+Generate migration:
+
+```
+pnpm models:generate-migration -- <new-migration-name>
+
 ```

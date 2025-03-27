@@ -78,6 +78,8 @@ web_modules/
 .env.test.local
 .env.production.local
 .env.local
+.env.api-int-tests
+.env.dev
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -135,3 +137,6 @@ dist
 .nx/workspace-data
 
 .vscode/
+
+# docker volumes
+docker/

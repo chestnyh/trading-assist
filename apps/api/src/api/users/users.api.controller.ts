@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body } from '@nestjs/common';
 
 import { UsersApiService } from './users.api.service';
 
@@ -6,8 +6,8 @@ import { UsersApiService } from './users.api.service';
 export class UsersApiController {
   constructor(private readonly appService: UsersApiService) {}
 
-  @Get()
-  getData() {
-    return this.appService.getData();
+  @Post()
+  async createUser(@Body() createUserDto: any) {
+    return this.appService.create(createUserDto);
   }
 }

@@ -25,8 +25,18 @@
         "apps/binance-api-imitation-e2e/**/*",
         "apps/binance-api-info-collector-e2e/**/*",
         "apps/api-e2e/**/*",
-        "apps/auto-trader-e2e/**/*"
+        "apps/auto-trader-e2e/**/*",
+        "apps/migrations-e2e/**/*"
       ]
+    },
+    {
+      "plugin": "@nx/cypress/plugin",
+      "options": {
+        "targetName": "e2e",
+        "openTargetName": "open-cypress",
+        "componentTestingTargetName": "component-test",
+        "ciTargetName": "e2e-ci"
+      }
     }
   ],
   "targetDefaults": {
@@ -34,7 +44,27 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["default", "^default"]
+    },
+    "e2e-ci--**/*": {
+      "dependsOn": ["^build"]
     }
   },
-  "nxCloudAccessToken": "ODJmYTJjYzgtODVjNC00YjFmLWE5ZDItMjVlNTg3Mzc2MjE0fHJlYWQtd3JpdGU="
+  "nxCloudAccessToken": "ODJmYTJjYzgtODVjNC00YjFmLWE5ZDItMjVlNTg3Mzc2MjE0fHJlYWQtd3JpdGU=",
+  "generators": {
+    "@nx/react": {
+      "application": {
+        "babel": true,
+        "style": "scss",
+        "linter": "eslint",
+        "bundler": "webpack"
+      },
+      "component": {
+        "style": "scss"
+      },
+      "library": {
+        "style": "scss",
+        "linter": "eslint"
+      }
+    }
+  }
 }

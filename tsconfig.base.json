@@ -15,6 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "configs": ["libs/configs/src/index.ts"],
+      "models": ["libs/models/src/index.ts"],
       "object-navigator": ["libs/object-navigator/src/index.ts"]
     }
   },
