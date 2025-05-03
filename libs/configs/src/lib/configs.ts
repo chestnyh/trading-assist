@@ -9,7 +9,7 @@ else if (process?.env?.['NODE_ENV'] !== 'production') {
 type Config = string | number | undefined;
 
 // TODO review this file
-export default class Configs {
+export class Configs {
   private configs: Record<string, Config> = {};
 
   constructor() {    

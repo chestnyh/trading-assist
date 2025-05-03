@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ActionsRunnerService } from "../actions-runner/actions-runner.service";
+import { ModelsService } from "@trading-bot/models";
+import { prependListener } from 'process';
 
 const config = {
     "type": "interval",
@@ -160,7 +162,8 @@ const config = {
 @Injectable()
 export class AutoTraderService {
     constructor(
-        private actionsRunnerService: ActionsRunnerService
+        private actionsRunnerService: ActionsRunnerService,
+        private modelsService: ModelsService
     ){
         this.init();
     }

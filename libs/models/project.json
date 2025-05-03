@@ -10,10 +10,16 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/models",
-        "tsConfig": "libs/models/tsconfig.lib.json",
-        "packageJson": "libs/models/package.json",
         "main": "libs/models/src/index.ts",
-        "assets": ["libs/models/*.md"]
+        "tsConfig": "libs/models/tsconfig.lib.json",
+        "assets": []
+      }
+    },
+    "migrations:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node ./src/migrations/run.ts",
+        "cwd": "libs/models"
       }
     }
   }

@@ -20,6 +20,7 @@ model User {
   password String 
   name  String?
   configs UserConfig[]
+  telegramSettings UserTelegramSettings[]
 }
 
 model UserConfig {
@@ -28,4 +29,13 @@ model UserConfig {
   description String
   authorId  Int
   author    User    @relation(fields: [authorId], references: [id])
+  config  Json @default("{}")
+}
+
+model UserTelegramSettings {
+  id    Int     @default(autoincrement()) @id
+  name String
+  description String
+  userId Int
+  user User @relation(fields: [userId], references: [id])
 }

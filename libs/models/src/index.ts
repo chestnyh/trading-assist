@@ -1,2 +1,4 @@
-export * as models from './lib/models';
-export * as connection from './lib/connect';
+export * from "./lib/models.service";
+export * from "./lib/models.module";
+export * from "./lib/models";
+export * from "./types";
