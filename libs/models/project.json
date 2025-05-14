@@ -7,7 +7,9 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/libs/models",
         "main": "libs/models/src/index.ts",
@@ -18,8 +20,29 @@
     "migrations:run": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node ./src/migrations/run.ts",
-        "cwd": "libs/models"
+        "command": "ts-node libs/models/src/migrations/run.ts",
+        "cwd": "."
+      }
+    },
+    "migrations:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node libs/models/src/migrations/generate.ts",
+        "cwd": "."
+      }
+    },
+    "migrations:seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node libs/models/src/migrations/seed.ts",
+        "cwd": "."
+      }
+    },
+    "migrations:reset": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node libs/models/src/migrations/reset.ts",
+        "cwd": "."
       }
     }
   }

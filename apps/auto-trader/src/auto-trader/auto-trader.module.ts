@@ -6,16 +6,18 @@ import { AutoTraderService } from './auto-trader.service';
 
 import { ModelsModule, ConnectionParams } from '@trading-bot/models';
 
-// const config: ConnectionParams = {}
+import { Configs } from '@trading-bot/configs';
+
+const config = new Configs();
 
 @Module({
   imports: [
     ModelsModule.forRoot({
-      host: 'localhost',
-      port: 5432,
-      user: 'admin',
-      password: 'secret',
-      database: 'test_db',
+      host: config.get('DB_HOST'),
+      port: config.get('DB_PORT'),
+      user: config.get('DB_USER'),
+      password: config.get('DB_PASSWORD'),
+      database: config.get('DB_NAME'),
     }),
     ActionsRunnerModule,
   ],

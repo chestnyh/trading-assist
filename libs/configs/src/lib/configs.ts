@@ -10,7 +10,7 @@ type Config = string | number | undefined;
 
 // TODO review this file
 export class Configs {
-  private configs: Record<string, Config> = {};
+  private configs: Record<string, string> = {};
 
   constructor() {    
     this.#init();
@@ -18,16 +18,16 @@ export class Configs {
 
   #init(){
     this.configs = {
-      PORT:process.env['PORT'] ? parseInt(process.env['PORT'], 10) : 3000,
+      PORT:process.env['PORT'] ? parseInt(process.env['PORT'], 10).toString() : '3000',
       DB_USER: process.env['DB_USER'],
       DB_PASSWORD: process.env['DB_PASSWORD'],
       DB_NAME: process.env['DB_NAME'],
       DB_HOST: process.env['DB_HOST'],
-      DB_PORT: process.env['DB_PORT'] ? parseInt(process.env['DB_PORT'], 10) : 5432,
+      DB_PORT: process.env['DB_PORT'] ? parseInt(process.env['DB_PORT'], 10).toString() : '5432',
     };
   }
 
-  get(configName: string): Config {
+  get(configName: string): string {
     return this.configs[configName];
   }
 }

@@ -1,6 +1,6 @@
 export type ConnectionParams = {
     host: string;
-    port: number;
+    port: string;
     user: string;
     password: string;
     database: string;
