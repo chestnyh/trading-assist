@@ -10,12 +10,11 @@ import binance from './actions/binance';
 import telegram from './actions/telegram';
 
 @Injectable()
-export class ActionsService {
+export class ActionsHub {
 
-    private heap: ObjectNavigator;
+    private heap: ObjectNavigator = new ObjectNavigator();
 
     constructor(){
-        this.heap = new ObjectNavigator();
         this.loadActions();
     }
 

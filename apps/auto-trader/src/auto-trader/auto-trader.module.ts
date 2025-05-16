@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 
-import { ActionsRunnerModule } from '../actions-runner/actions-runner.module';
-
 import { AutoTraderService } from './auto-trader.service';
 
 import { ModelsModule, ConnectionParams } from '@trading-bot/models';
@@ -19,7 +17,6 @@ const config = new Configs();
       password: config.get('DB_PASSWORD'),
       database: config.get('DB_NAME'),
     }),
-    ActionsRunnerModule,
   ],
   controllers: [],
   providers: [
