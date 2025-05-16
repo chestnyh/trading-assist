@@ -1,3 +1,0 @@
-# Experimments 
-
-This folder is a pile of artifacts that we do for binance api possibilities.Some test coding examples etc...
