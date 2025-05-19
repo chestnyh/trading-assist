@@ -1,4 +1,4 @@
-const logRule = require('../data/rules/1-log.json');
+const logRule = require('./units/rules/1-log.json');
 
 module.exports = {
     user: [
@@ -16,6 +16,15 @@ module.exports = {
                             name: "Initial Config",
                             description: "Initial config ",
                             ruleBody: logRule
+                        }
+                    ]
+                },
+                telegramSettings: {
+                    create: [
+                        {
+                            name: 'Telegram Settings',
+                            description: 'Telegram settings',
+                            apiToken: '1234567890',
                         }
                     ]
                 }

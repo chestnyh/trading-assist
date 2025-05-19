@@ -13,16 +13,21 @@ export class AutoTraderService {
         this.init();
     }
     async init(){
-        let rules = await this.modelsService.userRules.findMany();
+        let users = await this.modelsService.user.findMany({
+            select: {
+              rules: true,
+              telegramSettings: true
+            },
+        });
 
-        // Here we should get all users information and should pass it to action runner
-        // This information is like user telegram settings, user binance settings, logger, etc...
-
-        rules.forEach(rule => {
-            const {ruleBody} = rule;
-            const actionsRunner = new ActionsRunner(/* Should pass all things we depends on, like user settings etc. */);
-            actionsRunner.run(ruleBody);
-            this.actionsRunners.push(actionsRunner);
+        users.forEach(user => {
+            const {rules, telegramSettings} = user;
+            rules.forEach(rule => {
+                const {ruleBody} = rule;
+                const actionsRunner = new ActionsRunner(ruleBody, {telegramSettings});
+                actionsRunner.run();
+                this.actionsRunners.push(actionsRunner);
+            });
         });
     }
 }    

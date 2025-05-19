@@ -36,6 +36,7 @@ model UserTelegramSettings {
   id    Int     @default(autoincrement()) @id
   name String
   description String
+  apiToken String
   userId Int
   user User @relation(fields: [userId], references: [id])
 }

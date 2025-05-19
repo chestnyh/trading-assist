@@ -6,22 +6,22 @@ import { ActionsHub } from '../actions/action-hub';
 export class ActionsRunner {
 
     private actionsHub = new ActionsHub()
+    constructor(
+        private ruleBody, 
+        private settings
+    ){}
 
-    constructor(){}
-
-    run(rule){
+    run(){
 
         const {
             type, 
             arguments: args
-        } = rule;
-
-        const dependencies = {};
+        } = this.ruleBody;
         
         this.actionsHub[type](
             args, 
             {
-                dependencies
+                settings: this.settings
             });
 
     }
