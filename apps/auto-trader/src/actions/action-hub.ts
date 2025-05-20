@@ -14,21 +14,29 @@ export class ActionsHub {
 
     private heap: ObjectNavigator = new ObjectNavigator();
 
-    constructor(){
+    constructor(
+        private includedActions: string[]
+    ){
         this.loadActions();
     }
 
     loadActions(){
         Object.keys(common).forEach(key => {
-            this[key] = common[key].method;
+            if(this.includedActions.includes(key)){
+                this[key] = common[key].method;
+            }
         });
 
         Object.keys(binance).forEach(key => {
-            this[key] = binance[key].method;
+            if(this.includedActions.includes(key)){
+                this[key] = binance[key].method;
+            }
         });
 
         Object.keys(telegram).forEach(key => {
-            this[key] = telegram[key].method;
+            if(this.includedActions.includes(key)){
+                this[key] = telegram[key].method;
+            }
         });
     }
 

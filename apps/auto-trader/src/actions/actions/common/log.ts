@@ -8,14 +8,13 @@ import getValue from '../../utils/get-value.util'
  * @param dependencies 
  */
 export default function log(
-    args: any,
     {
-        sequenceContext
+        message = ""
+    },
+    {
+        sequenceContext = {}
     }
 ) {
-    let {
-        message,
-    } = args;
     const matches = message.match(/\${(.*?)}/g);
     if (matches) {
         matches.forEach(match => {
