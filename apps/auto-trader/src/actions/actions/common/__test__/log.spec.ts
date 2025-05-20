@@ -79,5 +79,4 @@ describe('log', () => {
         expect(console.log).toHaveBeenCalledWith('User (id: undefined, name: undefined undefined) opened deposit (amount:undefined, date: undefined)');
     });
     
-
 });
