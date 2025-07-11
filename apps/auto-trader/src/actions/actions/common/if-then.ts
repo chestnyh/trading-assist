@@ -1,14 +1,66 @@
 /**
- * Action that executes a 'then' action if a condition is met.
- * @param args 
- * @param param1 
+ * Executes a conditional action based on the result of another action.
+ * 
+ * This action implements if-then logic by first executing a condition action,
+ * and if that action returns a truthy value, it executes the then action.
+ * This enables conditional workflows and decision-making in trading strategies.
+ * 
+ * @param args - Configuration object containing the condition and action to execute
+ * @param args.if - The condition action object to evaluate
+ * @param args.if.type - The type/name of the condition action
+ * @param args.if.arguments - Arguments to pass to the condition action
+ * @param args.then - The action object to execute if condition is true
+ * @param args.then.type - The type/name of the action to execute
+ * @param args.then.arguments - Arguments to pass to the then action
+ * @param sequenceContext - Context object for storing and retrieving data between actions
+ * @param settings - Global settings object passed to actions
+ * 
+ * @example
+ * // Simple condition: check if price is above threshold, then log
+ * {
+ *   "type": "if_then",
+ *   "arguments": {
+ *     "if": {
+ *       // ...some action that returns some value, usually a condition
+ *     },
+ *     "then": {
+ *       // ...some action to execute if condition in `if` argument returns true
+ *     }
+ *   }
+ * }
+ * 
+ * @example
+ * // Example checking a value from heap and logging if condition is true
+ * {
+ *   "type": "if_then",
+ *   "arguments": {
+ *     "if": {
+ *       "type": "condition",
+ *       "arguments": {
+ *         "condition": {
+ *           "__var": "__heap__.some.value.from.heap"
+ *         }
+ *       }
+ *     },
+ *     "then": {
+ *       "type": "log",
+ *       "arguments": {
+ *         "message": "Value from heap: ${__heap__.some.value.from.heap}"
+ *       }
+ *     }
+ *   }
+ * }
+ * 
+ * @returns {void} Executes the then action if condition in `if` argument returns true
  */
 export default function if_then(
     args: any,
     {
         sequenceContext
-    }
+    },
+    settings: any
 ): void {
+
     const { 
         if: condition, 
         then 
@@ -28,11 +80,14 @@ export default function if_then(
         conditionArguments, 
         { 
             sequenceContext 
-        })){   
+        }
+    )){   
         this[thenType](
             thenArguments, 
             {
                 sequenceContext
-            });
+            },
+            settings
+        );
     }
 } 
