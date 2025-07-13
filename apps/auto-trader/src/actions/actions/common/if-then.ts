@@ -62,22 +62,22 @@ export default function if_then(
 ): void {
 
     const { 
-        if: condition, 
+        if: operations, 
         then 
     } = args;
 
     const {
-        type: conditionType,
-        arguments: conditionArguments,
-    } = condition;
+        type: operationType,
+        arguments: operationArguments,
+    } = operations;
 
     const {
         type: thenType,
         arguments: thenArguments,
     } = then;
 
-    if(this[conditionType](
-        conditionArguments, 
+    if(this[operationType](
+        operationArguments, 
         { 
             sequenceContext 
         }

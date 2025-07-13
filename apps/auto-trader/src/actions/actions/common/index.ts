@@ -4,7 +4,7 @@ import delete_from_heap from './delete-from-heap';
 import if_then from './if-then';
 import parallel from './parallel';
 import sequence from './sequence';
-import condition from './condition';
+import resolve from './resolve';
 import timeout from './timeout';
 import interval from './interval';
 
@@ -27,8 +27,8 @@ export default {
     sequence: {
         method: sequence
     },
-    condition: {
-        method: condition
+    resolve: {
+        method: resolve
     },
     timeout: {
         method: timeout

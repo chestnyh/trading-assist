@@ -1,0 +1,14 @@
+{
+    "name": "Timeout",
+    "description": "Action to check if the timeout is reached",
+    "type": "timeout",
+    "arguments": {
+        "do": {
+            "type": "log",
+            "arguments": {
+                "message": "Timeout message"
+            }
+        },
+        "timeout": 1000
+    }
+}

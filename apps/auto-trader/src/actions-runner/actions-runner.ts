@@ -4,12 +4,14 @@ import { ActionsHub } from '../actions/action-hub';
 
 @Injectable()
 export class ActionsRunner {
-
-    private actionsHub = new ActionsHub()
+    
+    private actionsHub: ActionsHub;
     constructor(
         private ruleBody, 
         private settings
-    ){}
+    ){
+        this.actionsHub = new ActionsHub();
+    };
 
     run(){
 
@@ -20,9 +22,9 @@ export class ActionsRunner {
         
         this.actionsHub[type](
             args, 
-            {
-                settings: this.settings
-            });
+            {},
+            this.settings
+        );
 
     }
 
