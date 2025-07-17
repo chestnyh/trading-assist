@@ -7,6 +7,11 @@ const comparisonOperators = {
         let [left, right] = operands;
         return this.resolve(left) == this.resolve(right);
     },
+    __neq (operands): boolean {
+        let [left, right] = operands;
+        console.log(left, right);
+        return this.resolve(left) !== this.resolve(right);
+    },
     __gt (operands): boolean {
         let [left, right] = operands;    
         return this.resolve(left) > this.resolve(right);

@@ -1,4 +1,4 @@
-import ConditionResolver from '../../resolver/resolver';
+import ConditionResolver from './resolver/resolver';
 
 /**
  * Evaluates a conditional expression and returns a boolean result.

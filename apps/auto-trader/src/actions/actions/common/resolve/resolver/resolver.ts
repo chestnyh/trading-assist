@@ -2,6 +2,7 @@ import comparisonOperators from "./comparison-operators";
 import fetchOperators from "./fetch-operators";
 import arithmeticOperators from "./arithmetic-operators";
 import logicalOperators from "./logical-operators";
+import arrayMethods from "./array-methods";
 
 class Resolver {
     
@@ -33,5 +34,6 @@ Object.assign(Resolver.prototype, comparisonOperators);
 Object.assign(Resolver.prototype, fetchOperators);
 Object.assign(Resolver.prototype, arithmeticOperators);
 Object.assign(Resolver.prototype, logicalOperators);
+Object.assign(Resolver.prototype, arrayMethods);
 
 export default Resolver;

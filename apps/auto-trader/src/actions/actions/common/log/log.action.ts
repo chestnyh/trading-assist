@@ -1,4 +1,4 @@
-import renderMessage from '../../utils/render-message.util'
+import renderMessage from '../../../utils/render-message.util'
 
 /**
  * Action that logs messages to the terminal for debugging purposes.

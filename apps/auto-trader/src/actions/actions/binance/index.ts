@@ -1,5 +1,6 @@
 import binance_spot_get_ticker from './binance-spot-get-ticker';
 import binance_um_futures_get_ticker from './binance-um-features-get-ticker';
+import binance_um_features_exchange_info from './binance-um-features-exchange-info';
 
 export default {
     binance_spot_get_ticker: {
@@ -7,5 +8,8 @@ export default {
     },
     binance_um_futures_get_ticker: {
         method: binance_um_futures_get_ticker
+    },
+    binance_um_features_exchange_info: {
+        method: binance_um_features_exchange_info
     }
 }

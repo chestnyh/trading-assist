@@ -9,8 +9,13 @@ import telegram from './actions/telegram';
 
 @Injectable()
 export class ActionsHub {
+
+    heap: ObjectNavigator;
+
     constructor(
     ){
+        this.heap = new ObjectNavigator();
+
         Object.keys(common).forEach(key => {
             this[key] = common[key].method;
         });

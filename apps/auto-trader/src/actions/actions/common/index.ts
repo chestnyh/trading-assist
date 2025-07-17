@@ -1,12 +1,14 @@
-import log from './log';
-import add_to_heap from './add-to-heap';
-import delete_from_heap from './delete-from-heap';
-import if_then from './if-then';
-import parallel from './parallel';
-import sequence from './sequence';
-import resolve from './resolve';
-import timeout from './timeout';
-import interval from './interval';
+import log from './log/log.action';
+import add_to_heap from './add-to-heap/add-to-heap.action';
+import delete_from_heap from './delete-from-heap/delete-from-heap.action';
+import if_then from './if-then/if-then.action';
+import parallel from './parallel/parallel.action';
+import sequence from './sequence/sequence.action';
+import resolve from './resolve/resolve.action';
+import timeout from './timeout/timeout.action';
+import interval from './interval/interval.action';
+import for_each from './for-each/for-each.action';
+import cron from './cron/cron.action';
 
 export default {
     log: {
@@ -35,5 +37,11 @@ export default {
     },
     interval: {
         method: interval
+    },
+    for_each: {
+        method: for_each
+    },
+    cron: {
+        method: cron
     }
 }
