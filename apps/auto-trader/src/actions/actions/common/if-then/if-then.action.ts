@@ -57,8 +57,7 @@ export default function if_then(
     args: any,
     {
         sequenceContext
-    },
-    settings: any
+    }
 ): void {
 
     const { 
@@ -86,8 +85,7 @@ export default function if_then(
             thenArguments, 
             {
                 sequenceContext
-            },
-            settings
+            }
         );
     }
 } 

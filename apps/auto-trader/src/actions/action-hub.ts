@@ -10,9 +10,10 @@ import telegram from './actions/telegram';
 @Injectable()
 export class ActionsHub {
 
-    heap: ObjectNavigator;
-
+    private heap: ObjectNavigator;
     constructor(
+        private ruleBody: any,
+        private settings: any,
     ){
         this.heap = new ObjectNavigator();
 
@@ -28,4 +29,26 @@ export class ActionsHub {
             this[key] = telegram[key].method;
         });
     }
+
+    run(){
+
+
+        const {
+            type, 
+            arguments: args
+        } = this.ruleBody;
+
+        console.log(type);
+        
+        this[type](
+            args, 
+            {},
+            this.settings
+        );
+
+
+
+    }
+
+    
 }

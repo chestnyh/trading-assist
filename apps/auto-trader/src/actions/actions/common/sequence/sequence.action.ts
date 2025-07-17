@@ -58,8 +58,7 @@ export default async function sequence(
             {
                 sequenceContext,
                 heap
-            },
-            settings
+            }
         );
     }
 } 

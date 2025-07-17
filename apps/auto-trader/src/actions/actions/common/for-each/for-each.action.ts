@@ -5,8 +5,7 @@ export default async function for_each(
     args: any,
     {
         sequenceContext
-    },
-    settings: any
+    }
 ): Promise<void> {
 
     let array = args.array;
@@ -19,8 +18,7 @@ export default async function for_each(
         array.arguments,
         {
             sequenceContext
-        },
-        settings
+        }
     );
 
     array.forEach(item => {
@@ -28,8 +26,7 @@ export default async function for_each(
             operations.arguments,
             {
                 sequenceContext: new ObjectNavigator(item),
-            },
-            settings
+            }
         );
     })
 } 

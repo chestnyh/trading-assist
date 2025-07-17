@@ -59,8 +59,7 @@ export default async function parallel(
     args: any,
     {
         sequenceContext,
-    },
-    settings: any
+    }
 ) {
     const { 
         do: actions,  

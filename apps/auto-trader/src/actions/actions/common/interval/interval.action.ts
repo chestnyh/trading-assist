@@ -45,7 +45,6 @@ export default function interval(
         sequenceContext,
         heap,
     },
-    settings: any
 ) {
     const {
         do: action,
@@ -57,6 +56,6 @@ export default function interval(
         this[actionType](action.arguments, {
             sequenceContext,
             heap
-        }, settings);
+        });
     }, interval);
 }

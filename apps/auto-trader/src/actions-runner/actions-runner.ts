@@ -8,24 +8,13 @@ export class ActionsRunner {
     private actionsHub: ActionsHub;
     constructor(
         private ruleBody, 
-        private settings
+        private settings,
     ){
-        this.actionsHub = new ActionsHub();
+        this.actionsHub = new ActionsHub(this.ruleBody, this.settings);
     };
 
     run(){
-
-        const {
-            type, 
-            arguments: args
-        } = this.ruleBody;
-        
-        this.actionsHub[type](
-            args, 
-            {},
-            this.settings
-        );
-
+        this.actionsHub.run();
     }
 
 }    

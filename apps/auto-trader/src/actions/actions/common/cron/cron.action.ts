@@ -7,19 +7,15 @@ export default function cron(
     },
     {
         sequenceContext
-    },
-    settings: any
+    }
 ): void {
-
-    console.log(schedule);
 
     cronLib.schedule(schedule, () => {
         this[operation.type](
             operation.arguments,
             {
                 sequenceContext
-            },
-            settings
+            }
         );
     });
 

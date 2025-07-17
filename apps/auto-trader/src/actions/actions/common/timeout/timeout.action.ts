@@ -45,8 +45,7 @@ export default async function timeout(
     args: any,
     {
         sequenceContext
-    },
-    settings: any
+    }
 ) {
     const { 
         do: action, 
