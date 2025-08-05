@@ -22,8 +22,8 @@
     "models:migrations:generate": "nx run models:migrations:generate",
     "configs:build": "nx run configs:build",
     "all:build": "nx run-many --target=build --all",
-    "docker:dev:up": "docker-compose -p dev --env-file .env.dev up",
-    "docker:int-test:up": "docker-compose -p int_test --env-file .env.api-int-tests up"
+    "docker:dev:up": "docker compose -p dev --env-file .env.dev up",
+    "docker:int-test:up": "docker compose -p int_test --env-file .env.api-int-tests up"
   },
   "author": "",
   "license": "ISC",
@@ -36,7 +36,6 @@
     "@nestjs/platform-express": "^10.4.15",
     "@prisma/client": "^6.5.0",
     "@prisma/migrate": "^6.5.0",
-    "@trading-bot/configs": "file:dist/libs/configs",
     "axios": "^1.8.4",
     "bybit-api": "^3.11.0",
     "commander": "^13.1.0",
