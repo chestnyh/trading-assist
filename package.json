@@ -20,6 +20,7 @@
     "models:migrations:seed": "nx run models:migrations:seed",
     "models:migrations:reset": "nx run models:migrations:reset",
     "models:migrations:generate": "nx run models:migrations:generate",
+    "models:migrations:migrate-and-seed": "nx run models:migrations:run; nx run models:migrations:seed seed/initial.js",
     "configs:build": "nx run configs:build",
     "all:build": "nx run-many --target=build --all",
     "docker:dev:up": "docker compose -p dev --env-file .env.dev up",
@@ -98,6 +99,7 @@
     "react-refresh": "^0.10.0",
     "ts-jest": "^29.3.0",
     "ts-node": "10.9.1",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "5.7.3",
     "webpack-cli": "^5.1.4"
   },

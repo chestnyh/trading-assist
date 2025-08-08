@@ -20,21 +20,21 @@
     "migrations:run": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node libs/models/src/migrations/run.ts",
+        "command": "ts-node -r tsconfig-paths/register --project libs/models/tsconfig.lib.json libs/models/src/migrations/run.ts",
         "cwd": "."
       }
     },
     "migrations:dev": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node libs/models/src/migrations/dev.ts",
+        "command": "ts-node -r tsconfig-paths/register --project libs/models/tsconfig.lib.json libs/models/src/migrations/dev.ts",
         "cwd": "."
       }
     },
     "migrations:seed": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node libs/models/src/migrations/seed.ts",
+        "command": "ts-node -r tsconfig-paths/register --project libs/models/tsconfig.lib.json libs/models/src/migrations/seed.ts seeds/initial.js",
         "cwd": "."
       }
     },

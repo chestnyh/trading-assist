@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:latest
-    container_name: ${DB_DOCKER_CONTAINER_NAME}
+    container_name: postgres
     restart: always
     environment:
       POSTGRES_USER: ${DB_USER}
@@ -14,12 +14,42 @@ services:
     volumes:
       - ${DB_DOCKER_VOLUME}:/var/lib/postgresql/data
     networks:
-      - postgres_network
+      - trading_bot_network
+  migrations:
+    build:
+      context: .
+      dockerfile: libs/models/Dockerfile
+    container_name: migrations  
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    networks:
+      - trading_bot_network
+  auto-trader:
+    build:
+      context: .
+      dockerfile: apps/auto-trader/Dockerfile  
+    container_name: auto-trader
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    networks:
+      - trading_bot_network
+
 
 volumes:
   postgres_data:
     driver: local
 
 networks:
-  postgres_network:
+  trading_bot_network:
     driver: bridge
