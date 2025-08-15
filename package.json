@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "auto-trader:build": "nx run auto-trader:build",
     "auto-trader:test": "nx test auto-trader",
     "auto-trader:test:watch": "nx test auto-trader --watch",
     "auto-trader:start": "nx run auto-trader:serve",
     "api:start": "nx run api:serve",
+    "api:build": "nx run api:build",
     "api:test-int": "docker-compose --env-file .env.api-int-tests up -d; npx prisma migrate deploy; NODE_ENV=api-int-tests pnpm run api:start & nx run api-e2e:e2e",
     "user-control-panel:start": "nx run user-control-panel:serve",
     "object-navigator:show": "nx show project object-navigator",
@@ -23,8 +25,10 @@
     "models:migrations:migrate-and-seed": "nx run models:migrations:run; nx run models:migrations:seed seed/initial.js",
     "configs:build": "nx run configs:build",
     "all:build": "nx run-many --target=build --all",
-    "docker:dev:up": "docker compose -p dev --env-file .env.dev up",
-    "docker:int-test:up": "docker compose -p int_test --env-file .env.api-int-tests up"
+    "all:start": "nx run-many --target=serve --all",
+    "docker:external:up": "docker compose --env-file .env.dev --profile external up",
+    "docker:init-external:up": "docker compose --env-file .env.dev --profile init-external up",
+    "docker:int-test:up": "docker compose --env-file .env.api-int-tests up"
   },
   "author": "",
   "license": "ISC",
@@ -35,6 +39,7 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^10.4.15",
     "@nestjs/platform-express": "^10.4.15",
+    "@nestjs/swagger": "^11.2.0",
     "@prisma/client": "^6.5.0",
     "@prisma/migrate": "^6.5.0",
     "axios": "^1.8.4",
