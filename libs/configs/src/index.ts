@@ -1,1 +1,2 @@
-export * from "./lib/configs";
+export * from "./lib/services-configs";
+export * from "./lib/devops-configs";

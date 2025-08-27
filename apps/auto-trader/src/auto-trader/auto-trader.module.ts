@@ -4,9 +4,9 @@ import { AutoTraderService } from './auto-trader.service';
 
 import { ModelsModule, ConnectionParams } from '@trading-bot/models';
 
-import { Configs } from '@trading-bot/configs';
+import { ServicesConfigs } from '@trading-bot/configs';
 
-const config = new Configs();
+const config = new ServicesConfigs();
 
 @Module({
   imports: [

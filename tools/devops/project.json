@@ -36,21 +36,11 @@
         }
       }
     },
-    "serve": {
-      "executor": "@nx/js:node",
-      "defaultConfiguration": "development",
-      "dependsOn": ["build"],
+    "auto-trader:image:deploy": {
+      "executor": "nx:run-commands",
       "options": {
-        "buildTarget": "devops:build",
-        "runBuildTargetDependencies": false
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "devops:build:development"
-        },
-        "production": {
-          "buildTarget": "devops:build:production"
-        }
+        "command": "ts-node -r tsconfig-paths/register --project tools/devops/tsconfig.app.json tools/devops/src/scripts/container-deploy.ts --project_name auto-trader",
+        "cwd": "."
       }
     }
   },

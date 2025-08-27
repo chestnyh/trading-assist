@@ -59,6 +59,7 @@
     "websocket.io": "^0.2.1"
   },
   "devDependencies": {
+    "@aws-sdk/client-ecr": "^3.864.0",
     "@babel/core": "^7.26.10",
     "@babel/preset-react": "^7.26.3",
     "@nestjs/schematics": "^10.2.3",

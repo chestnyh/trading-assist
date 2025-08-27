@@ -1,10 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import type { ConnectionParams } from '../types';
-import { Configs } from '@trading-bot/configs';
-const configs = new Configs();
+import { ServicesConfigs } from '@trading-bot/configs';
+const configs = new ServicesConfigs();
 
 export default class Models extends PrismaClient {
-    #configs: Configs;
+    #configs: ServicesConfigs;
     constructor(params: ConnectionParams) {
         const { host, port, user, password, database } = params;
         

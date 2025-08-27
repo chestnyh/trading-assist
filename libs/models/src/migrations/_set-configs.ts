@@ -1,6 +1,6 @@
-import { Configs } from '@trading-bot/configs';
+import { ServicesConfigs } from '@trading-bot/configs';
 
-const configs = new Configs();
+const configs = new ServicesConfigs();
 
 const DB_USER = configs.get('DB_USER');
 const DB_PASSWORD = configs.get('DB_PASSWORD');
