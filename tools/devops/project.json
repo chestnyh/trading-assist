@@ -39,6 +39,13 @@
     "auto-trader:image:deploy": {
       "executor": "nx:run-commands",
       "options": {
+        "command": "ts-node -r tsconfig-paths/register --project tools/devops/tsconfig.app.json tools/devops/src/scripts/image-deploy.ts --project_name auto-trader",
+        "cwd": "."
+      }
+    },
+    "auto-trader:container:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
         "command": "ts-node -r tsconfig-paths/register --project tools/devops/tsconfig.app.json tools/devops/src/scripts/container-deploy.ts --project_name auto-trader",
         "cwd": "."
       }

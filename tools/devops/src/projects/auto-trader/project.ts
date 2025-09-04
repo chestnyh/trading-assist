@@ -1,5 +1,7 @@
 import path from 'path';
+import fs from 'fs';
 import { ECRClient, GetAuthorizationTokenCommand } from "@aws-sdk/client-ecr";
+import SSH2Promise from 'ssh2-promise';
 import { Buffer } from "buffer";
 import { DevopsConfigs } from '@trading-bot/configs';
 import DevopsProject from '../DevopsProject';
@@ -10,6 +12,7 @@ export default class AutoTraderProject extends DevopsProject {
   private awsEcrRegion: string;
   private awsEcrAccountId: string;
   private awsEcrRepo: string;
+
 
   constructor() {
     super();
@@ -33,8 +36,8 @@ export default class AutoTraderProject extends DevopsProject {
     const ecrClient = new ECRClient({ 
       region: this.awsEcrRegion,
       credentials: {
-        accessKeyId: devopsConfigs.get('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: devopsConfigs.get('AWS_SECRET_ACCESS_KEY'),
+        accessKeyId: devopsConfigs.get('AWS_ECR_ACCESS_KEY_ID'),
+        secretAccessKey: devopsConfigs.get('AWS_ECR_SECRET_ACCESS_KEY'),
       }
     });
 
@@ -85,6 +88,58 @@ export default class AutoTraderProject extends DevopsProject {
       await this.getUsernameAndPassword();
     }
     return this.proxyEndpoint;
+  }
+
+  async containerDeploy() {
+    const sshConfig = {
+      host: 'ec2-13-60-24-25.eu-north-1.compute.amazonaws.com',
+      username: 'ec2-user',
+      port: 22,
+      identity: path.join(__dirname, '..', '..', '..', '..', '..', 'auto-trader.pem'),
+    }
+
+    const ssh = new SSH2Promise(sshConfig);
+    await ssh.connect();
+
+    // 1. Get ECR credentials
+    const username = await this.getUsername();
+    const password = await this.getPassword();
+    const proxyEndpoint = await this.getProxyEndpoint();
+
+    // 2. Login to ECR
+    console.log('Logging into ECR...');
+    try {
+      console.log(`echo "${password}" | docker login --username ${username} --password-stdin ${proxyEndpoint}`);
+      await ssh.exec(`echo "${password}" | docker login --username ${username} --password-stdin ${proxyEndpoint}`);
+    } catch (error) {
+      console.error('Error logging into ECR:', error);
+      // throw error;
+    }
+
+    // 3. Pull the latest image from ECR
+    console.log('Pulling image from ECR...');
+    console.log(`docker pull ${this.imageRepoUrl}:${this.imageTag}`);
+    await ssh.exec(`docker pull ${this.imageRepoUrl}:${this.imageTag}`);
+
+    // 4. Stop and remove existing container if it exists
+    console.log('Stopping existing container...');
+    try {
+      await ssh.exec('docker stop auto-trader || true');
+    } catch (error) {
+      // ignore if container does not exist
+    }
+    try {
+      await ssh.exec('docker rm auto-trader || true');
+    } catch (error) {
+      // ignore if container does not exist
+    }
+
+    // 5. Run the new container
+    console.log('Starting new container...');
+    await ssh.exec(`docker run -d --name auto-trader -p 3000:3000 ${this.imageRepoUrl}:${this.imageTag}`);
+
+    console.log('Container deployed successfully!');
+
   }
 
 }

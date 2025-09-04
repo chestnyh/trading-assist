@@ -1,19 +1,19 @@
-import { execSync } from 'child_process';
-import { ECRClient, GetAuthorizationTokenCommand } from "@aws-sdk/client-ecr";
-import { Buffer } from "buffer";
-import { parseArgs } from 'node:util';
-
 /**
- * Script to build, tag, push Docker image to AWS ECR, and print run instructions for EC2.
+ * Script to print out the EC2 user-data script for running a Docker container from ECR.
  * 
- * Prerequisites:
- * - AWS credentials configured (env vars, shared config, or IAM role).
- * - Docker installed and running.
- * - ECR repository already created.
+ * Usage:
+ *   ts-node tools/devops/src/scripts/ec2-container-deploy.ts --project_name auto-trader
  * 
- * Uses @aws-sdk/client-ecr to get Docker login credentials.
+ * Prints a bash script that can be used as EC2 user-data to:
+ *   - Install Docker (if not present)
+ *   - Authenticate to ECR
+ *   - Pull the latest image
+ *   - Run the container
  */
 
+import { parseArgs } from 'node:util';
+
+// Parse CLI args
 const args = parseArgs({
   options: {
     project_name: { 
@@ -32,11 +32,11 @@ const help = args?.values?.help;
 
 if (help) {
   console.log(`
-Usage: nx run auto-trader:image:deploy --project=auto-trader
+Usage: ts-node tools/devops/src/scripts/container-deploy.ts
 
 Options:
-  -p, --project_name    The name of the image to deploy
-  -h, --help    Show this help message and exit
+  -p, --project_name    The name of the project (e.g. auto-trader)
+  -h, --help            Show this help message and exit
 `);
   process.exit(0);
 }
@@ -48,52 +48,15 @@ if(!args?.values?.project_name) {
 
 const projectName = args?.values?.project_name;
 
-// import configs from project file
+// Dynamically import the project class
 const { default: Project } = require(`../projects/${projectName}/project`);
-
 const project = new Project();
 
 async function main() {
-
-  const username = await project.getUsername();
-  const password = await project.getPassword();
-  const proxyEndpoint = await project.getProxyEndpoint();
-
-  const imageName = project.imageName;
-  const imageTag = project.imageTag;
-  const imageRepoUrl = project.imageRepoUrl;
-  const dockerfile = project.dockerfile;
-
-  
-  // Docker login
-  execSync(
-    `docker login -u ${username} --password-stdin ${proxyEndpoint.replace('https://', '')}`,
-    { input: password, stdio: ['pipe', 'inherit', 'inherit'] }
-  );
-
-  // 2. Build Docker image
-  console.log('Building Docker image...');
-  execSync(
-    `docker build -f ${dockerfile} -t ${imageName}:${imageTag} .`,
-    { stdio: 'inherit' }
-  );
-
-  // 3. Tag Docker image for ECR
-  console.log('Tagging Docker image for ECR...');
-  execSync(
-    `docker tag ${imageName}:${imageTag} ${imageRepoUrl}:${imageTag}`,
-    { stdio: 'inherit' }
-  );
-
-  // 4. Push Docker image to ECR
-  console.log('Pushing Docker image to ECR...');
-  execSync(
-    `docker push ${imageRepoUrl}:${imageTag}`,
-    { stdio: 'inherit' }
-  );
+  await project.containerDeploy();
 }
 
 main().catch((err) => {
-  console.error('Error during image deploy:', err);
+  console.error('Error container deploy:', err);
   process.exit(1);
 });

@@ -49,19 +49,6 @@ RUN ls -la ./
 RUN ls -la ./libs/models/
 RUN ls -la ./libs/configs/
 
-# RUN npx prisma generate --schema=./libs/models/prisma/schema.prisma
-# RUN npm install -g pnpm
-
-# # Set environment variables for migrations
-# ENV DB_HOST=postgres
-# ENV DB_PORT=5432
-# ENV DB_USER=${DB_USER}
-# ENV DB_PASSWORD=${DB_PASSWORD}
-# ENV DB_NAME=${DB_NAME}
-
-# RUN pnpm models:migrations:run
-# RUN pnpm models:migrations:seed
-
 USER auto-trader
 
 EXPOSE 3000

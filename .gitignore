@@ -143,3 +143,6 @@ dist
 docker/
 
 notes.md
+
+# pem files
+*.pem

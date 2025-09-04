@@ -12,8 +12,8 @@ export class DevopsConfigs extends Configs {
       AWS_ECR_REGION: process.env['AWS_ECR_REGION'],
       AWS_ECR_ACCOUNT_ID: process.env['AWS_ECR_ACCOUNT_ID'],
       AWS_ECR_REPO_NAMESPACE: process.env['AWS_ECR_REPO_NAMESPACE'],
-      AWS_ACCESS_KEY_ID: process.env['AWS_ACCESS_KEY_ID'],
-      AWS_SECRET_ACCESS_KEY: process.env['AWS_SECRET_ACCESS_KEY'],
+      AWS_ECR_ACCESS_KEY_ID: process.env['AWS_ECR_ACCESS_KEY_ID'],
+      AWS_ECR_SECRET_ACCESS_KEY: process.env['AWS_ECR_SECRET_ACCESS_KEY'],
     };
   }
 }
