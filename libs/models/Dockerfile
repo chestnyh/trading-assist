@@ -22,12 +22,5 @@ RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile
 RUN pnpm models:migrations:generate
 
-# Set default environment variables
-ENV DB_HOST=postgres
-ENV DB_PORT=5432
-ENV DB_USER=${DB_USER}
-ENV DB_PASSWORD=${DB_PASSWORD}
-ENV DB_NAME=${DB_NAME}
-
 # Default command
 CMD ["sh", "-c", "pnpm models:migrations:run && pnpm models:migrations:seed"]

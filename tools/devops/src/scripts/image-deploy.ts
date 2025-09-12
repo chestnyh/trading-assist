@@ -1,4 +1,3 @@
-import { execSync } from 'child_process';
 import { parseArgs } from 'node:util';
 
 /**
@@ -50,42 +49,7 @@ const { default: Project } = require(`../projects/${projectName}/project`);
 const project = new Project();
 
 async function main() {
-
-  const username = await project.getUsername();
-  const password = await project.getPassword();
-  const proxyEndpoint = await project.getProxyEndpoint();
-
-  const imageName = project.imageName;
-  const imageTag = project.imageTag;
-  const imageRepoUrl = project.imageRepoUrl;
-  const dockerfile = project.dockerfile;
-
-  // Docker login
-  execSync(
-    `docker login -u ${username} --password-stdin ${proxyEndpoint.replace('https://', '')}`,
-    { input: password, stdio: ['pipe', 'inherit', 'inherit'] }
-  );
-
-  // 2. Build Docker image
-  console.log('Building Docker image...');
-  execSync(
-    `docker build -f ${dockerfile} -t ${imageName}:${imageTag} .`,
-    { stdio: 'inherit' }
-  );
-
-  // 3. Tag Docker image for ECR
-  console.log('Tagging Docker image for ECR...');
-  execSync(
-    `docker tag ${imageName}:${imageTag} ${imageRepoUrl}:${imageTag}`,
-    { stdio: 'inherit' }
-  );
-
-  // 4. Push Docker image to ECR
-  console.log('Pushing Docker image to ECR...');
-  execSync(
-    `docker push ${imageRepoUrl}:${imageTag}`,
-    { stdio: 'inherit' }
-  );
+  await project.imageDeploy();
 }
 
 main().catch((err) => {

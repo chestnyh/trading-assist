@@ -1,0 +1,1 @@
+export { default as awsGetECRCredentials } from './aws-get-ecr-credentials';

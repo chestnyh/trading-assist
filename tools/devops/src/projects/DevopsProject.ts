@@ -1,3 +1,5 @@
+import { DevopsConfigs } from "libs/configs/src/lib/devops-configs";
+
 export default class DevopsProject {
 
     protected name: string;
@@ -7,8 +9,9 @@ export default class DevopsProject {
     protected password: string;
     protected proxyEndpoint: string;
     protected dockerfile: string;
+    protected configProvider: DevopsConfigs;
   
-    get imageRepoUrl(): string {
+    getImageRepoUrl(): string {
         throw new Error('Not implemented');
     };
 
@@ -26,6 +29,10 @@ export default class DevopsProject {
 
     async getDockerfile() {
         return this.dockerfile;
+    }
+
+    async deploy() {
+        throw new Error('Not implemented');        
     }
       
 }
