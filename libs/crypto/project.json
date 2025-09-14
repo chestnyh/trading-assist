@@ -1,0 +1,20 @@
+{
+  "name": "crypto",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/crypto/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project crypto --web",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/configs",
+        "main": "libs/configs/src/index.ts",
+        "tsConfig": "libs/configs/tsconfig.lib.json",
+        "assets": []
+      }
+    }
+  }
+}
