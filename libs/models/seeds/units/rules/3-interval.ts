@@ -1,0 +1,14 @@
+export default {
+    "name": "Interval",
+    "description": "Action to run some action in a specific interval",
+    "type": "interval",
+    "arguments": {
+        "do": {
+            "type": "log",
+            "arguments": {
+                "message": "Interval message"
+            }
+        },
+        "interval": 1000
+    }
+}
