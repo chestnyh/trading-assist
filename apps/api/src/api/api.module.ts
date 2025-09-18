@@ -1,15 +1,26 @@
 import { Module } from '@nestjs/common';
+import { ServicesConfigsModule, ServicesConfigs } from '@trading-bot/configs';
+import { ModelsModule } from '@trading-bot/models';
 
 import { UsersApiModule } from "./users/users.api.module";
-import { ConfigModule } from '@nestjs/config';
-import configuration from '../config/configuration';
+import { AuthModule } from "./auth/auth.module";
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      load: [configuration],
+    ServicesConfigsModule,
+    // Global module
+    ModelsModule.forRootAsync({
+      useFactory: async (configService: ServicesConfigs) => ({
+        host: configService.get('DB_HOST'),
+        port: configService.get('DB_PORT'),
+        user: configService.get('DB_USER'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+      }),
+      inject: [ServicesConfigs],
     }),
-    UsersApiModule
+    UsersApiModule,
+    AuthModule
   ],
   controllers: [],
   providers: [],

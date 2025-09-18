@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { AutoTraderService } from './auto-trader.service';
 
-import { ModelsModule, ConnectionParams } from '@trading-bot/models';
+import { ModelsModule } from '@trading-bot/models';
 
 import { ServicesConfigs } from '@trading-bot/configs';
 

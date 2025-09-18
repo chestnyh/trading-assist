@@ -3,6 +3,7 @@ import * as timeoutRule from './units/rules/2-timeout';
 import * as intervalRule from './units/rules/3-interval';
 import * as sequenceRule from './units/rules/4-sequence';
 import * as parallelRule from './units/rules/5-parallel';
+// TODO: should make it @trading-bot/crypto-utils
 import { CryptoUtilsService } from '../../crypto-utils/src/lib/crypto-utils.service';
 
 const cryptoService = new CryptoUtilsService();

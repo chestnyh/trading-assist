@@ -3,7 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
@@ -12,11 +12,20 @@ import { ApiModule } from './api/api.module';
 async function bootstrap() {
   const app = await NestFactory.create(ApiModule);
 
+  // Enable validation globally
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }));
+
   const config = new DocumentBuilder()
-    .setTitle('User control panel API')
-    .setDescription('TODO add description here')
+    .setTitle('Trading Bot API')
+    .setDescription('API for trading bot user management and authentication')
     .setVersion('1.0')
-    .addTag('api')
+    .addBearerAuth()
+    .addTag('auth', 'Authentication endpoints')
+    .addTag('users', 'User management endpoints')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
