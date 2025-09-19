@@ -4,6 +4,7 @@ import { ModelsModule } from '@trading-bot/models';
 
 import { UsersApiModule } from "./users/users.api.module";
 import { AuthModule } from "./auth/auth.module";
+import { RulesModule } from "./rules/rules.module";
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { AuthModule } from "./auth/auth.module";
       inject: [ServicesConfigs],
     }),
     UsersApiModule,
-    AuthModule
+    AuthModule,
+    RulesModule
   ],
   controllers: [],
   providers: [],
