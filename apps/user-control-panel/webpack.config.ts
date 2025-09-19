@@ -10,6 +10,10 @@ module.exports = {
     port: 4200,
     historyApiFallback: true
   },
+  ignoreWarnings: [
+    /Failed to parse source map/,
+    /ENOENT: no such file or directory/
+  ],
   plugins: [
     new NxAppWebpackPlugin({
       tsConfig: './tsconfig.app.json',
