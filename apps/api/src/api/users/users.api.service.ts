@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ModelsService } from '@trading-bot/models';
 import { CryptoUtilsService } from '@trading-bot/crypto-utils';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersApiService {
@@ -10,9 +11,29 @@ export class UsersApiService {
   ) {}
 
   /**
-   * TODO add description
+   * Create a new user
    */
-  async create(user: any){
+  async create(user: CreateUserDto) {
+    // Hash the password before storing
+    const hashedPassword = await this.cryptoService.hashPassword(user.password);
+    
+    // Create the user in the database
+    const newUser = await this.modelsService.user.create({
+      data: {
+        nickname: user.nickname,
+        email: user.email,
+        password: hashedPassword,
+        name: user.name,
+      },
+      select: {
+        id: true,
+        nickname: true,
+        email: true,
+        name: true,
+      }
+    });
+
+    return newUser;
   }
 
   /**
@@ -71,8 +92,6 @@ export class UsersApiService {
     const user = await this.modelsService.user.findUnique({
       where: { email },
     });
-
-    console.log("user = ", user);
 
     if (user && await this.cryptoService.comparePassword(password, user.password)) {
       const { password: _, ...result } = user;
