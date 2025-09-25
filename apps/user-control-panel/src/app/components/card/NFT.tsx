@@ -14,7 +14,7 @@ import {
 // Custom components
 import Card from "./Card";
 // Assets
-import React, { useState } from "react";
+import { useState } from "react";
 import { IoHeart, IoHeartOutline } from "react-icons/io5";
 
 export default function NFT(props: any) {

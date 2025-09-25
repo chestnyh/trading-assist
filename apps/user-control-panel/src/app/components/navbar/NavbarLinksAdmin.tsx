@@ -18,8 +18,8 @@ import {
 import { ItemContent } from '../../components/menu/ItemContent';
 import { SearchBar } from '../../components/navbar/searchBar/SearchBar';
 import { SidebarResponsive } from '../../components/sidebar/Sidebar';
+import { useAuth } from '../../contexts/AuthContext';
 import PropTypes from 'prop-types';
-import React from 'react';
 // Assets
 import navImage from '../../assets/img/layout/Navbar.png';
 import { MdNotificationsNone, MdInfoOutline } from 'react-icons/md';
@@ -29,6 +29,7 @@ import routes from '../../../routes';
 export default function HeaderLinks(props: any) {
   const { secondary } = props;
   const { colorMode, toggleColorMode } = useColorMode();
+  const { user, logout } = useAuth();
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('gray.400', 'white');
   let menuBg = useColorModeValue('white', 'navy.800');
@@ -270,7 +271,7 @@ export default function HeaderLinks(props: any) {
               fontWeight="700"
               color={textColor}
             >
-              👋&nbsp; Hey, Adela
+              👋&nbsp; Hey, {user?.nickname || user?.name || 'User'}
             </Text>
           </Flex>
           <Flex flexDirection="column" p="10px">
@@ -296,6 +297,7 @@ export default function HeaderLinks(props: any) {
               color="red.400"
               borderRadius="8px"
               px="14px"
+              onClick={logout}
             >
               <Text fontSize="sm">Log out</Text>
             </MenuItem>

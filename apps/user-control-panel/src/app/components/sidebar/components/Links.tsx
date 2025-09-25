@@ -1,5 +1,3 @@
-/* eslint-disable */
-import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 // chakra imports
 import { Box, Flex, HStack, Text, useColorModeValue } from "@chakra-ui/react";
@@ -47,9 +45,7 @@ export function SidebarLinks(props: any) {
           </>
         );
       } else if (
-        route.layout === "/admin" ||
-        route.layout === "/auth" ||
-        route.layout === "/rtl"
+        route.layout === "/admin"
       ) {
         return (
           <NavLink key={index} to={route.layout + route.path}>

@@ -1,5 +1,4 @@
 import PropTypes from "prop-types";
-import React from "react";
 import { NavLink } from "react-router-dom";
 
 // Chakra imports
@@ -23,7 +22,6 @@ import {
 
 // Custom components
 import IconBox from "../../components/icons/IconBox";
-import { HorizonLogo } from "../../components/icons/Icons";
 import { SidebarResponsive } from "../../components/sidebar/Sidebar";
 import { SidebarContext } from "../../contexts/SidebarContext";
 
@@ -100,9 +98,7 @@ export default function AuthNavbar(props: any) {
       justifyContent='center'
       alignItems='center'
       color={mainText}>
-      <Stack direction='row' spacing='12px' align='center' justify='center'>
-        <HorizonLogo h='26px' w='175px' color={logoColor} />
-      </Stack>
+      <Stack direction='row' spacing='12px' align='center' justify='center' />
       <Text fontSize='sm' mt='3px'>
         {logoText}
       </Text>
@@ -120,7 +116,6 @@ export default function AuthNavbar(props: any) {
         justifyContent='center'
         alignItems='center'
         color={mainText}>
-        <HorizonLogo h='26px' w='175px' my='32px' color={logoColor} />
       </Link>
     );
     // mainText = useColorModeValue("gray.700", "gray.200");

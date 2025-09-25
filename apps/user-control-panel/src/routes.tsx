@@ -14,10 +14,11 @@ import MainDashboard from './app/views/admin/default';
 import NFTMarketplace from './app/views/admin/marketplace';
 import Profile from './app/views/admin/profile';
 import DataTables from './app/views/admin/dataTables';
-import RTL from './app/views/admin/rtl';
 
 // Auth Imports
 import SignInCentered from './app/views/auth/signIn';
+import SignUpCentered from './app/views/auth/signUp';
+import ForgotPasswordCentered from './app/views/auth/forgotPassword';
 
 const routes = [
   {
@@ -62,14 +63,22 @@ const routes = [
     path: '/sign-in',
     icon: <Icon as={MdLock} width="20px" height="20px" color="inherit" />,
     component: <SignInCentered />,
+    // collapse: true
   },
   {
-    name: 'RTL Admin',
-    layout: '/rtl',
-    path: '/rtl-default',
-    icon: <Icon as={MdHome} width="20px" height="20px" color="inherit" />,
-    component: <RTL />,
+    name: 'Sign Up',
+    layout: '/auth',
+    path: '/sign-up',
+    icon: <Icon as={MdLock} width="20px" height="20px" color="inherit" />,
+    component: <SignUpCentered />,
   },
+  {
+    name: 'Forgot Password',
+    layout: '/auth',
+    path: '/forgot-password',
+    icon: <Icon as={MdLock} width="20px" height="20px" color="inherit" />,
+    component: <ForgotPasswordCentered />,
+  }
 ];
 
 export default routes;

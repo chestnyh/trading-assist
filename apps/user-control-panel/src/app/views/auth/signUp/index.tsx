@@ -27,16 +27,18 @@ import { FcGoogle } from "react-icons/fc";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { RiEyeCloseLine } from "react-icons/ri";
 
-function SignIn() {
+function SignUp() {
   // Auth context
-  const { login } = useAuth();
+  const { signUp } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const toast = useToast();
 
   // Form state
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [nickname, setNickname] = useState("");
   const [show, setShow] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -64,8 +66,7 @@ function SignIn() {
     setIsSubmitting(true);
 
     try {
-      const success = await login(email, password);
-
+      const success = await signUp(email, password, name, nickname);
       if (success) {
         toast({
           title: "Login successful",
@@ -114,7 +115,7 @@ function SignIn() {
         flexDirection='column'>
         <Box me='auto'>
           <Heading color={textColor} fontSize='36px' mb='10px'>
-            Sign In
+            Sign Up
           </Heading>
           <Text
             mb='36px'
@@ -122,7 +123,7 @@ function SignIn() {
             color={textColorSecondary}
             fontWeight='400'
             fontSize='md'>
-            Enter your email and password to sign in!
+            Enter your information to sign up!
           </Text>
         </Box>
         <Flex
@@ -169,6 +170,7 @@ function SignIn() {
                 mb='8px'>
                 Email<Text color={brandStars}>*</Text>
               </FormLabel>
+              {/* Email */}
               <Input
                 isRequired={true}
                 variant='auth'
@@ -183,6 +185,47 @@ function SignIn() {
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isSubmitting}
               />
+              {/* Name */}
+                <FormLabel
+                  ms='4px'
+                  fontSize='sm'
+                  fontWeight='500'
+                  color={textColor}
+                  display='flex'>
+                  Name<Text color={brandStars}>*</Text>
+                </FormLabel>
+                <Input
+                  isRequired={true}
+                  fontSize='sm'
+                  placeholder='John Doe'
+                  mb='24px'
+                  size='lg'
+                  variant='auth'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={isSubmitting}
+                />
+              {/* Nickname */}
+              <FormLabel
+                ms='4px'
+                fontSize='sm'
+                fontWeight='500'
+                color={textColor}
+                display='flex'>
+                Nickname<Text color={brandStars}>*</Text>
+              </FormLabel>
+              <Input
+                isRequired={true}
+                fontSize='sm'
+                placeholder='Nickname'
+                mb='24px'
+                size='lg'
+                variant='auth'
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                disabled={isSubmitting}
+              />
+              {/* Password */}
               <FormLabel
                 ms='4px'
                 fontSize='sm'
@@ -213,32 +256,37 @@ function SignIn() {
                   />
                 </InputRightElement>
               </InputGroup>
-              <Flex justifyContent='space-between' align='center' mb='24px'>
-                <FormControl display='flex' alignItems='center'>
-                  <Checkbox
-                    id='remember-login'
-                    colorScheme='brandScheme'
-                    me='10px'
+              {/* Repeat Password */}
+              <FormLabel
+                ms='4px'
+                fontSize='sm'
+                fontWeight='500'
+                color={textColor}
+                display='flex'>
+                RepeatPassword<Text color={brandStars}>*</Text>
+              </FormLabel>
+              <InputGroup size='md'>
+                <Input
+                  isRequired={true}
+                  fontSize='sm'
+                  placeholder='Min. 8 characters'
+                  mb='24px'
+                  size='lg'
+                  type={show ? "text" : "password"}
+                  variant='auth'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isSubmitting}
+                />
+                <InputRightElement display='flex' alignItems='center' mt='4px'>
+                  <Icon
+                    color={textColorSecondary}
+                    _hover={{ cursor: "pointer" }}
+                    as={show ? RiEyeCloseLine : MdOutlineRemoveRedEye}
+                    onClick={handleClick}
                   />
-                  <FormLabel
-                    htmlFor='remember-login'
-                    mb='0'
-                    fontWeight='normal'
-                    color={textColor}
-                    fontSize='sm'>
-                    Keep me logged in
-                  </FormLabel>
-                </FormControl>
-                <NavLink to='/auth/forgot-password'>
-                  <Text
-                    color={textColorBrand}
-                    fontSize='sm'
-                    w='124px'
-                    fontWeight='500'>
-                    Forgot password?
-                  </Text>
-                </NavLink>
-              </Flex>
+                </InputRightElement>
+              </InputGroup>
               <Button
                 type='submit'
                 fontSize='sm'
@@ -248,9 +296,9 @@ function SignIn() {
                 h='50'
                 mb='24px'
                 isLoading={isSubmitting}
-                loadingText='Signing in...'
+                loadingText='Signing up...'
                 disabled={isSubmitting || !email || !password}>
-                Sign In
+                Sign Un
               </Button>
             </FormControl>
           </form>
@@ -261,14 +309,14 @@ function SignIn() {
             maxW='100%'
             mt='0px'>
             <Text color={textColorDetails} fontWeight='400' fontSize='14px'>
-              Not registered yet?
-              <NavLink to='/auth/sign-up'>
+              Already registered?
+              <NavLink to='/auth/sign-in'>
                 <Text
                   color={textColorBrand}
                   as='span'
                   ms='5px'
                   fontWeight='500'>
-                  Create an Account
+                  Sign In
                 </Text>
               </NavLink>
             </Text>
@@ -279,4 +327,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default SignUp;

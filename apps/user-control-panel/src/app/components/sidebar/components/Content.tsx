@@ -3,10 +3,6 @@ import { Box, Flex, Stack } from "@chakra-ui/react";
 //   Custom components
 import Brand from "./Brand";
 import Links from "./Links";
-import SidebarCard from "./SidebarCard";
-import React from "react";
-
-// FUNCTIONS
 
 function SidebarContent(props: any) {
   const { routes } = props;
@@ -24,7 +20,6 @@ function SidebarContent(props: any) {
         mt='60px'
         mb='40px'
         borderRadius='30px'>
-        <SidebarCard />
       </Box>
     </Flex>
   );

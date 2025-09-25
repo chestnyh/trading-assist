@@ -5,7 +5,7 @@ import Footer from '../../components/footer/FooterAdmin';
 import Navbar from '../../components/navbar/NavbarAdmin';
 import Sidebar from '../../components/sidebar/Sidebar';
 import { SidebarContext } from '../../contexts/SidebarContext';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import routes from '../../../routes';
 
