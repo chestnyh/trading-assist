@@ -12,10 +12,7 @@ import { SidebarContext } from '../../contexts/SidebarContext';
 export default function Auth() {
   // states and functions
   const [toggleSidebar, setToggleSidebar] = useState(false);
-  // functions for changing the states from components
-  const getRoute = () => {
-    return window.location.pathname !== '/auth/full-screen-maps';
-  };
+
   const getRoutes = (routes: any) => {
     return routes.map((route: any, key: number) => {
       if (route.layout === '/auth') {
@@ -52,17 +49,20 @@ export default function Auth() {
           transitionProperty="top, bottom, width"
           transitionTimingFunction="linear, linear, ease"
         >
-          {getRoute() ? (
-            <Box mx="auto" minH="100vh">
-              <Routes>
-                {getRoutes(routes)}
-                <Route
-                  path="/"
-                  element={<Navigate to="/auth/sign-in/default" replace />}
-                />
-              </Routes>
-            </Box>
-          ) : null}
+          <Box mx="auto" minH="100vh">
+            <Routes>
+              {getRoutes(routes)}
+              <Route
+                path="/"
+                element={
+                  <Navigate
+                    to="/auth/sign-in/default"
+                    replace
+                  />
+                }
+              />
+            </Routes>
+          </Box>
         </Box>
       </SidebarContext.Provider>
     </Box>

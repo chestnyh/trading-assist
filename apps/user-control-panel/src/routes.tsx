@@ -1,11 +1,10 @@
-import React from 'react';
-
 import { Icon } from '@chakra-ui/react';
 import {
   MdBarChart,
   MdPerson,
   MdHome,
   MdLock,
+  MdGavel,
   MdOutlineShoppingCart,
 } from 'react-icons/md';
 
@@ -14,6 +13,7 @@ import MainDashboard from './app/views/admin/default';
 import NFTMarketplace from './app/views/admin/marketplace';
 import Profile from './app/views/admin/profile';
 import DataTables from './app/views/admin/dataTables';
+import Rules from './app/views/admin/rules';
 
 // Auth Imports
 import SignInCentered from './app/views/auth/signIn';
@@ -58,6 +58,13 @@ const routes = [
     component: <Profile />,
   },
   {
+    name: 'Rules',
+    layout: '/admin',
+    path: '/rules',
+    icon: <Icon as={MdGavel} width="20px" height="20px" color="inherit" />,
+    component: <Rules />,
+  },
+  {
     name: 'Sign In',
     layout: '/auth',
     path: '/sign-in',
@@ -73,7 +80,7 @@ const routes = [
     component: <SignUpCentered />,
   },
   {
-    name: 'Forgot Password',
+    name: 'Forgot Passwrd',
     layout: '/auth',
     path: '/forgot-password',
     icon: <Icon as={MdLock} width="20px" height="20px" color="inherit" />,

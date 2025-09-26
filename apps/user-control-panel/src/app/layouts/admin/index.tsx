@@ -10,15 +10,11 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import routes from '../../../routes';
 
 // Custom Chakra theme
-export default function Dashboard(props: any) {
+export default function AdminLayout(props: any) {
   const { ...rest } = props;
   // states and functions
   const [fixed] = useState(false);
   const [toggleSidebar, setToggleSidebar] = useState(false);
-  // functions for changing the states from components
-  const getRoute = () => {
-    return window.location.pathname !== '/admin/full-screen-maps';
-  };
   const getActiveRoute = (routes: any): string => {
     let activeRoute = 'Default Brand Text';
     for (let i = 0; i < routes.length; i++) {
@@ -102,9 +98,7 @@ export default function Dashboard(props: any) {
       }
     });
   };
-  document.documentElement.dir = 'ltr';
   const { onOpen } = useDisclosure();
-  document.documentElement.dir = 'ltr';
   return (
     <Box>
       <Box>
@@ -114,7 +108,11 @@ export default function Dashboard(props: any) {
             setToggleSidebar,
           }}
         >
-          <Sidebar routes={routes} display="none" {...rest} />
+          <Sidebar 
+            routes={routes} 
+            display="none" 
+            {...rest} 
+          />
           <Box
             float="right"
             minHeight="100vh"
@@ -133,7 +131,6 @@ export default function Dashboard(props: any) {
               <Box>
                 <Navbar
                   onOpen={onOpen}
-                  logoText={'Horizon UI Dashboard PRO'}
                   brandText={getActiveRoute(routes)}
                   secondary={getActiveNavbar(routes)}
                   message={getActiveNavbarText(routes)}
@@ -142,24 +139,26 @@ export default function Dashboard(props: any) {
                 />
               </Box>
             </Portal>
-
-            {getRoute() ? (
-              <Box
-                mx="auto"
-                p={{ base: '20px', md: '30px' }}
-                pe="20px"
-                minH="100vh"
-                pt="50px"
-              >
-                <Routes>
-                  {getRoutes(routes)}
-                  <Route
-                    path="/"
-                    element={<Navigate to="/admin/default" replace />}
-                  />
-                </Routes>
-              </Box>
-            ) : null}
+            <Box
+              mx="auto"
+              p={{ base: '20px', md: '30px' }}
+              pe="20px"
+              minH="100vh"
+              pt="50px"
+            >
+              <Routes>
+                {getRoutes(routes)}
+                <Route
+                  path="/"
+                  element={
+                    <Navigate 
+                      to="/admin/default" 
+                      replace 
+                    />
+                  }
+                />
+              </Routes>
+            </Box>
             <Box>
               <Footer />
             </Box>

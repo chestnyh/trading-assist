@@ -12,7 +12,6 @@ import Upload from "./components/Upload";
 // Assets
 import banner from "../../../assets/img/auth/banner.png";
 import avatar from "../../../assets/img/avatars/avatar4.png";
-import React from "react";
 
 export default function Overview() {
   return (
