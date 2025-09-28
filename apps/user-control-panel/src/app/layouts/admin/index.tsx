@@ -8,6 +8,7 @@ import { SidebarContext } from '../../contexts/SidebarContext';
 import { useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import routes from '../../../routes';
+import Rules from '../../views/admin/rules';
 
 // Custom Chakra theme
 export default function AdminLayout(props: any) {
@@ -148,6 +149,10 @@ export default function AdminLayout(props: any) {
             >
               <Routes>
                 {getRoutes(routes)}
+                <Route
+                  path="/rules/:ruleId"
+                  element={<Rules />}
+                />
                 <Route
                   path="/"
                   element={
