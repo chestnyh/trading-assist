@@ -3,6 +3,7 @@ import JSONEditor from 'jsoneditor';
 import 'jsoneditor/dist/jsoneditor.css';
 
 interface Props {
+  readOnly?: boolean;
   json: any;
   onChangeJSON?: (json: any) => void;
 }
@@ -20,7 +21,11 @@ export default class JSONEditorDemo extends Component<Props> {
       },
       onModeChange: (mode: string) => {
         console.log('Mode changed to:', mode);
-      }
+      },
+      onChangeText: this.props.readOnly ?  (...args: any[]) => {
+        // TODO: Don't like this to make a json unchangable. Need to find another way.
+        this.jsoneditor.set(this.props.json);
+      } : undefined
     };
 
     this.jsoneditor = new JSONEditor(this.container, options);

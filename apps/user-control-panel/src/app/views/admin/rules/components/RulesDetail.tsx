@@ -14,6 +14,7 @@ import {
 import { useRules } from '../../../../contexts/RulesContext';
 import Menu from '../../../../components/menu/MainMenu';
 import { useNavigate, useParams } from 'react-router-dom';
+import JSONEditorDemo from './JSONeditor';
 // Assets
 
 export default function RulesDetail(props: any) {
@@ -143,26 +144,11 @@ export default function RulesDetail(props: any) {
           {/* Rule Body */}
           <Box>
             <Text fontSize="sm" color="gray.500" mb="2">Rule Body</Text>
-            <Box 
-              bg="gray.50" 
-              p="4" 
-              borderRadius="md" 
-              border="1px solid" 
-              borderColor="gray.200"
-              maxH="400px"
-              overflowY="auto"
-            >
-              <pre style={{ 
-                color: 'black',
-                margin: 0, 
-                fontSize: '12px', 
-                fontFamily: 'monospace',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word'
-              }}>
-                {JSON.stringify(rule.ruleBody, null, 2)}
-              </pre>
-            </Box>
+            <JSONEditorDemo 
+              json={rule.ruleBody} 
+              readOnly={true}
+              onChangeJSON={() => {}} 
+            />
           </Box>
 
           {/* Back Button */}
