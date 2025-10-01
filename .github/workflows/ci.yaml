@@ -6,8 +6,8 @@ on:
     branches: [ dev ]
 
 env:
-  NODE_VERSION: '20'
-  PNPM_VERSION: '8'
+  NODE_VERSION: '22'
+  PNPM_VERSION: '9'
 
 jobs:
   test:
@@ -39,8 +39,6 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-      - name: Show files
-        run: ls -la      
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
