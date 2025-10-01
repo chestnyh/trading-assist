@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useAuth } from "./AuthContext";
 
 export type Rule = {
   id: string;
@@ -10,8 +11,6 @@ export type Rule = {
 type RulesContextType = {
   rules: Rule[];
   isLoading: boolean;
-  mode: string;
-  setMode: (mode: string) => void;
   selectedRule: Rule | null;
   setSelectedRule: (rule: Rule | null) => void;
   fetchRules: () => Promise<void>;
@@ -25,17 +24,20 @@ const RulesContext = createContext<RulesContextType | undefined>(undefined);
 export const RulesProvider = ({ children }: { children: ReactNode }) => {
   const [rules, setRules] = useState<Rule[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [mode, setMode] = useState<string>("table"); // table, edit, detail
   const [selectedRule, setSelectedRule] = useState<Rule | null>(null);
+  const { token } = useAuth();
 
   const fetchRules = async () => {
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+    
     setIsLoading(true);
     try {
-      // Get token from localStorage (or other secure storage)
-      const token = localStorage.getItem("auth_token");
       const response = await fetch("http://localhost:3001/api/v1/rules", {
         headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -51,11 +53,18 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addRule = async (rule: Omit<Rule, "id">): Promise<boolean> => {
+    if (!token) {
+      return false;
+    }
+    
     setIsLoading(true);
     try {
       const response = await fetch("http://localhost:3001/api/v1/rules", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(rule),
       });
       if (response.ok) {
@@ -71,11 +80,18 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateRule = async (id: string, updatedRule: Partial<Rule>): Promise<boolean> => {
+    if (!token) {
+      return false;
+    }
+    
     setIsLoading(true);
     try {
       const response = await fetch(`http://localhost:3001/api/v1/rules/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(updatedRule),
       });
       if (response.ok) {
@@ -91,10 +107,17 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const deleteRule = async (id: string): Promise<boolean> => {
+    if (!token) {
+      return false;
+    }
+    
     setIsLoading(true);
     try {
       const response = await fetch(`http://localhost:3001/api/v1/rules/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (response.ok) {
         await fetchRules();
@@ -109,13 +132,13 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    fetchRules();
-  },[]);
+    if (token) {
+      fetchRules();
+    }
+  }, [token]);
 
   const value: RulesContextType = {
     rules,
-    mode,
-    setMode,
     selectedRule,
     setSelectedRule,
     isLoading,

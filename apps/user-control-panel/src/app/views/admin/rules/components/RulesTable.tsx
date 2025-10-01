@@ -18,11 +18,13 @@ import {
 import Card from '../../../../components/card/Card';
 import Menu from '../../../../components/menu/MainMenu';
 import { useRules } from '../../../../contexts/RulesContext';
+import { useNavigate } from 'react-router-dom';
 // Assets
 
 export default function RulesTable(props: any) {
 
-  const { rules, setMode, setSelectedRule, deleteRule } = useRules();
+  const { rules, setSelectedRule, deleteRule } = useRules();
+  const navigate = useNavigate();
 
   const textColor = useColorModeValue('secondaryGray.900', 'white');
 
@@ -42,7 +44,21 @@ export default function RulesTable(props: any) {
         >
           Rules Table
         </Text>
-        <Menu />
+        <Flex gap="8px" align="center">
+          <Button 
+            colorScheme="blue" 
+            onClick={() => navigate('/admin/rules/add')}
+            leftIcon={
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            }
+          >
+            Add Rule
+          </Button>
+          <Menu />
+        </Flex>
       </Flex>
       <Box>
         <Table variant="simple" color="gray.500" mb="24px" mt="12px">
@@ -127,7 +143,7 @@ export default function RulesTable(props: any) {
                       borderColor="transparent"
                       minW={{ sm: '150px', md: '200px', lg: 'auto' }}
                     >
-                      <Text onClick={() => { setMode("detail"); setSelectedRule(row); }}>{row.name}</Text>
+                       <Text onClick={() => { setSelectedRule(row); navigate(`/admin/rules/${row.id}`); }}>{row.name}</Text>
                     </Td>
                     <Td fontSize={{ sm: '14px' }}
                       borderColor="transparent"
@@ -149,9 +165,9 @@ export default function RulesTable(props: any) {
                     </Td>
                     <Td borderColor="transparent">
                       <Flex gap="8px">
-                        <Button
-                          colorScheme="blue"
-                          onClick={() => { setMode("detail"); setSelectedRule(row); }}
+                         <Button
+                           colorScheme="blue"
+                           onClick={() => { setSelectedRule(row); navigate(`/admin/rules/${row.id}`); }}
                           leftIcon={
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -160,9 +176,9 @@ export default function RulesTable(props: any) {
                           }
                         >
                         </Button>
-                        <Button
-                          colorScheme="green"
-                          onClick={() => { setMode("edit"); setSelectedRule(row); }}
+                         <Button
+                           colorScheme="green"
+                           onClick={() => { setSelectedRule(row); navigate(`/admin/rules/${row.id}/edit`); }}
                           leftIcon={
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />

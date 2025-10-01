@@ -1,26 +1,22 @@
 // Chakra imports
 import { Box } from "@chakra-ui/react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import RulesTable from "./components/RulesTable";
 import RulesEdit from "./components/RulesEdit";
 import RulesDetail from "./components/RulesDetail";
 import RulesAdd from "./components/RulesAdd";
-import { RulesProvider, useRules, Rule } from "../../../contexts/RulesContext";
-import { useState, useEffect } from "react";
+import { RulesProvider } from "../../../contexts/RulesContext";
 
 function RulesContent() {
-  const { rules, mode } = useRules();
-  const [ tableData, setTableData ] = useState<Rule[]>([]);
-
-  useEffect(() => {
-    setTableData(rules);
-  }, [rules]);
-
   return (
     <Box pt={{ base: "130px", md: "80px", xl: "80px" }}>
-        {mode === "table" && <RulesTable tableData={tableData} />}
-        {mode === "edit" && <RulesEdit />}
-        {mode === "detail" && <RulesDetail />}
-        {mode === "add" && <RulesAdd />}
+      <Routes>
+        <Route path="/" element={<RulesTable />} />
+        <Route path="/add" element={<RulesAdd />} />
+        <Route path="/:ruleId" element={<RulesDetail />} />
+        <Route path="/:ruleId/edit" element={<RulesEdit />} />
+        <Route path="*" element={<Navigate to="/admin/rules" replace />} />
+      </Routes>
     </Box>
   );
 }

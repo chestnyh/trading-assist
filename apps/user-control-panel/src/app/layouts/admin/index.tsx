@@ -89,7 +89,7 @@ export default function AdminLayout(props: any) {
     return routes.map((route: any, key: number) => {
       if (route.layout === '/admin') {
         return (
-          <Route path={`${route.path}`} element={route.component} key={key} />
+          <Route path={`${route.path}/*`} element={route.component} key={key} />
         );
       }
       if (route.collapse) {
@@ -149,10 +149,6 @@ export default function AdminLayout(props: any) {
             >
               <Routes>
                 {getRoutes(routes)}
-                <Route
-                  path="/rules/:ruleId"
-                  element={<Rules />}
-                />
                 <Route
                   path="/"
                   element={
