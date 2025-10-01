@@ -64,7 +64,7 @@ class ObjectNavigator {
         throw new Error("Can't set property to an array")
       }
       
-      if(current.hasOwnProperty(currentKey)){
+      if(current?.hasOwnProperty(currentKey)){
         return current[currentKey];
       }
 

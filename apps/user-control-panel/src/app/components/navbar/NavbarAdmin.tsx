@@ -18,17 +18,17 @@ export default function AdminNavbar(props: any) {
 	const { secondary, message, brandText } = props;
 
 	// Here are all the props that may change depending on navbar's type or state.(secondary, variant, scrolled)
-	let mainText = useColorModeValue('navy.700', 'white');
-	let secondaryText = useColorModeValue('gray.700', 'white');
-	let navbarPosition: "fixed" | "absolute" | "relative" | "static" | "sticky" = 'fixed';
-	let navbarFilter = 'none';
-	let navbarBackdrop = 'blur(20px)';
-	let navbarShadow = 'none';
-	let navbarBg = useColorModeValue('rgba(244, 247, 254, 0.2)', 'rgba(11,20,55,0.5)');
-	let navbarBorder = 'transparent';
-	let secondaryMargin = '0px';
-	let paddingX = '15px';
-	let gap = '0px';
+	const mainText = useColorModeValue('navy.700', 'white');
+	const secondaryText = useColorModeValue('gray.700', 'white');
+	const navbarPosition: "fixed" | "absolute" | "relative" | "static" | "sticky" = 'fixed';
+	const navbarFilter = 'none';
+	const navbarBackdrop = 'blur(20px)';
+	const navbarShadow = 'none';
+	const navbarBg = useColorModeValue('rgba(244, 247, 254, 0.2)', 'rgba(11,20,55,0.5)');
+	const navbarBorder = 'transparent';
+	const secondaryMargin = '0px';
+	const paddingX = '15px';
+	const gap = '0px';
 	const changeNavbar = () => {
 		if (window.scrollY > 1) {
 			setScrolled(true);

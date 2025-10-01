@@ -29,6 +29,7 @@
     "all:build": "nx run-many --target=build --all",
     "all:start": "nx run-many --target=serve --all",
     "all:test": "nx run-many --target=test --all",
+    "all:lint": "nx run-many --target=lint --all",
     "docker:external:up": "docker compose --env-file .env.dev --profile external up",
     "docker:init-external:up": "docker compose --env-file .env.dev --profile init-external up",
     "docker:int-test:up": "docker compose --env-file .env.api-int-tests up"

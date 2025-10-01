@@ -51,7 +51,7 @@ export default async function sequence(
         do: actions,  
     } = args;
 
-    for(let action of actions){
+    for(const action of actions){
         const actionType = action.type;
         await this[actionType](
             action.arguments, 

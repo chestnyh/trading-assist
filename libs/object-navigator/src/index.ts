@@ -1,1 +1,2 @@
-export * from './lib/object-navigator';
+import ObjectNavigator from './lib/object-navigator';
+export default ObjectNavigator;

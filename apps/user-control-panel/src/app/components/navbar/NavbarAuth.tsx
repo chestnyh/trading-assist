@@ -55,38 +55,38 @@ export default function AuthNavbar(props: any) {
   } = useDisclosure();
   // Menus
   function getLinks(routeName: string) {
-    let foundRoute = routes.filter(function (route: any) {
+    const foundRoute = routes.filter(function (route: any) {
       return route.items && route.name === routeName;
     });
     console.log(foundRoute);
     return (foundRoute[0] as any).items;
   }
   function getLinksCollapse(routeName: string) {
-    let foundRoute = routes.filter(function (route: any) {
+    const foundRoute = routes.filter(function (route: any) {
       return route.items && route.name === routeName;
     });
 
-    let foundLinks = (foundRoute[0] as any).items.filter(function (link: any) {
+    const foundLinks = (foundRoute[0] as any).items.filter(function (link: any) {
       return link.collapse === true;
     });
 
     return foundLinks;
   }
-  let authObject = getLinksCollapse("Authentication");
-  let mainObject = getLinksCollapse("Main Pages");
-  let dashboardsObject = getLinks("Dashboards");
-  let nftsObject = getLinks("NFTs");
-  let logoColor = useColorModeValue("white", "white");
+  const authObject = getLinksCollapse("Authentication");
+  const mainObject = getLinksCollapse("Main Pages");
+  const dashboardsObject = getLinks("Dashboards");
+  const nftsObject = getLinks("NFTs");
+  const logoColor = useColorModeValue("white", "white");
   // Chakra color mode
 
   const textColor = useColorModeValue("navy.700", "white");
-  let menuBg = useColorModeValue("white", "navy.900");
-  let mainText = "#fff";
-  let navbarBg = "none";
-  let navbarShadow = "initial";
-  let bgButton = "white";
-  let colorButton = "brand.500";
-  let navbarPosition: "absolute" | "fixed" | "relative" | "static" | "sticky" = "absolute";
+  const menuBg = useColorModeValue("white", "navy.900");
+  const mainText = "#fff";
+  const navbarBg = "none";
+  const navbarShadow = "initial";
+  const bgButton = "white";
+  const colorButton = "brand.500";
+  const navbarPosition: "absolute" | "fixed" | "relative" | "static" | "sticky" = "absolute";
 
   let brand = (
     <Link

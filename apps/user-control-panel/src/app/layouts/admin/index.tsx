@@ -17,15 +17,15 @@ export default function AdminLayout(props: any) {
   const [fixed] = useState(false);
   const [toggleSidebar, setToggleSidebar] = useState(false);
   const getActiveRoute = (routes: any): string => {
-    let activeRoute = 'Default Brand Text';
+    const activeRoute = 'Default Brand Text';
     for (let i = 0; i < routes.length; i++) {
       if (routes[i].collapse) {
-        let collapseActiveRoute = getActiveRoute(routes[i].items);
+        const collapseActiveRoute = getActiveRoute(routes[i].items);
         if (collapseActiveRoute !== activeRoute) {
           return collapseActiveRoute;
         }
       } else if (routes[i].category) {
-        let categoryActiveRoute = getActiveRoute(routes[i].items);
+        const categoryActiveRoute = getActiveRoute(routes[i].items);
         if (categoryActiveRoute !== activeRoute) {
           return categoryActiveRoute;
         }
@@ -40,15 +40,15 @@ export default function AdminLayout(props: any) {
     return activeRoute;
   };
   const getActiveNavbar = (routes: any): boolean => {
-    let activeNavbar = false;
+    const activeNavbar = false;
     for (let i = 0; i < routes.length; i++) {
       if (routes[i].collapse) {
-        let collapseActiveNavbar = getActiveNavbar(routes[i].items);
+        const collapseActiveNavbar = getActiveNavbar(routes[i].items);
         if (collapseActiveNavbar !== activeNavbar) {
           return collapseActiveNavbar;
         }
       } else if (routes[i].category) {
-        let categoryActiveNavbar = getActiveNavbar(routes[i].items);
+        const categoryActiveNavbar = getActiveNavbar(routes[i].items);
         if (categoryActiveNavbar !== activeNavbar) {
           return categoryActiveNavbar;
         }
@@ -63,15 +63,15 @@ export default function AdminLayout(props: any) {
     return activeNavbar;
   };
   const getActiveNavbarText = (routes: any): boolean => {
-    let activeNavbar = false;
+    const activeNavbar = false;
     for (let i = 0; i < routes.length; i++) {
       if (routes[i].collapse) {
-        let collapseActiveNavbar = getActiveNavbarText(routes[i].items);
+        const collapseActiveNavbar = getActiveNavbarText(routes[i].items);
         if (collapseActiveNavbar !== activeNavbar) {
           return collapseActiveNavbar;
         }
       } else if (routes[i].category) {
-        let categoryActiveNavbar = getActiveNavbarText(routes[i].items);
+        const categoryActiveNavbar = getActiveNavbarText(routes[i].items);
         if (categoryActiveNavbar !== activeNavbar) {
           return categoryActiveNavbar;
         }

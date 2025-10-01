@@ -9,7 +9,7 @@ export default async function for_each(
 ): Promise<void> {
 
     let array = args.array;
-    let operations = args.do;
+    const operations = args.do;
 
     const arrayOperation = array.type;
     const operationsType = operations.type;
