@@ -1,7 +1,5 @@
 # TRADING BOT
 
-Test comment
-
 This project is a trading bot designed to automate cryptocurrency trading. It uses various algorithms and strategies to analyze market trends and execute trades on behalf of the user. The bot is highly configurable and can be customized to suit different trading styles and risk tolerances.
 
 ## Features
