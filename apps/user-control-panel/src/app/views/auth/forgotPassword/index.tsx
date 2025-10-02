@@ -4,21 +4,15 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
   FormControl,
-  FormLabel,
   Heading,
-  Icon,
   Input,
-  InputGroup,
-  InputRightElement,
   Text,
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 // Custom components
-import { HSeparator } from "../../../components/separator/Separator";
 import DefaultAuth from "../../../layouts/auth/Default";
 import { useAuth } from "../../../contexts/AuthContext";
 // Assets
@@ -33,9 +27,7 @@ function ForgotPassword() {
 
   // Form state
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [show, setShow] = useState(false);
+  const [password] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Chakra color mode

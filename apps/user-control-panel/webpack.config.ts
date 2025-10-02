@@ -1,8 +1,12 @@
-const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
-const { NxReactWebpackPlugin } = require('@nx/react/webpack-plugin');
-const { join } = require('path');
+import { NxAppWebpackPlugin } from '@nx/webpack/app-plugin.js';
+import { NxReactWebpackPlugin } from '@nx/react/webpack-plugin.js';
+import { join } from 'path';
+import { fileURLToPath } from 'url';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = join(__filename, '..');
+
+export default {
   output: {
     path: join(__dirname, '../../dist/apps/user-control-panel'),
   },

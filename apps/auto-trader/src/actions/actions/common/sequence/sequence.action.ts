@@ -1,4 +1,4 @@
-import ObjectNavigator from 'libs/object-navigator/src/lib/object-navigator';
+import ObjectNavigator from '@trading-bot/object-navigator';
 
 /**
  * Executes multiple actions in sequence, passing data between them.

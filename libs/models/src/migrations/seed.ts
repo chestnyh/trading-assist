@@ -2,10 +2,10 @@ import { PrismaClient } from '@prisma/client';
 import './_set-configs'
 
 const filePath: string = process.argv[2];
-const {default: seedDataGetter} = require(filePath);
 
 const prisma = new PrismaClient();
 async function main() {
+    const {default: seedDataGetter} = await import(filePath);
     const seedData = await seedDataGetter();
     Object.keys(seedData).forEach(async (modelName) => {
         const items = seedData[modelName];
