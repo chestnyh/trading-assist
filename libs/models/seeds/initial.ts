@@ -4,7 +4,7 @@ import intervalRule from './units/rules/3-interval';
 import sequenceRule from './units/rules/4-sequence';
 import parallelRule from './units/rules/5-parallel';
 // TODO: should make it @trading-bot/crypto-utils
-import { CryptoUtilsService } from '../../crypto-utils/src/lib/crypto-utils.service';
+import { CryptoUtilsService } from '@trading-bot/crypto-utils';
 
 const cryptoService = new CryptoUtilsService();
 

@@ -91,13 +91,13 @@ export default function AuthNavbar(props: any) {
   // Chakra color mode
 
   const textColor = useColorModeValue("gray.700", "#fff");
-  let menuBg = useColorModeValue("white", "navy.900");
-  let mainText = "#fff";
-  let navbarBg = "none";
-  let navbarShadow = "initial";
-  let bgButton = useColorModeValue("white", "navy.900");
-  let colorButton = useColorModeValue("gray.700", "white");
-  let navbarPosition: "absolute" | "fixed" | "relative" | "static" | "sticky" = "absolute";
+  const menuBg = useColorModeValue("white", "navy.900");
+  const mainText = "#fff";
+  const navbarBg = "none";
+  const navbarShadow = "initial";
+  const bgButton = useColorModeValue("white", "navy.900");
+  const colorButton = useColorModeValue("gray.700", "white");
+  const navbarPosition: "absolute" | "fixed" | "relative" | "static" | "sticky" = "absolute";
 
   let brand = (
     <Link

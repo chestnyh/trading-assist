@@ -1,4 +1,4 @@
-import ObjectNavigator from 'libs/object-navigator/src/lib/object-navigator';
+import ObjectNavigator from '@trading-bot/object-navigator';
 
 /**
  * Executes multiple actions in sequence, passing data between them.
@@ -51,7 +51,7 @@ export default async function sequence(
         do: actions,  
     } = args;
 
-    for(let action of actions){
+    for(const action of actions){
         const actionType = action.type;
         await this[actionType](
             action.arguments, 

@@ -119,6 +119,9 @@ importers:
       prisma:
         specifier: ^6.5.0
         version: 6.13.0(typescript@5.7.3)
+      prop-types:
+        specifier: ^15.8.1
+        version: 15.8.1
       react:
         specifier: 19.0.0
         version: 19.0.0
@@ -261,6 +264,9 @@ importers:
       '@types/passport-local':
         specifier: ^1.0.38
         version: 1.0.38
+      '@types/prop-types':
+        specifier: ^15.7.15
+        version: 15.7.15
       '@types/react':
         specifier: 18.3.1
         version: 18.3.1

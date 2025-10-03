@@ -13,7 +13,7 @@ export class AutoTraderService {
         this.init();
     }
     async init(){
-        let users = await this.modelsService.user.findMany({
+        const users = await this.modelsService.user.findMany({
             select: {
               rules: true,
               telegramSettings: true

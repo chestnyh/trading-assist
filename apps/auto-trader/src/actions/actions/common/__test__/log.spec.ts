@@ -1,5 +1,5 @@
 import { ActionsHub } from '../../../action-hub';
-import ObjectNavigator from 'libs/object-navigator/src/lib/object-navigator';
+import ObjectNavigator from '@trading-bot/object-navigator';
 
 describe('log', () => {
     let sequenceContext;
@@ -7,7 +7,7 @@ describe('log', () => {
     let originalConsoleLog: typeof console.log;
     
     beforeEach(() => {
-        actionsHub = new ActionsHub(['log']);
+        actionsHub = new ActionsHub(['log'], {});
         sequenceContext = new ObjectNavigator();
         originalConsoleLog = console.log;
         console.log = jest.fn();

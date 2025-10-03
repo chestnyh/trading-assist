@@ -32,7 +32,7 @@ export default function HeaderLinks(props: any) {
   const { user, logout } = useAuth();
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('gray.400', 'white');
-  let menuBg = useColorModeValue('white', 'navy.800');
+  const menuBg = useColorModeValue('white', 'navy.800');
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const textColorBrand = useColorModeValue('brand.700', 'brand.400');
   const ethColor = useColorModeValue('gray.700', 'white');

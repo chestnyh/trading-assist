@@ -1,5 +1,5 @@
 import { ActionsHub } from '../../../action-hub';
-import ObjectNavigator from 'libs/object-navigator/src/lib/object-navigator';
+import ObjectNavigator from '@trading-bot/object-navigator';
 
 describe('timeout', () => {
   let sequenceContext;
@@ -7,7 +7,7 @@ describe('timeout', () => {
 
   beforeEach(() => {
     jest.useFakeTimers();
-    actionsHub = new ActionsHub(['interval']);
+    actionsHub = new ActionsHub(['interval'], {});
     sequenceContext = new ObjectNavigator();
     actionsHub['mock'] = jest.fn();
   });

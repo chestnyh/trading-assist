@@ -22,7 +22,7 @@ export default function Default(props: any) {
     fontSize,
     ...rest
   } = props;
-  let [checked, setChecked] = React.useState(isChecked);
+  const [checked, setChecked] = React.useState(isChecked);
   const textColorPrimary = useColorModeValue("secondaryGray.900", "white");
   return (
     <Box w="100%" fontWeight="500" {...rest}>

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import ObjectNavigator from 'libs/object-navigator/src/lib/object-navigator';
+import ObjectNavigator from '@trading-bot/object-navigator';
 
 // Actions
 import common from './actions/common';
