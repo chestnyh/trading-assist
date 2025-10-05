@@ -1,47 +1,33 @@
 # TRADING BOT
 
-This project is a trading bot designed to automate cryptocurrency trading. It uses various algorithms and strategies to analyze market trends and execute trades on behalf of the user. The bot is highly configurable and can be customized to suit different trading styles and risk tolerances.
+## The key idea
 
-## Features
+// TODO add description
 
-- Automated trading on multiple cryptocurrency exchanges
-- Customizable trading strategies
-- Real-time market data analysis
-- Risk management tools
-- Backtesting capabilities
+## Project description
 
-## Getting Started
+## Functional requirements
 
-To get started with the trading bot, follow these steps:
+## Non functional reqirements
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/chestnyh/trading-bot.git
-    ```    
+## Team collaboration services
+ - Git repository (Github) - https://github.com/chestnyh/trading-bot
+ - Task tracker (Click up) - https://app.clickup.com/90151705756/v/o/s/90157055260
+ - Massanger (Slack) - https://app.slack.com/
+ - Video conferencing (Google meet) - https://meet.google.com/
 
-## Monorepo
+## Technical stack
+ - gitnub
+ - nodejs
+ - typescript
+ - nx as monorepo
+ - nestjs for backend services
+ - react for frontend services
+ - postgresql as main database
+ - microservice architecture 
 
-Add project: 
-```
-nx g @nx/nest:app apps/<project-name>
-```
+## First time set up for development
+ - // todo add link documentation here
 
-Remove project: 
-
-```
-nx generate remove <project_name>
-```
-
-Create shared lib:
-```
-
-```
-
-## Migrations
-
-Generate migration:
-
-```
-pnpm models:generate-migration -- <new-migration-name>
-
-```
+## Onboarding documentation
+ - // todo onboarding documentation
