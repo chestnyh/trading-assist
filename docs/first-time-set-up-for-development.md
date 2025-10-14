@@ -15,7 +15,7 @@ cd trading-bot
 ```
 3) Running script that check of existance of necessary tools set
 ```
-TBD run script to
+./scripts/dev-tools-checking.sh
 ```
 If something is not installed it should be installed
 
