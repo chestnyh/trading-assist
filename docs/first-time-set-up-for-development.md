@@ -30,19 +30,15 @@ So you can modigy .env.dev accordingly values accordingly.
 ```
 pnpm install
 ```
-6) Run all necessary external services:
+6) Create folders for docker volumes:
+```
+source .env.dev && mkdir -p ${DOCKER_DB_VOLUME}
+```
+7) Run all necessary external services:
 ```
 pnpm docker:init-external:up
 ```
-7) Run migration:
-```
-pnpm models:migrations:dev
-```
-8) Run seeds: 
-```
-models:migrations:seed
-```
-9) Run all services(we use microservice architrcture):
+8) Run all services(we use microservice architrcture):
 ```
 pnpm all:start 
 ```
