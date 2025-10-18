@@ -43,9 +43,14 @@ Launch all required external services(with the `-d` flag for daemon mode):
 ```bash
 pnpm docker:init-external:up -d
 ```
+This command should deploy external services via docker with proper credentials + run migration + seeding with initial data 
 
 ### 7. Start All Services
 Launch all services to verify everything works properly:
 ```bash
 pnpm all:start
 ```
+
+### 8. Log in into platform
+In browser go to http://localhost:4200 (or different port if you changed its value in .env.dev file).
+And try to Sign In with email - `admin@tb.com` and password - `password` 
