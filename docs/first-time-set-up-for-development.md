@@ -1,44 +1,51 @@
-# First time set up
+# First Time Setup for Development
 
-This document descripes first time set up of the system localy.
-The whole project is designed to rum local set up as smooth as possible
+This document is created to help developers (and others) run the local project setup. 
+It consists of a list of commands with short descriptions that should be executed. 
 
-Steps to run project locally: 
+## Step-by-Step Setup
 
-1) Clone project from git repository:
-```
+### 1. Clone the Repository
+```bash
 git clone git@github.com:chestnyh/trading-bot.git
-```
-2) Go to project folder:
-```
 cd trading-bot
 ```
-3) Running script that check of existance of necessary tools set
-```
+
+### 2. Verify Development Tools
+Run our automated tool checker to ensure all required tools are installed:
+```bash
 ./scripts/dev-tools-checking.sh
 ```
-If something is not installed it should be installed
+If any tools are missing, install them before proceeding.
 
-4) Copy file with local project env variables
-```
+### 3. Environment Configuration
+Copy the environment template file to create your local environment variables file:
+```bash
 cp .env.dev.example .env.dev
 ```
-Probably some variables have conflicts with services you have on your machine.
-So you can modigy .env.dev accordingly values accordingly.
+Customize it if the default values don’t work for any reason.
 
-5) Installing dependencies(as package manager we use pnpm):
-```
+
+### 4. Install Dependencies
+Install all project dependencies:
+```bash
 pnpm install
 ```
-6) Create folders for docker volumes:
-```
+
+### 5. Prepare Docker Volumes
+Create necessary directories for Docker volumes:
+```bash
 source .env.dev && mkdir -p ${DOCKER_DB_VOLUME}
 ```
-7) Run all necessary external services:
+
+### 6. Start External Services
+Launch all required external services(with the `-d` flag for daemon mode):
+```bash
+pnpm docker:init-external:up -d
 ```
-pnpm docker:init-external:up
-```
-8) Run all services(we use microservice architrcture):
-```
-pnpm all:start 
+
+### 7. Start All Services
+Launch all services to verify everything works properly:
+```bash
+pnpm all:start
 ```
