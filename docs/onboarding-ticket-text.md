@@ -3,6 +3,10 @@
 This ticket is created to familarize new team members with project. 
 Introduce tools and approaches we use here.
 
+## Disclaimer
+
+If you encounter any problems or have questions while completing the steps in this ticket, don't hesitate to ask team members for help. We're here to support you and ensure a smooth onboarding experience.
+
 ## Team Collaboration
 
 First of all you should check that you have accesses to all instruments we use for development and communicating between team members. So we use:
@@ -32,3 +36,9 @@ Next step is you should read documentation about project to better understand it
  - Technology Stack - https://github.com/chestnyh/trading-bot/blob/dev/docs/technology-stack.md
  - Development Workflow - https://github.com/chestnyh/trading-bot/blob/dev/docs/development-workflow.md
  - Projects Commands - https://github.com/chestnyh/trading-bot/blob/dev/docs/project-commands.md
+
+ - [] I have read documentation
+
+Those steps are enough to start development, but probably you have some questions, misunderstandings, etc. So next and last step for this ticket is to set up call with [Add respnsible person here], for QA session.
+
+ - [] Set up call with [Add responsible person]
