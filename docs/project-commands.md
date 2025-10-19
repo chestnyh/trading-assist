@@ -17,9 +17,8 @@ Also we can specify `all` as service name for running specific command for all s
 ## How to run?
 We can't run those commands directly. For this we use package manager. Currently we use `pnpm` so to run some command we should use `pnpm`. For example:
 ```
-pnpm all:start
+pnpm api:start
 ```
-to start all services
 
 ## Commands
 In list bellow we have all commands with description:
