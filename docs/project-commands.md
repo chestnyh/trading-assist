@@ -23,77 +23,90 @@ pnpm api:start
 ## Commands
 In list bellow we have all commands with description:
 ### auto-trader
+Auto trader service. More info [here](../apps/auto-trader/README.md)
  * **auto-trader:build**
-    * TBD add description
+    * Build auto-trader service
  * **auto-trader:test**
-    * TBD add description
+    * Run tests for auto-trader service
  * **auto-trader:test:watch**
-    * TBD add description
+    * Run tests for auto-trader in watch mode
  * **auto-trader:start**
-    * TBD add description
+    * Start auto-trader service
 ### api
+Api service. More info [here](../apps/api/README.md)
  * **api:start**
-    * TBD add description
+    * Start api service
  * **api:build**
-    * TBD add description
+    * Build api service
  * **api:test-int**
-    * TBD add description
+    * Run api test-int services
 ### user-control-panel
+User control panel service. More info [here](../apps/user-control-panel/README.md)
  * **user-control-panel:start**
-    * TBD add description
+    * Start user-control-panel service
  * **user-control-panel:build**
-    * TBD add description
+    * Build user-control-panel service
  * **user-control-panel:test**
-    * TBD add description
+    * Run tests for user-control-panel service
  * **user-control-panel:lint**
-    * TBD add description
+    * Run linting for user-control-panel service
 ### object-navigator
+Object navigator library. More info [here](../libs/object-navigator/README.md)
  * **object-navigator:show**
-    * TBD add description
+    * Show object-navigator project information
  * **object-navigator:test**
-    * TBD add description
+    * Run tests for object-navigator library
+ * **crypto-utils:build**
+    * Build crypto-utils library
+ * **crypto-utils:test**
+    * Run tests for crypto-utils library
 ### monorepo
+Under `monorepo` domain we have commands related to monorepo management.
  * **monorepo:show**
-    * TBD add description
+    * Show all projects in the monorepo
  * **monorepo:graph**
-    * TBD add description
+    * Generate and display dependency graph
  * **monorepo:create-app:console**
-    * TBD add description
-### models    
+    * Create a new console application
+### models
+Models library. More info [here](../libs/models/README.md)
  * **models:build**
-    * TBD add description
+    * Build models library
  * **models:test**
-    * TBD add description
+    * Run tests for models library
  * **models:lint**
-    * TBD add description
+    * Run linting for models library
  * **models:migrations:run**
-    * TBD add description
+    * Run database migrations
  * **models:migrations:dev**
-    * TBD add description
+    * Run migrations in development mode
  * **models:migrations:seed**
-    * TBD add description
+    * Seed database with initial data
  * **models:migrations:reset**
-    * TBD add description
+    * Reset database and run migrations
  * **models:migrations:generate**
-    * TBD add description
+    * Generate new migration files
  * **models:migrations:migrate-and-seed**
-    * TBD add description
+    * Run migrations and seed database
 ### configs
+Configs library. More info [here](../libs/configs/README.md)
  * **configs:build**
-    * TBD add description
+    * Build configs library
 ### all
+`all` domain run specific command in all monorepo services/libraries/tools that consist this information 
  * **all:build**
-    * TBD add description
+    * Build all services and libraries
  * **all:start**
-    * TBD add description
+    * Start all services
  * **all:test**
-    * TBD add description
+    * Run tests for all services and libraries
  * **all:lint**
-    * TBD add description
+    * Run linting for all services and libraries
 ### docker
+`docker` domain to work with external services
  * **docker:external:up**
-    * TBD add description
+    * Start external services (PostgreSQL)
  * **docker:init-external:up**
-    * TBD add description
+    * Initialize and start external services
  * **docker:int-test:up**
-    * TBD add description
+    * Start services for integration testing

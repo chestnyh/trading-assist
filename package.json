@@ -18,6 +18,8 @@
     "user-control-panel:lint": "nx run user-control-panel:lint",
     "object-navigator:show": "nx show project object-navigator",
     "object-navigator:test": "nx run object-navigator:test",
+    "crypto-utils:build": "nx run crypto-utils:build",
+    "crypto-utils:test": "nx run crypto-utils:test",
     "monorepo:show": "nx show projects",
     "monorepo:graph": "nx graph",
     "monorepo:create-app:console": "nx g @nx/node:application --framework none",
