@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "//comment": "We have documentation for all commands bellow in docs/project-commands.md file. Please refer to it for more information. Or add update docs/project-commands.md if you add new command.",
     "auto-trader:build": "nx run auto-trader:build",
     "auto-trader:test": "nx test auto-trader",
     "auto-trader:test:watch": "nx test auto-trader --watch",
