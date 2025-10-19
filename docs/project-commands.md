@@ -1,8 +1,7 @@
 # Project Commands
 
 The purpose of this documentation is having explanation for all project commands that we have in package.json file.
-There is principle how those commands are build. All commands have `:` as separator. 
-At start(before `:`) we specify what service/library/tool this command relates to. Then next could be command that related to the service/library/tool. This second part can also be separated by `:` which depends on your service/library/tool structure.
+All commands have `:` as separator. At start(before `:`) we specify what service/library/tool this command relates to. Then next could be command that related to the service/library/tool. This second part can also be separated by `:` which depends on your service/library/tool structure.
 
 ## Visualisation
 ```
