@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { Logo } from "../shared/components/Logo"
+import { Logo } from "../../shared/components/Logo"
 
 export function Main() {
   return (
