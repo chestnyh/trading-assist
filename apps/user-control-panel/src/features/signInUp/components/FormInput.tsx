@@ -1,3 +1,4 @@
+import { FormFieldLabel } from "./FormFieldLabel";
 interface FormInputProps {
     label: string;
     id: string;
@@ -19,14 +20,14 @@ export function FormInput({
 }: FormInputProps) {
     return (
         <div className="w-full pt-5">
-            <label htmlFor={id} className="block text-[14px]">{label}</label>
+            <FormFieldLabel label={label} id={id} />
             <input
                 type={type}
                 id={id}
                 name={name}
                 value={value}
                 onChange={onChange}
-                className="w-full px-4 py-2 border-b bg-[#F2F4F8] border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="font-roboto tracking-[0] font-normal text-[16px] text-formLabel w-full px-4 py-2 mt-2 border-b bg-formInputBg border-formInputBorder rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder={placeholder}
             />
         </div>

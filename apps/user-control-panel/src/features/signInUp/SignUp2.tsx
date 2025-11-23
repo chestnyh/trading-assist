@@ -1,4 +1,4 @@
-import { Logo } from "../../shared/components/Logo";
+import logo from "../../shared/components/logo.svg";
 import { ManNearTheLamp } from "./components/svg/ManNearTheLamp";
 import { FormSelect } from "./components/FormSelect";
 import { FormButton } from "./components/FormButton";
@@ -12,7 +12,7 @@ export function SignUp2() {
             <div className="grid grid-cols-2 gap-5 w-full h-full">
                 <div className="col-span-1 flex flex-col relative">
                     <div className="flex">
-                        <Logo />
+                        <img src={logo} alt="Logo" className="w-16 h-16" />
                         <div className="font-semibold text-[50px] leading-[61px] flex items-center text-[#1C1C1E] ml-5">Trading Assist</div>
                     </div>
                     <div className="grid grid-cols-6 gap-4">

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-import { Logo } from "../../shared/components/Logo"
+import logo from "../../shared/components/logo.svg"
 
 export function Main() {
   return (
@@ -12,7 +12,7 @@ export function Main() {
             {/* Left Section - Logo */}
             <div className="flex items-center gap-3 flex-shrink-0">
               <div className="flex items-center justify-center">
-                <Logo/>
+                <img src={logo} alt="Logo" className="w-16 h-16" />
               </div>
               <span className="text-xl font-bold text-gray-900">Trading Assist</span>
             </div>

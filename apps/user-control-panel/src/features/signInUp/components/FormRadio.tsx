@@ -1,3 +1,5 @@
+import { FormFieldLabel } from "./FormFieldLabel";
+
 interface FormRadioOption {
     value: string;
     label: string;
@@ -5,6 +7,7 @@ interface FormRadioOption {
 
 interface FormRadioProps {
     label: string;
+    // id: string;
     name: string;
     options: FormRadioOption[];
     value?: string;
@@ -13,7 +16,8 @@ interface FormRadioProps {
 }
 
 export function FormRadio({ 
-    label, 
+    label,
+    // id,
     name, 
     options,
     value,
@@ -22,7 +26,6 @@ export function FormRadio({
 }: FormRadioProps) {
     return (
         <div className={`w-full pt-5 ${className}`}>
-            <label className="block text-[14px] mb-3">{label}</label>
             <div className="flex justify-between">
                 {options.map((option) => (
                    <div key={option.value} className="flex items-center">
