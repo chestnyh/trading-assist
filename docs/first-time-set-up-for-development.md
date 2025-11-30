@@ -7,8 +7,8 @@ It consists of a list of commands with short descriptions that should be execute
 
 ### 1. Clone the Repository
 ```bash
-git clone git@github.com:chestnyh/trading-bot.git
-cd trading-bot
+git clone git@github.com:chestnyh/trading-assist.git
+cd trading-assist
 ```
 
 ### 2. Verify Development Tools

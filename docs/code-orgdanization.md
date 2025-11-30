@@ -2,7 +2,7 @@
 
 ### Code Organization
 ```
-trading-bot/
+trading-assist/
 ├── apps/                    # Applications
 │   ├── api/                # Backend API service
 │   ├── auto-trader/        # Trading engine service
