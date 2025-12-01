@@ -1,14 +1,73 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-text: #1c1c1e;
+  --color-background: #ffffff;
+  --color-bg-secondary: #f4f6f8;
+  --color-primary: #1e6aff;
+  --color-accent: #4c8dff;
+
+  /* Font Families */
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+  --font-family-heading: 'Inter', system-ui, sans-serif;
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Font Sizes - Headings */
+  --text-h1: 4.210rem;
+  --text-h1--line-height: 1.3;
+  --text-h2: 3.158rem;
+  --text-h2--line-height: 1.3;
+  --text-h3: 2.25rem;
+  --text-h3--line-height: 1.3;
+  --text-h4: 2rem;
+  --text-h4--line-height: 1.4;
+  --text-h5: 1.5rem;
+  --text-h5--line-height: 1.4;
+  --text-h6: 1.25rem;
+  --text-h6--line-height: 1.4;
+
+  /* Font Sizes - Body */
+  --text-body-2xl: 1.25rem;
+  --text-body-2xl--line-height: 1.4;
+  --text-body-xl: 1.125rem;
+  --text-body-xl--line-height: 1.4;
+  --text-body-lg: 1rem;
+  --text-body-lg--line-height: 1.4;
+  --text-body-md: 0.875rem;
+  --text-body-md--line-height: 1.4;
+  --text-body-sm: 0.75rem;
+  --text-body-sm--line-height: 1.4;
+
+  /* Font Sizes - Buttons */
+  --text-btn-xl: 1.125rem;
+  --text-btn-xl--line-height: 1.4;
+  --text-btn-lg: 1rem;
+  --text-btn-lg--line-height: 1.4;
+  --text-btn-md: 0.875rem;
+  --text-btn-md--line-height: 1.4;
+  --text-btn-sm: 0.75rem;
+  --text-btn-sm--line-height: 1.4;
+
+  /* Breakpoints */
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1440px;
+  --breakpoint-3xl: 1920px;
+}
 
 @layer base {
   :root {
-    --text: #1c1c1e;
-    --background: #ffffff;
-    --background-secondary: #f4f6f8;
-    --primary: #1e6aff;
-    --accent: #4c8dff;
+    --text: var(--color-text);
+    --background: var(--color-background);
+    --background-secondary: var(--color-bg-secondary);
+    --primary: var(--color-primary);
+    --accent: var(--color-accent);
   }
 
   .dark {
