@@ -26,7 +26,7 @@ export function SignUp2() {
                 </div>
                 <div className="col-span-1">
                     <div className="grid grid-cols-6 gap-4 h-screen items-center">
-                        <div className="col-start-2 col-span-4 bg-white">
+                        <div className="col-start-2 col-span-4 bg-background">
                             <div className="w-full font-medium text-[40px] text-[#747474] self-stretch">Trading Preferences </div>
                             <FormProgressBar currentStep={1} />
                             <FormRadio

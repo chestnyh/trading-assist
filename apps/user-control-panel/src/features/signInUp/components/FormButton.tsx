@@ -23,7 +23,7 @@ export function FormButton({
                 type={type}
                 onClick={onClick}
                 disabled={disabled}
-                className="font-roboto tracking-[1px] w-full py-3 px-6 rounded-lg font-medium bg-brand text-white hover:bg-blue-700"
+                className="font-roboto tracking-[1px] w-full py-3 px-6 rounded-lg font-medium bg-primary text-white hover:bg-accent"
             >
                 {text}
             </button>

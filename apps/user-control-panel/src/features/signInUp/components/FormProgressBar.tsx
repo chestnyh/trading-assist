@@ -9,7 +9,7 @@ export function FormProgressBar({ currentStep }: { currentStep: number }) {
 
     return (
         <div className="pt-5">
-            <div className="h-[30px] rounded-[10px] border border-formInputBg" style={{ background: gradientStyles[currentStep] }}></div>
+            <div className="h-[30px] rounded-[10px] border border-bgSecondary" style={{ background: gradientStyles[currentStep] }}></div>
         </div>
     );
 }
