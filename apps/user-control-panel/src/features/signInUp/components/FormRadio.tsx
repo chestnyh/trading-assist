@@ -1,3 +1,5 @@
+
+import { ChangeEvent } from "react";
 import { FormFieldLabel } from "./FormFieldLabel";
 
 interface FormRadioOption {
@@ -7,17 +9,17 @@ interface FormRadioOption {
 
 interface FormRadioProps {
     label: string;
-    // id: string;
+    // TODO: Add support for custom `id` if future requirements include overriding default input IDs.
     name: string;
     options: FormRadioOption[];
     value?: string;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
     className?: string;
 }
 
 export function FormRadio({
     label,
-    // id,
+    // TODO: Add support for custom `id` if future requirements include overriding default input IDs.
     name,
     options,
     value,

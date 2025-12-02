@@ -1,3 +1,4 @@
+import { ChangeEvent } from "react";
 import { FormFieldLabel } from "./FormFieldLabel";
 
 interface FormInputProps {
@@ -7,7 +8,7 @@ interface FormInputProps {
     placeholder?: string;
     type?: string;
     value?: string;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function FormInput({

@@ -1,3 +1,4 @@
+import { ChangeEvent } from "react";
 import { FormFieldLabel } from "./FormFieldLabel";
 
 interface FormCheckboxOption {
@@ -10,7 +11,7 @@ interface FormCheckboxProps {
     name: string;
     options: FormCheckboxOption[];
     value?: string[];
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
     className?: string;
     variant?: "primary" | "secondary";
 }

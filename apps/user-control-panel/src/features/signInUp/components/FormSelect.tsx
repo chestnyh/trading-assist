@@ -1,3 +1,4 @@
+import { ChangeEvent } from "react";
 import { FormFieldLabel } from "./FormFieldLabel";
 
 interface FormSelectOption {
@@ -12,7 +13,7 @@ interface FormSelectProps {
     options: FormSelectOption[];
     placeholder?: string;
     value?: string;
-    onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+    onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
 }
 
 export function FormSelect({
