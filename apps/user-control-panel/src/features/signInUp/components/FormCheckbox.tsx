@@ -1,3 +1,5 @@
+import { FormFieldLabel } from "./FormFieldLabel";
+
 interface FormCheckboxOption {
     value: string;
     label: string;
@@ -20,29 +22,58 @@ export function FormCheckbox({
     value = [],
     onChange,
     className = "",
-    variant = "primary"
+    variant = "primary",
 }: FormCheckboxProps) {
+    const isPrimary = variant === "primary";
+
     return (
         <div className={`w-full pt-5 ${className}`}>
-            {variant === "primary" && (
-                <label className="block text-[14px] mb-3">{label}</label>
+
+            {isPrimary && (
+                <div className="flex justify-between">
+                    <FormFieldLabel label={label} id={`${name}-group`} />
+                </div>
             )}
-            <div className={variant === "primary" ? "flex justify-between" : "flex flex-col space-y-3"}>
-                {options.map((option) => (
-                    <div key={option.value} className="flex items-start">
-                        <input
-                            id={`${name}-${option.value}`}
-                            type="checkbox"
-                            name={name}
-                            value={option.value}
-                            checked={value.includes(option.value)}
-                            onChange={onChange}
-                            className="w-5 h-5 text-neutral-primary border-default-medium bg-neutral-secondary-medium rounded checked:bg-primary focus:bg-primary border border-default appearance-none"
-                            style={{ accentColor: '#3b82f6' }}
-                        />
-                        <label htmlFor={`${name}-${option.value}`} className="select-none ml-3 text-body-md text-text">{option.label}</label>
-                    </div>
-                ))}
+
+            <div
+                className={
+                    isPrimary
+                        ? "mt-2 flex flex-wrap gap-4 justify-between"
+                        : "mt-2 flex flex-col space-y-3"
+                }
+            >
+                {options.map((option) => {
+                    const checked = value.includes(option.value);
+
+                    return (
+                        <label
+                            key={option.value}
+                            htmlFor={`${name}-${option.value}`}
+                            className="flex items-start cursor-pointer"
+                        >
+                            <input
+                                id={`${name}-${option.value}`}
+                                type="checkbox"
+                                name={name}
+                                value={option.value}
+                                checked={checked}
+                                onChange={onChange}
+                                className="
+                                w-5 h-5  
+                                rounded 
+                                checked:bg-primary 
+                                focus:bg-primary 
+                                border border-accent 
+                                appearance-none
+                                cursor-pointer
+                "
+                            />
+                            <span className="ml-3 select-none text-body-md text-text">
+                                {option.label}
+                            </span>
+                        </label>
+                    );
+                })}
             </div>
         </div>
     );

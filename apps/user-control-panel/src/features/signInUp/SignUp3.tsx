@@ -59,14 +59,14 @@ export function SignUp3() {
                     <FormProgressBar currentStep={2} />
                 </div>
 
-                <div className="mt-6 space-y-4">
-                    <FormInput label="Email" id="email" name={"email"} />
-                    <FormInput label="Nickname" id="nickname" name={"nickname"} />
-                    <FormInput label="Password" id="password" type="password" name={"password"} />
-                    <FormInput label="Confirm Password" id="confirmPassword" type="password" name={"confirmPassword"} />
-                </div>
 
-                <div className="mt-6 space-y-3">
+                <FormInput label="Email" id="email" name={"email"} />
+                <FormInput label="Nickname" id="nickname" name={"nickname"} />
+                <FormInput label="Password" id="password" type="password" name={"password"} />
+                <FormInput label="Confirm Password" id="confirmPassword" type="password" name={"confirmPassword"} />
+
+
+                <div className=" space-y-3">
                     <FormCheckbox
                         label="Policy and email confirmation"
                         name="policyAndEmailConfirmation"
@@ -78,7 +78,7 @@ export function SignUp3() {
                     />
                 </div>
 
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row justify-between">
+                <div className=" flex flex-col gap-3 sm:flex-row justify-between">
                     <FormButton text="← Back" variant="outline" />
                     <FormButton text="Next →" />
                 </div>

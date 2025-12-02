@@ -15,32 +15,77 @@ interface FormSelectProps {
     onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-export function FormSelect({ 
-    label, 
-    id, 
-    name, 
+export function FormSelect({
+    label,
+    id,
+    name,
     options,
     placeholder = "Select an option",
     value,
-    onChange
+    onChange,
 }: FormSelectProps) {
     return (
         <div className="w-full pt-5">
             <FormFieldLabel label={label} id={id} />
-            <select
-                id={id}
-                name={name}
-                value={value}
-                onChange={onChange}
-                className="w-full px-4 py-2 pr-10 bg-bgSecondary border-b border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-primary appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23333%22%20d%3D%22M6%209L1%204h10z%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[length:12px] bg-[right_0.75rem_center]"
-            >
-                <option value="">{placeholder}</option>
-                {options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-            </select>
+
+            <div className="relative mt-2">
+                <select
+                    id={id}
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    className="
+            w-full h-12
+            bg-bgSecondary
+            px-4 pr-10
+            text-body-md text-text
+            border border-formInputBorder
+            rounded-md
+            appearance-none
+            transition-colors
+
+            hover:border-primary
+            hover:ring-2 hover:ring-accent
+
+            focus:outline-none
+            focus:border-primary
+            focus:ring-2 focus:ring-primary
+          "
+                >
+                    <option value="">{placeholder}</option>
+
+                    {options.map((option) => (
+                        <option
+                            key={option.value}
+                            value={option.value}
+                            className="
+                bg-background
+                text-text
+                cursor-pointer
+              "
+                        >
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+
+                <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+                    <svg
+                        className="h-3 w-3 text-text"
+                        viewBox="0 0 12 12"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M2 4.5L6 8.5L10 4.5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                </span>
+            </div>
         </div>
     );
 }

@@ -1,4 +1,5 @@
 import { FormFieldLabel } from "./FormFieldLabel";
+
 interface FormInputProps {
     label: string;
     id: string;
@@ -9,26 +10,46 @@ interface FormInputProps {
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function FormInput({ 
-    label, 
-    id, 
-    name, 
-    placeholder, 
+export function FormInput({
+    label,
+    id,
+    name,
+    placeholder,
     type = "text",
     value,
-    onChange
+    onChange,
 }: FormInputProps) {
     return (
         <div className="w-full pt-5">
             <FormFieldLabel label={label} id={id} />
+
             <input
                 type={type}
                 id={id}
                 name={name}
                 value={value}
-                onChange={onChange}
-                className="font-roboto tracking-[0] font-normal text-[16px] text-text w-full px-4 py-2 mt-2 border-b bg-bgSecondary border-formInputBorder rounded focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder={placeholder}
+                onChange={onChange}
+                className="
+          w-full h-12
+          mt-2
+          px-4
+          text-body-md text-text
+          bg-bgSecondary
+
+          border border-formInputBorder
+          rounded-md
+
+          transition-colors
+          appearance-none
+
+          hover:border-primary
+          hover:ring-2 hover:ring-accent
+
+          focus:outline-none
+          focus:border-primary
+          focus:ring-2 focus:ring-primary
+        "
             />
         </div>
     );

@@ -15,10 +15,10 @@ interface FormRadioProps {
     className?: string;
 }
 
-export function FormRadio({ 
+export function FormRadio({
     label,
     // id,
-    name, 
+    name,
     options,
     value,
     onChange,
@@ -27,12 +27,39 @@ export function FormRadio({
     return (
         <div className={`w-full pt-5 ${className}`}>
             <div className="flex justify-between">
+                <FormFieldLabel label={label} id={`${name}-${options.values}`} />
+            </div>
+            <div className="flex justify-between mt-2">
                 {options.map((option) => (
-                   <div key={option.value} className="flex items-center">
-                   <input id={`${name}-${option.value}`} type="radio" name={name} value={option.value} checked={value === option.value} onChange={onChange} 
-                   className="w-5 h-5 text-neutral-primary border-default-medium bg-neutral-secondary-medium rounded-full checked:bg-primary focus:bg-primary border border-default appearance-none" style={{ accentColor: '#3b82f6' }} />
-                   <label htmlFor={`${name}-${option.value}`} className="select-none ms-2 text-sm font-medium text-heading">{option.label}</label>
-               </div>
+                    <div key={option.value} className="flex items-center">
+                        <input
+                            id={`${name}-${option.value}`}
+                            type="radio"
+                            name={name}
+                            value={option.value}
+                            checked={value === option.value}
+                            onChange={onChange}
+                            className="
+                                w-5 h-5  
+                                rounded-full 
+                                checked:bg-primary 
+                                focus:bg-primary 
+                                border border-accent 
+                                appearance-none
+                                cursor-pointer
+                            "
+                        />
+                        <label
+                            htmlFor={`${name}-${option.value}`}
+                            className="
+                                ml-2
+                                select-none
+                                text-body-md
+                                text-text
+                                cursor-pointer
+                              ">
+                            {option.label}</label>
+                    </div>
                 ))}
             </div>
         </div>
