@@ -4,6 +4,7 @@ import { FormButton } from "./components/FormButton";
 import { FormRadio } from "./components/FormRadio";
 import { FormCheckbox } from "./components/FormCheckbox";
 import { AuthLayout } from "./components/AuthLayout";
+import { ArrowRight } from "./components/icons/ArrowRight";
 
 export function SignUp2() {
     return (
@@ -11,7 +12,7 @@ export function SignUp2() {
             currentStep={1}
             title="Trading Preferences"
             Illustration={ManNearTheLamp}
-            actions={<FormButton text="Next →" />}
+            actions={<FormButton text="Next" rightIcon={<ArrowRight />} />}
         >
             <FormRadio
                 label="Trading Experience Level"

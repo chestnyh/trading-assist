@@ -3,6 +3,8 @@ import { FormInput } from "./components/FormInput";
 import { FormButton } from "./components/FormButton";
 import { FormCheckbox } from "./components/FormCheckbox";
 import { AuthLayout } from "./components/AuthLayout";
+import { ArrowLeft } from "./components/icons/ArrowLeft";
+import { ArrowRight } from "./components/icons/ArrowRight";
 
 export function SignUp3() {
     return (
@@ -12,8 +14,8 @@ export function SignUp3() {
             Illustration={ManNearTheTarget}
             actions={
                 <>
-                    <FormButton text="← Back" variant="outline" />
-                    <FormButton text="Next →" />
+                    <FormButton text="Back" variant="outline" leftIcon={<ArrowLeft />} />
+                    <FormButton text="Next" rightIcon={<ArrowRight />} />
                 </>
             }
         >

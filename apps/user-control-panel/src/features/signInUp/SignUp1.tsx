@@ -3,6 +3,7 @@ import { FormInput } from "./components/FormInput";
 import { FormSelect } from "./components/FormSelect";
 import { FormButton } from "./components/FormButton";
 import { AuthLayout } from "./components/AuthLayout";
+import { ArrowRight } from "./components/icons/ArrowRight";
 
 export function SignUp1() {
     return (
@@ -10,7 +11,7 @@ export function SignUp1() {
             currentStep={0}
             title="Let’s Start!"
             Illustration={ManAtTheTable}
-            actions={<FormButton text="Next →" />}
+            actions={<FormButton text="Next" rightIcon={<ArrowRight />} />}
         >
             <FormInput
                 label="First Name"

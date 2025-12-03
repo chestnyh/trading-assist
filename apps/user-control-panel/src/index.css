@@ -1,12 +1,29 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* Colors */
+  /* Colors - Light Theme */
   --color-text: #1c1c1e;
   --color-background: #ffffff;
   --color-bg-secondary: #f4f6f8;
   --color-primary: #1e6aff;
   --color-accent: #4c8dff;
+  --color-error: #ff4d4f;
+  --color-success: #47b262;
+  --color-text-secondary: #747474;
+  --color-surface: #f4f6f8;
+
+  /* Colors - Dark Theme (will be used with dark: variant) */
+  --color-text-dark: #e6e9ee;
+  --color-background-dark: #0d1117;
+  --color-bg-secondary-dark: #161b22;
+  --color-primary-dark: #4d9eff;
+  --color-accent-dark: #82c1ff;
+  --color-error-dark: #ff4d4f;
+  --color-success-dark: #47b262;
+  --color-text-secondary-dark: #747474;
+  --color-surface-dark: #161b22;
 
   /* Font Families */
   --font-family-sans: 'Inter', system-ui, sans-serif;
@@ -19,7 +36,7 @@
   --font-weight-bold: 700;
 
   /* Font Sizes - Headings */
-  --text-h1: 4.210rem;
+  --text-h1: 4.21rem;
   --text-h1--line-height: 1.3;
   --text-h2: 3.158rem;
   --text-h2--line-height: 1.3;
@@ -59,22 +76,4 @@
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1440px;
   --breakpoint-3xl: 1920px;
-}
-
-@layer base {
-  :root {
-    --text: var(--color-text);
-    --background: var(--color-background);
-    --background-secondary: var(--color-bg-secondary);
-    --primary: var(--color-primary);
-    --accent: var(--color-accent);
-  }
-
-  .dark {
-    --text: #e6e9ee;
-    --background: #0d1117;
-    --background-secondary: #161b22;
-    --primary: #4d9eff;
-    --accent: #82c1ff;
-  }
 }

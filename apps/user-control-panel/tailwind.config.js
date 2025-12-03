@@ -5,11 +5,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        text: 'var(--text)',
-        background: 'var(--background)',
-        bgSecondary: 'var(--background-secondary)',
-        primary: 'var(--primary)',
-        accent: 'var(--accent)',
+        // Light theme colors
+        text: 'var(--color-text)',
+        background: 'var(--color-background)',
+        bgSecondary: 'var(--color-bg-secondary)',
+        primary: 'var(--color-primary)',
+        accent: 'var(--color-accent)',
+        error: 'var(--color-error)',
+        success: 'var(--color-success)',
+        textSecondary: 'var(--color-text-secondary)',
+        surface: 'var(--color-surface)',
       },
 
       screens: {

@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 interface FormButtonProps {
     text: string;
     type?: "button" | "submit" | "reset";
@@ -5,7 +7,8 @@ interface FormButtonProps {
     disabled?: boolean;
     className?: string;
     variant?: "primary" | "secondary" | "outline";
-    size?: "lg" | "md" | "sm";
+    leftIcon?: ReactNode;
+    rightIcon?: ReactNode;
 }
 
 export function FormButton({
@@ -15,32 +18,9 @@ export function FormButton({
     disabled = false,
     className = "",
     variant = "primary",
-    size = "lg",
+    leftIcon,
+    rightIcon,
 }: FormButtonProps) {
-    const sizeClasses = {
-        lg: "h-12 px-6 text-btn-lg",
-        md: "h-10 px-5 text-btn-md",
-        sm: "h-8 px-4 text-btn-sm",
-    };
-
-    const variantClasses = {
-        primary: `
-      bg-primary text-white
-      hover:bg-accent
-      focus:ring-2 focus:ring-primary
-    `,
-        secondary: `
-      bg-bgSecondary text-text
-      hover:bg-accent hover:text-white
-      focus:ring-2 focus:ring-primary
-    `,
-        outline: `
-      border border-primary text-primary
-      hover:bg-primary hover:text-white
-      focus:ring-2 focus:ring-primary
-    `,
-    };
-
     return (
         <div className="w-full mt-8">
             <button
@@ -51,13 +31,20 @@ export function FormButton({
           w-full rounded-md
           font-sans font-medium
           transition-colors
-          ${sizeClasses[size]}
-          ${variantClasses[variant]}
+          flex items-center justify-center gap-2
+          h-8 px-4 text-btn-sm
+          md:h-10 md:px-5 md:text-btn-md
+          lg:h-12 lg:px-6 lg:text-btn-lg
+          ${variant === "primary" ? "bg-primary text-white hover:bg-accent focus:ring-2 focus:ring-primary" : ""}
+          ${variant === "secondary" ? "bg-bgSecondary text-text hover:bg-accent hover:text-white focus:ring-2 focus:ring-primary" : ""}
+          ${variant === "outline" ? "border border-primary text-primary hover:bg-primary hover:text-white focus:ring-2 focus:ring-primary" : ""}
           ${disabled ? "opacity-50 cursor-not-allowed" : ""}
           ${className}
         `}
             >
-                {text}
+                {leftIcon && <span className="flex-shrink-0">{leftIcon}</span>}
+                <span>{text}</span>
+                {rightIcon && <span className="flex-shrink-0">{rightIcon}</span>}
             </button>
         </div>
     );
