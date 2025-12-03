@@ -11,6 +11,7 @@ interface FormInputProps {
     type?: string;
     value?: string;
     onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+    error?: string;
 }
 
 export function FormInput({
@@ -21,6 +22,7 @@ export function FormInput({
     type = "text",
     value,
     onChange,
+    error,
 }: FormInputProps) {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === "password";
@@ -45,14 +47,13 @@ export function FormInput({
           text-body-md
           text-text dark:text-[var(--color-text-dark)]
           bg-bg-secondary dark:bg-[var(--color-bg-secondary-dark)]
-          dark:border dark:border-[var(--color-text-dark)]
+          border ${error ? "border-error dark:border-error" : "dark:border dark:border-[var(--color-text-dark)]"}
           rounded-md
           appearance-none
           transition-colors
-          hover:border-primary dark:hover:border-[var(--color-primary-dark)]
+          ${error ? "" : "hover:border-primary dark:hover:border-[var(--color-primary-dark)]"}
           focus:outline-none
-          focus:border-primary dark:focus:border-[var(--color-primary-dark)]
-          focus:ring-2 focus:ring-primary dark:focus:ring-[var(--color-primary-dark)]
+          ${error ? "focus:border-error dark:focus:border-error focus:ring-2 focus:ring-error dark:focus:ring-error" : "focus:border-primary dark:focus:border-[var(--color-primary-dark)] focus:ring-2 focus:ring-primary dark:focus:ring-[var(--color-primary-dark)]"}
           placeholder:text-textSecondary dark:placeholder:text-[var(--color-text-secondary-dark)]
         `}
                 />
@@ -79,6 +80,11 @@ export function FormInput({
                     </button>
                 )}
             </div>
+            {error && (
+                <p className="mt-2 text-body-sm text-error dark:text-error">
+                    {error}
+                </p>
+            )}
         </div>
     );
 }

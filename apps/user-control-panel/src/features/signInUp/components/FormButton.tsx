@@ -6,7 +6,7 @@ interface FormButtonProps {
     onClick?: () => void;
     disabled?: boolean;
     className?: string;
-    variant?: "primary" | "secondary" | "outline";
+    variant?: "primary" | "secondary" | "outline" | "error";
     leftIcon?: ReactNode;
     rightIcon?: ReactNode;
 }
@@ -38,6 +38,7 @@ export function FormButton({
           ${variant === "primary" ? "bg-primary text-white hover:bg-accent focus:ring-2 focus:ring-primary" : ""}
           ${variant === "secondary" ? "bg-bgSecondary text-text hover:bg-accent hover:text-white focus:ring-2 focus:ring-primary" : ""}
           ${variant === "outline" ? "border border-primary text-primary hover:bg-primary hover:text-white focus:ring-2 focus:ring-primary" : ""}
+          ${variant === "error" ? "bg-error text-text  " : ""}
           ${disabled ? "opacity-50 cursor-not-allowed" : ""}
           ${className}
         `}

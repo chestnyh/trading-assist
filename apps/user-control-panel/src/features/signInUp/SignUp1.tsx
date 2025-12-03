@@ -24,6 +24,7 @@ export function SignUp1() {
                 id="lastName"
                 name="lastName"
                 placeholder="Enter your last name"
+                error="This field is required"
             />
             <FormSelect
                 label="Country"
