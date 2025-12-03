@@ -41,7 +41,7 @@ export function ToggleButton() {
       "
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         >
-            {isDark ? "☾ Dark" : "☀ Light"}
+            {isDark ? "☀ Light" : "☾ Dark"}
         </button>
     );
 }

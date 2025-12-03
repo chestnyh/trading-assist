@@ -11,7 +11,7 @@ export function SignUp4() {
             Illustration={ManNearTheTarget}
             actions={<FormButton text="Send" />}
         >
-            <FormInput label="Email" id="email" name="email" />
+            <FormInput label="Insert code here " id="text" name="text" type="text" />
         </AuthLayout>
     );
 }

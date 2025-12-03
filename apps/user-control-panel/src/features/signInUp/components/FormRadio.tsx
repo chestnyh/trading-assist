@@ -46,7 +46,7 @@ export function FormRadio({
                                 rounded-full 
                                 checked:bg-primary 
                                 focus:bg-primary 
-                                border border-accent 
+                                border border-text-secondary dark:border-text-primary-dark
                                 appearance-none
                                 cursor-pointer
                             "
@@ -57,7 +57,7 @@ export function FormRadio({
                                 ml-2
                                 select-none
                                 text-body-md
-                                text-text
+                                text-text dark:text-[var(--color-text-dark)]
                                 cursor-pointer
                               ">
                             {option.label}</label>

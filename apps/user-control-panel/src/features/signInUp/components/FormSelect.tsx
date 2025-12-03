@@ -37,31 +37,31 @@ export function FormSelect({
                     onChange={onChange}
                     className="
             w-full h-12
-            bg-bgSecondary
+            bg-bg-secondary dark:bg-[var(--color-bg-secondary-dark)]
             px-4 pr-10
-            text-body-md text-text
-            border border-formInputBorder
+            text-body-md
+            text-text dark:text-[var(--color-text-dark)]
+            dark:border dark:border-[var(--color-text-dark)]
             rounded-md
             appearance-none
-            transition-colors
-
-            hover:border-primary
-            hover:ring-2 hover:ring-accent
-
+            transition-colors 
+            hover:border-primary dark:hover:border-[var(--color-primary-dark)]
             focus:outline-none
-            focus:border-primary
-            focus:ring-2 focus:ring-primary
+            focus:border-primary dark:focus:border-[var(--color-primary-dark)]
+            focus:ring-2 focus:ring-primary dark:focus:ring-[var(--color-primary-dark)]
           "
                 >
-                    <option value="">{placeholder}</option>
+                    <option value="" className="text-textSecondary dark:placeholder:text-[var(--color-text-secondary-dark)]">
+                        {placeholder}
+                    </option>
 
                     {options.map((option) => (
                         <option
                             key={option.value}
                             value={option.value}
                             className="
-                bg-background
-                text-text
+                bg-background dark:bg-[var(--color-background-dark)]
+                text-text dark:text-[var(--color-text-dark)]
                 cursor-pointer
               "
                         >
@@ -72,7 +72,7 @@ export function FormSelect({
 
                 <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
                     <svg
-                        className="h-3 w-3 text-text"
+                        className="h-3 w-3 text-text dark:text-[var(--color-text-dark)]"
                         viewBox="0 0 12 12"
                         aria-hidden="true"
                     >

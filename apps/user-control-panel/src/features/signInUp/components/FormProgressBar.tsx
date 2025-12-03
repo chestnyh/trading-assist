@@ -18,8 +18,8 @@ export function FormProgressBar({
       to right,
       #47B262 0%,
       #47B262 ${fadeStart}%,
-      white ${progress}%,
-      white 100%
+      transparent ${progress}%,
+      transparent 100%
     )
   `;
 
@@ -31,7 +31,7 @@ export function FormProgressBar({
           rounded-[0.75rem] 
           h-4
           rounded-2xl
-          border border-bgSecondary
+          border border-bg-secondary dark:border-[var(--color-bg-secondary-dark)]`
           overflow-hidden
         "
                 style={{

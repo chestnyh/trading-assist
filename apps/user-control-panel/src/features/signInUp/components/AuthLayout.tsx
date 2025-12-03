@@ -65,7 +65,7 @@ export function AuthLayout({
 
             <div className="w-full max-w-xl mx-auto">
                 <div className="flex items-center justify-between gap-4">
-                    <h1 className="font-heading font-semibold text-h3 md:text-h2 text-text dark:text-[var(--color-text-dark)]">
+                    <h1 className="font-heading font-semibold text-h3 md:text-h2 text-text text-text-secondary dark:text-[var(--color-text-secondary-dark)]">
                         {title}
                     </h1>
 
