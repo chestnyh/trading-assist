@@ -1,46 +1,92 @@
+import { useState, useEffect } from "react";
+import { FormFieldLabel } from "./FormFieldLabel";
 interface FormCheckboxOption {
     value: string;
     label: string;
 }
-
 interface FormCheckboxProps {
     label: string;
     name: string;
     options: FormCheckboxOption[];
     value?: string[];
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (selectedValues: string[]) => void;
     className?: string;
 }
 
-export function FormCheckbox({ 
-    label, 
-    name, 
+export function FormCheckbox({
+    label,
+    name,
     options,
-    value = [],
+    value: controlledValue,
     onChange,
-    className = ""
+    className = "",
 }: FormCheckboxProps) {
+    const [selectedValues, setSelectedValues] = useState<string[]>(controlledValue || []);
+
+    useEffect(() => {
+        if (controlledValue !== undefined) {
+            setSelectedValues(controlledValue);
+        }
+    }, [controlledValue]);
+
+    const handleChange = (optionValue: string, checked: boolean) => {
+        let newSelectedValues: string[];
+
+        if (checked) {
+            newSelectedValues = [...selectedValues, optionValue];
+        } else {
+            newSelectedValues = selectedValues.filter((val) => val !== optionValue);
+        }
+
+        setSelectedValues(newSelectedValues);
+
+        if (onChange) {
+            onChange(newSelectedValues);
+        }
+    };
+
     return (
         <div className={`w-full pt-5 ${className}`}>
-            <label className="block text-[14px] mb-3">{label}</label>
             <div className="flex justify-between">
-                {options.map((option) => (
-                   <div key={option.value} className="flex items-center">
-                   <input 
-                       id={`${name}-${option.value}`} 
-                       type="checkbox" 
-                       name={name} 
-                       value={option.value} 
-                       checked={value.includes(option.value)} 
-                       onChange={onChange} 
-                       className="w-5 h-5 text-neutral-primary border-default-medium bg-neutral-secondary-medium rounded checked:bg-brand focus:bg-blue-500 border border-default appearance-none" 
-                       style={{ accentColor: '#3b82f6' }} 
-                   />
-                   <label htmlFor={`${name}-${option.value}`} className="select-none ms-2 text-sm font-medium text-heading">{option.label}</label>
-               </div>
-                ))}
+                <FormFieldLabel label={label} id={`${name}-group`} />
+            </div>
+
+            <div className="mt-2 flex flex-wrap gap-4 justify-between">
+                {options.map((option) => {
+                    const checked = selectedValues.includes(option.value);
+
+                    return (
+                        <label
+                            key={option.value}
+                            htmlFor={`${name}-${option.value}`}
+                            className="flex items-start cursor-pointer"
+                        >
+                            <input
+                                id={`${name}-${option.value}`}
+                                type="checkbox"
+                                name={name}
+                                value={option.value}
+                                checked={checked}
+                                onChange={(e) => handleChange(option.value, e.target.checked)}
+                                className="
+                                    w-5 h-5  
+                                    rounded 
+                                    checked:bg-primary 
+                                    focus:ring-primary
+                                    border border-text-secondary dark:border-text-primary-dark
+                                    appearance-none
+                                    cursor-pointer
+                                    flex-shrink-0
+                                    mt-0.5
+                                "
+                            />
+                            <span className="ml-3 select-none text-body-md text-text dark:text-[var(--color-text-dark)]">
+                                {option.label}
+                            </span>
+                        </label>
+                    );
+                })}
             </div>
         </div>
     );
 }
-

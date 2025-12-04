@@ -1,7 +1,17 @@
+import { ManNearTheTarget } from "./components/svg/ManNearTheTarget";
+import { FormInput } from "./components/FormInput";
+import { FormButton } from "./components/FormButton";
+import { AuthLayout } from "./components/AuthLayout";
+
 export function SignUp4() {
     return (
-        <div>
-            <h1>Sign Up 4</h1>
-        </div>
+        <AuthLayout
+            currentStep={3}
+            title="Email Confirmation"
+            Illustration={ManNearTheTarget}
+            actions={<FormButton text="Send" />}
+        >
+            <FormInput label="Insert code here " id="text" name="text" type="text" />
+        </AuthLayout>
     );
 }

@@ -1,5 +1,12 @@
-export function FormFieldLabel({ label, id }: { label: string, id: string }){
+interface FormFieldLabelProps {
+    label: string;
+    id: string;
+}
+
+export function FormFieldLabel({ label, id }: FormFieldLabelProps) {
     return (
-        <label htmlFor={id} className="font-roboto tracking-[0] font-normal text-[14px] text-formLabel">{label}</label>
+        <label htmlFor={id} className="block text-body-md font-medium text-text dark:text-[var(--color-text-dark)] mb-2">
+            {label}
+        </label>
     );
-};
+}

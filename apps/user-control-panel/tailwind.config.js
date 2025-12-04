@@ -1,29 +1,29 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./srcindex.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  darkMode: 'class',
+  content: ['./src/index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
-        darkbg: "#0D1117",
-        lightbg: "#FFFFFF",
-        brand: "#4D9EFF",
-        formHeader: "#747474",
-        formLabel: "#1161B22",
-        formInputBg: "#F4F6F8",
-        formInputBorder: "#C1C7CD"
+        // Light theme colors
+        text: 'var(--color-text)',
+        background: 'var(--color-background)',
+        bgSecondary: 'var(--color-bg-secondary)',
+        primary: 'var(--color-primary)',
+        accent: 'var(--color-accent)',
+        error: 'var(--color-error)',
+        success: 'var(--color-success)',
+        textSecondary: 'var(--color-text-secondary)',
+        surface: 'var(--color-surface)',
       },
+
       screens: {
-        'xl1440': '1440px',
-        '3xl': '1920px'
-      },
-      fontFamily: {
-        inter: ['Inter', 'sans-serif'],
-        roboto: ['Roboto', 'sans-serif'],
+        md: '768px',
+        lg: '1024px',
+        xl: '1440px',
+        '3xl': '1920px',
       },
     },
   },
   plugins: [],
-}
+};
