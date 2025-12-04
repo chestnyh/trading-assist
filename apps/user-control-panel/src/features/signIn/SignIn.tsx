@@ -1,16 +1,30 @@
-import { ManNearTheTarget } from "../signInUp/components/svg/ManNearTheTarget";
+import { ManNextToTheSafe } from "./components/svg/ManNextToTheSafe";
 import { FormInput } from "../signInUp/components/FormInput";
 import { FormButton } from "../signInUp/components/FormButton";
 import { AuthLayout } from "../signInUp/components/AuthLayout";
 import { Checkbox } from "../signInUp/components/Checkbox";
+import { AuthSocialButton } from "./components/AuthSocialButton";
+import { Google } from "./components/icons/Google";
+import { Facebook } from "./components/icons/Facebook";
 
 export function SignIn() {
     return (
         <AuthLayout
-            title="Email Confirmation"
-            Illustration={ManNearTheTarget}
+            title="Sign In Into Your Account"
+            Illustration={ManNextToTheSafe}
             actions={<FormButton text="Next" />}
         >
+            <div className="flex gap-3">
+                <AuthSocialButton
+                    text="Log in with Google"
+                    icon={<Google className="w-5 h-5" />}
+                />
+                <AuthSocialButton
+                    text="Log in with Facebook"
+                    icon={<Facebook className="w-5 h-5" />}
+                />
+            </div>
+
             <FormInput label="Email" id="email" name="email" />
             <FormInput label="Password" id="password" type="password" name="password" />
 
