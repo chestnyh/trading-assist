@@ -5,7 +5,7 @@ import { ToggleButton } from "./ToggleButton";
 import { ErrorPopup } from "./ErrorPopup";
 
 interface AuthLayoutProps {
-    currentStep: number;
+    currentStep?: number;
     title: string;
     Illustration: ComponentType;
     children: ReactNode;
@@ -81,9 +81,11 @@ export function AuthLayout({
                     </div>
                 )}
 
-                <div className="mt-4">
-                    <FormProgressBar currentStep={currentStep} />
-                </div>
+                {currentStep && (
+                    <div className="mt-4">
+                        <FormProgressBar currentStep={currentStep} />
+                    </div>
+                )}
 
                 <div className="mt-6 space-y-4">{children}</div>
 
