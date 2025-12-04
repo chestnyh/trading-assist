@@ -10,6 +10,7 @@ interface AuthLayoutProps {
     Illustration: ComponentType;
     children: ReactNode;
     actions?: ReactNode;
+    totalSteps?: number;
 }
 
 export function AuthLayout({
@@ -18,6 +19,7 @@ export function AuthLayout({
     Illustration,
     children,
     actions,
+    totalSteps
 }: AuthLayoutProps) {
     const hasError = currentStep === 3;
 
@@ -82,7 +84,7 @@ export function AuthLayout({
                 )}
 
                 <div className="mt-4">
-                    <FormProgressBar currentStep={currentStep} />
+                    <FormProgressBar currentStep={currentStep} totalSteps={totalSteps} />
                 </div>
 
                 <div className="mt-6 space-y-4">{children}</div>
