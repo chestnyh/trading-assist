@@ -13,6 +13,7 @@ export function SignUp2() {
             title="Trading Preferences"
             Illustration={ManNearTheLamp}
             actions={<FormButton text="Next" rightIcon={<ArrowRight />} />}
+            totalSteps={4}
         >
             <FormRadio
                 label="Trading Experience Level"
