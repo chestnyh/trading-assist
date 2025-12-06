@@ -24,3 +24,4 @@ This structure allows for:
 - **Consistent tooling**: Single configuration for linting, testing, and building
 - **Atomic changes**: Changes to shared code and consuming apps can be made together
 - **Dependency management**: Clear dependency graph between applications and libraries
+
