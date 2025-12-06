@@ -14,13 +14,13 @@ This trading bot project is built as a monorepo using Nx workspace, featuring mu
 
 Services/libraries/tools technology stack described in relative docs
 
-#### [API service](../apps/api/docs/technology-stack.md)
-#### [Auto-Trader service](../apps/auto-trader/docs/technology-stack.md)
-#### [User Control Panel service](../apps/user-control-panel/docs/technology-stack.md)
-#### [Configs Library](../libs/configs/docs/technology-stack.md)
-#### [Crypto Utils Library](../libs/crypto-utils/docs/technology-stack.md)
-#### [Models library](../libs/models/docs/technology-stack.md)
-#### [Object Navigator Tool](../tools/devops/docs/technology-stack.md)
+#### [API service](../apps/api/_docs/technology-stack.md)
+#### [Auto-Trader service](../apps/auto-trader/_docs/technology-stack.md)
+#### [User Control Panel service](../apps/user-control-panel/_docs/technology-stack.md)
+#### [Configs Library](../libs/configs/_docs/technology-stack.md)
+#### [Crypto Utils Library](../libs/crypto-utils/_docs/technology-stack.md)
+#### [Models library](../libs/models/_docs/technology-stack.md)
+#### [Object Navigator Tool](../tools/devops/_docs/technology-stack.md)
 
 #### Code Quality
 - **ESLint** (v8.57.1) - Code linting
