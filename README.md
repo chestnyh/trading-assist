@@ -45,11 +45,11 @@ Complete setup guide for getting the trading bot platform running locally. Inclu
 
 Principle that we want to follow here is keep documentation close to the code. It means that our codebase contains a large number of documentation files at all levels and as close as possible to the corresponding code. But also we should have menu that reflects all documentation we have in one point. You can see it bellow:
 
-* [Project Architecture](docs/project-architecture.md)
-* [First Time Set Up For Development](docs/first-time-set-up-for-development.md)
-* [Development Workflow](docs/development-workflow.md)
-* [Code Organization](docs/docs/code-orgdanization.md)
-* [Project Commands](docs/project-commands.md)
-* [Technolody Stack](docs/technology-stack.md)
+* [Project Architecture](_docs/project-architecture.md)
+* [First Time Set Up For Development](_docs/first-time-set-up-for-development.md)
+* [Development Workflow](_docs/development-workflow.md)
+* [Code Organization](_docs/code-orgdanization.md)
+* [Project Commands](_docs/project-commands.md)
+* [Technolody Stack](_docs/technology-stack.md)
 * [Services aka Applications](apps/README.md)
 * [Libraries](libs/README.md)

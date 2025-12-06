@@ -2,7 +2,7 @@
 
 ### Code Organization
 ```
-trading-bot/
+trading-assist/
 ├── apps/                    # Applications
 │   ├── api/                # Backend API service
 │   ├── auto-trader/        # Trading engine service
@@ -12,7 +12,7 @@ trading-bot/
 │   ├── configs/            # Shared configurations
 │   ├── crypto-utils/       # Cryptographic utilities
 │   └── object-navigator/   # Object navigation utility
-├── docs/                   # Documentation
+├── _docs/                  # Documentation
 ├── scripts/                # Development scripts
 └── docker/                 # Docker configurations
 ```
