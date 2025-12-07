@@ -12,6 +12,7 @@ export function SignUp1() {
             title="Let’s Start!"
             Illustration={ManAtTheTable}
             actions={<FormButton text="Next" rightIcon={<ArrowRight />} />}
+            totalSteps={4}
         >
             <FormInput
                 label="First Name"

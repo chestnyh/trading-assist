@@ -18,6 +18,7 @@ export function SignUp3() {
                     <FormButton text="Next" rightIcon={<ArrowRight />} />
                 </>
             }
+            totalSteps={4}
         >
             <FormInput label="Email" id="email" name="email" />
             <FormInput label="Nickname" id="nickname" name="nickname" />
