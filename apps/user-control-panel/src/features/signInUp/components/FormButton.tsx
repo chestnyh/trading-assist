@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 interface FormButtonProps {
-    text: string;
+    text?: string;
     type?: "button" | "submit" | "reset";
     onClick?: () => void;
     disabled?: boolean;
@@ -45,7 +45,11 @@ export function FormButton({
         `}
             >
                 {leftIcon && <span className="flex-shrink-0">{leftIcon}</span>}
-                <span>{text}</span>
+                {text && (
+                    <span className="transition-all duration-300 ease-in-out whitespace-nowrap">
+                        {text}
+                    </span>
+                )}
                 {rightIcon && <span className="flex-shrink-0">{rightIcon}</span>}
             </button>
         </div>

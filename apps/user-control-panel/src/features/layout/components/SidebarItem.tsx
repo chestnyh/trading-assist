@@ -18,27 +18,28 @@ function SidebarItem({ icon, label, collapsed, active = false, variant = "primar
         group
         mx-4 px-2 py-3 rounded-lg cursor-pointer transition-all
         hover:bg-transparent
-        ${active ? "text-primary" : "text-text hover:text-accent"}
+        ${active ? "text-primary" : "text-text hover:text-primary"}
     `}
         >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 min-w-0">
                 {cloneElement(icon as ReactElement, {
                     className: `
                 ${variant === "primary" ? "w-7 h-7" : "w-4 h-4"}
-                ${active ? "text-accent" : "text-accent group-hover:text-accent"}
+                flex-shrink-0
+                ${active ? "text-accent" : "text-accent group-hover:text-primary"}
             `
                 })}
 
-                {!collapsed && (
-                    <span
-                        className={`
+                <span
+                    className={`
                     ${variant === "primary" ? "text-body1" : "text-body2"}
-                    ${active ? "text-accent" : "text-text group-hover:text-accent"}
+                    ${active ? "text-accent" : "text-text group-hover:text-primary"}
+                    transition-all duration-300 ease-in-out whitespace-nowrap
+                    ${collapsed ? "opacity-0 max-w-0 overflow-hidden" : "opacity-100 max-w-full"}
                 `}
-                    >
-                        {label}
-                    </span>
-                )}
+                >
+                    {label}
+                </span>
             </div>
         </Link>
 

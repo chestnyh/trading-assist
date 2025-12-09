@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { ChevronRight, ChevronLeft, LayoutDashboard, Book, Settings, User, Check } from "lucide-react";
+import { ChevronRight, ChevronLeft, LayoutDashboard, Book, Settings, User, Check, LogOut } from "lucide-react";
 import { ToggleButton } from "../signInUp/components/ToggleButton";
 import logo from "../../shared/components/logo.svg";
 import SidebarItem from "./components/SidebarItem";
 import SidebarCollapseItem from "./components/SidebarCollapseItem";
+import { FormButton } from "../signInUp/components/FormButton";
+import UserAvatar from "./components/UserAvatar";
 
 export function Sidebar() {
     const [collapsed, setCollapsed] = useState(false);
@@ -12,14 +14,16 @@ export function Sidebar() {
         <aside
             className={`
         h-screen flex flex-col
-        transition-all duration-300
+        transition-all duration-300 ease-in-out
         ${collapsed ? "w-20" : "w-72"}
         bg-bg-secondary/70 backdrop-blur-xl 
         border-r border-border
+        overflow-hidden
       `}
         >
             {/* Header with logo + collapse button */}
             <div className="flex flex-col">
+
                 <div className="flex items-center gap-3 px-4 pt-6 pb-4">
                     <div className="flex items-center gap-3 flex-shrink-0">
                         <img src={logo} alt="Logo" className="w-8 h-8" />
@@ -79,25 +83,39 @@ export function Sidebar() {
                         variant="secondary"
                     />
                 </SidebarCollapseItem>
-                <ToggleButton />
+                <div
+                    className={`
+                        mx-4 px-2
+                        transition-all duration-300 ease-in-out
+                        ${collapsed ? "opacity-0 max-h-0 overflow-hidden" : "opacity-100 max-h-screen"}
+                    `}
+                >
+                    <ToggleButton />
+                </div>
             </nav>
 
             {/* Profile */}
-            <div className="mt-auto p-4">
-                <div
-                    className="
-            flex items-center gap-3 p-2 rounded-lg
-            border border-border
-            hover:bg-primary-hover hover:text-white
-            transition
-          "
-                >
-                    <User className="text-text" />
-                    {!collapsed && (
-                        <span className="text-text-secondary">
-                            Profile
-                        </span>
-                    )}
+            <div className="mt-auto  transition-all  duration-300 ease-in-out  whitespace-nowrap">
+                <div className="flex items-center ml-1 p-4">
+                    <UserAvatar size={40} />
+                    <span
+                        className={` 
+                            text-primary text-btn-lg
+                            transition-all duration-300 ease-in-out 
+                            ${collapsed ? "opacity-0 max-w-0 overflow-hidden" : "ml-4 opacity-100 max-w-full"}
+                               
+                        `}
+                    >
+                        Profile Name
+                    </span>
+                </div>
+
+                <div className="flex items-center    p-4 ">
+                    <FormButton
+                        text={collapsed ? undefined : "Sign Out"}
+                        variant="outline"
+                        leftIcon={<LogOut className={collapsed ? "ml-2 rounded-lg w-5 h-5" : ""} />}
+                    />
                 </div>
             </div>
         </aside>
