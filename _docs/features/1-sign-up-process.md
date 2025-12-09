@@ -306,6 +306,28 @@ Both client-side validation errors and server-side errors are possible at this s
 - **Server-side errors**: Registration errors from the API endpoint (e.g., email already exists, nickname already taken, server errors)
 - Server-side errors are displayed to the user and prevent navigation to the next step
 
+#### Backend Implementation
+
+**Registration Endpoint:**
+- Endpoint: `POST /api/v1/users` (TODO add documentation here)
+
+**Server-Side Validation:**
+- All validation rules are applied using the shared validation library (same as client-side)
+- Additional server-side checks:
+  - Email uniqueness check (must not already exist in database)
+  - Nickname uniqueness check (must not already exist in database)
+
+**User Creation Process:**
+- Password is hashed using secure hashing algorithm before storage
+- User record is created in database with `verified` field set to `false`
+- Email verification token is generated
+- Verification email is sent to user's email address
+- Registration token is generated and returned to client for email verification step
+
+**Response:**
+- On success: Returns registration token required for email verification
+- On failure: Returns appropriate error messages (e.g., email already exists, nickname taken)
+
 ### Step 4: Email Verification
 
 #### User Flow
@@ -404,3 +426,27 @@ Both client-side validation errors and server-side errors are possible at this s
 - **Server-side errors**: Verification errors from the API endpoint (e.g., invalid code, expired code, invalid token, server errors)
 - Server-side errors are displayed as form level errors to the user and prevent account activation
 - Error messages should be user-friendly and actionable (e.g., "Invalid code. Please check your email and try again.")
+
+#### Backend Implementation
+
+**Email Verification Endpoint:**
+- Endpoint: `POST /api/v1/auth/verify-email` (TODO add link to documentation)
+
+**Server-Side Verification Process:**
+- Token validation: Verifies that the registration token is valid and not expired
+- Code validation: Verifies that the verification code matches the code sent to user's email
+- Code expiration check: Verifies that the verification code has not expired
+- User lookup: Finds the user record associated with the token
+
+**Account Activation:**
+- If verification is successful:
+  - User record `verified` field is updated from `false` to `true`
+  - User record is marked as email verified
+  - User can now log in to the system
+- If verification fails:
+  - User record `verified` field remains `false`
+  - User must retry verification or request a new code
+
+**Response:**
+- On success: Returns success response indicating account activation
+- On failure: Returns appropriate error messages (e.g., invalid code, expired code, invalid token)
