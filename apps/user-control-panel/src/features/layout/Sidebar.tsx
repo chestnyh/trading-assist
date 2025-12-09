@@ -13,6 +13,7 @@ export function Sidebar() {
     return (
         <aside
             className={`
+              sticky top-0 z-10
         h-screen flex flex-col
         transition-all duration-300 ease-in-out
         ${collapsed ? "w-20" : "w-72"}
@@ -21,7 +22,6 @@ export function Sidebar() {
         overflow-hidden
       `}
         >
-            {/* Header with logo + collapse button */}
             <div className="flex flex-col">
 
                 <div className="flex items-center gap-3 px-4 pt-6 pb-4">

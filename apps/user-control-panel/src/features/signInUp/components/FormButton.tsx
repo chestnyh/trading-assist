@@ -39,7 +39,7 @@ export function FormButton({
           ${variant === "outline" ? "border-2 border-border text-primary bg-transparent hover:bg-primary hover:text-text active:bg-primary-active" : ""}
 
           ${variant === "error" ? "bg-error text-text  " : ""}
-          ${variant === "text" ? "text-primary dark:text-[var(--color-primary-dark)] hover:text-accent dark:hover:text-accent bg-transparent" : ""}
+          ${variant === "text" ? "text-primary   hover:text-accent dark:hover:text-accent bg-transparent" : ""}
           ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
           ${className}
         `}

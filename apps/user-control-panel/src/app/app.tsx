@@ -9,14 +9,14 @@ import { SignIn } from '../features/signIn/SignIn';
 import { RestorePassword1 } from '../features/restorePassword/RestorePassword1';
 import { RestorePassword2 } from '../features/restorePassword/RestorePassword2';
 import { RestorePassword3 } from '../features/restorePassword/RestorePassword3';
+import ProtectedRoute from '../features/layout/ProtectedRoute';
 
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-background]  transition-colors duration-300">
+      <div className="min-h-screen bg-background transition-colors duration-300">
         <Routes>
           <Route path="/" element={<HtmlEntryPoint />} />
-          <Route path="/main" element={<Main />} />
           <Route path="/sign-up-1" element={<SignUp1 />} />
           <Route path='/sign-up-2' element={<SignUp2 />} />
           <Route path='/sign-up-3' element={<SignUp3 />} />
@@ -25,6 +25,14 @@ export default function App() {
           <Route path='/restore-password-2' element={<RestorePassword2 />} />
           <Route path='/restore-password-3' element={<RestorePassword3 />} />
           <Route path='/sign-in' element={<SignIn />} />
+          <Route
+            path="/main"
+            element={
+              <ProtectedRoute>
+                <Main />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
     </BrowserRouter>
