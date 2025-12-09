@@ -1,12 +1,15 @@
 import { Link } from 'react-router-dom';
 
 import logo from "../../shared/components/logo.svg"
+import { Sidebar } from '../layout/Sidebar';
 
 export function Main() {
   return (
-    <div className="min-h-screen bg-darkbg">
+    <div className="min-h-screen bg-[var(--color-background)] dark:bg-[var(--color-background-dark)]">
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200">
+
+      <Sidebar />
+      <nav className="bg-white dark:bg-[var(--color-bg-secondary-dark)] border-b border-gray-200 dark:border-[var(--color-border-dark)]">
         <div className="mx-auto px-[100px]">
           <div className="flex items-center justify-between">
             {/* Left Section - Logo */}
@@ -14,18 +17,18 @@ export function Main() {
               <div className="flex items-center justify-center">
                 <img src={logo} alt="Logo" className="w-16 h-16" />
               </div>
-              <span className="text-xl font-bold text-gray-900">Trading Assist</span>
+              <span className="text-xl font-bold text-gray-900 dark:text-[var(--color-text-dark)]">Trading Assist</span>
             </div>
 
             {/* Center Section - Navigation Links */}
             <div className="hidden md:flex items-center gap-8">
-              <Link to="/about" className="text-gray-900 hover:text-[#5C7CFA] transition-colors">
+              <Link to="/about" className="text-gray-900 dark:text-[var(--color-text-dark)] hover:text-[#5C7CFA] transition-colors">
                 About us
               </Link>
-              <Link to="/documents" className="text-gray-900 hover:text-[#5C7CFA] transition-colors">
+              <Link to="/documents" className="text-gray-900 dark:text-[var(--color-text-dark)] hover:text-[#5C7CFA] transition-colors">
                 View documents
               </Link>
-              <Link to="/contact" className="text-gray-900 hover:text-[#5C7CFA] transition-colors">
+              <Link to="/contact" className="text-gray-900 dark:text-[var(--color-text-dark)] hover:text-[#5C7CFA] transition-colors">
                 Contact
               </Link>
             </div>
@@ -33,27 +36,27 @@ export function Main() {
             {/* Right Section - User Actions */}
             <div className="flex items-center gap-4">
               {/* User Profile Icon */}
-              <button className="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-gray-400 transition-colors">
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button className="w-8 h-8 rounded-full border-2 border-gray-300 dark:border-[var(--color-border-dark)] flex items-center justify-center hover:border-gray-400 dark:hover:border-[var(--color-primary)] transition-colors">
+                <svg className="w-5 h-5 text-gray-600 dark:text-[var(--color-text-secondary-dark)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </button>
 
               {/* Log out Button */}
-              <button className="bg-gray-700 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors shadow-sm">
+              <button className="bg-gray-700 dark:bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-[var(--color-primary-hover)] transition-colors shadow-sm">
                 Log out
               </button>
 
               {/* Paper Airplane Icon */}
-              <button className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors">
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-[var(--color-bg-secondary-dark)] rounded-full transition-colors">
+                <svg className="w-5 h-5 text-gray-600 dark:text-[var(--color-text-secondary-dark)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                 </svg>
               </button>
 
               {/* Moon Icon (Theme Toggle) */}
-              <button className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors">
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <button className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-[var(--color-bg-secondary-dark)] rounded-full transition-colors">
+                <svg className="w-5 h-5 text-gray-600 dark:text-[var(--color-text-secondary-dark)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                 </svg>
               </button>
@@ -63,17 +66,17 @@ export function Main() {
       </nav>
 
       {/* Hero Section*/}
-      <section className="bg-white">
+      <section className="bg-white dark:bg-[var(--color-background-dark)]">
         <div className="mx-auto px-[100px]">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             {/* Left Column - Text Content */}
             <div className="flex-1 space-y-6">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-gray-900 leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-gray-900 dark:text-[var(--color-text-dark)] leading-tight">
                 Unlock Your{' '}
                 <span className="font-bold">Coding Potential</span>
                 {' '}with Enigma
               </h1>
-              <p className="text-lg text-gray-700 max-w-2xl">
+              <p className="text-lg text-gray-700 dark:text-[var(--color-text-secondary-dark)] max-w-2xl">
                 Learn coding and design with Enigma-AI, your ultimate destination for mastering the art of creating stunning designs and building powerful applications.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -91,49 +94,49 @@ export function Main() {
 
             {/* Right Column - Chart Image */}
             <div className="flex-1 flex justify-center lg:justify-end">
-              <img 
-                src="../../assets/hero_image.png" 
-                alt="Financial Chart" 
+              <img
+                src="../../assets/hero_image.png"
+                alt="Financial Chart"
                 className="max-w-full h-auto rounded-lg shadow-lg"
               />
             </div>
           </div>
         </div>
-      </section>    
+      </section>
 
       {/* How it works?  */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
         <div className="mx-auto px-[100px]">
-          <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 dark:text-[var(--color-text-dark)] mb-12">
             How it works ?
           </h2>
           <div className="flex flex-col md:flex-row justify-center gap-8">
             {/* Step 1 Card */}
-            <div className="bg-gray-100 p-8 rounded-lg shadow-md flex-1">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+            <div className="bg-gray-100 dark:bg-[var(--color-bg-secondary-dark)] p-8 rounded-lg shadow-md flex-1">
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
                 Step 1
               </h3>
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 dark:text-[var(--color-text-secondary-dark)] text-lg">
                 Ready to dive in? Here's how you can start contributing to the Enigma Code-ai developer community.
               </p>
             </div>
 
             {/* Step 2 Card */}
-            <div className="bg-gray-100 p-8 rounded-lg shadow-md flex-1">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+            <div className="bg-gray-100 dark:bg-[var(--color-bg-secondary-dark)] p-8 rounded-lg shadow-md flex-1">
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
                 Step 2
               </h3>
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 dark:text-[var(--color-text-secondary-dark)] text-lg">
                 Access a wealth of resources to support your development journey with Enigma Code-ai.
               </p>
             </div>
 
             {/* Step 3 Card */}
-            <div className="bg-gray-100 p-8 rounded-lg shadow-md flex-1">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+            <div className="bg-gray-100 dark:bg-[var(--color-bg-secondary-dark)] p-8 rounded-lg shadow-md flex-1">
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
                 Step 3
               </h3>
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 dark:text-[var(--color-text-secondary-dark)] text-lg">
                 Access a wealth of resources to support your development journey with Enigma Code-ai.
               </p>
             </div>
@@ -142,7 +145,7 @@ export function Main() {
       </section>
 
       {/* Check on the go  */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
         <div className="mx-auto px-[100px]">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             {/* Left Section - Mobile Phone Mockup */}
@@ -150,7 +153,7 @@ export function Main() {
               <div className="relative w-[300px] h-[600px] bg-gray-800 rounded-[40px] p-2 shadow-2xl">
                 {/* Phone Notch */}
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-800 rounded-b-2xl z-10"></div>
-                
+
                 {/* Phone Screen */}
                 <div className="w-full h-full bg-white rounded-[32px] overflow-hidden relative">
                   {/* Status Bar */}
@@ -189,7 +192,7 @@ export function Main() {
                       <div className="bg-white rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-[80%]">
                         <p className="text-sm">Welcome to our store! We're so glad to have you here. 😊</p>
                       </div>
-                      
+
                       {/* Assistance Message */}
                       <div className="bg-white rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-[85%]">
                         <p className="text-sm font-medium mb-2">Here's how we can assist you today:</p>
@@ -248,7 +251,7 @@ export function Main() {
                 Check on the go{' '}
                 <span className="font-bold">anytime anywhere</span>
               </h2>
-              
+
               <div className="flex flex-col sm:flex-row items-start gap-6">
                 {/* QR Code */}
                 <div className="bg-white p-4 rounded-lg shadow-lg">
@@ -257,9 +260,8 @@ export function Main() {
                     {Array.from({ length: 64 }).map((_, i) => (
                       <div
                         key={i}
-                        className={`${
-                          Math.random() > 0.5 ? 'bg-black' : 'bg-white'
-                        }`}
+                        className={`${Math.random() > 0.5 ? 'bg-black' : 'bg-white'
+                          }`}
                       />
                     ))}
                   </div>
@@ -281,23 +283,23 @@ export function Main() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
         <div className="mx-auto px-[100px]">
-          <h2 className="text-4xl font-bold text-center text-gray-900 mb-12">
+          <h2 className="text-4xl font-bold text-center text-gray-900 dark:text-[var(--color-text-dark)] mb-12">
             Testimonials Section
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Testimonial Card 1 - Hadid Khan */}
-            <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <div className="bg-gray-50 dark:bg-[var(--color-bg-secondary-dark)] p-6 rounded-lg shadow-sm">
               {/* Star Rating - 5/5 */}
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z"/>
+                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
                   </svg>
                 ))}
               </div>
-              <p className="text-gray-700 mb-6 text-sm leading-relaxed">
+              <p className="text-gray-700 dark:text-[var(--color-text-secondary-dark)] mb-6 text-sm leading-relaxed">
                 "Great session! Dani was super helpful. She shared some practical advice on how can lorem ip we go about refining our service offerings."
               </p>
               <div className="flex items-center gap-3">
@@ -305,23 +307,23 @@ export function Main() {
                   HK
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm">Hadid Khan</p>
-                  <p className="text-xs text-gray-600">UIUX Designer</p>
+                  <p className="font-semibold text-gray-900 dark:text-[var(--color-text-dark)] text-sm">Hadid Khan</p>
+                  <p className="text-xs text-gray-600 dark:text-[var(--color-text-secondary-dark)]">UIUX Designer</p>
                 </div>
               </div>
             </div>
 
             {/* Testimonial Card 2 - Wade Warren */}
-            <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <div className="bg-gray-50 dark:bg-[var(--color-bg-secondary-dark)] p-6 rounded-lg shadow-sm">
               {/* Star Rating - 4/5 */}
               <div className="flex gap-1 mb-4">
                 {[...Array(4)].map((_, i) => (
                   <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z"/>
+                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
                   </svg>
                 ))}
                 <svg className="w-5 h-5 text-gray-300 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z"/>
+                  <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
                 </svg>
               </div>
               <p className="text-gray-700 mb-6 text-sm leading-relaxed">
@@ -344,7 +346,7 @@ export function Main() {
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z"/>
+                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
                   </svg>
                 ))}
               </div>
@@ -368,12 +370,12 @@ export function Main() {
               <div className="flex gap-1 mb-4">
                 {[...Array(3)].map((_, i) => (
                   <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z"/>
+                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
                   </svg>
                 ))}
                 {[...Array(2)].map((_, i) => (
                   <svg key={i} className="w-5 h-5 text-gray-300 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z"/>
+                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
                   </svg>
                 ))}
               </div>
@@ -435,7 +437,7 @@ export function Main() {
                   />
                 </svg>
               </div>
-              
+
               {/* Text and Icons */}
               <div className="flex items-start justify-between gap-4">
                 <p className="text-sm text-gray-700 flex-1">
@@ -493,7 +495,7 @@ export function Main() {
                   />
                 </svg>
               </div>
-              
+
               {/* Text and Icons */}
               <div className="flex items-start justify-between gap-4">
                 <p className="text-sm text-gray-700 flex-1">
@@ -551,7 +553,7 @@ export function Main() {
                   />
                 </svg>
               </div>
-              
+
               {/* Text and Icons */}
               <div className="flex items-start justify-between gap-4">
                 <p className="text-sm text-gray-700 flex-1">
@@ -576,13 +578,13 @@ export function Main() {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
         <div className="mx-auto px-[100px]">
           <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
               Frequently Asked <br /> Questions
             </h2>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-[var(--color-text-secondary-dark)]">
               Have questions about Enigma Code-ai? Here are some of the most common inquiries we receive from our users. If you don't find the answer you're looking for, feel free to contact us.
             </p>
           </div>
@@ -655,13 +657,13 @@ export function Main() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-[var(--color-background-dark)]">
         <div className="mx-auto px-[100px]">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-normal text-gray-900 mb-4">
+            <h2 className="text-4xl font-normal text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
               Many users trust us
             </h2>
-            <p className="text-2xl text-gray-900 mb-10">
+            <p className="text-2xl text-gray-900 dark:text-[var(--color-text-dark)] mb-10">
               join us
             </p>
             <div className="flex justify-center gap-6">
@@ -678,14 +680,14 @@ export function Main() {
 
 
       {/* Footer */}
-      <footer className="bg-white py-16 border-t border-blue-200">
+      <footer className="bg-white dark:bg-[var(--color-background-dark)] py-16 border-t border-blue-200 dark:border-[var(--color-border-dark)]">
         <div className="mx-auto px-[100px]">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Left Column - Logo and Socials */}
             <div className="flex flex-col items-start gap-6">
               <div className="flex flex-col items-start">
-                <span className="text-2xl font-bold text-gray-700">Logo</span>
-                <p className="text-gray-500 text-sm mt-1">
+                <span className="text-2xl font-bold text-gray-700 dark:text-[var(--color-text-dark)]">Logo</span>
+                <p className="text-gray-500 dark:text-[var(--color-text-secondary-dark)] text-sm mt-1">
                   Unlock Your Coding <br />
                   Potential with Enigma
                 </p>
