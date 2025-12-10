@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { ChevronRight, ChevronLeft, LayoutDashboard, Book, Settings, User, Check, LogOut } from "lucide-react";
-import { ToggleButton } from "../signInUp/components/ToggleButton";
+import { Link, useLocation } from "react-router-dom";
+import { ChevronRight, ChevronLeft, LayoutDashboard, Book, Settings, User, Check } from "lucide-react";
 import logo from "../../shared/components/logo.svg";
 import SidebarItem from "./components/SidebarItem";
 import SidebarCollapseItem from "./components/SidebarCollapseItem";
-import { FormButton } from "../signInUp/components/FormButton";
-import UserAvatar from "./components/UserAvatar";
 
 export function Sidebar() {
     const [collapsed, setCollapsed] = useState(false);
+    const location = useLocation();
 
     return (
         <aside
@@ -25,14 +24,14 @@ export function Sidebar() {
             <div className="flex flex-col">
 
                 <div className="flex items-center gap-3 px-4 pt-6 pb-4">
-                    <div className="flex items-center gap-3 flex-shrink-0">
+                    <Link to="/" className="flex items-center gap-3 flex-shrink-0 hover:opacity-80 transition-opacity">
                         <img src={logo} alt="Logo" className="w-8 h-8" />
                         {!collapsed && (
                             <span className="text-primary text-h5 font-semibold">
                                 Trading Assist
                             </span>
                         )}
-                    </div>
+                    </Link>
 
                     <button
                         onClick={() => setCollapsed(!collapsed)}
@@ -62,25 +61,44 @@ export function Sidebar() {
                     icon={<LayoutDashboard />}
                     label="Dashboard"
                     collapsed={collapsed}
+                    to="/dashboard"
+                    active={location.pathname === "/dashboard"}
                 />
-                <SidebarItem icon={<Book />} label="Rules" collapsed={collapsed} />
-                <SidebarItem icon={<Settings />} label="Settings" collapsed={collapsed} />
+                <SidebarItem
+                    icon={<Book />}
+                    label="Rules"
+                    collapsed={collapsed}
+                    to="/rules"
+                    active={location.pathname === "/rules"}
+                />
+                <SidebarItem
+                    icon={<Settings />}
+                    label="Settings"
+                    collapsed={collapsed}
+                    to="/settings"
+                    active={location.pathname === "/settings"}
+                />
                 <SidebarCollapseItem
                     icon={<Check />}
                     label="Management"
                     collapsed={collapsed}
+                    onExpand={() => setCollapsed(false)}
                 >
                     <SidebarItem
                         icon={<User />}
                         label="Users"
                         collapsed={collapsed}
                         variant="secondary"
+                        to="/users"
+                        active={location.pathname === "/users"}
                     />
                     <SidebarItem
                         icon={<Book />}
                         label="Rules"
                         collapsed={collapsed}
                         variant="secondary"
+                        to="/management/rules"
+                        active={location.pathname === "/management/rules"}
                     />
                 </SidebarCollapseItem>
                 <div
@@ -90,34 +108,8 @@ export function Sidebar() {
                         ${collapsed ? "opacity-0 max-h-0 overflow-hidden" : "opacity-100 max-h-screen"}
                     `}
                 >
-                    <ToggleButton />
                 </div>
             </nav>
-
-            {/* Profile */}
-            <div className="mt-auto  transition-all  duration-300 ease-in-out  whitespace-nowrap">
-                <div className="flex items-center ml-1 p-4">
-                    <UserAvatar size={40} />
-                    <span
-                        className={` 
-                            text-primary text-btn-lg
-                            transition-all duration-300 ease-in-out 
-                            ${collapsed ? "opacity-0 max-w-0 overflow-hidden" : "ml-4 opacity-100 max-w-full"}
-                               
-                        `}
-                    >
-                        Profile Name
-                    </span>
-                </div>
-
-                <div className="flex items-center    p-4 ">
-                    <FormButton
-                        text={collapsed ? undefined : "Sign Out"}
-                        variant="outline"
-                        leftIcon={<LogOut className={collapsed ? "ml-2 rounded-lg w-5 h-5" : ""} />}
-                    />
-                </div>
-            </div>
         </aside>
     );
 }

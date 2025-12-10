@@ -18,9 +18,10 @@ const UserAvatar = ({
             className={`
                 flex items-center justify-center
                 rounded-full
-                border-2 border-[var(--color-border)] dark:border-[var(--color-border-dark)]
+                border-2 border-border
+               
                 overflow-hidden
-                bg-[var(--color-bg-secondary)] dark:bg-[var(--color-bg-secondary-dark)]
+                bg-bg-secondary  
                 ${className}
             `}
             style={{ width: size, height: size }}
@@ -33,7 +34,7 @@ const UserAvatar = ({
                 />
             ) : (
                 <User
-                    className="text-[var(--color-text-secondary)] dark:text-[var(--color-text-secondary-dark)]"
+                    className="text-text-secondary "
                     size={size * 0.6}
                 />
             )}

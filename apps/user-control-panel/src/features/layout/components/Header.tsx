@@ -1,14 +1,16 @@
 import { Link } from 'react-router-dom';
-import { LogInIcon, Search } from 'lucide-react';
+import { Search, } from 'lucide-react';
 import { ToggleButton } from '../../signInUp/components/ToggleButton';
 import logo from "../../../shared/components/logo.svg";
+import UserMenuButton from './UserMenuButton';
+import AuthButton from './AuthButton';
 
 interface HeaderProps {
     className?: string;
     isAuthenticated?: boolean;
 }
 
-export function Header({ className = "", isAuthenticated = false }: HeaderProps) {
+export function Header({ className = "", isAuthenticated = true }: HeaderProps) {
     return (
         <header
             className={`
@@ -23,14 +25,18 @@ export function Header({ className = "", isAuthenticated = false }: HeaderProps)
             <div className="px-4 md:px-8 lg:px-[100px]">
                 <div className="flex items-center justify-between gap-6 py-4">
 
-                    {!isAuthenticated && (<div className="flex items-center gap-3 flex-shrink-0">
-                        <img src={logo} alt="Logo" className="w-8 h-8" />
+                    {!isAuthenticated && (
+                        <Link
+                            to="/"
+                            className="flex items-center gap-3 flex-shrink-0 hover:opacity-80 transition-opacity"
+                        >
+                            <img src={logo} alt="Logo" className="w-8 h-8" />
 
-                        <span className="text-primary text-h5 font-semibold mr-4">
-                            Trading Assist
-                        </span>
-
-                    </div>)}
+                            <span className="text-primary text-h5 font-semibold mr-4">
+                                Trading Assist
+                            </span>
+                        </Link>
+                    )}
 
                     <nav className="hidden md:flex items-center gap-8">
                         <Link
@@ -68,23 +74,11 @@ export function Header({ className = "", isAuthenticated = false }: HeaderProps)
                         </div>
 
 
-                        <button
-                            type="button"
-                            className="
-                                inline-flex items-center justify-center gap-2
-                                h-9 px-3 py-2
-                                text-sm font-medium
-                                rounded-md
-                                border-2 border-border text-primary bg-transparent
-                                hover:bg-primary hover:text-text
-                                active:bg-primary-active
-                                transition-colors
-                                whitespace-nowrap
-                            "
-                        >
-                            <LogInIcon className="w-4 h-4 flex-shrink-0" />
-                            <span>Log In</span>
-                        </button>
+                        {isAuthenticated ? (
+                            <UserMenuButton />
+                        ) : (
+                            <AuthButton />
+                        )}
 
                         <ToggleButton />
                     </div>

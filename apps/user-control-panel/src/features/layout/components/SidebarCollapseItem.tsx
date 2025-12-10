@@ -6,6 +6,7 @@ interface SidebarCollapseItemProps {
     label: string;
     collapsed: boolean;
     children: React.ReactNode;
+    onExpand?: () => void;
 }
 
 
@@ -13,12 +14,18 @@ function SidebarCollapseItem({
     icon,
     label,
     collapsed,
-    children
+    children,
+    onExpand
 }: SidebarCollapseItemProps) {
     const [open, setOpen] = useState(false);
 
     const handleClick = () => {
-        if (!collapsed) setOpen((prev) => !prev);
+        if (collapsed && onExpand) {
+            setOpen(true);
+            onExpand();
+        } else if (!collapsed) {
+            setOpen((prev) => !prev);
+        }
     };
 
     return (

@@ -8,7 +8,7 @@ interface PagesLayoutProps {
     isAuthenticated?: boolean;
 }
 
-const PagesLayout = ({ children, isAuthenticated = false }: PagesLayoutProps) => {
+const PagesLayout = ({ children, isAuthenticated = true }: PagesLayoutProps) => {
     return (
         <div className="min-h-screen flex flex-col bg-background">
             <div className="flex flex-1">
