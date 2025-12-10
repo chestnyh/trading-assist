@@ -95,8 +95,8 @@ Account Created → Redirect to Login Page
 - On page reload, data from localStorage is restored to application state
 
 **Validation Flow:**
-- When "Next" button is pressed, all form fields are validated using the shared validation library on client side
-- Validation rules are applied according to the shared validation library specifications
+- When "Next" button is pressed, all form fields are validated using the api-client library on client side
+- Validation rules are applied according to the api-client library specifications
 
 **Validation Success:**
 - If all fields pass validation
@@ -246,8 +246,8 @@ No server-side errors are received at this step since no data is sent to the ser
 - On page reload, form data cannot be restored and user must input all information again
 
 **Validation Flow:**
-- When "Next" button is pressed, all form fields are validated using the shared validation library on client side
-- Validation rules are applied according to the shared validation library specifications
+- When "Next" button is pressed, all form fields are validated using the api-client library on client side
+- Validation rules are applied according to the api-client library specifications
 - Email format validation
 - Password strength validation:
   - Minimum length: 8 characters
@@ -312,7 +312,7 @@ Both client-side validation errors and server-side errors are possible at this s
 - Endpoint: `POST /api/v1/users` (TODO add documentation here)
 
 **Server-Side Validation:**
-- All validation rules are applied using the shared validation library (same as client-side)
+- All validation rules are applied as for api-client lib
 - Additional server-side checks:
   - Email uniqueness check (must not already exist in database)
   - Nickname uniqueness check (must not already exist in database)
@@ -366,8 +366,8 @@ Both client-side validation errors and server-side errors are possible at this s
 - After successful verification, all localStorage data saved during registration process is removed
 
 **Validation Flow:**
-- When "Verify" button is pressed, verification code is validated using the shared validation library on client side
-- Validation rules are applied according to the shared validation library specifications
+- When "Verify" button is pressed, verification code is validated using the api-client library on client side
+- Validation rules are applied according to the api-client library specifications
 - Verification code format validation:
   - Required field
   - Exact length (6 digits)
