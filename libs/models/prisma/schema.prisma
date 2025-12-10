@@ -13,12 +13,47 @@ datasource db {
   url      = env("DB_URL")
 }
 
+enum TradingExperienceLevel {
+  Beginner
+  Intermediate
+  Advanced
+}
+
+enum PrimaryTradingStrategy {
+  Scalping
+  DayTrading
+  SwingTrading
+  PositionTrading
+  Automated
+}
+
+enum RiskTolerance {
+  Conservative
+  Moderate
+  Aggressive
+}
+
+enum TradingPlatform {
+  Binance
+  Bybit
+  Kraken
+  Other
+}
+
 model User {
   id    Int     @default(autoincrement()) @id
   nickname String @unique
   email String  @unique
   password String 
-  name  String?
+  firstName String
+  lastName String
+  isEmailVerified Boolean @default(false)
+  emailVerificationToken String
+  emailVerificationCode String
+  tradingExperienceLevel TradingExperienceLevel?
+  primaryTradingStrategy PrimaryTradingStrategy?
+  riskTolerance RiskTolerance?
+  preferredTradingPlatforms TradingPlatform[] @default([])
   rules UserRules[]
   telegramSettings UserTelegramSettings[]
 }

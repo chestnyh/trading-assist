@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ModelsService } from '@trading-bot/models';
 import { CryptoUtilsService } from '@trading-bot/crypto-utils';
 import { CreateUserDto } from './dto/create-user.dto';
+import { randomUUID, randomInt } from 'crypto';
 
 @Injectable()
 export class UsersApiService {
@@ -17,19 +18,36 @@ export class UsersApiService {
     // Hash the password before storing
     const hashedPassword = await this.cryptoService.hashPassword(user.password);
     
+    // Generate email verification token
+    const emailVerificationToken = randomUUID();
+    const emailVerificationCode = randomInt(100000, 999999).toString();
+    
     // Create the user in the database
     const newUser = await this.modelsService.user.create({
       data: {
         nickname: user.nickname,
         email: user.email,
         password: hashedPassword,
-        name: user.name,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        emailVerificationToken,
+        emailVerificationCode,
+        tradingExperienceLevel: user.tradingExperienceLevel,
+        primaryTradingStrategy: user.primaryTradingStrategy,
+        riskTolerance: user.riskTolerance,
+        preferredTradingPlatforms: user.preferredTradingPlatforms,
       },
       select: {
         id: true,
         nickname: true,
         email: true,
-        name: true,
+        firstName: true,
+        lastName: true,
+        emailVerificationToken: true,
+        tradingExperienceLevel: true,
+        primaryTradingStrategy: true,
+        riskTolerance: true,
+        preferredTradingPlatforms: true,
       }
     });
 
@@ -74,7 +92,8 @@ export class UsersApiService {
         id: true,
         nickname: true,
         email: true,
-        name: true,
+        firstName: true,
+        lastName: true,
       }
     });
 
