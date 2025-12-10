@@ -19,6 +19,11 @@ export default async function main() {
                     email: 'admin@tb.com',
                     nickname: 'admin',
                     password: await cryptoService.hashPassword('password'),
+                    firstName: 'Admin',
+                    lastName: 'User',
+                    emailVerificationToken: 'initial-seed-token',
+                    emailVerificationCode: '123456',
+                    isEmailVerified: true,
                     rules: {
                         create: [
                             {
