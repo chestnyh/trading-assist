@@ -5,11 +5,12 @@ import { ToggleButton } from "./ToggleButton";
 import { ErrorPopup } from "./ErrorPopup";
 
 interface AuthLayoutProps {
-    currentStep: number;
+    currentStep?: number;
     title: string;
     Illustration: ComponentType;
     children: ReactNode;
     actions?: ReactNode;
+    totalSteps?: number;
 }
 
 export function AuthLayout({
@@ -18,6 +19,7 @@ export function AuthLayout({
     Illustration,
     children,
     actions,
+    totalSteps
 }: AuthLayoutProps) {
     const hasError = currentStep === 3;
 
@@ -59,21 +61,15 @@ export function AuthLayout({
                         Trading Assist
                     </span>
                 </div>
-
-
-                <ToggleButton />
             </div>
-
 
             <div className="w-full max-w-xl mx-auto">
                 <div className="flex items-center justify-between gap-4">
                     <h1 className="font-heading font-semibold text-h3 md:text-h2 text-text text-text-secondary dark:text-[var(--color-text-secondary-dark)]">
                         {title}
                     </h1>
-
-
-                    <ToggleButton />
                 </div>
+                <ToggleButton />
 
                 {hasError && (
                     <div className="mt-4">
@@ -81,9 +77,11 @@ export function AuthLayout({
                     </div>
                 )}
 
-                <div className="mt-4">
-                    <FormProgressBar currentStep={currentStep} />
-                </div>
+                {currentStep && (
+                    <div className="mt-4">
+                        <FormProgressBar currentStep={currentStep}  totalSteps={totalSteps}/>
+                    </div>
+                )}
 
                 <div className="mt-6 space-y-4">{children}</div>
 

@@ -1,20 +1,26 @@
 # Code Organization
 
-### Code Organization
+This project follows a monorepo structure. Code is organized into applications, shared libraries, and supporting directories.
+
+## Project Structure
+
 ```
 trading-assist/
-├── apps/                    # Applications
-│   ├── api/                # Backend API service
-│   ├── auto-trader/        # Trading engine service
-│   └── user-control-panel/ # Frontend application
-├── libs/                   # Shared libraries
-│   ├── models/             # Database models & Prisma
-│   ├── configs/            # Shared configurations
-│   ├── crypto-utils/       # Cryptographic utilities
-│   └── object-navigator/   # Object navigation utility
 ├── _docs/                  # Documentation
+├── apps/                   # Applications aka Services
+├── libs/                   # Shared libraries
 ├── scripts/                # Development scripts
 └── docker/                 # Docker configurations
+├── nx.json                 # Nx workspace configuration
+├── package.json            # Dependencies and scripts
+├── tsconfig.base.json      # TypeScript base configuration
+└── docker-compose.yml      # Docker Compose configuration
 ```
 
-TBD
+## Monorepo Benefits
+
+This structure allows for:
+- **Code sharing**: Libraries can be shared across multiple applications
+- **Consistent tooling**: Single configuration for linting, testing, and building
+- **Atomic changes**: Changes to shared code and consuming apps can be made together
+- **Dependency management**: Clear dependency graph between applications and libraries

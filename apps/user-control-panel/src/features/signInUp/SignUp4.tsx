@@ -10,6 +10,7 @@ export function SignUp4() {
             title="Email Confirmation"
             Illustration={ManNearTheTarget}
             actions={<FormButton text="Send" />}
+            totalSteps={4}
         >
             <FormInput label="Insert code here " id="text" name="text" type="text" />
         </AuthLayout>
