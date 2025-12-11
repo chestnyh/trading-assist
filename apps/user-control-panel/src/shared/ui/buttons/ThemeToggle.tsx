@@ -2,7 +2,7 @@ import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
 
-export function ToggleButton() {
+export function ThemeToggle() {
     const [isDark, setIsDark] = useState<boolean>(() => {
         if (typeof window === "undefined") return false;
 

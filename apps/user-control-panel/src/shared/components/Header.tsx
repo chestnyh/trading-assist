@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Search, } from 'lucide-react';
-import { ToggleButton } from '../../signInUp/components/ToggleButton';
-import logo from "../../../shared/components/logo.svg";
-import UserMenuButton from './UserMenuButton';
-import AuthButton from './AuthButton';
+import { ThemeToggle } from '../ui/buttons/ThemeToggle';
+import UserMenuButton from '../ui/buttons/UserMenuButton';
+import AuthButton from '../ui/buttons/AuthButton';
+import logo from "./logo.svg";
 
 interface HeaderProps {
     className?: string;
@@ -80,7 +80,7 @@ export function Header({ className = "", isAuthenticated = true }: HeaderProps) 
                             <AuthButton />
                         )}
 
-                        <ToggleButton />
+                        <ThemeToggle />
                     </div>
                 </div>
             </div>

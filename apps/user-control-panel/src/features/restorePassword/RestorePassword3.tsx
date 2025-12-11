@@ -1,7 +1,7 @@
 import { ManNextToTheSafe } from "./components/svg/ManNextToTheSafe";
-import { FormInput } from "../signInUp/components/FormInput";
-import { FormButton } from "../signInUp/components/FormButton";
-import { AuthLayout } from "../signInUp/components/AuthLayout";
+import { Input } from "../../shared/ui/forms/Input";
+import { Button } from "../../shared/ui/buttons/Button";
+import { AuthLayout } from "../layout/AuthLayout";
 
 export function RestorePassword3() {
     return (
@@ -9,11 +9,11 @@ export function RestorePassword3() {
             currentStep={2}
             title="Enter new password"
             Illustration={ManNextToTheSafe}
-            actions={<FormButton text="Set Up New Password" />}
+            actions={<Button text="Set Up New Password" />}
             totalSteps={3}
         >
-            <FormInput label="Password" id="password" type="password" name="password" />
-            <FormInput label="Confirm Password" id="confirmPassword" type="password" name="confirmPassword" />
+            <Input label="Password" id="password" type="password" name="password" />
+            <Input label="Confirm Password" id="confirmPassword" type="password" name="confirmPassword" />
         </AuthLayout>
     );
 }

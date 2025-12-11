@@ -1,9 +1,9 @@
 import { ChangeEvent, useState } from "react";
-import { FormFieldLabel } from "./FormFieldLabel";
-import { Eye } from "./icons/Eye";
-import { EyeOff } from "./icons/EyeOff";
+import { FieldLabel } from "./FieldLabel";
+import { Eye } from "../../../features/signInUp/components/icons/Eye";
+import { EyeOff } from "../../../features/signInUp/components/icons/EyeOff";
 
-interface FormInputProps {
+interface InputProps {
     label: string;
     id: string;
     name: string;
@@ -14,7 +14,7 @@ interface FormInputProps {
     error?: string;
 }
 
-export function FormInput({
+export function Input({
     label,
     id,
     name,
@@ -23,14 +23,14 @@ export function FormInput({
     value,
     onChange,
     error,
-}: FormInputProps) {
+}: InputProps) {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === "password";
     const inputType = isPassword && showPassword ? "text" : type;
 
     return (
         <div className="w-full pt-5">
-            <FormFieldLabel label={label} id={id} />
+            <FieldLabel label={label} id={id} />
 
             <div className="relative mt-2">
                 <input

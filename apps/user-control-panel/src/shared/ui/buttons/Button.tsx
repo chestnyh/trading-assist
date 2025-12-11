@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-interface FormButtonProps {
+interface ButtonProps {
     text?: string;
     type?: "button" | "submit" | "reset";
     onClick?: () => void;
@@ -11,7 +11,7 @@ interface FormButtonProps {
     rightIcon?: ReactNode;
 }
 
-export function FormButton({
+export function Button({
     text,
     type = "button",
     onClick,
@@ -20,7 +20,7 @@ export function FormButton({
     variant = "primary",
     leftIcon,
     rightIcon,
-}: FormButtonProps) {
+}: ButtonProps) {
     const isTextVariant = variant === "text";
 
     return (

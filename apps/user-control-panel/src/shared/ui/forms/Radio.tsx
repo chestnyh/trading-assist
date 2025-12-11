@@ -1,35 +1,32 @@
-
 import { ChangeEvent } from "react";
-import { FormFieldLabel } from "./FormFieldLabel";
+import { FieldLabel } from "./FieldLabel";
 
-interface FormRadioOption {
+interface RadioOption {
     value: string;
     label: string;
 }
 
-interface FormRadioProps {
+interface RadioProps {
     label: string;
-    // TODO: Add support for custom `id` if future requirements include overriding default input IDs.
     name: string;
-    options: FormRadioOption[];
+    options: RadioOption[];
     value?: string;
     onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
     className?: string;
 }
 
-export function FormRadio({
+export function Radio({
     label,
-    // TODO: Add support for custom `id` if future requirements include overriding default input IDs.
     name,
     options,
     value,
     onChange,
     className = ""
-}: FormRadioProps) {
+}: RadioProps) {
     return (
         <div className={`w-full pt-5 ${className}`}>
             <div className="flex justify-between">
-                <FormFieldLabel label={label} id={`${name}-${options.values}`} />
+                <FieldLabel label={label} id={`${name}-${options[0]?.value || 'group'}`} />
             </div>
             <div className="flex justify-between mt-2">
                 {options.map((option) => (

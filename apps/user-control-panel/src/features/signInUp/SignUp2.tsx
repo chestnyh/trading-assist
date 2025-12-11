@@ -1,9 +1,9 @@
 import { ManNearTheLamp } from "./components/svg/ManNearTheLamp";
-import { FormSelect } from "./components/FormSelect";
-import { FormButton } from "./components/FormButton";
-import { FormRadio } from "./components/FormRadio";
-import { FormCheckbox } from "./components/FormCheckbox";
-import { AuthLayout } from "./components/AuthLayout";
+import { Select } from "../../shared/ui/forms/Select";
+import { Button } from "../../shared/ui/buttons/Button";
+import { Radio } from "../../shared/ui/forms/Radio";
+import { CheckboxGroup } from "../../shared/ui/forms/CheckboxGroup";
+import { AuthLayout } from "../layout/AuthLayout";
 import { ArrowRight } from "./components/icons/ArrowRight";
 
 export function SignUp2() {
@@ -12,10 +12,10 @@ export function SignUp2() {
             currentStep={1}
             title="Trading Preferences"
             Illustration={ManNearTheLamp}
-            actions={<FormButton text="Next" rightIcon={<ArrowRight />} />}
+            actions={<Button text="Next" rightIcon={<ArrowRight />} />}
             totalSteps={4}
         >
-            <FormRadio
+            <Radio
                 label="Trading Experience Level"
                 name="experienceLevel"
                 options={[
@@ -24,7 +24,7 @@ export function SignUp2() {
                     { value: "advanced", label: "Advanced" },
                 ]}
             />
-            <FormSelect
+            <Select
                 label="Primary Trading Strategy"
                 id="tradingStyle"
                 name="tradingStyle"
@@ -37,7 +37,7 @@ export function SignUp2() {
                     { value: "automated", label: "Automated" },
                 ]}
             />
-            <FormRadio
+            <Radio
                 label="Risk Tolerance"
                 name="riskTolerance"
                 options={[
@@ -46,7 +46,7 @@ export function SignUp2() {
                     { value: "aggressive", label: "Aggressive" },
                 ]}
             />
-            <FormCheckbox
+            <CheckboxGroup
                 label="Preferred Trading Platforms"
                 name="preferredPlatforms"
                 options={[

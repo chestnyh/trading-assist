@@ -1,6 +1,6 @@
 import { LogInIcon } from "lucide-react"
 
-const AuthButton = () => {
+export function AuthButton() {
     return (
         <button
             type="button"

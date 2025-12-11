@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronRight, ChevronLeft, LayoutDashboard, Book, Settings, User, Check } from "lucide-react";
-import logo from "../../shared/components/logo.svg";
-import SidebarItem from "./components/SidebarItem";
-import SidebarCollapseItem from "./components/SidebarCollapseItem";
+import logo from "../logo.svg";
+import SidebarItem from "./SidebarItem";
+import SidebarCollapseItem from "./SidebarCollapseItem";
 
 export function Sidebar() {
     const [collapsed, setCollapsed] = useState(false);

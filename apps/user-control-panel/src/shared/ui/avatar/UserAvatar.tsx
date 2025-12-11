@@ -7,12 +7,12 @@ interface UserAvatarProps {
     className?: string;
 }
 
-const UserAvatar = ({
+export function UserAvatar({
     src,
     alt = "User avatar",
     size = 40,
     className = ""
-}: UserAvatarProps) => {
+}: UserAvatarProps) {
     return (
         <div
             className={`

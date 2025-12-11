@@ -1,22 +1,22 @@
 import { ChangeEvent } from "react";
-import { FormFieldLabel } from "./FormFieldLabel";
+import { FieldLabel } from "./FieldLabel";
 
-interface FormSelectOption {
+interface SelectOption {
     value: string;
     label: string;
 }
 
-interface FormSelectProps {
+interface SelectProps {
     label: string;
     id: string;
     name: string;
-    options: FormSelectOption[];
+    options: SelectOption[];
     placeholder?: string;
     value?: string;
     onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
 }
 
-export function FormSelect({
+export function Select({
     label,
     id,
     name,
@@ -24,10 +24,10 @@ export function FormSelect({
     placeholder = "Select an option",
     value,
     onChange,
-}: FormSelectProps) {
+}: SelectProps) {
     return (
         <div className="w-full pt-5">
-            <FormFieldLabel label={label} id={id} />
+            <FieldLabel label={label} id={id} />
 
             <div className="relative mt-2">
                 <select
