@@ -76,6 +76,7 @@
     "commander": "^13.1.0",
     "framer-motion": "^11.18.2",
     "jsoneditor": "^10.4.1",
+    "lucide-react": "^0.556.0",
     "node-cron": "^3.0.3",
     "node-telegram-bot-api": "^0.65.1",
     "npm-force-resolutions": "^0.0.10",

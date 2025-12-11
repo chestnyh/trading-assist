@@ -1,79 +1,18 @@
-import { Link } from 'react-router-dom';
-
-import logo from "../../shared/components/logo.svg"
-
 export function Main() {
   return (
-    <div className="min-h-screen bg-darkbg">
-      {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200">
-        <div className="mx-auto px-[100px]">
-          <div className="flex items-center justify-between">
-            {/* Left Section - Logo */}
-            <div className="flex items-center gap-3 flex-shrink-0">
-              <div className="flex items-center justify-center">
-                <img src={logo} alt="Logo" className="w-16 h-16" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">Trading Assist</span>
-            </div>
-
-            {/* Center Section - Navigation Links */}
-            <div className="hidden md:flex items-center gap-8">
-              <Link to="/about" className="text-gray-900 hover:text-[#5C7CFA] transition-colors">
-                About us
-              </Link>
-              <Link to="/documents" className="text-gray-900 hover:text-[#5C7CFA] transition-colors">
-                View documents
-              </Link>
-              <Link to="/contact" className="text-gray-900 hover:text-[#5C7CFA] transition-colors">
-                Contact
-              </Link>
-            </div>
-
-            {/* Right Section - User Actions */}
-            <div className="flex items-center gap-4">
-              {/* User Profile Icon */}
-              <button className="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-gray-400 transition-colors">
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </button>
-
-              {/* Log out Button */}
-              <button className="bg-gray-700 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors shadow-sm">
-                Log out
-              </button>
-
-              {/* Paper Airplane Icon */}
-              <button className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors">
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
-              </button>
-
-              {/* Moon Icon (Theme Toggle) */}
-              <button className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors">
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
+    <>
       {/* Hero Section*/}
-      <section className="bg-white">
+      <section className="bg-white dark:bg-[var(--color-background-dark)]">
         <div className="mx-auto px-[100px]">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             {/* Left Column - Text Content */}
             <div className="flex-1 space-y-6">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-gray-900 leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-gray-900 dark:text-[var(--color-text-dark)] leading-tight">
                 Unlock Your{' '}
                 <span className="font-bold">Coding Potential</span>
                 {' '}with Enigma
               </h1>
-              <p className="text-lg text-gray-700 max-w-2xl">
+              <p className="text-lg text-gray-700 dark:text-[var(--color-text-secondary-dark)] max-w-2xl">
                 Learn coding and design with Enigma-AI, your ultimate destination for mastering the art of creating stunning designs and building powerful applications.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -91,49 +30,49 @@ export function Main() {
 
             {/* Right Column - Chart Image */}
             <div className="flex-1 flex justify-center lg:justify-end">
-              <img 
-                src="../../assets/hero_image.png" 
-                alt="Financial Chart" 
+              <img
+                src="../../assets/hero_image.png"
+                alt="Financial Chart"
                 className="max-w-full h-auto rounded-lg shadow-lg"
               />
             </div>
           </div>
         </div>
-      </section>    
+      </section>
 
       {/* How it works?  */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
         <div className="mx-auto px-[100px]">
-          <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 dark:text-[var(--color-text-dark)] mb-12">
             How it works ?
           </h2>
           <div className="flex flex-col md:flex-row justify-center gap-8">
             {/* Step 1 Card */}
-            <div className="bg-gray-100 p-8 rounded-lg shadow-md flex-1">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+            <div className="bg-gray-100 dark:bg-[var(--color-bg-secondary-dark)] p-8 rounded-lg shadow-md flex-1">
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
                 Step 1
               </h3>
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 dark:text-[var(--color-text-secondary-dark)] text-lg">
                 Ready to dive in? Here's how you can start contributing to the Enigma Code-ai developer community.
               </p>
             </div>
 
             {/* Step 2 Card */}
-            <div className="bg-gray-100 p-8 rounded-lg shadow-md flex-1">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+            <div className="bg-gray-100 dark:bg-[var(--color-bg-secondary-dark)] p-8 rounded-lg shadow-md flex-1">
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
                 Step 2
               </h3>
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 dark:text-[var(--color-text-secondary-dark)] text-lg">
                 Access a wealth of resources to support your development journey with Enigma Code-ai.
               </p>
             </div>
 
             {/* Step 3 Card */}
-            <div className="bg-gray-100 p-8 rounded-lg shadow-md flex-1">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+            <div className="bg-gray-100 dark:bg-[var(--color-bg-secondary-dark)] p-8 rounded-lg shadow-md flex-1">
+              <h3 className="text-2xl font-semibold text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
                 Step 3
               </h3>
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 dark:text-[var(--color-text-secondary-dark)] text-lg">
                 Access a wealth of resources to support your development journey with Enigma Code-ai.
               </p>
             </div>
@@ -142,7 +81,7 @@ export function Main() {
       </section>
 
       {/* Check on the go  */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
         <div className="mx-auto px-[100px]">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             {/* Left Section - Mobile Phone Mockup */}
@@ -150,7 +89,7 @@ export function Main() {
               <div className="relative w-[300px] h-[600px] bg-gray-800 rounded-[40px] p-2 shadow-2xl">
                 {/* Phone Notch */}
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-800 rounded-b-2xl z-10"></div>
-                
+
                 {/* Phone Screen */}
                 <div className="w-full h-full bg-white rounded-[32px] overflow-hidden relative">
                   {/* Status Bar */}
@@ -189,7 +128,7 @@ export function Main() {
                       <div className="bg-white rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-[80%]">
                         <p className="text-sm">Welcome to our store! We're so glad to have you here. 😊</p>
                       </div>
-                      
+
                       {/* Assistance Message */}
                       <div className="bg-white rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-[85%]">
                         <p className="text-sm font-medium mb-2">Here's how we can assist you today:</p>
@@ -248,7 +187,7 @@ export function Main() {
                 Check on the go{' '}
                 <span className="font-bold">anytime anywhere</span>
               </h2>
-              
+
               <div className="flex flex-col sm:flex-row items-start gap-6">
                 {/* QR Code */}
                 <div className="bg-white p-4 rounded-lg shadow-lg">
@@ -257,9 +196,8 @@ export function Main() {
                     {Array.from({ length: 64 }).map((_, i) => (
                       <div
                         key={i}
-                        className={`${
-                          Math.random() > 0.5 ? 'bg-black' : 'bg-white'
-                        }`}
+                        className={`${Math.random() > 0.5 ? 'bg-black' : 'bg-white'
+                          }`}
                       />
                     ))}
                   </div>
@@ -281,23 +219,23 @@ export function Main() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
         <div className="mx-auto px-[100px]">
-          <h2 className="text-4xl font-bold text-center text-gray-900 mb-12">
+          <h2 className="text-4xl font-bold text-center text-gray-900 dark:text-[var(--color-text-dark)] mb-12">
             Testimonials Section
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Testimonial Card 1 - Hadid Khan */}
-            <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <div className="bg-gray-50 dark:bg-[var(--color-bg-secondary-dark)] p-6 rounded-lg shadow-sm">
               {/* Star Rating - 5/5 */}
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z"/>
+                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
                   </svg>
                 ))}
               </div>
-              <p className="text-gray-700 mb-6 text-sm leading-relaxed">
+              <p className="text-gray-700 dark:text-[var(--color-text-secondary-dark)] mb-6 text-sm leading-relaxed">
                 "Great session! Dani was super helpful. She shared some practical advice on how can lorem ip we go about refining our service offerings."
               </p>
               <div className="flex items-center gap-3">
@@ -305,23 +243,23 @@ export function Main() {
                   HK
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm">Hadid Khan</p>
-                  <p className="text-xs text-gray-600">UIUX Designer</p>
+                  <p className="font-semibold text-gray-900 dark:text-[var(--color-text-dark)] text-sm">Hadid Khan</p>
+                  <p className="text-xs text-gray-600 dark:text-[var(--color-text-secondary-dark)]">UIUX Designer</p>
                 </div>
               </div>
             </div>
 
             {/* Testimonial Card 2 - Wade Warren */}
-            <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <div className="bg-gray-50 dark:bg-[var(--color-bg-secondary-dark)] p-6 rounded-lg shadow-sm">
               {/* Star Rating - 4/5 */}
               <div className="flex gap-1 mb-4">
                 {[...Array(4)].map((_, i) => (
                   <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z"/>
+                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
                   </svg>
                 ))}
                 <svg className="w-5 h-5 text-gray-300 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z"/>
+                  <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
                 </svg>
               </div>
               <p className="text-gray-700 mb-6 text-sm leading-relaxed">
@@ -344,7 +282,7 @@ export function Main() {
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z"/>
+                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
                   </svg>
                 ))}
               </div>
@@ -368,12 +306,12 @@ export function Main() {
               <div className="flex gap-1 mb-4">
                 {[...Array(3)].map((_, i) => (
                   <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z"/>
+                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
                   </svg>
                 ))}
                 {[...Array(2)].map((_, i) => (
                   <svg key={i} className="w-5 h-5 text-gray-300 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z"/>
+                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
                   </svg>
                 ))}
               </div>
@@ -435,7 +373,7 @@ export function Main() {
                   />
                 </svg>
               </div>
-              
+
               {/* Text and Icons */}
               <div className="flex items-start justify-between gap-4">
                 <p className="text-sm text-gray-700 flex-1">
@@ -493,7 +431,7 @@ export function Main() {
                   />
                 </svg>
               </div>
-              
+
               {/* Text and Icons */}
               <div className="flex items-start justify-between gap-4">
                 <p className="text-sm text-gray-700 flex-1">
@@ -551,7 +489,7 @@ export function Main() {
                   />
                 </svg>
               </div>
-              
+
               {/* Text and Icons */}
               <div className="flex items-start justify-between gap-4">
                 <p className="text-sm text-gray-700 flex-1">
@@ -576,13 +514,13 @@ export function Main() {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
         <div className="mx-auto px-[100px]">
           <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
               Frequently Asked <br /> Questions
             </h2>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-[var(--color-text-secondary-dark)]">
               Have questions about Enigma Code-ai? Here are some of the most common inquiries we receive from our users. If you don't find the answer you're looking for, feel free to contact us.
             </p>
           </div>
@@ -655,13 +593,13 @@ export function Main() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-[var(--color-background-dark)]">
         <div className="mx-auto px-[100px]">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-normal text-gray-900 mb-4">
+            <h2 className="text-4xl font-normal text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
               Many users trust us
             </h2>
-            <p className="text-2xl text-gray-900 mb-10">
+            <p className="text-2xl text-gray-900 dark:text-[var(--color-text-dark)] mb-10">
               join us
             </p>
             <div className="flex justify-center gap-6">
@@ -675,70 +613,6 @@ export function Main() {
           </div>
         </div>
       </section>
-
-
-      {/* Footer */}
-      <footer className="bg-white py-16 border-t border-blue-200">
-        <div className="mx-auto px-[100px]">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Left Column - Logo and Socials */}
-            <div className="flex flex-col items-start gap-6">
-              <div className="flex flex-col items-start">
-                <span className="text-2xl font-bold text-gray-700">Logo</span>
-                <p className="text-gray-500 text-sm mt-1">
-                  Unlock Your Coding <br />
-                  Potential with Enigma
-                </p>
-              </div>
-              <div className="flex space-x-4">
-                {/* Twitter Icon */}
-                <a href="#" className="text-gray-500 hover:text-gray-900 transition-colors">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 014 9.74c-.095 0-.189-.007-.283-.012v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                  </svg>
-                </a>
-                {/* GitHub Icon */}
-                <a href="#" className="text-gray-500 hover:text-gray-900 transition-colors">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.499.092.679-.217.679-.481 0-.237-.008-.865-.011-1.695-2.782.602-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.618.069-.606.069-.606 1.003.07 1.531 1.032 1.531 1.032.892 1.529 2.341 1.089 2.91.835.091-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.953 0-1.092.39-1.988 1.029-2.681-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.022A9.606 9.606 0 0112 6.865c.85.004 1.705.115 2.504.337 1.909-1.292 2.747-1.022 2.747-1.022.546 1.379.202 2.398.099 2.651.64.693 1.028 1.59 1.028 2.681 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2Z" clipRule="evenodd" />
-                  </svg>
-                </a>
-                {/* Slack Icon */}
-                <a href="#" className="text-gray-500 hover:text-gray-900 transition-colors">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12.001 10.001a2 2 0 100-4 2 2 0 000 4zm-4 0a2 2 0 100-4 2 2 0 000 4zm8 0a2 2 0 100-4 2 2 0 000 4zm-4 4a2 2 0 100-4 2 2 0 000 4zm-4 0a2 2 0 100-4 2 2 0 000 4zm8 0a2 2 0 100-4 2 2 0 000 4zm-4 4a2 2 0 100-4 2 2 0 000 4zm-4 0a2 2 0 100-4 2 2 0 000 4zm8 0a2 2 0 100-4 2 2 0 000 4z" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-
-            {/* Middle Column - Product Links */}
-            <div className="flex flex-col items-start gap-4">
-              <h3 className="text-lg font-bold text-gray-700">Product</h3>
-              <ul className="space-y-2 text-gray-600">
-                <li><a href="#" className="hover:text-gray-900 transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-gray-900 transition-colors">Extension</a></li>
-                <li><a href="#" className="hover:text-gray-900 transition-colors">Pro</a></li>
-                <li><a href="#" className="hover:text-gray-900 transition-colors">Changelog</a></li>
-                <li><a href="#" className="hover:text-gray-900 transition-colors">Docs</a></li>
-                <li><a href="#" className="hover:text-gray-900 transition-colors">Download</a></li>
-              </ul>
-            </div>
-
-            {/* Right Column - Resources Links */}
-            <div className="flex flex-col items-start gap-4">
-              <h3 className="text-lg font-bold text-gray-700">Resources</h3>
-              <ul className="space-y-2 text-gray-600">
-                <li><a href="#" className="hover:text-gray-900 transition-colors">About us</a></li>
-                <li><a href="#" className="hover:text-gray-900 transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-gray-900 transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-gray-900 transition-colors">Customers</a></li>
-                <li><a href="#" className="hover:text-gray-900 transition-colors">Brand</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 }

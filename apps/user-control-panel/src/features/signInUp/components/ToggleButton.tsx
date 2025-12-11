@@ -1,3 +1,4 @@
+import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
 
@@ -30,18 +31,10 @@ export function ToggleButton() {
         <button
             type="button"
             onClick={() => setIsDark((prev) => !prev)}
-            className="
-       inline-flex items-center justify-center
-        rounded-full border border-textSecondary/40 dark:border-[var(--color-text-secondary-dark)]/40
-        px-3 py-1 text-body-sm
-        text-text dark:text-[var(--color-text-dark)]
-        hover:border-accent dark:hover:border-[var(--color-accent-dark)]
-        hover:text-accent dark:hover:text-[var(--color-accent-dark)]
-        transition-colors
-      "
+            className="flex items-center justify-center gap-2 text-primary   hover:text-accent dark:hover:text-accent bg-transparent"
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         >
-            {isDark ? "☀ Light" : "☾ Dark"}
+            {isDark ? <Sun /> : <Moon />}
         </button>
     );
 }

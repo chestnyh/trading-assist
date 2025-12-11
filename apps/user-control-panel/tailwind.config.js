@@ -6,15 +6,21 @@ module.exports = {
     extend: {
       colors: {
         // Light theme colors
-        text: 'var(--color-text)',
+        primary: 'var(--color-primary)',
+        primaryHover: 'var(--color-primary-hover)',
+        primaryActive: 'var(--color-primary-active)',
+
+        accent: 'var(--color-accent)',
+
         background: 'var(--color-background)',
         bgSecondary: 'var(--color-bg-secondary)',
-        primary: 'var(--color-primary)',
-        accent: 'var(--color-accent)',
+        border: 'var(--color-border)',
+
+        text: 'var(--color-text)',
+        textSecondary: 'var(--color-text-secondary)',
+
         error: 'var(--color-error)',
         success: 'var(--color-success)',
-        textSecondary: 'var(--color-text-secondary)',
-        surface: 'var(--color-surface)',
       },
 
       screens: {
