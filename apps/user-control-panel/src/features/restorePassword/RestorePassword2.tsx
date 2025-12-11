@@ -1,7 +1,7 @@
 import { ManNextToTheSafe } from "./components/svg/ManNextToTheSafe";
-import { FormInput } from "../signInUp/components/FormInput";
-import { FormButton } from "../signInUp/components/FormButton";
-import { AuthLayout } from "../signInUp/components/AuthLayout";
+import { Input } from "../../shared/ui/forms/Input";
+import { Button } from "../../shared/ui/buttons/Button";
+import { AuthLayout } from "../layout/AuthLayout";
 import { ArrowLeft } from "../signInUp/components/icons/ArrowLeft";
 import { ArrowRight } from "../signInUp/components/icons/ArrowRight";
 
@@ -13,13 +13,13 @@ export function RestorePassword2() {
             Illustration={ManNextToTheSafe}
             actions={
                 <>
-                    <FormButton text="Back" variant="outline" leftIcon={<ArrowLeft />} />
-                    <FormButton text="Reset password" rightIcon={<ArrowRight />} />
+                    <Button text="Back" variant="outline" leftIcon={<ArrowLeft />} />
+                    <Button text="Reset password" rightIcon={<ArrowRight />} />
                 </>
             }
             totalSteps={3}
         >
-            <FormInput label="Secret code" id="text" name="text" type="text" />
+            <Input label="Secret code" id="text" name="text" type="text" />
         </AuthLayout>
     );
 }

@@ -1,26 +1,27 @@
 import { useState, useEffect } from "react";
-import { FormFieldLabel } from "./FormFieldLabel";
-interface FormCheckboxOption {
+import { FieldLabel } from "./FieldLabel";
+
+interface CheckboxGroupOption {
     value: string;
     label: string;
 }
-interface FormCheckboxProps {
+interface CheckboxGroupProps {
     label: string;
     name: string;
-    options: FormCheckboxOption[];
+    options: CheckboxGroupOption[];
     value?: string[];
     onChange?: (selectedValues: string[]) => void;
     className?: string;
 }
 
-export function FormCheckbox({
+export function CheckboxGroup({
     label,
     name,
     options,
     value: controlledValue,
     onChange,
     className = "",
-}: FormCheckboxProps) {
+}: CheckboxGroupProps) {
     const [selectedValues, setSelectedValues] = useState<string[]>(controlledValue || []);
 
     useEffect(() => {
@@ -48,7 +49,7 @@ export function FormCheckbox({
     return (
         <div className={`w-full pt-5 ${className}`}>
             <div className="flex justify-between">
-                <FormFieldLabel label={label} id={`${name}-group`} />
+                <FieldLabel label={label} id={`${name}-group`} />
             </div>
 
             <div className="mt-2 flex flex-wrap gap-4 justify-between">

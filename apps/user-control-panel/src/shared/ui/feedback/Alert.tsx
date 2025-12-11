@@ -1,6 +1,6 @@
-import { AlertTriangle } from "./icons/AlertTriangle";
+import { AlertTriangle } from "../../../features/signInUp/components/icons/AlertTriangle";
 
-export function ErrorPopup() {
+export function Alert() {
     return (
         <div
             className={`

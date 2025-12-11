@@ -1,8 +1,8 @@
 import { ManAtTheTable } from "./components/svg/ManAtTheTable";
-import { FormInput } from "./components/FormInput";
-import { FormSelect } from "./components/FormSelect";
-import { FormButton } from "./components/FormButton";
-import { AuthLayout } from "./components/AuthLayout";
+import { Input } from "../../shared/ui/forms/Input";
+import { Select } from "../../shared/ui/forms/Select";
+import { Button } from "../../shared/ui/buttons/Button";
+import { AuthLayout } from "../layout/AuthLayout";
 import { ArrowRight } from "./components/icons/ArrowRight";
 
 export function SignUp1() {
@@ -11,23 +11,23 @@ export function SignUp1() {
             currentStep={0}
             title="Let’s Start!"
             Illustration={ManAtTheTable}
-            actions={<FormButton text="Next" rightIcon={<ArrowRight />} />}
+            actions={<Button text="Next" rightIcon={<ArrowRight />} />}
             totalSteps={4}
         >
-            <FormInput
+            <Input
                 label="First Name"
                 id="firstName"
                 name="firstName"
                 placeholder="Enter your first name"
             />
-            <FormInput
+            <Input
                 label="Last Name"
                 id="lastName"
                 name="lastName"
                 placeholder="Enter your last name"
                 error="This field is required"
             />
-            <FormSelect
+            <Select
                 label="Country"
                 id="country"
                 name="country"

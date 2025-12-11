@@ -1,8 +1,8 @@
 import { ManNearTheTarget } from "./components/svg/ManNearTheTarget";
-import { FormInput } from "./components/FormInput";
-import { FormButton } from "./components/FormButton";
-import { Checkbox } from "./components/Checkbox";
-import { AuthLayout } from "./components/AuthLayout";
+import { Input } from "../../shared/ui/forms/Input";
+import { Button } from "../../shared/ui/buttons/Button";
+import { Checkbox } from "../../shared/ui/forms/Checkbox";
+import { AuthLayout } from "../layout/AuthLayout";
 import { ArrowLeft } from "./components/icons/ArrowLeft";
 import { ArrowRight } from "./components/icons/ArrowRight";
 
@@ -14,16 +14,16 @@ export function SignUp3() {
             Illustration={ManNearTheTarget}
             actions={
                 <>
-                    <FormButton text="Back" variant="outline" leftIcon={<ArrowLeft />} />
-                    <FormButton text="Next" rightIcon={<ArrowRight />} />
+                    <Button text="Back" variant="outline" leftIcon={<ArrowLeft />} />
+                    <Button text="Next" rightIcon={<ArrowRight />} />
                 </>
             }
             totalSteps={4}
         >
-            <FormInput label="Email" id="email" name="email" />
-            <FormInput label="Nickname" id="nickname" name="nickname" />
-            <FormInput label="Password" id="password" type="password" name="password" />
-            <FormInput label="Confirm Password" id="confirmPassword" type="password" name="confirmPassword" />
+            <Input label="Email" id="email" name="email" />
+            <Input label="Nickname" id="nickname" name="nickname" />
+            <Input label="Password" id="password" type="password" name="password" />
+            <Input label="Confirm Password" id="confirmPassword" type="password" name="confirmPassword" />
             <div className="space-y-3 mt-10">
                 <Checkbox
                     id="news-updates"

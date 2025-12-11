@@ -1,7 +1,7 @@
 import { ManNearTheTarget } from "./components/svg/ManNearTheTarget";
-import { FormInput } from "./components/FormInput";
-import { FormButton } from "./components/FormButton";
-import { AuthLayout } from "./components/AuthLayout";
+import { Input } from "../../shared/ui/forms/Input";
+import { Button } from "../../shared/ui/buttons/Button";
+import { AuthLayout } from "../layout/AuthLayout";
 
 export function SignUp4() {
     return (
@@ -9,10 +9,10 @@ export function SignUp4() {
             currentStep={3}
             title="Email Confirmation"
             Illustration={ManNearTheTarget}
-            actions={<FormButton text="Send" />}
+            actions={<Button text="Send" />}
             totalSteps={4}
         >
-            <FormInput label="Insert code here " id="text" name="text" type="text" />
+            <Input label="Insert code here " id="text" name="text" type="text" />
         </AuthLayout>
     );
 }
