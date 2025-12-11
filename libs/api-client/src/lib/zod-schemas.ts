@@ -1,0 +1,44 @@
+/**
+ * Zod schemas for API validation
+ * These should match the OpenAPI spec
+ */
+
+import { z } from 'zod';
+
+export const TradingExperienceLevelSchema = z.enum(['Beginner', 'Intermediate', 'Advanced']);
+
+export const PrimaryTradingStrategySchema = z.enum([
+  'Scalping',
+  'DayTrading',
+  'SwingTrading',
+  'PositionTrading',
+  'Automated',
+]);
+
+export const RiskToleranceSchema = z.enum(['Conservative', 'Moderate', 'Aggressive']);
+
+export const TradingPlatformSchema = z.enum(['Binance', 'Bybit', 'Kraken', 'Other']);
+
+export const CreateUserDtoSchema = z.object({
+  nickname: z.string().min(3, 'Nickname must be at least 3 characters long'),
+  email: z.string().email('Please provide a valid email address'),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters long')
+    .regex(/.*[A-Z].*/, 'Password must contain at least one uppercase letter')
+    .regex(/.*[a-z].*/, 'Password must contain at least one lowercase letter')
+    .regex(/.*\d.*/, 'Password must contain at least one number')
+    .regex(/.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/]/, 'Password must contain at least one special character'),
+  firstName: z.string().min(1).max(50),
+  lastName: z.string().min(1).max(50),
+  tradingExperienceLevel: TradingExperienceLevelSchema.optional(),
+  primaryTradingStrategy: PrimaryTradingStrategySchema.optional(),
+  riskTolerance: RiskToleranceSchema.optional(),
+  preferredTradingPlatforms: z.array(TradingPlatformSchema).optional(),
+});
+
+export const LoginDtoSchema = z.object({
+  email: z.string().email('Please provide a valid email address'),
+  password: z.string().min(1, 'Password is required'),
+});
+
