@@ -2,28 +2,57 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Global body background */
+body {
+  background-color: var(--color-background);
+  transition: background-color 0.3s ease;
+  margin: 0;
+  padding: 0;
+}
+
+html.dark body {
+  background-color: var(--color-background-dark);
+}
+
 @theme {
   /* Colors - Light Theme */
-  --color-text: #1c1c1e;
-  --color-background: #ffffff;
-  --color-bg-secondary: #f4f6f8;
   --color-primary: #1e6aff;
-  --color-accent: #4c8dff;
+  --color-primary-hover: #4c8dff;
+  --color-primary-active: #174fcc;
+
+  --color-accent: #9cb8ff;
+  --color-accent-hover: rgba(156, 184, 255, 0.2); /* 20% */
+  --color-accent-active: rgba(156, 184, 255, 0.5); /* 50% */
+
+  --color-background: #f2f2f9;
+  --color-bg-secondary: #eaeaf1;
+  --color-border: #c3c9d1;
+
+  --color-text: #1c1c1e;
+  --color-text-secondary: #626d7a;
+
   --color-error: #ff4d4f;
   --color-success: #47b262;
-  --color-text-secondary: #747474;
-  --color-surface: #f4f6f8;
 
   /* Colors - Dark Theme (will be used with dark: variant) */
-  --color-text-dark: #e6e9ee;
+
+  --color-primary-dark: #4d9eff;
+  --color-primary-dark-hover: #6bb3ff;
+  --color-primary-dark-active: #1a75d1;
+
+  --color-accent-dark: #9cb8ff;
+  --color-accent-hover: rgba(156, 184, 255, 0.2); /* 20% */
+  --color-accent-active: rgba(156, 184, 255, 0.5); /* 50% */
+
   --color-background-dark: #0d1117;
   --color-bg-secondary-dark: #161b22;
-  --color-primary-dark: #4d9eff;
-  --color-accent-dark: #82c1ff;
+  --color-border-dark: #193152;
+
+  --color-text-dark: #e6e9ee;
+  --color-text-secondary-dark: #8897a2;
+
   --color-error-dark: #ff4d4f;
   --color-success-dark: #47b262;
-  --color-text-secondary-dark: #747474;
-  --color-surface-dark: #161b22;
 
   /* Font Families */
   --font-family-sans: 'Inter', system-ui, sans-serif;
@@ -76,4 +105,23 @@
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1440px;
   --breakpoint-3xl: 1920px;
+}
+
+/* Dark theme overrides */
+.dark {
+  --color-primary: var(--color-primary-dark);
+  --color-primary-hover: var(--color-primary-dark-hover);
+  --color-primary-active: var(--color-primary-dark-active);
+
+  --color-accent: var(--color-accent-dark);
+
+  --color-background: var(--color-background-dark);
+  --color-bg-secondary: var(--color-bg-secondary-dark);
+  --color-border: var(--color-border-dark);
+
+  --color-text: var(--color-text-dark);
+  --color-text-secondary: var(--color-text-secondary-dark);
+
+  --color-error: var(--color-error-dark);
+  --color-success: var(--color-success-dark);
 }
