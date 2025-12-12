@@ -5,7 +5,11 @@
 
 import { z } from 'zod';
 
-export const TradingExperienceLevelSchema = z.enum(['Beginner', 'Intermediate', 'Advanced']);
+export const TradingExperienceLevelSchema = z.enum([
+  'Beginner',
+  'Intermediate',
+  'Advanced',
+]);
 
 export const PrimaryTradingStrategySchema = z.enum([
   'Scalping',
@@ -15,9 +19,18 @@ export const PrimaryTradingStrategySchema = z.enum([
   'Automated',
 ]);
 
-export const RiskToleranceSchema = z.enum(['Conservative', 'Moderate', 'Aggressive']);
+export const RiskToleranceSchema = z.enum([
+  'Conservative',
+  'Moderate',
+  'Aggressive',
+]);
 
-export const TradingPlatformSchema = z.enum(['Binance', 'Bybit', 'Kraken', 'Other']);
+export const TradingPlatformSchema = z.enum([
+  'Binance',
+  'Bybit',
+  'Kraken',
+  'Other',
+]);
 
 export const CreateUserDtoSchema = z.object({
   nickname: z.string().min(3, 'Nickname must be at least 3 characters long'),
@@ -28,7 +41,10 @@ export const CreateUserDtoSchema = z.object({
     .regex(/.*[A-Z].*/, 'Password must contain at least one uppercase letter')
     .regex(/.*[a-z].*/, 'Password must contain at least one lowercase letter')
     .regex(/.*\d.*/, 'Password must contain at least one number')
-    .regex(/.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/]/, 'Password must contain at least one special character'),
+    .regex(
+      /.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/]/,
+      'Password must contain at least one special character'
+    ),
   firstName: z.string().min(1).max(50),
   lastName: z.string().min(1).max(50),
   tradingExperienceLevel: TradingExperienceLevelSchema.optional(),
@@ -42,3 +58,7 @@ export const LoginDtoSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
+export const VerifyEmailDtoSchema = z.object({
+  code: z.string().min(6, 'Verification code must be 6 digits'),
+  token: z.string().uuid('Token must be a valid UUID'),
+});

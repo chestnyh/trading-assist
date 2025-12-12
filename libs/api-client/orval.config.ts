@@ -1,16 +1,17 @@
+import { defineConfig } from 'orval';
 
-export default {
+export default defineConfig({
   api: {
-    input: './openapi.json', // Path relative to this config file
+    input: {
+      target: './openapi.json',
+    },
     output: {
       target: './src/lib/api-client.ts',
-      client: 'fetch', // Use fetch for HTTP requests
-      mode: 'tags-split',
-      schemas: './src/lib', // Output directory for Zod schemas
-      zod: true, // Generate Zod schemas for validation
+      client: 'fetch',
+      mode: 'single',
       override: {
         mutator: {
-          path: './src/api/mutator.ts',
+          path: './src/lib/mutator.ts',
           name: 'customInstance',
         },
       },
@@ -19,4 +20,4 @@ export default {
       afterAllFilesWrite: 'prettier --write',
     },
   },
-};
+});
