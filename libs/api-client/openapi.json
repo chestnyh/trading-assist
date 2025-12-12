@@ -61,6 +61,44 @@
         ]
       }
     },
+    "/api/v1/auth/verify-email": {
+      "post": {
+        "operationId": "AuthController_verifyEmail",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email verified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyEmailResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid verification code or email already verified"
+          },
+          "401": {
+            "description": "Invalid or expired token"
+          }
+        },
+        "summary": "Verify user email with verification code",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/v1/rules": {
       "post": {
         "operationId": "RulesController_create",
@@ -450,6 +488,46 @@
         "required": [
           "access_token",
           "user"
+        ]
+      },
+      "VerifyEmailDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "6-digit verification code sent to user email",
+            "example": "123456",
+            "minLength": 6,
+            "maxLength": 6
+          },
+          "token": {
+            "type": "string",
+            "description": "Registration token received from user registration",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          }
+        },
+        "required": [
+          "code",
+          "token"
+        ]
+      },
+      "VerifyEmailResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Success message",
+            "example": "Email verified successfully"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if verification was successful",
+            "example": true
+          }
+        },
+        "required": [
+          "message",
+          "success"
         ]
       },
       "CreateRuleDto": {

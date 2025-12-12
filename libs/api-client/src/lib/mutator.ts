@@ -3,12 +3,17 @@
  */
 
 import { z } from 'zod';
-import { CreateUserDtoSchema, LoginDtoSchema } from '../lib/zod-schemas';
+import {
+  CreateUserDtoSchema,
+  LoginDtoSchema,
+  VerifyEmailDtoSchema,
+} from './zod-schemas';
 
 // Map URLs to their request body schemas
 const requestSchemas: Record<string, z.ZodSchema<any>> = {
   '/api/v1/users': CreateUserDtoSchema,
   '/api/v1/auth/login': LoginDtoSchema,
+  '/api/v1/auth/verify-email': VerifyEmailDtoSchema,
 };
 
 export const customInstance = async <T>(
@@ -27,10 +32,9 @@ export const customInstance = async <T>(
   };
 
   // Add authentication token if available
-  const token = typeof window !== 'undefined' 
-    ? localStorage.getItem('auth_token') 
-    : null;
-  
+  const token =
+    typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
@@ -38,9 +42,8 @@ export const customInstance = async <T>(
   // Validate request body using URL-based schema mapping
   if (config.body && (schema || requestSchemas[url])) {
     try {
-      const bodyData = typeof config.body === 'string' 
-        ? JSON.parse(config.body) 
-        : config.body;
+      const bodyData =
+        typeof config.body === 'string' ? JSON.parse(config.body) : config.body;
       const validationSchema = schema || requestSchemas[url];
       if (validationSchema) {
         validationSchema.parse(bodyData); // This will throw an error if the data is invalid
@@ -95,4 +98,3 @@ export const customInstance = async <T>(
 
   return data;
 };
-
