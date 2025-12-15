@@ -14,6 +14,7 @@ interface SelectProps {
     placeholder?: string;
     value?: string;
     onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
+    error?: string;
 }
 
 export function Select({
@@ -24,6 +25,7 @@ export function Select({
     placeholder = "Select an option",
     value,
     onChange,
+    error,
 }: SelectProps) {
     return (
         <div className="w-full pt-5">
@@ -33,37 +35,32 @@ export function Select({
                 <select
                     id={id}
                     name={name}
-                    value={value}
+                    value={value || ""}
                     onChange={onChange}
-                    className="
-            w-full h-12
-            bg-bg-secondary dark:bg-[var(--color-bg-secondary-dark)]
-            px-4 pr-10
-            text-body-md
-            text-text dark:text-[var(--color-text-dark)]
-            dark:border dark:border-[var(--color-text-dark)]
-            rounded-md
-            appearance-none
-            transition-colors 
-            hover:border-primary dark:hover:border-[var(--color-primary-dark)]
-            focus:outline-none
-            focus:border-primary dark:focus:border-[var(--color-primary-dark)]
-            focus:ring-2 focus:ring-primary dark:focus:ring-[var(--color-primary-dark)]
-          "
+                    className={`
+                        w-full h-12
+                        px-4 pr-10
+                        text-body-md
+                        rounded-md
+                        appearance-none
+                        transition-colors
+                        focus:outline-none
+                        ${error
+                            ? "border-2 border-error text-text bg-background focus:border-error focus:ring-2 focus:ring-error"
+                            : !value || value === ""
+                                ? "border-2 border-accent text-text-secondary bg-background hover:bg-background hover:text-text focus:border-primary focus:bg-background focus:text-text focus:ring-2 focus:ring-primary"
+                                : "border-2 border-accent text-accent bg-background hover:bg-background hover:text-text focus:border-primary focus:bg-background focus:text-text focus:ring-2 focus:ring-primary"
+                        }
+                         `}
                 >
-                    <option value="" className="text-textSecondary dark:placeholder:text-[var(--color-text-secondary-dark)]">
+                    <option value="" disabled={value !== "" && value !== undefined && value !== null}>
                         {placeholder}
                     </option>
-
                     {options.map((option) => (
                         <option
                             key={option.value}
                             value={option.value}
-                            className="
-                bg-background dark:bg-[var(--color-background-dark)]
-                text-text dark:text-[var(--color-text-dark)]
-                cursor-pointer
-              "
+                            className="bg-background text-text cursor-pointer"
                         >
                             {option.label}
                         </option>
@@ -72,7 +69,7 @@ export function Select({
 
                 <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
                     <svg
-                        className="h-3 w-3 text-text dark:text-[var(--color-text-dark)]"
+                        className="h-3 w-3 text-text"
                         viewBox="0 0 12 12"
                         aria-hidden="true"
                     >
@@ -87,6 +84,11 @@ export function Select({
                     </svg>
                 </span>
             </div>
+            {error && (
+                <p className="mt-2 text-body-sm text-error">
+                    {error}
+                </p>
+            )}
         </div>
     );
 }

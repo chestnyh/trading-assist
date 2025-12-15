@@ -3,8 +3,7 @@ import { Input } from "../../shared/ui/forms/Input";
 import { Button } from "../../shared/ui/buttons/Button";
 import { Checkbox } from "../../shared/ui/forms/Checkbox";
 import { AuthLayout } from "../layout/AuthLayout";
-import { ArrowLeft } from "./components/icons/ArrowLeft";
-import { ArrowRight } from "./components/icons/ArrowRight";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function SignUp3() {
     return (
@@ -14,8 +13,8 @@ export function SignUp3() {
             Illustration={ManNearTheTarget}
             actions={
                 <>
-                    <Button text="Back" variant="outline" leftIcon={<ArrowLeft />} />
-                    <Button text="Next" rightIcon={<ArrowRight />} />
+                    <Button text="Back" variant="outline" leftIcon={<ChevronLeft />} />
+                    <Button text="Next" rightIcon={<ChevronRight />} />
                 </>
             }
             totalSteps={4}

@@ -4,7 +4,7 @@ import { Button } from "../../shared/ui/buttons/Button";
 import { Radio } from "../../shared/ui/forms/Radio";
 import { CheckboxGroup } from "../../shared/ui/forms/CheckboxGroup";
 import { AuthLayout } from "../layout/AuthLayout";
-import { ArrowRight } from "./components/icons/ArrowRight";
+import { ChevronRight } from "lucide-react";
 
 export function SignUp2() {
     return (
@@ -12,7 +12,7 @@ export function SignUp2() {
             currentStep={1}
             title="Trading Preferences"
             Illustration={ManNearTheLamp}
-            actions={<Button text="Next" rightIcon={<ArrowRight />} />}
+            actions={<Button text="Next" rightIcon={<ChevronRight />} />}
             totalSteps={4}
         >
             <Radio

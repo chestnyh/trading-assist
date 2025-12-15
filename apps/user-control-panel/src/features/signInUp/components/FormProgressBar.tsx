@@ -16,8 +16,8 @@ export function FormProgressBar({
     const gradient = `
     linear-gradient(
       to right,
-      #47B262 0%,
-      #47B262 ${fadeStart}%,
+   var(--color-success) 0%,
+      var(--color-success) ${fadeStart}%,
       transparent ${progress}%,
       transparent 100%
     )
@@ -27,12 +27,11 @@ export function FormProgressBar({
         <div className="pt-5">
             <div
                 className="
-                 h-[1.875rem]            
-          rounded-[0.75rem] 
-          h-4
-          rounded-2xl
-          border border-bg-secondary dark:border-[var(--color-bg-secondary-dark)]`
-          overflow-hidden
+                      h-6
+                    rounded-md
+                    border-2 border-accent
+                    bg-background
+                    overflow-hidden
         "
                 style={{
                     background: gradient,
