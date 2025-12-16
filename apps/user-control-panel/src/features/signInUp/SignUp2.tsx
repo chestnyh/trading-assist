@@ -1,61 +1,144 @@
+import { ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 import { ManNearTheLamp } from "./components/svg/ManNearTheLamp";
 import { Select } from "../../shared/ui/forms/Select";
 import { Button } from "../../shared/ui/buttons/Button";
 import { Radio } from "../../shared/ui/forms/Radio";
 import { CheckboxGroup } from "../../shared/ui/forms/CheckboxGroup";
 import { AuthLayout } from "../layout/AuthLayout";
-import { ChevronRight } from "lucide-react";
+import {
+    tradingExperienceLevelOptions,
+    primaryTradingStrategyOptions,
+    riskToleranceOptions,
+    preferredTradingPlatformsOptions,
+} from "../../shared/data/tradingOptions";
+
+import { useSignUpStep2 } from "../../app/contexts/SignUpContext";
 
 export function SignUp2() {
+    const navigate = useNavigate();
+    const { state, setField, validateAndGetResult } = useSignUpStep2();
+
+    const handleExperienceLevelChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (value === "Beginner" || value === "Intermediate" || value === "Advanced") {
+            setField("tradingExperienceLevel", value);
+        } else {
+            setField("tradingExperienceLevel", undefined);
+        }
+    };
+
+    const handleTradingStrategyChange = (e: ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        if (!value) {
+            setField("primaryTradingStrategy", undefined);
+            return;
+        }
+        const enumValue = value as
+            | "Scalping"
+            | "DayTrading"
+            | "SwingTrading"
+            | "PositionTrading"
+            | "Automated"
+            | undefined;
+        setField("primaryTradingStrategy", enumValue);
+    };
+
+    const handleRiskToleranceChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        if (value === "Conservative" || value === "Moderate" || value === "Aggressive") {
+            setField("riskTolerance", value);
+        } else {
+            setField("riskTolerance", undefined);
+        }
+    };
+
+    const handlePlatformsChange = (selectedValues: string[]) => {
+        const enumValues = selectedValues as ("Binance" | "Bybit" | "Kraken" | "Other")[];
+        setField("preferredTradingPlatforms", enumValues.length > 0 ? enumValues : undefined);
+    };
+
+    const handleBackClick = () => {
+        navigate("/sign-up-1");
+    };
+
+    const handleNextClick = () => {
+        const { ok } = validateAndGetResult();
+        if (ok) {
+            navigate("/sign-up-3");
+        }
+    };
+
+    const disableNext = state.hasAttemptedValidation && Object.keys(state.errors).length > 0;
+
     return (
         <AuthLayout
             currentStep={2}
             title="Trading Preferences"
             Illustration={ManNearTheLamp}
-            actions={<Button text="Next" rightIcon={<ChevronRight />} />}
+            actions={
+                <>
+                    <Button
+                        text="Back"
+                        variant="outline"
+                        leftIcon={<ChevronLeft />}
+                        onClick={handleBackClick}
+                    />
+                    <Button
+                        text="Next"
+                        rightIcon={<ChevronRight />}
+                        onClick={handleNextClick}
+                        disabled={disableNext}
+                    />
+                </>
+            }
             totalSteps={4}
         >
             <Radio
                 label="Trading Experience Level"
-                name="experienceLevel"
-                options={[
-                    { value: "beginner", label: "Beginner" },
-                    { value: "intermediate", label: "Intermediate" },
-                    { value: "advanced", label: "Advanced" },
-                ]}
+                name="tradingExperienceLevel"
+                value={state.tradingExperienceLevel}
+                onChange={handleExperienceLevelChange}
+                options={tradingExperienceLevelOptions}
             />
+            {state.errors.tradingExperienceLevel && (
+                <p className="mt-2 text-body-sm text-error">{state.errors.tradingExperienceLevel}</p>
+            )}
+
             <Select
                 label="Primary Trading Strategy"
-                id="tradingStyle"
-                name="tradingStyle"
+                id="primaryTradingStrategy"
+                name="primaryTradingStrategy"
                 placeholder="Select your trading style"
-                options={[
-                    { value: "scalping", label: "Scalping" },
-                    { value: "dayTrading", label: "Day Trading" },
-                    { value: "swingTrading", label: "Swing Trading" },
-                    { value: "positionTrading", label: "Position Trading" },
-                    { value: "automated", label: "Automated" },
-                ]}
+                value={state.primaryTradingStrategy || ""}
+                onChange={handleTradingStrategyChange}
+                error={state.errors.primaryTradingStrategy}
+                options={primaryTradingStrategyOptions}
             />
+
             <Radio
                 label="Risk Tolerance"
                 name="riskTolerance"
-                options={[
-                    { value: "conservative", label: "Conservative" },
-                    { value: "moderate", label: "Moderate" },
-                    { value: "aggressive", label: "Aggressive" },
-                ]}
+                value={state.riskTolerance}
+                onChange={handleRiskToleranceChange}
+                options={riskToleranceOptions}
             />
+            {state.errors.riskTolerance && (
+                <p className="mt-2 text-body-sm text-error">{state.errors.riskTolerance}</p>
+            )}
+
             <CheckboxGroup
                 label="Preferred Trading Platforms"
-                name="preferredPlatforms"
-                options={[
-                    { value: "binance", label: "Binance" },
-                    { value: "bybit", label: "Bybit" },
-                    { value: "kraken", label: "Kraken" },
-                    { value: "other", label: "Other" },
-                ]}
+                name="preferredTradingPlatforms"
+                value={state.preferredTradingPlatforms}
+                onChange={handlePlatformsChange}
+                options={preferredTradingPlatformsOptions}
             />
+            {state.errors.preferredTradingPlatforms && (
+                <p className="mt-2 text-body-sm text-error">{state.errors.preferredTradingPlatforms}</p>
+            )}
         </AuthLayout>
     );
 }
