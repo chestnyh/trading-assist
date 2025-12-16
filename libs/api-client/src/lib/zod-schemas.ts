@@ -42,11 +42,25 @@ export const CreateUserDtoSchema = z.object({
     .regex(/.*[a-z].*/, 'Password must contain at least one lowercase letter')
     .regex(/.*\d.*/, 'Password must contain at least one number')
     .regex(
-      /.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/]/,
+      /.*[@$!%*?&#^()_+\-=[\]{};':"\\|,.<>/]*/,
       'Password must contain at least one special character'
     ),
-  firstName: z.string().min(1).max(50),
-  lastName: z.string().min(1).max(50),
+  firstName: z
+    .string()
+    .min(1, 'First name must be at least 1 character long')
+    .max(50, 'First name must not exceed 50 characters')
+    .regex(
+      /^[a-zA-Z\s'-]+$/,
+      'First name can only contain letters, spaces, hyphens, and apostrophes'
+    ),
+  lastName: z
+    .string()
+    .min(1, 'Last name must be at least 1 character long')
+    .max(50, 'Last name must not exceed 50 characters')
+    .regex(
+      /^[a-zA-Z\s'-]+$/,
+      'Last name can only contain letters, spaces, hyphens, and apostrophes'
+    ),
   tradingExperienceLevel: TradingExperienceLevelSchema.optional(),
   primaryTradingStrategy: PrimaryTradingStrategySchema.optional(),
   riskTolerance: RiskToleranceSchema.optional(),

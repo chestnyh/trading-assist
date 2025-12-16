@@ -14,6 +14,7 @@ interface CountrySelectProps {
     value?: string;
     onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
     error?: string;
+    required?: boolean;
 }
 
 export function CountrySelect({
@@ -25,6 +26,7 @@ export function CountrySelect({
     value,
     onChange,
     error,
+    required = false,
 }: CountrySelectProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState<CountryOption | null>(
@@ -117,7 +119,7 @@ export function CountrySelect({
 
     return (
         <div className="w-full pt-5">
-            <FieldLabel label={label} id={id} />
+            <FieldLabel label={label} id={id} required={required} />
             <div className="relative mt-2" ref={containerRef}>
                 <input type="hidden" name={name} value={value || ""} />
                 <button

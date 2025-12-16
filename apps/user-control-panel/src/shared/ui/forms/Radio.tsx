@@ -36,8 +36,9 @@ export function Radio({
                             type="radio"
                             name={name}
                             value={option.value}
-                            checked={value === option.value}
-                            onChange={onChange}
+                            {...(onChange && value !== undefined
+                                ? { checked: value === option.value, onChange }
+                                : {})}
                             className="
                                 w-5 h-5  
                                 rounded-full 

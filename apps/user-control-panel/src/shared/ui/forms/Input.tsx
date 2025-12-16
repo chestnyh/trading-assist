@@ -11,6 +11,7 @@ interface InputProps {
     value?: string;
     onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
     error?: string;
+    required?: boolean;
 }
 
 export function Input({
@@ -22,6 +23,7 @@ export function Input({
     value,
     onChange,
     error,
+    required = false,
 }: InputProps) {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === "password";
@@ -29,7 +31,7 @@ export function Input({
 
     return (
         <div className="w-full pt-5">
-            <FieldLabel label={label} id={id} />
+            <FieldLabel label={label} id={id} required={required} />
 
             <div className="relative mt-2">
                 <input

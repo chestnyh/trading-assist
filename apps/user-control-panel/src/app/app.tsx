@@ -11,6 +11,7 @@ import { RestorePassword2 } from '../features/restorePassword/RestorePassword2';
 import { RestorePassword3 } from '../features/restorePassword/RestorePassword3';
 import ProtectedRoute from '../features/layout/ProtectedRoute';
 import Dashboard from '../features/dashboard/Dashboard';
+import { SignUpStep1Provider } from './contexts/SignUpContext';
 
 export default function App() {
   return (
@@ -25,7 +26,14 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/sign-up-1" element={<SignUp1 />} />
+          <Route
+            path="/sign-up-1"
+            element={
+              <SignUpStep1Provider>
+                <SignUp1 />
+              </SignUpStep1Provider>
+            }
+          />
           <Route path='/sign-up-2' element={<SignUp2 />} />
           <Route path='/sign-up-3' element={<SignUp3 />} />
           <Route path='/sign-up-4' element={<SignUp4 />} />
