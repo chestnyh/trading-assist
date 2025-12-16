@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 export function RestorePassword2() {
     return (
         <AuthLayout
-            currentStep={1}
+            currentStep={2}
             title="Insert code"
             Illustration={ManNextToTheSafe}
             actions={

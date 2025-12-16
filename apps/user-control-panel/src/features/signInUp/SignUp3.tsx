@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 export function SignUp3() {
     return (
         <AuthLayout
-            currentStep={2}
+            currentStep={3}
             title="Account Info"
             Illustration={ManNearTheTarget}
             actions={

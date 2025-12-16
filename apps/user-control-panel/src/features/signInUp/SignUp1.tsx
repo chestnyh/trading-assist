@@ -9,7 +9,7 @@ import { ChevronRight } from "lucide-react";
 export function SignUp1() {
     return (
         <AuthLayout
-            currentStep={0}
+            currentStep={1}
             title="Let’s Start!"
             Illustration={ManAtTheTable}
             actions={<Button text="Next" rightIcon={<ChevronRight />} />}

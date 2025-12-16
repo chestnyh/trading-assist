@@ -8,8 +8,8 @@ export function FormProgressBar({
     totalSteps = 4,
 }: FormProgressBarProps) {
 
-    const clampedStep = Math.min(Math.max(currentStep, 0), totalSteps - 1);
-    const progress = ((clampedStep + 1) / totalSteps) * 100;
+    const clampedStep = Math.min(Math.max(currentStep, 1), totalSteps);
+    const progress = (clampedStep / totalSteps) * 100;
     const fadeWidth = 8;
 
     const fadeStart = Math.max(progress - fadeWidth, 0);

@@ -6,7 +6,7 @@ import { AuthLayout } from "../layout/AuthLayout";
 export function SignUp4() {
     return (
         <AuthLayout
-            currentStep={3}
+            currentStep={4}
             title="Email Confirmation"
             Illustration={ManNearTheTarget}
             actions={<Button text="Send" />}

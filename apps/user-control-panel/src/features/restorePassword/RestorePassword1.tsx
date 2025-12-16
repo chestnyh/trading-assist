@@ -6,7 +6,7 @@ import { AuthLayout } from "../layout/AuthLayout";
 export function RestorePassword1() {
     return (
         <AuthLayout
-            currentStep={0}
+            currentStep={1}
             title="Insert your email"
             Illustration={ManNextToTheSafe}
             actions={<Button text="Send me code on email" />}
