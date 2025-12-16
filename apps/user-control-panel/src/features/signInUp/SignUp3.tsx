@@ -1,11 +1,55 @@
+import { ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 import { ManNearTheTarget } from "./components/svg/ManNearTheTarget";
 import { Input } from "../../shared/ui/forms/Input";
 import { Button } from "../../shared/ui/buttons/Button";
 import { Checkbox } from "../../shared/ui/forms/Checkbox";
 import { AuthLayout } from "../layout/AuthLayout";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useSignUpStep3 } from "../../app/contexts/SignUpContext";
 
 export function SignUp3() {
+    const navigate = useNavigate();
+    const { state, setField, validateAndGetResult } = useSignUpStep3();
+
+    const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setField("email", e.target.value);
+    };
+
+    const handleNicknameChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setField("nickname", e.target.value);
+    };
+
+    const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setField("password", e.target.value);
+    };
+
+    const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setField("confirmPassword", e.target.value);
+    };
+
+    const handleNewsUpdatesChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setField("newsUpdates", e.target.checked);
+    };
+
+    const handleTosPrivacyChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setField("tosPrivacy", e.target.checked);
+    };
+
+    const handleBackClick = () => {
+        navigate("/sign-up-2");
+    };
+
+    const handleNextClick = () => {
+        const { ok } = validateAndGetResult();
+        if (ok) {
+            navigate("/sign-up-4");
+        }
+    };
+
+    const disableNext = state.hasAttemptedValidation && Object.keys(state.errors).length > 0;
+
     return (
         <AuthLayout
             currentStep={3}
@@ -13,27 +57,86 @@ export function SignUp3() {
             Illustration={ManNearTheTarget}
             actions={
                 <>
-                    <Button text="Back" variant="outline" leftIcon={<ChevronLeft />} />
-                    <Button text="Next" rightIcon={<ChevronRight />} />
+                    <Button
+                        text="Back"
+                        variant="outline"
+                        leftIcon={<ChevronLeft />}
+                        onClick={handleBackClick}
+                    />
+                    <Button
+                        text="Next"
+                        rightIcon={<ChevronRight />}
+                        onClick={handleNextClick}
+                        disabled={disableNext}
+                    />
                 </>
             }
             totalSteps={4}
         >
-            <Input label="Email" id="email" name="email" />
-            <Input label="Nickname" id="nickname" name="nickname" />
-            <Input label="Password" id="password" type="password" name="password" />
-            <Input label="Confirm Password" id="confirmPassword" type="password" name="confirmPassword" />
+            <Input
+                label="Email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                value={state.email}
+                onChange={handleEmailChange}
+                error={state.errors.email}
+                required
+            />
+
+            <Input
+                label="Nickname"
+                id="nickname"
+                name="nickname"
+                placeholder="Enter your nickname"
+                value={state.nickname}
+                onChange={handleNicknameChange}
+                error={state.errors.nickname}
+                required
+            />
+
+            <Input
+                label="Password"
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                value={state.password}
+                onChange={handlePasswordChange}
+                error={state.errors.password}
+                required
+            />
+
+            <Input
+                label="Confirm Password"
+                id="confirmPassword"
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm your password"
+                value={state.confirmPassword}
+                onChange={handleConfirmPasswordChange}
+                error={state.errors.confirmPassword}
+                required
+            />
+
             <div className="space-y-3 mt-10">
                 <Checkbox
                     id="news-updates"
                     name="newsUpdates"
                     label="I want to receive news and updates via email"
+                    checked={state.newsUpdates}
+                    onChange={handleNewsUpdatesChange}
                 />
                 <Checkbox
                     id="tos-privacy"
                     name="tosPrivacy"
                     label="I have read and accept the Terms of Service and Privacy Policy"
+                    checked={state.tosPrivacy}
+                    onChange={handleTosPrivacyChange}
                 />
+                {state.errors.tosPrivacy && (
+                    <p className="mt-2 text-body-sm text-error">{state.errors.tosPrivacy}</p>
+                )}
             </div>
         </AuthLayout>
     );
