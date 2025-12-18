@@ -30,7 +30,6 @@ function SignUp() {
             currentStep={currentStep}
             totalSteps={4}
             title={config.title}
-            Illustration={config.Illustration}
         >
             {renderStepContent()}
         </AuthLayout>

@@ -1,34 +1,28 @@
-import { ComponentType } from "react";
-import { ManAtTheTable } from "../components/svg/ManAtTheTable";
-import { ManNearTheLamp } from "../components/svg/ManNearTheLamp";
-import { ManNearTheTarget } from "../components/svg/ManNearTheTarget";
+import { SIGN_UP_STRINGS } from "../strings/signUpStrings";
+
+const { steps } = SIGN_UP_STRINGS;
 
 export interface StepConfig {
     step: 1 | 2 | 3 | 4;
     title: string;
-    Illustration: ComponentType;
 }
 
 export const stepsConfig: StepConfig[] = [
     {
         step: 1,
-        title: "Let's Start!",
-        Illustration: ManAtTheTable,
+        title: steps.step1Title,
     },
     {
         step: 2,
-        title: "Trading Preferences",
-        Illustration: ManNearTheLamp,
+        title: steps.step2Title,
     },
     {
         step: 3,
-        title: "Account Info",
-        Illustration: ManNearTheTarget,
+        title: steps.step3Title,
     },
     {
         step: 4,
-        title: "Email Confirmation",
-        Illustration: ManNearTheTarget,
+        title: steps.step4Title,
     },
 ];
 

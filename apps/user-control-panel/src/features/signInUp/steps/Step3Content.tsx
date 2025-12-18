@@ -1,42 +1,18 @@
-import { ChangeEvent } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Input } from "../../../shared/ui/forms/Input";
 import { Button } from "../../../shared/ui/buttons/Button";
 import { Checkbox } from "../../../shared/ui/forms/Checkbox";
+import { ErrorAlert } from "../../../shared/ui/feedback/ErrorAlert";
+import { createInputHandler, createCheckboxHandler } from "../../../shared/utils/formHandlers";
 import { useSignUpStep3, useSignUpContext } from "../../../app/contexts/SignUpContext";
+import { SIGN_UP_STRINGS } from "../strings/signUpStrings";
+
+const { step3, buttons } = SIGN_UP_STRINGS;
 
 export function Step3Content() {
     const { state, setField, validateAndGetResult } = useSignUpStep3();
     const { registerUser, isSubmitting, serverError, nextStep, prevStep } = useSignUpContext();
-
-    const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setField("email", e.target.value);
-    };
-
-    const handleNicknameChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setField("nickname", e.target.value);
-    };
-
-    const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setField("password", e.target.value);
-    };
-
-    const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setField("confirmPassword", e.target.value);
-    };
-
-    const handleNewsUpdatesChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setField("newsUpdates", e.target.checked);
-    };
-
-    const handleTosPrivacyChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setField("tosPrivacy", e.target.checked);
-    };
-
-    const handleBackClick = () => {
-        prevStep();
-    };
 
     const handleNextClick = async () => {
         const { ok } = validateAndGetResult();
@@ -54,47 +30,47 @@ export function Step3Content() {
     return (
         <>
             <Input
-                label="Email"
+                label={step3.labels.email}
                 id="email"
                 name="email"
-                placeholder="Enter your email"
+                placeholder={step3.placeholders.email}
                 value={state.email}
-                onChange={handleEmailChange}
+                onChange={createInputHandler(setField, "email")}
                 error={state.errors.email}
                 required
             />
 
             <Input
-                label="Nickname"
+                label={step3.labels.nickname}
                 id="nickname"
                 name="nickname"
-                placeholder="Enter your nickname"
+                placeholder={step3.placeholders.nickname}
                 value={state.nickname}
-                onChange={handleNicknameChange}
+                onChange={createInputHandler(setField, "nickname")}
                 error={state.errors.nickname}
                 required
             />
 
             <Input
-                label="Password"
+                label={step3.labels.password}
                 id="password"
                 type="password"
                 name="password"
-                placeholder="Enter your password"
+                placeholder={step3.placeholders.password}
                 value={state.password}
-                onChange={handlePasswordChange}
+                onChange={createInputHandler(setField, "password")}
                 error={state.errors.password}
                 required
             />
 
             <Input
-                label="Confirm Password"
+                label={step3.labels.confirmPassword}
                 id="confirmPassword"
                 type="password"
                 name="confirmPassword"
-                placeholder="Confirm your password"
+                placeholder={step3.placeholders.confirmPassword}
                 value={state.confirmPassword}
-                onChange={handleConfirmPasswordChange}
+                onChange={createInputHandler(setField, "confirmPassword")}
                 error={state.errors.confirmPassword}
                 required
             />
@@ -103,36 +79,32 @@ export function Step3Content() {
                 <Checkbox
                     id="news-updates"
                     name="newsUpdates"
-                    label="I want to receive news and updates via email"
+                    label={step3.labels.newsUpdates}
                     checked={state.newsUpdates}
-                    onChange={handleNewsUpdatesChange}
+                    onChange={createCheckboxHandler(setField, "newsUpdates")}
                 />
                 <Checkbox
                     id="tos-privacy"
                     name="tosPrivacy"
-                    label="I have read and accept the Terms of Service and Privacy Policy"
+                    label={step3.labels.tosPrivacy}
                     checked={state.tosPrivacy}
-                    onChange={handleTosPrivacyChange}
+                    onChange={createCheckboxHandler(setField, "tosPrivacy")}
                     required
                     error={state.errors.tosPrivacy}
                 />
             </div>
 
-            {serverError && (
-                <div className="mt-4 p-4 rounded-md bg-error/10 border border-error">
-                    <p className="text-body-sm text-error">{serverError}</p>
-                </div>
-            )}
+            <ErrorAlert message={serverError} />
 
             <div className="mt-8 flex justify-between gap-3">
                 <Button
-                    text="Back"
+                    text={buttons.back}
                     variant="outline"
                     leftIcon={<ChevronLeft />}
-                    onClick={handleBackClick}
+                    onClick={prevStep}
                 />
                 <Button
-                    text={isSubmitting ? "Submitting..." : "Next"}
+                    text={isSubmitting ? buttons.submitting : buttons.next}
                     rightIcon={<ChevronRight />}
                     onClick={handleNextClick}
                     disabled={disableNext}

@@ -15,6 +15,7 @@ interface SelectProps {
     value?: string;
     onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
     error?: string;
+    required?: boolean;
 }
 
 export function Select({
@@ -26,10 +27,11 @@ export function Select({
     value,
     onChange,
     error,
+    required = false,
 }: SelectProps) {
     return (
         <div className="w-full pt-5">
-            <FieldLabel label={label} id={id} />
+            <FieldLabel label={label} id={id} required={required} />
 
             <div className="relative mt-2">
                 <select

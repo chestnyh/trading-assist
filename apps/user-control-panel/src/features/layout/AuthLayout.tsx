@@ -1,4 +1,4 @@
-import { ComponentType, ReactNode } from "react";
+import { ReactNode } from "react";
 import logo from "../../shared/components/logo.svg";
 import { FormProgressBar } from "../signInUp/components/FormProgressBar";
 import { ThemeToggle } from "../../shared/ui/buttons/ThemeToggle";
@@ -8,7 +8,6 @@ import { FloatingBlobs } from "../../shared/ui/FloatingBlobs";
 interface AuthLayoutProps {
     currentStep?: number;
     title: string;
-    Illustration: ComponentType;
     children: ReactNode;
     actions?: ReactNode;
     totalSteps?: number;

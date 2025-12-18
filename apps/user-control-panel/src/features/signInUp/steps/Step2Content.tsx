@@ -12,6 +12,9 @@ import {
     preferredTradingPlatformsOptions,
 } from "../../../shared/data/tradingOptions";
 import { useSignUpStep2, useSignUpContext } from "../../../app/contexts/SignUpContext";
+import { SIGN_UP_STRINGS } from "../strings/signUpStrings";
+
+const { step2, buttons } = SIGN_UP_STRINGS;
 
 export function Step2Content() {
     const { state, setField, validateAndGetResult } = useSignUpStep2();
@@ -56,10 +59,6 @@ export function Step2Content() {
         setField("preferredTradingPlatforms", enumValues.length > 0 ? enumValues : undefined);
     };
 
-    const handleBackClick = () => {
-        prevStep();
-    };
-
     const handleNextClick = () => {
         const { ok } = validateAndGetResult();
         if (ok) {
@@ -72,7 +71,7 @@ export function Step2Content() {
     return (
         <>
             <Radio
-                label="Trading Experience Level"
+                label={step2.labels.tradingExperience}
                 name="tradingExperienceLevel"
                 value={state.tradingExperienceLevel}
                 onChange={handleExperienceLevelChange}
@@ -83,10 +82,10 @@ export function Step2Content() {
             )}
 
             <Select
-                label="Primary Trading Strategy"
+                label={step2.labels.tradingStrategy}
                 id="primaryTradingStrategy"
                 name="primaryTradingStrategy"
-                placeholder="Select your trading style"
+                placeholder={step2.placeholders.tradingStrategy}
                 value={state.primaryTradingStrategy || ""}
                 onChange={handleTradingStrategyChange}
                 error={state.errors.primaryTradingStrategy}
@@ -94,7 +93,7 @@ export function Step2Content() {
             />
 
             <Radio
-                label="Risk Tolerance"
+                label={step2.labels.riskTolerance}
                 name="riskTolerance"
                 value={state.riskTolerance}
                 onChange={handleRiskToleranceChange}
@@ -105,7 +104,7 @@ export function Step2Content() {
             )}
 
             <CheckboxGroup
-                label="Preferred Trading Platforms"
+                label={step2.labels.tradingPlatforms}
                 name="preferredTradingPlatforms"
                 value={state.preferredTradingPlatforms}
                 onChange={handlePlatformsChange}
@@ -117,13 +116,13 @@ export function Step2Content() {
 
             <div className="mt-8 flex justify-between gap-3">
                 <Button
-                    text="Back"
+                    text={buttons.back}
                     variant="outline"
                     leftIcon={<ChevronLeft />}
-                    onClick={handleBackClick}
+                    onClick={prevStep}
                 />
                 <Button
-                    text="Next"
+                    text={buttons.next}
                     rightIcon={<ChevronRight />}
                     onClick={handleNextClick}
                     disabled={disableNext}

@@ -1,25 +1,18 @@
-import { ChangeEvent } from "react";
 import { ChevronRight } from "lucide-react";
 
 import { Input } from "../../../shared/ui/forms/Input";
 import { CountrySelect } from "../../../shared/ui/forms/CountrySelect";
 import { Button } from "../../../shared/ui/buttons/Button";
 import { countries } from "../../../shared/data/countries";
+import { createInputHandler, createSelectHandler } from "../../../shared/utils/formHandlers";
 import { useSignUpStep1, useSignUpContext } from "../../../app/contexts/SignUpContext";
+import { SIGN_UP_STRINGS } from "../strings/signUpStrings";
+
+const { step1, buttons } = SIGN_UP_STRINGS;
 
 export function Step1Content() {
     const { state, setField, validateAndGetResult } = useSignUpStep1();
     const { nextStep } = useSignUpContext();
-
-    const handleInput =
-        (field: "firstName" | "lastName") =>
-            (e: ChangeEvent<HTMLInputElement>) => {
-                setField(field, e.target.value);
-            };
-
-    const handleCountryChange = (e: ChangeEvent<HTMLSelectElement>) => {
-        setField("country", e.target.value);
-    };
 
     const handleNextClick = () => {
         const { ok } = validateAndGetResult();
@@ -33,42 +26,42 @@ export function Step1Content() {
     return (
         <>
             <Input
-                label="First Name"
+                label={step1.labels.firstName}
                 id="firstName"
                 name="firstName"
-                placeholder="Enter your first name"
+                placeholder={step1.placeholders.firstName}
                 value={state.firstName}
-                onChange={handleInput("firstName")}
+                onChange={createInputHandler(setField, "firstName")}
                 error={state.errors.firstName}
                 required
             />
 
             <Input
-                label="Last Name"
+                label={step1.labels.lastName}
                 id="lastName"
                 name="lastName"
-                placeholder="Enter your last name"
+                placeholder={step1.placeholders.lastName}
                 value={state.lastName}
-                onChange={handleInput("lastName")}
+                onChange={createInputHandler(setField, "lastName")}
                 error={state.errors.lastName}
                 required
             />
 
             <CountrySelect
-                label="Country"
+                label={step1.labels.country}
                 id="country"
                 name="country"
-                placeholder="Select your country"
+                placeholder={step1.placeholders.country}
                 options={countries}
                 value={state.country}
-                onChange={handleCountryChange}
+                onChange={createSelectHandler(setField, "country")}
                 error={state.errors.country}
                 required
             />
 
-            <div className="mt-8 flex justify-end">
+            <div className="mt-8">
                 <Button
-                    text="Next"
+                    text={buttons.next}
                     rightIcon={<ChevronRight />}
                     onClick={handleNextClick}
                     disabled={disableNext}

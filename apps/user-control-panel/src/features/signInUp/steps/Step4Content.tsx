@@ -1,11 +1,15 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Check } from "lucide-react";
 import { VerifyEmailDtoSchema, authControllerVerifyEmail } from "@trading-bot/api-client";
 
 import { Input } from "../../../shared/ui/forms/Input";
 import { Button } from "../../../shared/ui/buttons/Button";
+import { ErrorAlert } from "../../../shared/ui/feedback/ErrorAlert";
 import { useSignUpContext } from "../../../app/contexts/SignUpContext";
+import { SIGN_UP_STRINGS } from "../strings/signUpStrings";
+
+const { step4, buttons } = SIGN_UP_STRINGS;
 
 export function Step4Content() {
     const navigate = useNavigate();
@@ -29,7 +33,7 @@ export function Step4Content() {
     const getValidationError = (value: string): string | null => {
         const result = VerifyEmailDtoSchema.shape.code.safeParse(value);
         if (!result.success) {
-            return result.error.issues[0]?.message || "Invalid verification code";
+            return result.error.issues[0]?.message || step4.errors.invalidCodeField;
         }
         return null;
     };
@@ -37,7 +41,6 @@ export function Step4Content() {
     const isCodeValid = getValidationError(code) === null;
 
     const handleCodeChange = (e: ChangeEvent<HTMLInputElement>) => {
-
         const value = e.target.value.replace(/\D/g, '').slice(0, 6);
         setCode(value);
         setServerError(null);
@@ -46,10 +49,6 @@ export function Step4Content() {
             const error = getValidationError(value);
             setFieldError(error);
         }
-    };
-
-    const handleBackClick = () => {
-        prevStep();
     };
 
     const validateCode = (): boolean => {
@@ -65,7 +64,7 @@ export function Step4Content() {
         }
 
         if (!emailVerificationToken) {
-            setServerError("Verification token is missing. Please go back and complete registration.");
+            setServerError(step4.errors.tokenMissing);
             return;
         }
 
@@ -84,31 +83,31 @@ export function Step4Content() {
                 setIsSuccess(true);
                 clearStorage();
             } else {
-                const errorMessage = result.message || "Verification failed. Please try again.";
+                const errorMessage = result.message || step4.errors.verificationFailed;
                 setServerError(errorMessage);
-                setFieldError("Invalid code");
+                setFieldError(step4.errors.invalidCodeField);
             }
         } catch (err: unknown) {
-            let errorMessage = "Verification failed. Please try again.";
+            let errorMessage: string = step4.errors.verificationFailed;
 
             if (err && typeof err === "object") {
                 if ("message" in err) {
                     const message = String(err.message);
                     if (message === "Failed to fetch" || message.includes("fetch")) {
-                        errorMessage = "Unable to connect to the server. Please check your internet connection.";
+                        errorMessage = step4.errors.networkError;
                     } else {
                         errorMessage = message;
                     }
                 } else if ("status" in err) {
                     const status = (err as { status: number }).status;
                     if (status === 400) {
-                        errorMessage = "Invalid verification code. Please check and try again.";
-                        setFieldError("Invalid code");
+                        errorMessage = step4.errors.invalidCode;
+                        setFieldError(step4.errors.invalidCodeField);
                     } else if (status === 401) {
-                        errorMessage = "Verification code expired or invalid. Please request a new code.";
-                        setFieldError("Expired or invalid code");
+                        errorMessage = step4.errors.expiredCode;
+                        setFieldError(step4.errors.expiredCodeField);
                     } else if (status >= 500) {
-                        errorMessage = "Server error. Please try again later.";
+                        errorMessage = step4.errors.serverError;
                     }
                 }
             }
@@ -124,17 +123,17 @@ export function Step4Content() {
             <>
                 <div className="text-center py-8">
                     <div className="text-6xl mb-4">✓</div>
-                    <h2 className="text-h3 font-semibold text-text mb-2">Email Verified!</h2>
+                    <h2 className="text-h3 font-semibold text-text mb-2">{step4.messages.successTitle}</h2>
                     <p className="text-body-md text-text-secondary">
-                        Your email has been successfully verified. You can now sign in to your account.
+                        {step4.messages.successMessage}
                     </p>
                     <p className="text-body-sm text-text-secondary mt-2">
-                        Redirecting to sign in page...
+                        {step4.messages.redirecting}
                     </p>
                 </div>
                 <div className="mt-8 flex justify-center">
                     <Button
-                        text="Go to Sign In"
+                        text={buttons.goToSignIn}
                         onClick={() => navigate("/sign-in")}
                     />
                 </div>
@@ -147,36 +146,33 @@ export function Step4Content() {
     return (
         <>
             <p className="text-body-md text-text-secondary mb-4">
-                We've sent a verification code to your email. Please enter it below to complete your registration.
+                {step4.messages.instructions}
             </p>
 
             <Input
-                label="Verification Code"
+                label={step4.labels.verificationCode}
                 id="verificationCode"
                 name="verificationCode"
                 type="text"
-                placeholder="Enter 6-digit code"
+                placeholder={step4.placeholders.verificationCode}
                 value={code}
                 onChange={handleCodeChange}
                 error={fieldError ?? undefined}
                 required
             />
 
-            {serverError && (
-                <div className="mt-4 p-4 rounded-md bg-error/10 border border-error">
-                    <p className="text-body-sm text-error">{serverError}</p>
-                </div>
-            )}
+            <ErrorAlert message={serverError} />
 
             <div className="mt-8 flex justify-between gap-3">
                 <Button
-                    text="Back"
+                    text={buttons.back}
                     variant="outline"
                     leftIcon={<ChevronLeft />}
-                    onClick={handleBackClick}
+                    onClick={prevStep}
                 />
                 <Button
-                    text={isSubmitting ? "Verifying..." : "Verify"}
+                    text={isSubmitting ? buttons.verifying : buttons.verify}
+                    rightIcon={<Check />}
                     onClick={handleSubmit}
                     disabled={isButtonDisabled}
                 />

@@ -1,4 +1,3 @@
-import { ManNextToTheSafe } from "./components/svg/ManNextToTheSafe";
 import { Input } from "../../shared/ui/forms/Input";
 import { Button } from "../../shared/ui/buttons/Button";
 import { AuthLayout } from "../layout/AuthLayout";
@@ -9,7 +8,6 @@ export function RestorePassword2() {
         <AuthLayout
             currentStep={2}
             title="Insert code"
-            Illustration={ManNextToTheSafe}
             actions={
                 <>
                     <Button text="Back" variant="outline" leftIcon={<ChevronLeft />} />
