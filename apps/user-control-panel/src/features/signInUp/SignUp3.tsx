@@ -7,11 +7,12 @@ import { Input } from "../../shared/ui/forms/Input";
 import { Button } from "../../shared/ui/buttons/Button";
 import { Checkbox } from "../../shared/ui/forms/Checkbox";
 import { AuthLayout } from "../layout/AuthLayout";
-import { useSignUpStep3 } from "../../app/contexts/SignUpContext";
+import { useSignUpStep3, useSignUpContext } from "../../app/contexts/SignUpContext";
 
 export function SignUp3() {
     const navigate = useNavigate();
     const { state, setField, validateAndGetResult } = useSignUpStep3();
+    const { registerUser, isSubmitting, serverError } = useSignUpContext();
 
     const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
         setField("email", e.target.value);
@@ -41,14 +42,23 @@ export function SignUp3() {
         navigate("/sign-up-2");
     };
 
-    const handleNextClick = () => {
+    const handleNextClick = async () => {
         const { ok } = validateAndGetResult();
+        console.log("ok", validateAndGetResult);
         if (ok) {
-            navigate("/sign-up-4");
+            const result = await registerUser();
+            if (result.ok) {
+                // navigate("/sign-up-4");
+                console.log("result", result);
+                console.log('success registration');
+            }
+        } else {
+            console.log('error registration');
         }
     };
 
-    const disableNext = state.hasAttemptedValidation && Object.keys(state.errors).length > 0;
+    const disableNext =
+        (state.hasAttemptedValidation && Object.keys(state.errors).length > 0) || isSubmitting;
 
     return (
         <AuthLayout
@@ -64,7 +74,7 @@ export function SignUp3() {
                         onClick={handleBackClick}
                     />
                     <Button
-                        text="Next"
+                        text={isSubmitting ? "Submitting..." : "Next"}
                         rightIcon={<ChevronRight />}
                         onClick={handleNextClick}
                         disabled={disableNext}
@@ -138,6 +148,11 @@ export function SignUp3() {
                     <p className="mt-2 text-body-sm text-error">{state.errors.tosPrivacy}</p>
                 )}
             </div>
+            {serverError && (
+                <div className="mt-4 p-4 rounded-md bg-error/10 border border-error">
+                    <p className="text-body-sm text-error">{serverError}</p>
+                </div>
+            )}
         </AuthLayout>
     );
 }

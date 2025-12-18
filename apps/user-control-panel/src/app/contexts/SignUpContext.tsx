@@ -12,6 +12,8 @@ import {
     PrimaryTradingStrategySchema,
     RiskToleranceSchema,
     TradingPlatformSchema,
+    usersApiControllerCreateUser,
+    type CreateUserDto,
 } from "@trading-bot/api-client";
 
 // ---------- Schemas ----------
@@ -68,6 +70,8 @@ type SignUpState = SignUpFormData & {
         step2: boolean;
         step3: boolean;
     };
+    isSubmitting: boolean;
+    serverError: string | null;
 };
 
 type SignUpAction =
@@ -80,12 +84,15 @@ type SignUpAction =
     | { type: "SET_ATTEMPTED_STEP1"; payload: boolean }
     | { type: "SET_ATTEMPTED_STEP2"; payload: boolean }
     | { type: "SET_ATTEMPTED_STEP3"; payload: boolean }
+    | { type: "SET_SUBMITTING"; payload: boolean }
+    | { type: "SET_SERVER_ERROR"; payload: string | null }
     | { type: "RESET" };
 
 // ---------- Constants ----------
 
 export const LS_KEY_STEP1 = "signUp.step1";
 export const LS_KEY_STEP2 = "signUp.step2";
+export const LS_KEY_VERIFICATION_TOKEN = "signUp.verificationToken";
 
 const initialStep1Values: SignUpStep1FormData = {
     firstName: "",
@@ -123,6 +130,8 @@ const initialState: SignUpState = {
         step2: false,
         step3: false,
     },
+    isSubmitting: false,
+    serverError: null,
 };
 
 // ---------- Helper Functions ----------
@@ -238,6 +247,7 @@ function reducer(state: SignUpState, action: SignUpAction): SignUpState {
                 ...state,
                 [field]: value,
                 errors: { ...state.errors, step3: nextErrors },
+                serverError: null,
             };
         }
 
@@ -267,6 +277,12 @@ function reducer(state: SignUpState, action: SignUpAction): SignUpState {
                 ...state,
                 hasAttemptedValidation: { ...state.hasAttemptedValidation, step3: action.payload },
             };
+
+        case "SET_SUBMITTING":
+            return { ...state, isSubmitting: action.payload };
+
+        case "SET_SERVER_ERROR":
+            return { ...state, serverError: action.payload };
 
         case "RESET":
             return initialState;
@@ -309,6 +325,10 @@ type SignUpContextValue = {
     // Common
     reset: () => void;
     clearStorage: () => void;
+    // Registration
+    registerUser: () => Promise<{ ok: boolean; error?: string }>;
+    isSubmitting: boolean;
+    serverError: string | null;
 };
 
 const SignUpContext = createContext<SignUpContextValue | null>(null);
@@ -494,6 +514,77 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
                     window.localStorage.removeItem(LS_KEY_STEP2);
                 }
             },
+            registerUser: async () => {
+                const createUserDto: CreateUserDto = {
+                    firstName: state.firstName,
+                    lastName: state.lastName,
+                    email: state.email,
+                    nickname: state.nickname,
+                    password: state.password,
+                    tradingExperienceLevel: state.tradingExperienceLevel,
+                    primaryTradingStrategy: state.primaryTradingStrategy,
+                    riskTolerance: state.riskTolerance,
+                    preferredTradingPlatforms: state.preferredTradingPlatforms,
+                };
+
+                dispatch({ type: "SET_SUBMITTING", payload: true });
+                dispatch({ type: "SET_SERVER_ERROR", payload: null });
+
+                try {
+                    const response = await usersApiControllerCreateUser(createUserDto);
+
+                    let token: string | undefined;
+
+                    if (response && typeof response === 'object') {
+                        if ('emailVerificationToken' in response) {
+                            token = (response as unknown as { emailVerificationToken: string }).emailVerificationToken;
+                        }
+                        else if ('data' in response && response.data && typeof response.data === 'object') {
+                            const data = response.data as unknown as { emailVerificationToken?: string };
+                            token = data.emailVerificationToken;
+                        }
+                    }
+
+                    if (token && typeof window !== "undefined") {
+                        window.localStorage.setItem(LS_KEY_VERIFICATION_TOKEN, token);
+                    }
+
+                    dispatch({ type: "SET_SUBMITTING", payload: false });
+                    return { ok: true };
+                } catch (error: unknown) {
+                    dispatch({ type: "SET_SUBMITTING", payload: false });
+
+                    let errorMessage = "Registration failed. Please try again.";
+
+                    if (error && typeof error === "object") {
+                        if ("message" in error) {
+                            const message = String(error.message);
+
+                            if (message === "Failed to fetch" || message.includes("fetch")) {
+                                errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
+                            } else {
+                                errorMessage = message;
+                            }
+                        } else if ("status" in error) {
+                            const status = (error as { status: number }).status;
+                            if (status === 409) {
+                                errorMessage = "Email or nickname already exists. Please use different credentials.";
+                            } else if (status === 400) {
+                                errorMessage = "Invalid data. Please check your input.";
+                            } else if (status >= 500) {
+                                errorMessage = "Server error. Please try again later.";
+                            }
+                        }
+                    } else if (error instanceof TypeError && error.message === "Failed to fetch") {
+                        errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
+                    }
+
+                    dispatch({ type: "SET_SERVER_ERROR", payload: errorMessage });
+                    return { ok: false, error: errorMessage };
+                }
+            },
+            isSubmitting: state.isSubmitting,
+            serverError: state.serverError,
         };
     }, [state]);
 
@@ -518,4 +609,16 @@ export function useSignUpStep3() {
     const ctx = useContext(SignUpContext);
     if (!ctx) throw new Error("useSignUpStep3 must be used within SignUpProvider");
     return ctx.step3;
+}
+
+export function useSignUpContext() {
+    const ctx = useContext(SignUpContext);
+    if (!ctx) throw new Error("useSignUpContext must be used within SignUpProvider");
+    return {
+        registerUser: ctx.registerUser,
+        isSubmitting: ctx.isSubmitting,
+        serverError: ctx.serverError,
+        reset: ctx.reset,
+        clearStorage: ctx.clearStorage,
+    };
 }

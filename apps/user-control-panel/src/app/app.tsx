@@ -12,6 +12,7 @@ import { RestorePassword3 } from '../features/restorePassword/RestorePassword3';
 import ProtectedRoute from '../features/layout/ProtectedRoute';
 import Dashboard from '../features/dashboard/Dashboard';
 import { SignUpProvider } from './contexts/SignUpContext';
+import SignUp from '../features/signInUp/SignUp';
 
 export default function App() {
   return (
@@ -24,6 +25,14 @@ export default function App() {
               <ProtectedRoute>
                 <HtmlEntryPoint />
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sign-up"
+            element={
+              <SignUpProvider>
+                <SignUp />
+              </SignUpProvider>
             }
           />
           <Route
