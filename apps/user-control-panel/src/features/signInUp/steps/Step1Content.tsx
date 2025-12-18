@@ -1,19 +1,15 @@
 import { ChangeEvent } from "react";
-import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 
-import { ManAtTheTable } from "./components/svg/ManAtTheTable";
-import { AuthLayout } from "../layout/AuthLayout";
-import { Input } from "../../shared/ui/forms/Input";
-import { CountrySelect } from "../../shared/ui/forms/CountrySelect";
-import { Button } from "../../shared/ui/buttons/Button";
-import { countries } from "../../shared/data/countries";
+import { Input } from "../../../shared/ui/forms/Input";
+import { CountrySelect } from "../../../shared/ui/forms/CountrySelect";
+import { Button } from "../../../shared/ui/buttons/Button";
+import { countries } from "../../../shared/data/countries";
+import { useSignUpStep1, useSignUpContext } from "../../../app/contexts/SignUpContext";
 
-import { useSignUpStep1 } from "../../app/contexts/SignUpContext";
-
-export function SignUp1() {
-    const navigate = useNavigate();
+export function Step1Content() {
     const { state, setField, validateAndGetResult } = useSignUpStep1();
+    const { nextStep } = useSignUpContext();
 
     const handleInput =
         (field: "firstName" | "lastName") =>
@@ -28,27 +24,14 @@ export function SignUp1() {
     const handleNextClick = () => {
         const { ok } = validateAndGetResult();
         if (ok) {
-            navigate("/sign-up-2");
+            nextStep();
         }
     };
 
     const disableNext = state.hasAttemptedValidation && Object.keys(state.errors).length > 0;
 
     return (
-        <AuthLayout
-            currentStep={1}
-            title="Let's Start!"
-            Illustration={ManAtTheTable}
-            actions={
-                <Button
-                    text="Next"
-                    rightIcon={<ChevronRight />}
-                    onClick={handleNextClick}
-                    disabled={disableNext}
-                />
-            }
-            totalSteps={4}
-        >
+        <>
             <Input
                 label="First Name"
                 id="firstName"
@@ -82,6 +65,15 @@ export function SignUp1() {
                 error={state.errors.country}
                 required
             />
-        </AuthLayout>
+
+            <div className="mt-8 flex justify-end">
+                <Button
+                    text="Next"
+                    rightIcon={<ChevronRight />}
+                    onClick={handleNextClick}
+                    disabled={disableNext}
+                />
+            </div>
+        </>
     );
 }

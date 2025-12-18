@@ -1,18 +1,14 @@
 import { ChangeEvent } from "react";
-import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { ManNearTheTarget } from "./components/svg/ManNearTheTarget";
-import { Input } from "../../shared/ui/forms/Input";
-import { Button } from "../../shared/ui/buttons/Button";
-import { Checkbox } from "../../shared/ui/forms/Checkbox";
-import { AuthLayout } from "../layout/AuthLayout";
-import { useSignUpStep3, useSignUpContext } from "../../app/contexts/SignUpContext";
+import { Input } from "../../../shared/ui/forms/Input";
+import { Button } from "../../../shared/ui/buttons/Button";
+import { Checkbox } from "../../../shared/ui/forms/Checkbox";
+import { useSignUpStep3, useSignUpContext } from "../../../app/contexts/SignUpContext";
 
-export function SignUp3() {
-    const navigate = useNavigate();
+export function Step3Content() {
     const { state, setField, validateAndGetResult } = useSignUpStep3();
-    const { registerUser, isSubmitting, serverError } = useSignUpContext();
+    const { registerUser, isSubmitting, serverError, nextStep, prevStep } = useSignUpContext();
 
     const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
         setField("email", e.target.value);
@@ -39,21 +35,16 @@ export function SignUp3() {
     };
 
     const handleBackClick = () => {
-        navigate("/sign-up-2");
+        prevStep();
     };
 
     const handleNextClick = async () => {
         const { ok } = validateAndGetResult();
-        console.log("ok", validateAndGetResult);
         if (ok) {
             const result = await registerUser();
             if (result.ok) {
-                // navigate("/sign-up-4");
-                console.log("result", result);
-                console.log('success registration');
+                nextStep();
             }
-        } else {
-            console.log('error registration');
         }
     };
 
@@ -61,28 +52,7 @@ export function SignUp3() {
         (state.hasAttemptedValidation && Object.keys(state.errors).length > 0) || isSubmitting;
 
     return (
-        <AuthLayout
-            currentStep={3}
-            title="Account Info"
-            Illustration={ManNearTheTarget}
-            actions={
-                <>
-                    <Button
-                        text="Back"
-                        variant="outline"
-                        leftIcon={<ChevronLeft />}
-                        onClick={handleBackClick}
-                    />
-                    <Button
-                        text={isSubmitting ? "Submitting..." : "Next"}
-                        rightIcon={<ChevronRight />}
-                        onClick={handleNextClick}
-                        disabled={disableNext}
-                    />
-                </>
-            }
-            totalSteps={4}
-        >
+        <>
             <Input
                 label="Email"
                 id="email"
@@ -148,11 +118,27 @@ export function SignUp3() {
                     <p className="mt-2 text-body-sm text-error">{state.errors.tosPrivacy}</p>
                 )}
             </div>
+
             {serverError && (
                 <div className="mt-4 p-4 rounded-md bg-error/10 border border-error">
                     <p className="text-body-sm text-error">{serverError}</p>
                 </div>
             )}
-        </AuthLayout>
+
+            <div className="mt-8 flex justify-between gap-3">
+                <Button
+                    text="Back"
+                    variant="outline"
+                    leftIcon={<ChevronLeft />}
+                    onClick={handleBackClick}
+                />
+                <Button
+                    text={isSubmitting ? "Submitting..." : "Next"}
+                    rightIcon={<ChevronRight />}
+                    onClick={handleNextClick}
+                    disabled={disableNext}
+                />
+            </div>
+        </>
     );
 }

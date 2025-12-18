@@ -1,25 +1,21 @@
 import { ChangeEvent } from "react";
-import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { ManNearTheLamp } from "./components/svg/ManNearTheLamp";
-import { Select } from "../../shared/ui/forms/Select";
-import { Button } from "../../shared/ui/buttons/Button";
-import { Radio } from "../../shared/ui/forms/Radio";
-import { CheckboxGroup } from "../../shared/ui/forms/CheckboxGroup";
-import { AuthLayout } from "../layout/AuthLayout";
+import { Select } from "../../../shared/ui/forms/Select";
+import { Button } from "../../../shared/ui/buttons/Button";
+import { Radio } from "../../../shared/ui/forms/Radio";
+import { CheckboxGroup } from "../../../shared/ui/forms/CheckboxGroup";
 import {
     tradingExperienceLevelOptions,
     primaryTradingStrategyOptions,
     riskToleranceOptions,
     preferredTradingPlatformsOptions,
-} from "../../shared/data/tradingOptions";
+} from "../../../shared/data/tradingOptions";
+import { useSignUpStep2, useSignUpContext } from "../../../app/contexts/SignUpContext";
 
-import { useSignUpStep2 } from "../../app/contexts/SignUpContext";
-
-export function SignUp2() {
-    const navigate = useNavigate();
+export function Step2Content() {
     const { state, setField, validateAndGetResult } = useSignUpStep2();
+    const { nextStep, prevStep } = useSignUpContext();
 
     const handleExperienceLevelChange = (e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -61,41 +57,20 @@ export function SignUp2() {
     };
 
     const handleBackClick = () => {
-        navigate("/sign-up-1");
+        prevStep();
     };
 
     const handleNextClick = () => {
         const { ok } = validateAndGetResult();
         if (ok) {
-            navigate("/sign-up-3");
+            nextStep();
         }
     };
 
     const disableNext = state.hasAttemptedValidation && Object.keys(state.errors).length > 0;
 
     return (
-        <AuthLayout
-            currentStep={2}
-            title="Trading Preferences"
-            Illustration={ManNearTheLamp}
-            actions={
-                <>
-                    <Button
-                        text="Back"
-                        variant="outline"
-                        leftIcon={<ChevronLeft />}
-                        onClick={handleBackClick}
-                    />
-                    <Button
-                        text="Next"
-                        rightIcon={<ChevronRight />}
-                        onClick={handleNextClick}
-                        disabled={disableNext}
-                    />
-                </>
-            }
-            totalSteps={4}
-        >
+        <>
             <Radio
                 label="Trading Experience Level"
                 name="tradingExperienceLevel"
@@ -139,6 +114,21 @@ export function SignUp2() {
             {state.errors.preferredTradingPlatforms && (
                 <p className="mt-2 text-body-sm text-error">{state.errors.preferredTradingPlatforms}</p>
             )}
-        </AuthLayout>
+
+            <div className="mt-8 flex justify-between gap-3">
+                <Button
+                    text="Back"
+                    variant="outline"
+                    leftIcon={<ChevronLeft />}
+                    onClick={handleBackClick}
+                />
+                <Button
+                    text="Next"
+                    rightIcon={<ChevronRight />}
+                    onClick={handleNextClick}
+                    disabled={disableNext}
+                />
+            </div>
+        </>
     );
 }

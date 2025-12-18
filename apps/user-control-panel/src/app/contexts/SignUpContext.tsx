@@ -60,6 +60,7 @@ type SignUpFormData = SignUpStep1FormData & SignUpStep2FormData & SignUpStep3For
 type FieldErrors<T extends Record<string, unknown>> = Partial<Record<keyof T, string>>;
 
 type SignUpState = SignUpFormData & {
+    currentStep: 1 | 2 | 3 | 4;
     errors: {
         step1: FieldErrors<SignUpStep1FormData>;
         step2: FieldErrors<SignUpStep2FormData>;
@@ -72,6 +73,7 @@ type SignUpState = SignUpFormData & {
     };
     isSubmitting: boolean;
     serverError: string | null;
+    emailVerificationToken: string | null;
 };
 
 type SignUpAction =
@@ -86,6 +88,10 @@ type SignUpAction =
     | { type: "SET_ATTEMPTED_STEP3"; payload: boolean }
     | { type: "SET_SUBMITTING"; payload: boolean }
     | { type: "SET_SERVER_ERROR"; payload: string | null }
+    | { type: "SET_VERIFICATION_TOKEN"; payload: string | null }
+    | { type: "SET_STEP"; payload: 1 | 2 | 3 | 4 }
+    | { type: "NEXT_STEP" }
+    | { type: "PREV_STEP" }
     | { type: "RESET" };
 
 // ---------- Constants ----------
@@ -120,6 +126,7 @@ const initialState: SignUpState = {
     ...initialStep1Values,
     ...initialStep2Values,
     ...initialStep3Values,
+    currentStep: 1,
     errors: {
         step1: {},
         step2: {},
@@ -132,6 +139,7 @@ const initialState: SignUpState = {
     },
     isSubmitting: false,
     serverError: null,
+    emailVerificationToken: null,
 };
 
 // ---------- Helper Functions ----------
@@ -221,10 +229,16 @@ function reducer(state: SignUpState, action: SignUpAction): SignUpState {
             const { field, value } = action.payload;
             const nextErrors = { ...state.errors.step1 };
             if (state.hasAttemptedValidation.step1) delete nextErrors[field];
+            // Clear verification token when data changes (user needs to re-register)
+            const shouldClearToken = state.emailVerificationToken !== null;
+            if (shouldClearToken && typeof window !== "undefined") {
+                window.localStorage.removeItem(LS_KEY_VERIFICATION_TOKEN);
+            }
             return {
                 ...state,
                 [field]: value,
                 errors: { ...state.errors, step1: nextErrors },
+                emailVerificationToken: null,
             };
         }
 
@@ -232,10 +246,16 @@ function reducer(state: SignUpState, action: SignUpAction): SignUpState {
             const { field, value } = action.payload;
             const nextErrors = { ...state.errors.step2 };
             if (state.hasAttemptedValidation.step2) delete nextErrors[field];
+            // Clear verification token when data changes (user needs to re-register)
+            const shouldClearToken = state.emailVerificationToken !== null;
+            if (shouldClearToken && typeof window !== "undefined") {
+                window.localStorage.removeItem(LS_KEY_VERIFICATION_TOKEN);
+            }
             return {
                 ...state,
                 [field]: value,
                 errors: { ...state.errors, step2: nextErrors },
+                emailVerificationToken: null,
             };
         }
 
@@ -243,11 +263,17 @@ function reducer(state: SignUpState, action: SignUpAction): SignUpState {
             const { field, value } = action.payload;
             const nextErrors = { ...state.errors.step3 };
             if (state.hasAttemptedValidation.step3) delete nextErrors[field];
+            // Clear verification token when data changes (user needs to re-register)
+            const shouldClearToken = state.emailVerificationToken !== null;
+            if (shouldClearToken && typeof window !== "undefined") {
+                window.localStorage.removeItem(LS_KEY_VERIFICATION_TOKEN);
+            }
             return {
                 ...state,
                 [field]: value,
                 errors: { ...state.errors, step3: nextErrors },
                 serverError: null,
+                emailVerificationToken: null,
             };
         }
 
@@ -283,6 +309,24 @@ function reducer(state: SignUpState, action: SignUpAction): SignUpState {
 
         case "SET_SERVER_ERROR":
             return { ...state, serverError: action.payload };
+
+        case "SET_VERIFICATION_TOKEN":
+            return { ...state, emailVerificationToken: action.payload };
+
+        case "SET_STEP":
+            return { ...state, currentStep: action.payload };
+
+        case "NEXT_STEP":
+            return {
+                ...state,
+                currentStep: Math.min(state.currentStep + 1, 4) as 1 | 2 | 3 | 4,
+            };
+
+        case "PREV_STEP":
+            return {
+                ...state,
+                currentStep: Math.max(state.currentStep - 1, 1) as 1 | 2 | 3 | 4,
+            };
 
         case "RESET":
             return initialState;
@@ -329,6 +373,12 @@ type SignUpContextValue = {
     registerUser: () => Promise<{ ok: boolean; error?: string }>;
     isSubmitting: boolean;
     serverError: string | null;
+    emailVerificationToken: string | null;
+    // Navigation
+    currentStep: 1 | 2 | 3 | 4;
+    goToStep: (step: 1 | 2 | 3 | 4) => void;
+    nextStep: () => void;
+    prevStep: () => void;
 };
 
 const SignUpContext = createContext<SignUpContextValue | null>(null);
@@ -545,8 +595,11 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
                         }
                     }
 
-                    if (token && typeof window !== "undefined") {
-                        window.localStorage.setItem(LS_KEY_VERIFICATION_TOKEN, token);
+                    if (token) {
+                        dispatch({ type: "SET_VERIFICATION_TOKEN", payload: token });
+                        if (typeof window !== "undefined") {
+                            window.localStorage.setItem(LS_KEY_VERIFICATION_TOKEN, token);
+                        }
                     }
 
                     dispatch({ type: "SET_SUBMITTING", payload: false });
@@ -585,6 +638,18 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
             },
             isSubmitting: state.isSubmitting,
             serverError: state.serverError,
+            emailVerificationToken: state.emailVerificationToken,
+            // Navigation
+            currentStep: state.currentStep,
+            goToStep: (step: 1 | 2 | 3 | 4) => {
+                dispatch({ type: "SET_STEP", payload: step });
+            },
+            nextStep: () => {
+                dispatch({ type: "NEXT_STEP" });
+            },
+            prevStep: () => {
+                dispatch({ type: "PREV_STEP" });
+            },
         };
     }, [state]);
 
@@ -618,7 +683,13 @@ export function useSignUpContext() {
         registerUser: ctx.registerUser,
         isSubmitting: ctx.isSubmitting,
         serverError: ctx.serverError,
+        emailVerificationToken: ctx.emailVerificationToken,
         reset: ctx.reset,
         clearStorage: ctx.clearStorage,
+        // Navigation
+        currentStep: ctx.currentStep,
+        goToStep: ctx.goToStep,
+        nextStep: ctx.nextStep,
+        prevStep: ctx.prevStep,
     };
 }

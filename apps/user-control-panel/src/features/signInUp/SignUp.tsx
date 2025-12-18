@@ -1,37 +1,40 @@
-import { ChevronRight } from "lucide-react"
-import { Button } from "../../shared/ui/buttons/Button"
-import { AuthLayout } from "../layout/AuthLayout"
-import { ManAtTheTable } from "./components/svg/ManAtTheTable"
-import { useSignUpStep1 } from "../../app/contexts/SignUpContext"
+import { AuthLayout } from "../layout/AuthLayout";
+import { useSignUpContext } from "../../app/contexts/SignUpContext";
+import { Step1Content } from "./steps/Step1Content";
+import { Step2Content } from "./steps/Step2Content";
+import { Step3Content } from "./steps/Step3Content";
+import { Step4Content } from "./steps/Step4Content";
+import { getStepConfig } from "./steps/stepsConfig";
 
+function SignUp() {
+    const { currentStep } = useSignUpContext();
+    const config = getStepConfig(currentStep);
 
-const SignUp = () => {
-    const { state, validateAndGetResult } = useSignUpStep1();
-
-    const handleNextClick = () => {
-        const { ok } = validateAndGetResult();
-        if (ok) {
-
+    const renderStepContent = () => {
+        switch (currentStep) {
+            case 1:
+                return <Step1Content />;
+            case 2:
+                return <Step2Content />;
+            case 3:
+                return <Step3Content />;
+            case 4:
+                return <Step4Content />;
+            default:
+                return null;
         }
     };
 
-    const disableNext = state.hasAttemptedValidation && Object.keys(state.errors).length > 0;
     return (
-
         <AuthLayout
-            currentStep={1}
-            title="Let's Start!"
-            Illustration={ManAtTheTable}
-            actions={<Button
-                text="Next"
-                rightIcon={<ChevronRight />}
-                onClick={handleNextClick}
-                disabled={disableNext} />}
-            totalSteps={4} children={undefined}        >
-
-
+            currentStep={currentStep}
+            totalSteps={4}
+            title={config.title}
+            Illustration={config.Illustration}
+        >
+            {renderStepContent()}
         </AuthLayout>
-    )
+    );
 }
 
-export default SignUp
+export default SignUp;
