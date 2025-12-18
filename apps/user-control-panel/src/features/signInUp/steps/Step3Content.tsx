@@ -113,10 +113,9 @@ export function Step3Content() {
                     label="I have read and accept the Terms of Service and Privacy Policy"
                     checked={state.tosPrivacy}
                     onChange={handleTosPrivacyChange}
+                    required
+                    error={state.errors.tosPrivacy}
                 />
-                {state.errors.tosPrivacy && (
-                    <p className="mt-2 text-body-sm text-error">{state.errors.tosPrivacy}</p>
-                )}
             </div>
 
             {serverError && (

@@ -215,9 +215,21 @@ function initState(): SignUpState {
         window.localStorage.removeItem(LS_KEY_STEP2);
     }
 
+    // Restore verification token from localStorage
+    let restoredToken: string | null = null;
+    try {
+        const tokenRaw = window.localStorage.getItem(LS_KEY_VERIFICATION_TOKEN);
+        if (tokenRaw) {
+            restoredToken = tokenRaw;
+        }
+    } catch {
+        window.localStorage.removeItem(LS_KEY_VERIFICATION_TOKEN);
+    }
+
     return {
         ...initialState,
         ...restored,
+        emailVerificationToken: restoredToken,
     };
 }
 
@@ -562,6 +574,7 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
                 if (typeof window !== "undefined") {
                     window.localStorage.removeItem(LS_KEY_STEP1);
                     window.localStorage.removeItem(LS_KEY_STEP2);
+                    window.localStorage.removeItem(LS_KEY_VERIFICATION_TOKEN);
                 }
             },
             registerUser: async () => {
@@ -623,7 +636,7 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
                             if (status === 409) {
                                 errorMessage = "Email or nickname already exists. Please use different credentials.";
                             } else if (status === 400) {
-                                errorMessage = "Invalid data. Please check your input.";
+                                errorMessage = "Some information is incorrect. Please check all fields and try again.";
                             } else if (status >= 500) {
                                 errorMessage = "Server error. Please try again later.";
                             }

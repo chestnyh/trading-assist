@@ -47,7 +47,7 @@ export const CreateUserDtoSchema = z.object({
     ),
   firstName: z
     .string()
-    .min(1, 'First name must be at least 1 character long')
+    .min(1, 'First name is required')
     .max(50, 'First name must not exceed 50 characters')
     .regex(
       /^[a-zA-Z\s'-]+$/,
@@ -55,7 +55,7 @@ export const CreateUserDtoSchema = z.object({
     ),
   lastName: z
     .string()
-    .min(1, 'Last name must be at least 1 character long')
+    .min(1, 'Last name is required')
     .max(50, 'Last name must not exceed 50 characters')
     .regex(
       /^[a-zA-Z\s'-]+$/,
@@ -73,6 +73,10 @@ export const LoginDtoSchema = z.object({
 });
 
 export const VerifyEmailDtoSchema = z.object({
-  code: z.string().min(6, 'Verification code must be 6 digits'),
+  code: z
+    .string()
+    .min(1, 'Verification code is required')
+    .length(6, 'Verification code must be exactly 6 digits')
+    .regex(/^\d{6}$/, 'Verification code must contain only digits'),
   token: z.string().uuid('Token must be a valid UUID'),
 });
