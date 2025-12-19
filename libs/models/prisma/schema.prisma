@@ -56,6 +56,22 @@ model User {
   preferredTradingPlatforms TradingPlatform[] @default([])
   rules UserRules[]
   telegramSettings UserTelegramSettings[]
+
+  passwordResets PasswordReset[]
+}
+
+model PasswordReset {
+  id              Int       @default(autoincrement()) @id
+  userId          Int
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token           String    @unique
+  code            String
+  verified        Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([token])
+  @@index([userId])
 }
 
 model UserRules {
