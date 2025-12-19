@@ -24,6 +24,10 @@ export class AuthController {
     type: AuthResponseDto
   })
   @ApiResponse({ 
+    status: 400, 
+    description: 'Email not verified' 
+  })
+  @ApiResponse({ 
     status: 401, 
     description: 'Invalid credentials' 
   })
@@ -33,7 +37,12 @@ export class AuthController {
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    return this.authService.login(user);
+
+    if (!user.isEmailVerified) {
+      throw new BadRequestException('Please verify your email address before logging in. Check your email for the verification code.');
+    }
+
+    return this.authService.login(user, loginDto.rememberMe);
   }
 
   @Post('verify-email')

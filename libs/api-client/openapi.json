@@ -51,6 +51,9 @@
               }
             }
           },
+          "400": {
+            "description": "Email not verified"
+          },
           "401": {
             "description": "Invalid credentials"
           }
@@ -459,6 +462,11 @@
             "description": "User password",
             "example": "somepassword",
             "minLength": 6
+          },
+          "rememberMe": {
+            "type": "boolean",
+            "description": "Remember me option to stay logged in",
+            "example": false
           }
         },
         "required": [
