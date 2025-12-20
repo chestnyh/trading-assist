@@ -62,3 +62,29 @@ export const VerifyEmailDtoSchema = z.object({
   code: z.string().min(6, 'Verification code must be 6 digits'),
   token: z.string().uuid('Token must be a valid UUID'),
 });
+
+export const ForgotPasswordDtoSchema = z.object({
+  email: z.string().email('Please provide a valid email address'),
+});
+
+export const VerifyPasswordResetDtoSchema = z.object({
+  code: z.string()
+    .min(6, 'Verification code must be 6 digits')
+    .max(6, 'Verification code must be 6 digits')
+    .regex(/^\d+$/, 'Verification code must contain only numbers'),
+  token: z.string().min(1, 'Token is required'),
+});
+
+export const ResetPasswordDtoSchema = z.object({
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters long')
+    .regex(/.*[A-Z].*/, 'Password must contain at least one uppercase letter')
+    .regex(/.*[a-z].*/, 'Password must contain at least one lowercase letter')
+    .regex(/.*\d.*/, 'Password must contain at least one number')
+    .regex(
+      /.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/]/,
+      'Password must contain at least one special character'
+    ),
+  token: z.string().min(1, 'Token is required'),
+});

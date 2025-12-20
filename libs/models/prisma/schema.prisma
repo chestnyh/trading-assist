@@ -50,6 +50,9 @@ model User {
   isEmailVerified Boolean @default(false)
   emailVerificationToken String
   emailVerificationCode String
+  passwordResetToken String?
+  passwordResetCode String?
+  passwordResetTokenExpiresAt DateTime?
   tradingExperienceLevel TradingExperienceLevel?
   primaryTradingStrategy PrimaryTradingStrategy?
   riskTolerance RiskTolerance?

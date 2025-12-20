@@ -7,6 +7,9 @@ import {
   CreateUserDtoSchema,
   LoginDtoSchema,
   VerifyEmailDtoSchema,
+  ForgotPasswordDtoSchema,
+  VerifyPasswordResetDtoSchema,
+  ResetPasswordDtoSchema,
 } from './zod-schemas';
 
 // Map URLs to their request body schemas
@@ -14,6 +17,9 @@ const requestSchemas: Record<string, z.ZodSchema<any>> = {
   '/api/v1/users': CreateUserDtoSchema,
   '/api/v1/auth/login': LoginDtoSchema,
   '/api/v1/auth/verify-email': VerifyEmailDtoSchema,
+  '/api/v1/auth/forgot-password': ForgotPasswordDtoSchema,
+  '/api/v1/auth/verify-password-reset': VerifyPasswordResetDtoSchema,
+  '/api/v1/auth/reset-password': ResetPasswordDtoSchema,
 };
 
 export const customInstance = async <T>(
@@ -22,7 +28,7 @@ export const customInstance = async <T>(
   schema?: z.ZodSchema<T>
 ): Promise<T> => {
   // Base URL configuration
-  const baseURL = process.env['API_BASE_URL'] || 'http://localhost:3001';
+  const baseURL = process.env['API_BASE_URL'] || 'http://localhost:3002';
   const fullUrl = url.startsWith('http') ? url : `${baseURL}${url}`;
 
   // Merge default headers
@@ -66,11 +72,24 @@ export const customInstance = async <T>(
 
   // Handle non-OK responses
   if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      message: response.statusText,
-      status: response.status,
-    }));
-    throw error;
+    let errorData;
+    try {
+      errorData = await response.json();
+    } catch {
+      errorData = {
+        message: response.statusText,
+        status: response.status,
+      };
+    }
+    // Ensure status is set for error handling
+    if (!errorData.status && !errorData.statusCode) {
+      errorData.status = response.status;
+    }
+    // Also set statusCode if it's not there
+    if (errorData.statusCode && !errorData.status) {
+      errorData.status = errorData.statusCode;
+    }
+    throw errorData;
   }
 
   // Handle empty responses

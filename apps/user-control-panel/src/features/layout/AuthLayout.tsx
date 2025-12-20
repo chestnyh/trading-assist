@@ -2,7 +2,6 @@ import { ComponentType, ReactNode } from "react";
 import logo from "../../shared/components/logo.svg";
 import { FormProgressBar } from "../signInUp/components/FormProgressBar";
 import { ThemeToggle } from "../../shared/ui/buttons/ThemeToggle";
-import { Alert } from "../../shared/ui/feedback/Alert";
 
 interface AuthLayoutProps {
     currentStep?: number;
@@ -21,8 +20,6 @@ export function AuthLayout({
     actions,
     totalSteps
 }: AuthLayoutProps) {
-    const hasError = currentStep === 3;
-
     return (
         <div
             className="
@@ -70,12 +67,6 @@ export function AuthLayout({
                     </h1>
                 </div>
                 <ThemeToggle />
-
-                {hasError && (
-                    <div className="mt-4">
-                        <Alert />
-                    </div>
-                )}
 
                 {currentStep && (
                     <div className="mt-4">

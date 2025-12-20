@@ -9,6 +9,7 @@ interface ButtonProps {
     variant?: "primary" | "outline" | "error" | "text";
     leftIcon?: ReactNode;
     rightIcon?: ReactNode;
+    form?: string;
 }
 
 export function Button({
@@ -20,6 +21,7 @@ export function Button({
     variant = "primary",
     leftIcon,
     rightIcon,
+    form,
 }: ButtonProps) {
     const isTextVariant = variant === "text";
 
@@ -29,6 +31,7 @@ export function Button({
                 type={type}
                 onClick={onClick}
                 disabled={disabled}
+                form={form}
                 className={`
           ${isTextVariant ? "" : "w-full rounded-md"}
           font-sans font-medium
