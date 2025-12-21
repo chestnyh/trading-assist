@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ModelsService } from '@trading-bot/models';
+import { ServicesConfigs } from '@trading-bot/configs';
 
 @Injectable()
 export class AuthService {
@@ -8,17 +9,22 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private modelsService: ModelsService,
+    private configService: ServicesConfigs,
   ) {}
 
-  async login(user: any) {
+  async login(user: any, rememberMe?: boolean) {
     const payload = { 
       email: user.email, 
       sub: user.id,
       nickname: user.nickname 
     };
     
+    // Set token expiration based on rememberMe option
+    // If rememberMe is true, use 30 days, otherwise use default from config (24h)
+    const expiresIn = rememberMe ? '30d' : this.configService.get('JWT_EXPIRES_IN') || '24h';
+    
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { expiresIn }),
       user: {
         id: user.id,
         nickname: user.nickname,
