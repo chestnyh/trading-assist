@@ -292,7 +292,7 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
             emailVerificationToken: state.emailVerificationToken,
             // Navigation
             currentStep: state.currentStep,
-            goToStep: (step: 1 | 2 | 3 | 4) => {
+            goToStep: (step: 0 | 1 | 2 | 3) => {
                 dispatch({ type: "SET_STEP", payload: step });
             },
             nextStep: () => {

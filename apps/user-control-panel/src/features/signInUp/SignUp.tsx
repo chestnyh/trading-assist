@@ -10,28 +10,20 @@ function SignUp() {
     const { currentStep } = useSignUpContext();
     const config = getStepConfig(currentStep);
 
-    const renderStepContent = () => {
-        switch (currentStep) {
-            case 1:
-                return <Step1Content />;
-            case 2:
-                return <Step2Content />;
-            case 3:
-                return <Step3Content />;
-            case 4:
-                return <Step4Content />;
-            default:
-                return null;
-        }
-    };
+    const renderStepContent = [
+        <Step1Content />,
+        <Step2Content />,
+        <Step3Content />,
+        <Step4Content />,
+    ];
 
     return (
         <AuthLayout
-            currentStep={currentStep}
+            currentStep={currentStep + 1}
             totalSteps={4}
             title={config.title}
         >
-            {renderStepContent()}
+            {renderStepContent[currentStep] || null}
         </AuthLayout>
     );
 }
