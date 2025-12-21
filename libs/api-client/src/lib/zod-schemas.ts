@@ -38,15 +38,29 @@ export const CreateUserDtoSchema = z.object({
   password: z
     .string()
     .min(8, 'Password must be at least 8 characters long')
-    .regex(/.*[A-Z].*/, 'Password must contain at least one uppercase letter')
-    .regex(/.*[a-z].*/, 'Password must contain at least one lowercase letter')
-    .regex(/.*\d.*/, 'Password must contain at least one number')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/\d/, 'Password must contain at least one number')
     .regex(
-      /.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/]/,
+      /[@$!%*?&#^()_+\-=[\]{};':"\\|,.<>/]/,
       'Password must contain at least one special character'
     ),
-  firstName: z.string().min(1).max(50),
-  lastName: z.string().min(1).max(50),
+  firstName: z
+    .string()
+    .min(1, 'First name is required')
+    .max(50, 'First name must not exceed 50 characters')
+    .regex(
+      /^[a-zA-Z\s'-]+$/,
+      'First name can only contain letters, spaces, hyphens, and apostrophes'
+    ),
+  lastName: z
+    .string()
+    .min(1, 'Last name is required')
+    .max(50, 'Last name must not exceed 50 characters')
+    .regex(
+      /^[a-zA-Z\s'-]+$/,
+      'Last name can only contain letters, spaces, hyphens, and apostrophes'
+    ),
   tradingExperienceLevel: TradingExperienceLevelSchema.optional(),
   primaryTradingStrategy: PrimaryTradingStrategySchema.optional(),
   riskTolerance: RiskToleranceSchema.optional(),
@@ -59,6 +73,10 @@ export const LoginDtoSchema = z.object({
 });
 
 export const VerifyEmailDtoSchema = z.object({
-  code: z.string().min(6, 'Verification code must be 6 digits'),
+  code: z
+    .string()
+    .min(1, 'Verification code is required')
+    .length(6, 'Verification code must be exactly 6 digits')
+    .regex(/^\d{6}$/, 'Verification code must contain only digits'),
   token: z.string().uuid('Token must be a valid UUID'),
 });

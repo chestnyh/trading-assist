@@ -1,4 +1,3 @@
-import { ManNextToTheSafe } from "./components/svg/ManNextToTheSafe";
 import { Input } from "../../shared/ui/forms/Input";
 import { Button } from "../../shared/ui/buttons/Button";
 import { Checkbox } from "../../shared/ui/forms/Checkbox";
@@ -11,7 +10,6 @@ export function SignIn() {
     return (
         <AuthLayout
             title="Sign In Into Your Account"
-            Illustration={ManNextToTheSafe}
             actions={<Button text="Next" />}
         >
             <div className="flex gap-3">

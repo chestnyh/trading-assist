@@ -125,3 +125,104 @@ html.dark body {
   --color-error: var(--color-error-dark);
   --color-success: var(--color-success-dark);
 }
+
+/* Floating blobs animations */
+@keyframes float-slow {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  20% {
+    transform: translate(200px, -250px) scale(1.25);
+  }
+  40% {
+    transform: translate(-220px, 180px) scale(0.8);
+  }
+  60% {
+    transform: translate(250px, 200px) scale(1.2);
+  }
+  80% {
+    transform: translate(-180px, -220px) scale(0.9);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes float-medium {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  20% {
+    transform: translate(-250px, 200px) scale(1.3);
+  }
+  40% {
+    transform: translate(220px, -180px) scale(0.75);
+  }
+  60% {
+    transform: translate(-200px, -250px) scale(1.15);
+  }
+  80% {
+    transform: translate(180px, 220px) scale(0.85);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes float-fast {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  20% {
+    transform: translate(180px, -250px) scale(1.2);
+  }
+  40% {
+    transform: translate(-250px, 150px) scale(0.8);
+  }
+  60% {
+    transform: translate(220px, 250px) scale(1.3);
+  }
+  80% {
+    transform: translate(-200px, -180px) scale(0.9);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 50s ease infinite;
+}
+
+.animate-float-medium {
+  animation: float-medium 30s ease infinite;
+}
+
+.animate-float-fast {
+  animation: float-fast 20s ease infinite;
+}
+
+/* Custom scrollbar for dropdown */
+.country-select-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.country-select-dropdown::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+  border-radius: 4px;
+}
+
+.country-select-dropdown::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+.country-select-dropdown::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-hover);
+}
+
+/* Firefox scrollbar */
+.country-select-dropdown {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--color-bg-secondary);
+}

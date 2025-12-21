@@ -9,7 +9,7 @@ const path = require('path');
 const fs = require('fs');
 const originalResolveFilename = Module._resolveFilename;
 const distPath = __dirname;
-const manifest = [{"module":"@trading-bot/configs","exactMatch":"libs/configs/src/index.js","pattern":"libs/configs/src/index.ts"},{"module":"@trading-bot/models","exactMatch":"libs/models/src/index.js","pattern":"libs/models/src/index.ts"},{"module":"@trading-bot/object-navigator","exactMatch":"libs/object-navigator/src/index.js","pattern":"libs/object-navigator/src/index.ts"},{"module":"@trading-bot/crypto-utils","exactMatch":"libs/crypto-utils/src/index.js","pattern":"libs/crypto-utils/src/index.ts"}];
+const manifest = [{"module":"@trading-bot/configs","exactMatch":"libs/configs/src/index.js","pattern":"libs/configs/src/index.ts"},{"module":"@trading-bot/crypto-utils","exactMatch":"libs/crypto-utils/src/index.js","pattern":"libs/crypto-utils/src/index.ts"},{"module":"@trading-bot/models","exactMatch":"libs/models/src/index.js","pattern":"libs/models/src/index.ts"},{"module":"@trading-bot/object-navigator","exactMatch":"libs/object-navigator/src/index.js","pattern":"libs/object-navigator/src/index.ts"},{"module":"@trading-bot/api-client","exactMatch":"libs/api-client/src/index.js","pattern":"libs/api-client/src/index.ts"}];
 
 Module._resolveFilename = function(request, parent) {
   let found;

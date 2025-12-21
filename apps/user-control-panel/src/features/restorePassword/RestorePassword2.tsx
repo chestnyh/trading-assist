@@ -1,20 +1,17 @@
-import { ManNextToTheSafe } from "./components/svg/ManNextToTheSafe";
 import { Input } from "../../shared/ui/forms/Input";
 import { Button } from "../../shared/ui/buttons/Button";
 import { AuthLayout } from "../layout/AuthLayout";
-import { ArrowLeft } from "../signInUp/components/icons/ArrowLeft";
-import { ArrowRight } from "../signInUp/components/icons/ArrowRight";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function RestorePassword2() {
     return (
         <AuthLayout
-            currentStep={1}
+            currentStep={2}
             title="Insert code"
-            Illustration={ManNextToTheSafe}
             actions={
                 <>
-                    <Button text="Back" variant="outline" leftIcon={<ArrowLeft />} />
-                    <Button text="Reset password" rightIcon={<ArrowRight />} />
+                    <Button text="Back" variant="outline" leftIcon={<ChevronLeft />} />
+                    <Button text="Reset password" rightIcon={<ChevronRight />} />
                 </>
             }
             totalSteps={3}
