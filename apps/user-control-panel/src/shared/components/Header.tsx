@@ -1,16 +1,17 @@
 import { Link } from 'react-router-dom';
-import { Search, } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { ThemeToggle } from '../ui/buttons/ThemeToggle';
 import UserMenuButton from '../ui/buttons/UserMenuButton';
 import AuthButton from '../ui/buttons/AuthButton';
+import { useAuth } from '../../app/contexts/AuthContext';
 import logo from "./logo.svg";
 
 interface HeaderProps {
     className?: string;
-    isAuthenticated?: boolean;
 }
 
-export function Header({ className = "", isAuthenticated = true }: HeaderProps) {
+export function Header({ className = "" }: HeaderProps) {
+    const { isAuthenticated } = useAuth();
     return (
         <header
             className={`
