@@ -16,7 +16,7 @@ const PagesLayout = ({ children }: PagesLayoutProps) => {
     const { isAuthenticated } = useAuth();
 
     if (AUTH_PAGES.includes(location.pathname)) {
-        return null;
+        return <>{children}</>;
     }
 
     return (

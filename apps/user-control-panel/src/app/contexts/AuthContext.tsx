@@ -34,10 +34,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check for existing token on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem('auth_token');
-    const storedUser = localStorage.getItem('user_data');
+    const storedToken = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+    const storedUser = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
 
     if (storedToken && storedUser) {
       setToken(storedToken);
@@ -79,8 +78,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (access_token && userData) {
         setToken(access_token);
         setUser(userData);
-        localStorage.setItem('auth_token', access_token);
-        localStorage.setItem('user_data', JSON.stringify(userData));
+
+        if (rememberMe) {
+          localStorage.setItem('auth_token', access_token);
+          localStorage.setItem('user_data', JSON.stringify(userData));
+          sessionStorage.removeItem('auth_token');
+          sessionStorage.removeItem('user_data');
+        } else {
+          sessionStorage.setItem('auth_token', access_token);
+          sessionStorage.setItem('user_data', JSON.stringify(userData));
+          // Clear localStorage in case it was used previously
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('user_data');
+        }
 
         setIsLoading(false);
         return { success: true };
@@ -125,6 +135,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user_data');
+    sessionStorage.removeItem('auth_token');
+    sessionStorage.removeItem('user_data');
   };
 
   const signUp = async (email: string, password: string, name: string, nickname: string): Promise<boolean> => {
