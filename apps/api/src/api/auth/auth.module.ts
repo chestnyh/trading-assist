@@ -5,13 +5,14 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ServicesConfigsModule, ServicesConfigs } from '@trading-bot/configs';
-import { ModelsModule } from '@trading-bot/models';
+import { CryptoUtilsModule } from '@trading-bot/crypto-utils';
 import { UsersApiModule } from '../users/users.api.module';
 
 @Module({
   imports: [
     UsersApiModule,
     ServicesConfigsModule,
+    CryptoUtilsModule,
     JwtModule.registerAsync({
       imports: [ServicesConfigsModule],
       useFactory: async (configService: ServicesConfigs) => ({
