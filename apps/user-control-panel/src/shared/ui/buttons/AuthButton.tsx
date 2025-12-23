@@ -1,9 +1,17 @@
 import { LogInIcon } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 export function AuthButton() {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        navigate("/sign-in");
+    };
+
     return (
         <button
             type="button"
+            onClick={handleClick}
             className="
                                 inline-flex items-center justify-center gap-2
                                 h-9 px-3 py-2
