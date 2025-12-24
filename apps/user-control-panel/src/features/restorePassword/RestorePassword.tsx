@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { customInstance } from "@trading-bot/api-client";
-import { Input } from "../../shared/ui/forms/Input";
-import { Button } from "../../shared/ui/buttons/Button";
 import { AuthLayout } from "../layout/AuthLayout";
-import { ArrowLeft } from "../signInUp/components/icons/ArrowLeft";
-import { ArrowRight } from "../signInUp/components/icons/ArrowRight";
+import { Step1Content } from "./steps/Step1Content";
+import { Step2Content } from "./steps/Step2Content";
+import { Step3Content } from "./steps/Step3Content";
+import { getStepConfig } from "./steps/stepsConfig";
 
 type RestorePasswordStep = 0 | 1 | 2;
 
@@ -50,6 +50,8 @@ export function RestorePassword() {
   const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const config = getStepConfig(step);
+
   const handleRequestReset = async () => {
     try {
       setIsLoading(true);
@@ -76,12 +78,10 @@ export function RestorePassword() {
 
       setStep(1);
     } catch (e: any) {
-      // Extract error message from different error formats
       let errorMessage = "Failed to request password reset. Please try again.";
       
-      // Handle network errors
       if (e?.isNetworkError) {
-        errorMessage = e.message || "Не удалось подключиться к серверу. Убедитесь, что бэкенд запущен.";
+        errorMessage = e.message || "Failed to connect to the server. Make sure the backend is running.";
         setFormError(errorMessage);
         setIsLoading(false);
         return;
@@ -89,7 +89,6 @@ export function RestorePassword() {
       
       if (e?.message) {
         errorMessage = e.message;
-        // Check if it's a validation error for email field
         if (e?.errors && Array.isArray(e.errors) && e.errors.length > 0) {
           const emailError = e.errors.find((err: any) => err.path?.includes('email'));
           if (emailError) {
@@ -99,7 +98,6 @@ export function RestorePassword() {
           }
         }
       } else if (e?.errors && Array.isArray(e.errors) && e.errors.length > 0) {
-        // Handle validation errors
         const emailError = e.errors.find((err: any) => err.path?.includes('email'));
         if (emailError) {
           setEmailError(emailError.message);
@@ -149,12 +147,10 @@ export function RestorePassword() {
 
       setStep(2);
     } catch (e: any) {
-      // Extract error message from different error formats
       let errorMessage = "Invalid or expired code. Please try again.";
       
-      // Handle network errors
       if (e?.isNetworkError) {
-        errorMessage = e.message || "Не удалось подключиться к серверу. Убедитесь, что бэкенд запущен.";
+        errorMessage = e.message || "Failed to connect to the server. Make sure the backend is running.";
         setFormError(errorMessage);
         setIsLoading(false);
         return;
@@ -162,7 +158,6 @@ export function RestorePassword() {
       
       if (e?.message) {
         errorMessage = e.message;
-        // Check if it's a validation error for code field
         if (e?.errors && Array.isArray(e.errors) && e.errors.length > 0) {
           const codeError = e.errors.find((err: any) => err.path?.includes('code'));
           if (codeError) {
@@ -172,7 +167,6 @@ export function RestorePassword() {
           }
         }
       } else if (e?.errors && Array.isArray(e.errors) && e.errors.length > 0) {
-        // Handle validation errors
         const codeError = e.errors.find((err: any) => err.path?.includes('code'));
         if (codeError) {
           setCodeError(codeError.message);
@@ -242,12 +236,10 @@ export function RestorePassword() {
       localStorage.removeItem("password_reset_token");
       navigate("/sign-in");
     } catch (e: any) {
-      // Extract error message from different error formats
       let errorMessage = "Failed to reset password. Please try again.";
       
-      // Handle network errors
       if (e?.isNetworkError) {
-        errorMessage = e.message || "Не удалось подключиться к серверу. Убедитесь, что бэкенд запущен.";
+        errorMessage = e.message || "Failed to connect to the server. Make sure the backend is running.";
         setFormError(errorMessage);
         setIsLoading(false);
         return;
@@ -255,7 +247,6 @@ export function RestorePassword() {
       
       if (e?.message) {
         errorMessage = e.message;
-        // Check if it's a validation error for password field
         if (e?.errors && Array.isArray(e.errors) && e.errors.length > 0) {
           const passwordError = e.errors.find((err: any) => err.path?.includes('password'));
           if (passwordError) {
@@ -265,7 +256,6 @@ export function RestorePassword() {
           }
         }
       } else if (e?.errors && Array.isArray(e.errors) && e.errors.length > 0) {
-        // Handle validation errors
         const passwordError = e.errors.find((err: any) => err.path?.includes('password'));
         if (passwordError) {
           setPasswordError(passwordError.message);
@@ -283,149 +273,75 @@ export function RestorePassword() {
     }
   };
 
-  const goNext = () => {
-    setStep((prev) => (prev < 2 ? ((prev + 1) as RestorePasswordStep) : prev));
-  };
-
   const goBack = () => {
     setStep((prev) => (prev > 0 ? ((prev - 1) as RestorePasswordStep) : prev));
   };
 
-  if (step === 0) {
-    return (
-      <AuthLayout
-        currentStep={0}
-        title="Insert your email"
-        actions={
-          <Button
-            text="Send me code on email"
-            onClick={handleRequestReset}
-            disabled={isLoading || !email}
-          />
-        }
-        totalSteps={3}
-      >
-        {formError && (
-          <div className="mt-2 text-sm text-red-500">
-            {formError}
-          </div>
-        )}
-        <Input
-          label="Email"
-          id="email"
-          name="email"
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            setEmailError(null);
-            setFormError(null);
-          }}
-          error={emailError || undefined}
-          required
-        />
-      </AuthLayout>
-    );
-  }
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
+    setEmailError(null);
+    setFormError(null);
+  };
 
-  if (step === 1) {
-    return (
-      <AuthLayout
-        currentStep={1}
-        title="Insert code"
-        actions={
-          <>
-            <Button
-              text="Back"
-              variant="outline"
-              leftIcon={<ArrowLeft />}
-              onClick={goBack}
-            />
-            <Button
-              text="Reset password"
-              rightIcon={<ArrowRight />}
-              onClick={handleVerifyCode}
-              disabled={isLoading || !code}
-            />
-          </>
-        }
-        totalSteps={3}
-      >
-        {formError && (
-          <div className="mt-2 text-sm text-red-500">
-            {formError}
-          </div>
-        )}
-        <Input
-          label="Secret code"
-          id="code"
-          name="code"
-          type="text"
-          placeholder="Enter verification code"
-          value={code}
-          onChange={(e) => {
-            setCode(e.target.value);
-            setCodeError(null);
-            setFormError(null);
-          }}
-          error={codeError || undefined}
-          required
-        />
-      </AuthLayout>
-    );
-  }
+  const handleCodeChange = (value: string) => {
+    setCode(value);
+    setCodeError(null);
+    setFormError(null);
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    setPasswordError(null);
+    setFormError(null);
+  };
+
+  const handleConfirmPasswordChange = (value: string) => {
+    setConfirmPassword(value);
+    setConfirmPasswordError(null);
+    setFormError(null);
+  };
+
+  const renderStepContent = [
+    <Step1Content
+      key="step1"
+      email={email}
+      emailError={emailError}
+      formError={formError}
+      isLoading={isLoading}
+      onEmailChange={handleEmailChange}
+      onRequestReset={handleRequestReset}
+    />,
+    <Step2Content
+      key="step2"
+      code={code}
+      codeError={codeError}
+      formError={formError}
+      isLoading={isLoading}
+      onCodeChange={handleCodeChange}
+      onVerifyCode={handleVerifyCode}
+      onBack={goBack}
+    />,
+    <Step3Content
+      key="step3"
+      password={password}
+      confirmPassword={confirmPassword}
+      passwordError={passwordError}
+      confirmPasswordError={confirmPasswordError}
+      formError={formError}
+      isLoading={isLoading}
+      onPasswordChange={handlePasswordChange}
+      onConfirmPasswordChange={handleConfirmPasswordChange}
+      onResetPassword={handleResetPassword}
+    />,
+  ];
 
   return (
     <AuthLayout
-      currentStep={2}
-      title="Enter new password"
-      actions={
-        <Button
-          text="Set Up New Password"
-          onClick={handleResetPassword}
-          disabled={isLoading || !password || !confirmPassword}
-        />
-      }
+      currentStep={step + 1}
       totalSteps={3}
+      title={config.title}
     >
-      {formError && (
-        <div className="mt-2 text-sm text-red-500">
-          {formError}
-        </div>
-      )}
-      <Input
-        label="Password"
-        id="password"
-        type="password"
-        name="password"
-        placeholder="Enter new password"
-        value={password}
-        onChange={(e) => {
-          setPassword(e.target.value);
-          setPasswordError(null);
-          setFormError(null);
-        }}
-        error={passwordError || undefined}
-        required
-      />
-      <Input
-        label="Confirm Password"
-        id="confirmPassword"
-        type="password"
-        name="confirmPassword"
-        placeholder="Confirm new password"
-        value={confirmPassword}
-        onChange={(e) => {
-          setConfirmPassword(e.target.value);
-          setConfirmPasswordError(null);
-          setFormError(null);
-        }}
-        error={confirmPasswordError || undefined}
-        required
-      />
+      {renderStepContent[step] || null}
     </AuthLayout>
   );
 }
-
-
