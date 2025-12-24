@@ -7,6 +7,9 @@ import {
   CreateUserDtoSchema,
   LoginDtoSchema,
   VerifyEmailDtoSchema,
+  ForgotPasswordDtoSchema,
+  VerifyPasswordResetDtoSchema,
+  ResetPasswordDtoSchema,
 } from './zod-schemas';
 
 // Map URLs to their request body schemas
@@ -14,6 +17,9 @@ const requestSchemas: Record<string, z.ZodSchema<any>> = {
   '/api/v1/users': CreateUserDtoSchema,
   '/api/v1/auth/login': LoginDtoSchema,
   '/api/v1/auth/verify-email': VerifyEmailDtoSchema,
+  '/api/v1/auth/forgot-password': ForgotPasswordDtoSchema,
+  '/api/v1/auth/verify-password-reset': VerifyPasswordResetDtoSchema,
+  '/api/v1/auth/reset-password': ResetPasswordDtoSchema,
 };
 
 export const customInstance = async <T>(
@@ -59,17 +65,39 @@ export const customInstance = async <T>(
     }
   }
 
-  const response = await fetch(fullUrl, {
-    ...config,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(fullUrl, {
+      ...config,
+      headers,
+    });
+  } catch (networkError: any) {
+    // Handle network errors (connection refused, timeout, etc.)
+    throw {
+      message: networkError.message?.includes('Failed to fetch') || networkError.message?.includes('ERR_CONNECTION_REFUSED')
+        ? 'Не удалось подключиться к серверу. Убедитесь, что бэкенд запущен на порту 3001.'
+        : `Ошибка сети: ${networkError.message || 'Неизвестная ошибка подключения'}`,
+      status: 0,
+      isNetworkError: true,
+      originalError: networkError,
+    };
+  }
 
   // Handle non-OK responses
   if (!response.ok) {
-    const error = await response.json().catch(() => ({
+    const errorData = await response.json().catch(() => ({
       message: response.statusText,
-      status: response.status,
+      statusCode: response.status,
     }));
+    
+    // NestJS error format: { statusCode, message, error }
+    // Extract message from NestJS error format or use statusText
+    const error = {
+      message: errorData.message || errorData.statusText || response.statusText,
+      status: errorData.statusCode || response.status,
+      ...errorData,
+    };
+    
     throw error;
   }
 
