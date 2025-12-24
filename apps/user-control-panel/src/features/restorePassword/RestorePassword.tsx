@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { z } from "zod";
 import { customInstance } from "@trading-bot/api-client";
 import { AuthLayout } from "../layout/AuthLayout";
 import { Step1Content } from "./steps/Step1Content";
@@ -9,32 +8,6 @@ import { Step3Content } from "./steps/Step3Content";
 import { getStepConfig } from "./steps/stepsConfig";
 
 type RestorePasswordStep = 0 | 1 | 2;
-
-const ForgotPasswordDtoSchema = z.object({
-  email: z.string().email("Please provide a valid email address"),
-});
-
-const VerifyPasswordResetDtoSchema = z.object({
-  code: z
-    .string()
-    .min(6, "Verification code must be 6 digits")
-    .max(6, "Verification code must be 6 digits")
-    .regex(/^\d+$/, "Verification code must contain only numbers"),
-  token: z.string().uuid("Invalid or expired token. Please try again."),
-});
-
-const ResetPasswordDtoSchema = z.object({
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters long")
-    .regex(/.*[A-Z].*/, "Password must contain at least one uppercase letter")
-    .regex(/.*[a-z].*/, "Password must contain at least one lowercase letter")
-    .regex(/.*\d.*/, "Password must contain at least one number")
-    .regex(
-      /.*[@$!%*?&#^()_+\-=\[\]{};':"\\|,.<>\/]/,
-      "Password must contain at least one special character"
-    ),
-});
 
 export function RestorePassword() {
   const [step, setStep] = useState<RestorePasswordStep>(0);
@@ -58,18 +31,11 @@ export function RestorePassword() {
       setFormError(null);
       setEmailError(null);
 
-      const parsed = ForgotPasswordDtoSchema.safeParse({ email });
-      if (!parsed.success) {
-        setEmailError(parsed.error.issues[0]?.message ?? "Invalid email");
-        setIsLoading(false);
-        return;
-      }
-
       const data = await customInstance<{ token: string; message: string }>(
         "/api/v1/auth/forgot-password",
         {
           method: "POST",
-          body: JSON.stringify({ email: parsed.data.email }),
+          body: JSON.stringify({ email }),
         }
       );
       if (data.token) {
@@ -87,7 +53,15 @@ export function RestorePassword() {
         return;
       }
       
-      if (e?.message) {
+      if (e?.message === 'Validation failed' && e?.errors && Array.isArray(e.errors)) {
+        const emailError = e.errors.find((err: any) => err.path?.includes('email'));
+        if (emailError) {
+          setEmailError(emailError.message);
+          setIsLoading(false);
+          return;
+        }
+        errorMessage = e.errors[0]?.message ?? errorMessage;
+      } else if (e?.message) {
         errorMessage = e.message;
         if (e?.errors && Array.isArray(e.errors) && e.errors.length > 0) {
           const emailError = e.errors.find((err: any) => err.path?.includes('email'));
@@ -122,17 +96,8 @@ export function RestorePassword() {
       setCodeError(null);
 
       const token = localStorage.getItem("password_reset_token") ?? "";
-      const parsed = VerifyPasswordResetDtoSchema.safeParse({ code, token });
-      if (!parsed.success) {
-        const codeError = parsed.error.issues.find((issue) => issue.path?.includes('code'));
-        if (codeError) {
-          setCodeError(codeError.message);
-        } else {
-          setFormError(
-            parsed.error.issues[0]?.message ??
-              "Invalid or expired code. Please try again."
-          );
-        }
+      if (!token) {
+        setFormError("Invalid or expired token. Please start the reset process again.");
         setIsLoading(false);
         return;
       }
@@ -141,7 +106,7 @@ export function RestorePassword() {
         "/api/v1/auth/verify-password-reset",
         {
           method: "POST",
-          body: JSON.stringify(parsed.data),
+          body: JSON.stringify({ code, token }),
         }
       );
 
@@ -156,7 +121,21 @@ export function RestorePassword() {
         return;
       }
       
-      if (e?.message) {
+      if (e?.message === 'Validation failed' && e?.errors && Array.isArray(e.errors)) {
+        const codeError = e.errors.find((err: any) => err.path?.includes('code'));
+        if (codeError) {
+          setCodeError(codeError.message);
+          setIsLoading(false);
+          return;
+        }
+        const tokenError = e.errors.find((err: any) => err.path?.includes('token'));
+        if (tokenError) {
+          setFormError(tokenError.message);
+          setIsLoading(false);
+          return;
+        }
+        errorMessage = e.errors[0]?.message ?? errorMessage;
+      } else if (e?.message) {
         errorMessage = e.message;
         if (e?.errors && Array.isArray(e.errors) && e.errors.length > 0) {
           const codeError = e.errors.find((err: any) => err.path?.includes('code'));
@@ -207,28 +186,13 @@ export function RestorePassword() {
         return;
       }
 
-      const parsedPassword = ResetPasswordDtoSchema.safeParse({ password });
-      if (!parsedPassword.success) {
-        const passwordError = parsedPassword.error.issues.find((issue) => issue.path?.includes('password'));
-        if (passwordError) {
-          setPasswordError(passwordError.message);
-        } else {
-          setFormError(
-            parsedPassword.error.issues[0]?.message ??
-              "Password does not meet requirements."
-          );
-        }
-        setIsLoading(false);
-        return;
-      }
-
       await customInstance<{ message: string }>(
         "/api/v1/auth/reset-password",
         {
           method: "POST",
           body: JSON.stringify({
             token,
-            password: parsedPassword.data.password,
+            password,
           }),
         }
       );
@@ -245,7 +209,21 @@ export function RestorePassword() {
         return;
       }
       
-      if (e?.message) {
+      if (e?.message === 'Validation failed' && e?.errors && Array.isArray(e.errors)) {
+        const passwordError = e.errors.find((err: any) => err.path?.includes('password'));
+        if (passwordError) {
+          setPasswordError(passwordError.message);
+          setIsLoading(false);
+          return;
+        }
+        const tokenError = e.errors.find((err: any) => err.path?.includes('token'));
+        if (tokenError) {
+          setFormError(tokenError.message);
+          setIsLoading(false);
+          return;
+        }
+        errorMessage = e.errors[0]?.message ?? errorMessage;
+      } else if (e?.message) {
         errorMessage = e.message;
         if (e?.errors && Array.isArray(e.errors) && e.errors.length > 0) {
           const passwordError = e.errors.find((err: any) => err.path?.includes('password'));
