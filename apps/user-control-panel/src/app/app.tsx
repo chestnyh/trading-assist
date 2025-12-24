@@ -12,7 +12,12 @@ import { AppProviders } from './providers/AppProviders';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       <AppProviders>
         <div className="min-h-screen bg-background transition-colors duration-300">
           <Routes>

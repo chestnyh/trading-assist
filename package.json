@@ -17,7 +17,7 @@
     "user-control-panel:start": "nx run user-control-panel:serve",
     "user-control-panel:build": "nx run user-control-panel:build",
     "user-control-panel:test": "nx run user-control-panel:test",
-    "user-control-panel:test-coverage": "nx run user-control-panel:test --coverage",
+    "user-control-panel:test-coverage": "pnpm user-control-panel:test-coverage",
     "user-control-panel:lint": "nx run user-control-panel:lint",
     "object-navigator:show": "nx show project object-navigator",
     "object-navigator:test": "nx run object-navigator:test",
