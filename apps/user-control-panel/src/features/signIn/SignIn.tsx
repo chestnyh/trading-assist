@@ -150,7 +150,7 @@ export function SignIn() {
                 <Button
                     text="Forgot password?"
                     variant="text"
-                    onClick={() => navigate("/restore-password-1")}
+                    onClick={() => navigate("/restore-password")}
                 />
             </div>
 
