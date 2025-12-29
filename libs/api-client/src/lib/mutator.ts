@@ -75,8 +75,8 @@ export const customInstance = async <T>(
     // Handle network errors (connection refused, timeout, etc.)
     throw {
       message: networkError.message?.includes('Failed to fetch') || networkError.message?.includes('ERR_CONNECTION_REFUSED')
-        ? 'Не удалось подключиться к серверу. Убедитесь, что бэкенд запущен на порту 3001.'
-        : `Ошибка сети: ${networkError.message || 'Неизвестная ошибка подключения'}`,
+        ? 'Failed to connect to the server. Make sure the backend is running on port 3001.'
+        : `Network Error: ${networkError.message || 'Unknown connection error'}`,
       status: 0,
       isNetworkError: true,
       originalError: networkError,

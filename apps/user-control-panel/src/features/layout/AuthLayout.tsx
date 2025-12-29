@@ -42,6 +42,7 @@ export function AuthLayout({
                             Trading Assist
                         </div>
                     </div>
+<<<<<<< HEAD
 
                     <div className="flex flex-col place-items-center justify-center flex-grow  mb-25">
                         <div className="font-heading font-semibold text-h3 text-primary">

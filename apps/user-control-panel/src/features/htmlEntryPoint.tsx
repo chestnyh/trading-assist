@@ -20,12 +20,12 @@ export function HtmlEntryPoint() {
                     </a>
                 </li>
                 <li>
-                    <a
+                            <a
                         href="/restore-password"
                         className="block px-4 py-2 text-blue-600 hover:bg-blue-50 hover:text-blue-700 rounded-lg transition-colors duration-200 font-medium underline"
-                    >
+                            >
                         Restore Password
-                    </a>
+                            </a>
                 </li>
                 <li>
                     <a
