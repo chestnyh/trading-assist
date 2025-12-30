@@ -2,6 +2,7 @@ import { Input } from "../../../shared/ui/forms/Input";
 import { Button } from "../../../shared/ui/buttons/Button";
 import { ArrowLeft } from "../../signInUp/components/icons/ArrowLeft";
 import { ArrowRight } from "../../signInUp/components/icons/ArrowRight";
+import { customInstance } from "@trading-bot/api-client";
 
 interface Step2ContentProps {
   code: string;
@@ -9,7 +10,10 @@ interface Step2ContentProps {
   formError: string | null;
   isLoading: boolean;
   onCodeChange: (value: string) => void;
-  onVerifyCode: () => void;
+  setStep: (step: 2) => void;
+  setIsLoading: (loading: boolean) => void;
+  setFormError: (error: string | null) => void;
+  setCodeError: (error: string | null) => void;
   onBack: () => void;
 }
 
@@ -19,9 +23,86 @@ export function Step2Content({
   formError,
   isLoading,
   onCodeChange,
-  onVerifyCode,
+  setStep,
+  setIsLoading,
+  setFormError,
+  setCodeError,
   onBack,
 }: Step2ContentProps) {
+  const handleVerifyCode = async () => {
+    try {
+      setIsLoading(true);
+      setFormError(null);
+      setCodeError(null);
+
+      const token = localStorage.getItem("password_reset_token") ?? "";
+      if (!token) {
+        setFormError("Invalid or expired token. Please start the reset process again.");
+        setIsLoading(false);
+        return;
+      }
+
+      await customInstance<{ message: string }>(
+        "/api/v1/auth/verify-password-reset",
+        {
+          method: "POST",
+          body: JSON.stringify({ code, token }),
+        }
+      );
+
+      setStep(2);
+    } catch (e: any) {
+      let errorMessage = "Invalid or expired code. Please try again.";
+
+      if (e?.isNetworkError) {
+        errorMessage = e.message || "Failed to connect to the server. Make sure the backend is running.";
+        setFormError(errorMessage);
+        setIsLoading(false);
+        return;
+      }
+
+      if (e?.message === 'Validation failed' && e?.errors && Array.isArray(e.errors)) {
+        const codeError = e.errors.find((err: any) => err.path?.includes('code'));
+        if (codeError) {
+          setCodeError(codeError.message);
+          setIsLoading(false);
+          return;
+        }
+        const tokenError = e.errors.find((err: any) => err.path?.includes('token'));
+        if (tokenError) {
+          setFormError(tokenError.message);
+          setIsLoading(false);
+          return;
+        }
+        errorMessage = e.errors[0]?.message ?? errorMessage;
+      } else if (e?.message) {
+        errorMessage = e.message;
+        if (e?.errors && Array.isArray(e.errors) && e.errors.length > 0) {
+          const codeError = e.errors.find((err: any) => err.path?.includes('code'));
+          if (codeError) {
+            setCodeError(codeError.message);
+            setIsLoading(false);
+            return;
+          }
+        }
+      } else if (e?.errors && Array.isArray(e.errors) && e.errors.length > 0) {
+        const codeError = e.errors.find((err: any) => err.path?.includes('code'));
+        if (codeError) {
+          setCodeError(codeError.message);
+          setIsLoading(false);
+          return;
+        }
+        errorMessage = e.errors[0]?.message ?? errorMessage;
+      } else if (typeof e === 'string') {
+        errorMessage = e;
+      }
+
+      setFormError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
       {formError && (
@@ -50,7 +131,7 @@ export function Step2Content({
         <Button
           text="Reset password"
           rightIcon={<ArrowRight />}
-          onClick={onVerifyCode}
+          onClick={handleVerifyCode}
           disabled={isLoading || !code}
         />
       </div>
