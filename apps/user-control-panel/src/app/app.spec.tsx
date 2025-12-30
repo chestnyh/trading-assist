@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
 
 import App from './app';
 
@@ -19,22 +18,7 @@ jest.mock('./contexts/AuthContext', () => ({
 
 describe('App', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    );
+    const { baseElement } = render(<App />);
     expect(baseElement).toBeTruthy();
   });
-
-  it('should redirect to sign-in when user is not authenticated', () => {
-    const { container } = render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    );
-    // The app should redirect to /auth/sign-in when not authenticated
-    // We can check that some auth-related element is present
-    expect(container.firstChild).toBeTruthy();
-  });
-});
+})
