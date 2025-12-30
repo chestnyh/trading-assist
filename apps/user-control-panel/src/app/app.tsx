@@ -2,9 +2,7 @@ import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import { HtmlEntryPoint } from '../features/htmlEntryPoint';
 import { Main } from '../features/mainPage/Main';
 import { SignIn } from '../features/signIn/SignIn';
-import { RestorePassword1 } from '../features/restorePassword/RestorePassword1';
-import { RestorePassword2 } from '../features/restorePassword/RestorePassword2';
-import { RestorePassword3 } from '../features/restorePassword/RestorePassword3';
+import { RestorePassword } from '../features/restorePassword/RestorePassword';
 import Dashboard from '../features/dashboard/Dashboard';
 import { SignUpProvider } from './contexts/SignUpContext';
 import SignUp from '../features/signInUp/SignUp';
@@ -30,9 +28,7 @@ export default function App() {
                 </SignUpProvider>
               }
             />
-            <Route path='/restore-password-1' element={<RestorePassword1 />} />
-            <Route path='/restore-password-2' element={<RestorePassword2 />} />
-            <Route path='/restore-password-3' element={<RestorePassword3 />} />
+            <Route path='/restore-password' element={<RestorePassword />} />
             <Route path='/sign-in' element={<SignIn />} />
             <Route path="/main" element={<Main />} />
             <Route path="/dashboard" element={<Dashboard />} />

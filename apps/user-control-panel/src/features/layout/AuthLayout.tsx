@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ComponentType, ReactNode } from "react";
 import logo from "../../shared/components/logo.svg";
 import { FormProgressBar } from "../signInUp/components/FormProgressBar";
 import { ThemeToggle } from "../../shared/ui/buttons/ThemeToggle";
@@ -8,6 +8,7 @@ import { FloatingBlobs } from "../../shared/ui/FloatingBlobs";
 interface AuthLayoutProps {
     currentStep?: number;
     title: string;
+    Illustration?: ComponentType;
     children: ReactNode;
     actions?: ReactNode;
     totalSteps?: number;
@@ -16,6 +17,7 @@ interface AuthLayoutProps {
 export function AuthLayout({
     currentStep,
     title,
+    Illustration,
     children,
     actions,
     totalSteps
@@ -46,6 +48,11 @@ export function AuthLayout({
                             <TypewriterText text="Ready to take your trading to the next level?" speed={120} />
                         </div>
 
+                        {Illustration && (
+                            <div className="mt-10 w-full">
+                                <Illustration />
+                            </div>
+                        )}
                     </div>
                 </div>
 
