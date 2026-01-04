@@ -38,6 +38,14 @@ Object.defineProperty(window, 'localStorage', {
     value: localStorageMock,
 });
 
+// Test constants for button labels
+const BUTTON_LABELS = {
+    SEND_CODE_ON_EMAIL: /send me code on email/i,
+    RESET_PASSWORD: /reset password/i,
+    SET_UP_NEW_PASSWORD: /set up new password/i,
+    BACK: /^back$/i,
+} as const;
+
 describe('RestorePassword', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -71,13 +79,13 @@ describe('RestorePassword', () => {
         it('renders "Send me code on email" button on step 1', async () => {
             await setup();
 
-            expect(screen.getByRole('button', { name: /send me code on email/i })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL })).toBeInTheDocument();
         });
 
         it('disables submit button when email is empty', async () => {
             await setup();
 
-            const submitButton = screen.getByRole('button', { name: /send me code on email/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
             expect(submitButton).toHaveProperty('disabled', true);
         });
 
@@ -87,7 +95,7 @@ describe('RestorePassword', () => {
             const emailInput = screen.getByLabelText(/email/i);
             await user.type(emailInput, 'test@example.com');
 
-            const submitButton = screen.getByRole('button', { name: /send me code on email/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
             await waitFor(() => {
                 expect(submitButton).not.toHaveProperty('disabled', true);
             });
@@ -104,7 +112,7 @@ describe('RestorePassword', () => {
             const emailInput = screen.getByLabelText(/email/i);
             await user.type(emailInput, 'test@example.com');
 
-            const submitButton = screen.getByRole('button', { name: /send me code on email/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -137,7 +145,7 @@ describe('RestorePassword', () => {
             const emailInput = screen.getByLabelText(/email/i);
             await user.type(emailInput, 'test@example.com');
 
-            const submitButton = screen.getByRole('button', { name: /send me code on email/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -161,7 +169,7 @@ describe('RestorePassword', () => {
             const emailInput = screen.getByLabelText(/email/i);
             await user.type(emailInput, 'invalid-email');
 
-            const submitButton = screen.getByRole('button', { name: /send me code on email/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -179,7 +187,7 @@ describe('RestorePassword', () => {
             const emailInput = screen.getByLabelText(/email/i);
             await user.type(emailInput, 'test@example.com');
 
-            const submitButton = screen.getByRole('button', { name: /send me code on email/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -202,7 +210,7 @@ describe('RestorePassword', () => {
 
             const emailInput = screen.getByLabelText(/email/i);
             await user.type(emailInput, 'invalid');
-            const submitButton = screen.getByRole('button', { name: /send me code on email/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -226,7 +234,7 @@ describe('RestorePassword', () => {
 
             const emailInput = screen.getByLabelText(/email/i);
             await user.type(emailInput, 'test@example.com');
-            const submitButton = screen.getByRole('button', { name: /send me code on email/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -238,6 +246,25 @@ describe('RestorePassword', () => {
 
             await waitFor(() => {
                 expect(screen.queryByText(/user not found/i)).toBeNull();
+            });
+        });
+
+        it('disables submit button while loading on step 1', async () => {
+            mockCustomInstance.mockImplementation(
+                () => new Promise((resolve) => setTimeout(() => resolve({ token: 'test', message: 'ok' }), 100))
+            );
+
+            const { user } = await setup();
+
+            const emailInput = screen.getByLabelText(/email/i);
+            await user.type(emailInput, 'test@example.com');
+
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
+            await user.click(submitButton);
+
+            // Button should be disabled while loading
+            await waitFor(() => {
+                expect(submitButton).toHaveProperty('disabled', true);
             });
         });
     });
@@ -252,7 +279,7 @@ describe('RestorePassword', () => {
             const emailInput = screen.getByLabelText(/email/i);
             await user.type(emailInput, 'test@example.com');
 
-            const submitButton = screen.getByRole('button', { name: /send me code on email/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -272,15 +299,15 @@ describe('RestorePassword', () => {
             const { user } = await setup();
             await navigateToStep2(user);
 
-            expect(screen.getByRole('button', { name: /^back$/i })).toBeInTheDocument();
-            expect(screen.getByRole('button', { name: /reset password/i })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: BUTTON_LABELS.BACK })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD })).toBeInTheDocument();
         });
 
         it('disables submit button when code is empty', async () => {
             const { user } = await setup();
             await navigateToStep2(user);
 
-            const submitButton = screen.getByRole('button', { name: /reset password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
             expect(submitButton).toHaveProperty('disabled', true);
         });
 
@@ -291,7 +318,7 @@ describe('RestorePassword', () => {
             const codeInput = screen.getByLabelText(/secret code/i);
             await user.type(codeInput, '123456');
 
-            const submitButton = screen.getByRole('button', { name: /reset password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
             await waitFor(() => {
                 expect(submitButton).not.toHaveProperty('disabled', true);
             });
@@ -301,7 +328,7 @@ describe('RestorePassword', () => {
             const { user } = await setup();
             await navigateToStep2(user);
 
-            const backButton = screen.getByRole('button', { name: /^back$/i });
+            const backButton = screen.getByRole('button', { name: BUTTON_LABELS.BACK });
             await user.click(backButton);
 
             await waitFor(() => {
@@ -321,7 +348,7 @@ describe('RestorePassword', () => {
             const codeInput = screen.getByLabelText(/secret code/i);
             await user.type(codeInput, '123456');
 
-            const submitButton = screen.getByRole('button', { name: /reset password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -349,7 +376,7 @@ describe('RestorePassword', () => {
             const codeInput = screen.getByLabelText(/secret code/i);
             await user.type(codeInput, '123456');
 
-            const submitButton = screen.getByRole('button', { name: /reset password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -371,7 +398,7 @@ describe('RestorePassword', () => {
             const codeInput = screen.getByLabelText(/secret code/i);
             await user.type(codeInput, '123456');
 
-            const submitButton = screen.getByRole('button', { name: /reset password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -399,7 +426,7 @@ describe('RestorePassword', () => {
             const codeInput = screen.getByLabelText(/secret code/i);
             // Type something to enable button, then submit - API will return validation error
             await user.type(codeInput, '123');
-            const submitButton = screen.getByRole('button', { name: /reset password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -421,7 +448,7 @@ describe('RestorePassword', () => {
             const codeInput = screen.getByLabelText(/secret code/i);
             await user.type(codeInput, 'wrong-code');
 
-            const submitButton = screen.getByRole('button', { name: /reset password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -449,7 +476,7 @@ describe('RestorePassword', () => {
             const codeInput = screen.getByLabelText(/secret code/i);
             // Type something invalid to trigger error
             await user.type(codeInput, '123');
-            const submitButton = screen.getByRole('button', { name: /reset password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -478,7 +505,7 @@ describe('RestorePassword', () => {
 
             const codeInput = screen.getByLabelText(/secret code/i);
             await user.type(codeInput, 'wrong');
-            const submitButton = screen.getByRole('button', { name: /reset password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -493,6 +520,41 @@ describe('RestorePassword', () => {
                 expect(screen.queryByText(/invalid or expired code/i)).toBeNull();
             }, { timeout: 3000 });
         });
+
+        it('disables submit button while loading on step 2', async () => {
+            localStorageMock.setItem('password_reset_token', 'test-token-123');
+            mockCustomInstance
+                .mockResolvedValueOnce({
+                    token: 'test-token-123',
+                    message: 'Password reset code sent to your email',
+                })
+                .mockImplementation(
+                    () => new Promise((resolve) => setTimeout(() => resolve({ message: 'ok' }), 100))
+                );
+
+            const { user } = await setup();
+
+            const emailInput = screen.getByLabelText(/email/i);
+            await user.type(emailInput, 'test@example.com');
+
+            const submitButton1 = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
+            await user.click(submitButton1);
+
+            await waitFor(() => {
+                expect(screen.getByText(/insert code/i)).toBeInTheDocument();
+            });
+
+            const codeInput = screen.getByLabelText(/secret code/i);
+            await user.type(codeInput, '123456');
+
+            const submitButton2 = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
+            await user.click(submitButton2);
+
+            // Button should be disabled while loading
+            await waitFor(() => {
+                expect(submitButton2).toHaveProperty('disabled', true);
+            });
+        });
     });
 
     describe('Step 3: Password Reset', () => {
@@ -506,7 +568,7 @@ describe('RestorePassword', () => {
             const emailInput = screen.getByLabelText(/email/i);
             await user.type(emailInput, 'test@example.com');
 
-            const submitButton1 = screen.getByRole('button', { name: /send me code on email/i });
+            const submitButton1 = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
             await user.click(submitButton1);
 
             await waitFor(() => {
@@ -522,7 +584,7 @@ describe('RestorePassword', () => {
             const codeInput = screen.getByLabelText(/secret code/i);
             await user.type(codeInput, '123456');
 
-            const submitButton2 = screen.getByRole('button', { name: /reset password/i });
+            const submitButton2 = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
             await user.click(submitButton2);
 
             await waitFor(() => {
@@ -558,14 +620,14 @@ describe('RestorePassword', () => {
             const { user } = await setup();
             await navigateToStep3(user);
 
-            expect(screen.getByRole('button', { name: /set up new password/i })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD })).toBeInTheDocument();
         });
 
         it('disables submit button when password is empty', async () => {
             const { user } = await setup();
             await navigateToStep3(user);
 
-            const submitButton = screen.getByRole('button', { name: /set up new password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
             expect(submitButton).toHaveProperty('disabled', true);
         });
 
@@ -576,7 +638,7 @@ describe('RestorePassword', () => {
             const passwordInput = screen.getByPlaceholderText(/enter new password/i);
             await user.type(passwordInput, 'Password123*');
 
-            const submitButton = screen.getByRole('button', { name: /set up new password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
             expect(submitButton).toHaveProperty('disabled', true);
         });
 
@@ -590,7 +652,7 @@ describe('RestorePassword', () => {
             const confirmPasswordInput = screen.getByPlaceholderText(/confirm new password/i);
             await user.type(confirmPasswordInput, 'Password123*');
 
-            const submitButton = screen.getByRole('button', { name: /set up new password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
             await waitFor(() => {
                 expect(submitButton).not.toHaveProperty('disabled', true);
             });
@@ -606,7 +668,7 @@ describe('RestorePassword', () => {
             const confirmPasswordInput = screen.getByPlaceholderText(/confirm new password/i);
             await user.type(confirmPasswordInput, 'DifferentPassword123*');
 
-            const submitButton = screen.getByRole('button', { name: /set up new password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -629,7 +691,7 @@ describe('RestorePassword', () => {
             const confirmPasswordInput = screen.getByPlaceholderText(/confirm new password/i);
             await user.type(confirmPasswordInput, 'NewPassword123*');
 
-            const submitButton = screen.getByRole('button', { name: /set up new password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -667,7 +729,7 @@ describe('RestorePassword', () => {
             const confirmPasswordInput = screen.getByPlaceholderText(/confirm new password/i);
             await user.type(confirmPasswordInput, 'NewPassword123*');
 
-            const submitButton = screen.getByRole('button', { name: /set up new password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -693,7 +755,7 @@ describe('RestorePassword', () => {
             const confirmPasswordInput = screen.getByPlaceholderText(/confirm new password/i);
             await user.type(confirmPasswordInput, 'NewPassword123*');
 
-            const submitButton = screen.getByRole('button', { name: /set up new password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -724,7 +786,7 @@ describe('RestorePassword', () => {
             const confirmPasswordInput = screen.getByPlaceholderText(/confirm new password/i);
             await user.type(confirmPasswordInput, 'Short1*');
 
-            const submitButton = screen.getByRole('button', { name: /set up new password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -749,7 +811,7 @@ describe('RestorePassword', () => {
             const confirmPasswordInput = screen.getByPlaceholderText(/confirm new password/i);
             await user.type(confirmPasswordInput, 'NewPassword123*');
 
-            const submitButton = screen.getByRole('button', { name: /set up new password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -778,7 +840,7 @@ describe('RestorePassword', () => {
             const confirmPasswordInput = screen.getByPlaceholderText(/confirm new password/i);
             await user.type(confirmPasswordInput, 'Short1*');
 
-            const submitButton = screen.getByRole('button', { name: /set up new password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -803,7 +865,7 @@ describe('RestorePassword', () => {
             const confirmPasswordInput = screen.getByPlaceholderText(/confirm new password/i);
             await user.type(confirmPasswordInput, 'Different123*');
 
-            const submitButton = screen.getByRole('button', { name: /set up new password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -833,7 +895,7 @@ describe('RestorePassword', () => {
             const confirmPasswordInput = screen.getByPlaceholderText(/confirm new password/i);
             await user.type(confirmPasswordInput, 'NewPassword123*');
 
-            const submitButton = screen.getByRole('button', { name: /set up new password/i });
+            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
             await user.click(submitButton);
 
             await waitFor(() => {
@@ -845,110 +907,6 @@ describe('RestorePassword', () => {
 
             await waitFor(() => {
                 expect(screen.queryByText(/token has expired/i)).toBeNull();
-            });
-        });
-    });
-
-    describe('Step Navigation', () => {
-        it('displays correct step title for each step', async () => {
-            const { user } = await setup();
-
-            // Step 1
-            expect(screen.getByText(/insert your email/i)).toBeInTheDocument();
-
-            // Navigate to Step 2
-            mockCustomInstance.mockResolvedValue({
-                token: 'test-token-123',
-                message: 'Password reset code sent to your email',
-            });
-
-            const emailInput = screen.getByLabelText(/email/i);
-            await user.type(emailInput, 'test@example.com');
-
-            const submitButton1 = screen.getByRole('button', { name: /send me code on email/i });
-            await user.click(submitButton1);
-
-            await waitFor(() => {
-                expect(screen.getByText(/insert code/i)).toBeInTheDocument();
-            });
-
-            // Navigate to Step 3
-            localStorageMock.setItem('password_reset_token', 'test-token-123');
-            mockCustomInstance.mockResolvedValue({
-                message: 'Code verified successfully',
-            });
-
-            const codeInput = screen.getByLabelText(/secret code/i);
-            await user.type(codeInput, '123456');
-
-            const submitButton2 = screen.getByRole('button', { name: /reset password/i });
-            await user.click(submitButton2);
-
-            await waitFor(() => {
-                expect(screen.getByText(/enter new password/i)).toBeInTheDocument();
-            });
-        });
-
-        it('cannot go back from step 1', async () => {
-            await setup();
-
-            // There should be no back button on step 1
-            expect(screen.queryByRole('button', { name: /^back$/i })).not.toBeInTheDocument();
-        });
-    });
-
-    describe('Loading States', () => {
-        it('disables submit button while loading on step 1', async () => {
-            mockCustomInstance.mockImplementation(
-                () => new Promise((resolve) => setTimeout(() => resolve({ token: 'test', message: 'ok' }), 100))
-            );
-
-            const { user } = await setup();
-
-            const emailInput = screen.getByLabelText(/email/i);
-            await user.type(emailInput, 'test@example.com');
-
-            const submitButton = screen.getByRole('button', { name: /send me code on email/i });
-            await user.click(submitButton);
-
-            // Button should be disabled while loading
-            await waitFor(() => {
-                expect(submitButton).toHaveProperty('disabled', true);
-            });
-        });
-
-        it('disables submit button while loading on step 2', async () => {
-            localStorageMock.setItem('password_reset_token', 'test-token-123');
-            mockCustomInstance
-                .mockResolvedValueOnce({
-                    token: 'test-token-123',
-                    message: 'Password reset code sent to your email',
-                })
-                .mockImplementation(
-                    () => new Promise((resolve) => setTimeout(() => resolve({ message: 'ok' }), 100))
-                );
-
-            const { user } = await setup();
-
-            const emailInput = screen.getByLabelText(/email/i);
-            await user.type(emailInput, 'test@example.com');
-
-            const submitButton1 = screen.getByRole('button', { name: /send me code on email/i });
-            await user.click(submitButton1);
-
-            await waitFor(() => {
-                expect(screen.getByText(/insert code/i)).toBeInTheDocument();
-            });
-
-            const codeInput = screen.getByLabelText(/secret code/i);
-            await user.type(codeInput, '123456');
-
-            const submitButton2 = screen.getByRole('button', { name: /reset password/i });
-            await user.click(submitButton2);
-
-            // Button should be disabled while loading
-            await waitFor(() => {
-                expect(submitButton2).toHaveProperty('disabled', true);
             });
         });
 
@@ -971,7 +929,7 @@ describe('RestorePassword', () => {
             const emailInput = screen.getByLabelText(/email/i);
             await user.type(emailInput, 'test@example.com');
 
-            const submitButton1 = screen.getByRole('button', { name: /send me code on email/i });
+            const submitButton1 = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
             await user.click(submitButton1);
 
             await waitFor(() => {
@@ -981,7 +939,7 @@ describe('RestorePassword', () => {
             const codeInput = screen.getByLabelText(/secret code/i);
             await user.type(codeInput, '123456');
 
-            const submitButton2 = screen.getByRole('button', { name: /reset password/i });
+            const submitButton2 = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
             await user.click(submitButton2);
 
             await waitFor(() => {
@@ -994,13 +952,61 @@ describe('RestorePassword', () => {
             const confirmPasswordInput = screen.getByPlaceholderText(/confirm new password/i);
             await user.type(confirmPasswordInput, 'NewPassword123*');
 
-            const submitButton3 = screen.getByRole('button', { name: /set up new password/i });
+            const submitButton3 = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
             await user.click(submitButton3);
 
             // Button should be disabled while loading
             await waitFor(() => {
                 expect(submitButton3).toHaveProperty('disabled', true);
             });
+        });
+    });
+
+    describe('Step Navigation', () => {
+        it('displays correct step title for each step', async () => {
+            const { user } = await setup();
+
+            // Step 1
+            expect(screen.getByText(/insert your email/i)).toBeInTheDocument();
+
+            // Navigate to Step 2
+            mockCustomInstance.mockResolvedValue({
+                token: 'test-token-123',
+                message: 'Password reset code sent to your email',
+            });
+
+            const emailInput = screen.getByLabelText(/email/i);
+            await user.type(emailInput, 'test@example.com');
+
+            const submitButton1 = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
+            await user.click(submitButton1);
+
+            await waitFor(() => {
+                expect(screen.getByText(/insert code/i)).toBeInTheDocument();
+            });
+
+            // Navigate to Step 3
+            localStorageMock.setItem('password_reset_token', 'test-token-123');
+            mockCustomInstance.mockResolvedValue({
+                message: 'Code verified successfully',
+            });
+
+            const codeInput = screen.getByLabelText(/secret code/i);
+            await user.type(codeInput, '123456');
+
+            const submitButton2 = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
+            await user.click(submitButton2);
+
+            await waitFor(() => {
+                expect(screen.getByText(/enter new password/i)).toBeInTheDocument();
+            });
+        });
+
+        it('cannot go back from step 1', async () => {
+            await setup();
+
+            // There should be no back button on step 1
+            expect(screen.queryByRole('button', { name: BUTTON_LABELS.BACK })).not.toBeInTheDocument();
         });
     });
 });
