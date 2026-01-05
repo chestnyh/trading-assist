@@ -468,18 +468,10 @@ The application uses a centralized routing system with authentication-aware redi
 
 #### Authentication Routes
 
-The following routes are protected with authentication-aware redirects:
-
-##### `/sign-in`
-- **Unauthenticated users**: Displays the Sign In form
-- **Authenticated users**: Automatically redirected to `/dashboard`
+The following route is protected with authentication-aware redirects:
 
 ##### `/sign-up`
 - **Unauthenticated users**: Displays the Sign Up form
-- **Authenticated users**: Automatically redirected to `/dashboard`
-
-##### `/restore-password`
-- **Unauthenticated users**: Displays the Restore Password form
 - **Authenticated users**: Automatically redirected to `/dashboard`
 
 #### Protected Routes
@@ -495,14 +487,14 @@ The following routes are protected with authentication-aware redirects:
 #### Error Handling Routes
 
 ##### 404 Page (Not Found)
-- **Unauthenticated users**: Automatically redirected to `/sign-in` when accessing non-existent pages
+- **Unauthenticated users**: Automatically redirected to authentication page when accessing non-existent pages
 - **Authenticated users**: Displays a 404 error page with navigation options to return to the dashboard
 
 ### Technical Implementation
 
 #### Authentication Route Component
 
-The `AuthRoute` component wraps authentication-related pages (`/sign-in`, `/sign-up`, `/restore-password`) and automatically redirects authenticated users to the dashboard:
+The `AuthRoute` component wraps authentication-related pages (including `/sign-up`) and automatically redirects authenticated users to the dashboard:
 
 ```typescript
 // AuthRoute component checks authentication status
@@ -520,17 +512,13 @@ The `AuthRoute` component wraps authentication-related pages (`/sign-in`, `/sign
 
 #### Unauthenticated User Flow
 1. User visits `/` → Sees main page
-2. User visits `/sign-in` → Sees Sign In form
-3. User visits `/sign-up` → Sees Sign Up form
-4. User visits `/restore-password` → Sees Restore Password form
-5. User visits non-existent route (e.g., `/unknown-page`) → Redirected to `/sign-in`
+2. User visits `/sign-up` → Sees Sign Up form
+3. User visits non-existent route (e.g., `/unknown-page`) → Redirected to authentication page
 
 #### Authenticated User Flow
 1. User visits `/` → Sees main page
-2. User visits `/sign-in` → Automatically redirected to `/dashboard`
-3. User visits `/sign-up` → Automatically redirected to `/dashboard`
-4. User visits `/restore-password` → Automatically redirected to `/dashboard`
-5. User visits non-existent route (e.g., `/unknown-page`) → Sees 404 page with option to return to dashboard
+2. User visits `/sign-up` → Automatically redirected to `/dashboard`
+3. User visits non-existent route (e.g., `/unknown-page`) → Sees 404 page with option to return to dashboard
 
 ### Benefits
 
