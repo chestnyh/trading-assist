@@ -450,3 +450,79 @@ Both client-side validation errors and server-side errors are possible at this s
 **Response:**
 - On success: Returns success response indicating account activation
 - On failure: Returns appropriate error messages (e.g., invalid code, expired code, invalid token)
+
+---
+
+## Routing and Redirect Rules
+
+### Overview
+
+The application uses a centralized routing system with authentication-aware redirect rules. The routing configuration ensures proper navigation based on user authentication status and handles edge cases for non-existent pages.
+
+### Route Configuration
+
+#### Root Route (`/`)
+- **Unauthenticated users**: Displays the main page
+- **Authenticated users**: Displays the main page
+- The root route serves as the entry point to the platform
+
+#### Authentication Routes
+
+The following route is protected with authentication-aware redirects:
+
+##### `/sign-up`
+- **Unauthenticated users**: Displays the Sign Up form
+- **Authenticated users**: Automatically redirected to `/dashboard`
+
+#### Protected Routes
+
+##### `/dashboard`
+- **Unauthenticated users**: Access is restricted (handled by route guards)
+- **Authenticated users**: Displays the user dashboard
+
+##### `/main`
+- **Unauthenticated users**: Displays the main page
+- **Authenticated users**: Displays the main page
+
+#### Error Handling Routes
+
+##### 404 Page (Not Found)
+- **Unauthenticated users**: Automatically redirected to authentication page when accessing non-existent pages
+- **Authenticated users**: Displays a 404 error page with navigation options to return to the dashboard
+
+### Technical Implementation
+
+#### Authentication Route Component
+
+The `AuthRoute` component wraps authentication-related pages (including `/sign-up`) and automatically redirects authenticated users to the dashboard:
+
+```typescript
+// AuthRoute component checks authentication status
+// If authenticated: redirect to /dashboard
+// If not authenticated: render the auth form
+```
+
+#### Redirect Logic
+
+- Authentication status is determined using the `useAuth` hook from `AuthContext`
+- Redirects are performed using React Router's `Navigate` component with `replace` prop to prevent back navigation issues
+- The 404 route (`path="*"`) handles all non-existent routes with conditional rendering based on authentication status
+
+### User Experience Flow
+
+#### Unauthenticated User Flow
+1. User visits `/` → Sees main page
+2. User visits `/sign-up` → Sees Sign Up form
+3. User visits non-existent route (e.g., `/unknown-page`) → Redirected to authentication page
+
+#### Authenticated User Flow
+1. User visits `/` → Sees main page
+2. User visits `/sign-up` → Automatically redirected to `/dashboard`
+3. User visits non-existent route (e.g., `/unknown-page`) → Sees 404 page with option to return to dashboard
+
+### Benefits
+
+- **Improved Security**: Prevents authenticated users from accessing authentication forms
+- **Better UX**: Automatically redirects users to appropriate pages based on their authentication status
+- **Consistent Navigation**: Standardized behavior for handling non-existent routes
+- **Simplified Entry Point**: Root route (`/`) serves as the main entry point, eliminating the need for a separate entry point page

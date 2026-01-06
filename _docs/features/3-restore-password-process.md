@@ -523,6 +523,47 @@ Both client-side validation errors and server-side errors are possible at this s
 
 ---
 
+## Routing and Redirect Rules
+
+### Route Configuration
+
+#### `/restore-password`
+- **Unauthenticated users**: Displays the Restore Password form
+- **Authenticated users**: Automatically redirected to `/dashboard`
+
+### Technical Implementation
+
+#### Authentication Route Component
+
+The `AuthRoute` component wraps the `/restore-password` page and automatically redirects authenticated users to the dashboard:
+
+```typescript
+// AuthRoute component checks authentication status
+// If authenticated: redirect to /dashboard
+// If not authenticated: render the restore password form
+```
+
+#### Redirect Logic
+
+- Authentication status is determined using the `useAuth` hook from `AuthContext`
+- Redirects are performed using React Router's `Navigate` component with `replace` prop to prevent back navigation issues
+
+### User Experience Flow
+
+#### Unauthenticated User Flow
+- User visits `/restore-password` → Sees Restore Password form
+
+#### Authenticated User Flow
+- User visits `/restore-password` → Automatically redirected to `/dashboard`
+
+### Benefits
+
+- **Improved Security**: Prevents authenticated users from accessing the restore password form
+- **Better UX**: Automatically redirects authenticated users to the dashboard
+- **Consistent Navigation**: Standardized behavior for handling authentication routes
+
+---
+
 ## References
 
 - API Endpoint: `POST /api/v1/auth/forgot-password` (TODO add link to API documentation)

@@ -324,8 +324,49 @@ Both client-side validation errors and server-side errors are possible:
 
 ---
 
+## Routing and Redirect Rules
+
+### Route Configuration
+
+#### `/sign-in`
+- **Unauthenticated users**: Displays the Sign In form
+- **Authenticated users**: Automatically redirected to `/dashboard`
+
+### Technical Implementation
+
+#### Authentication Route Component
+
+The `AuthRoute` component wraps the `/sign-in` page and automatically redirects authenticated users to the dashboard:
+
+```typescript
+// AuthRoute component checks authentication status
+// If authenticated: redirect to /dashboard
+// If not authenticated: render the sign-in form
+```
+
+#### Redirect Logic
+
+- Authentication status is determined using the `useAuth` hook from `AuthContext`
+- Redirects are performed using React Router's `Navigate` component with `replace` prop to prevent back navigation issues
+
+### User Experience Flow
+
+#### Unauthenticated User Flow
+- User visits `/sign-in` → Sees Sign In form
+
+#### Authenticated User Flow
+- User visits `/sign-in` → Automatically redirected to `/dashboard`
+
+### Benefits
+
+- **Improved Security**: Prevents authenticated users from accessing the sign-in form
+- **Better UX**: Automatically redirects authenticated users to the dashboard
+- **Consistent Navigation**: Standardized behavior for handling authentication routes
+
+---
+
 ## References
 
 - API Endpoint: `POST /api/v1/auth/login` (TODO add link to API documentation)
 - Sign-Up Process: See [Sign-Up Process Documentation](./1-sign-up-process.md)
-- Password Recovery: See Password Recovery Documentation (TODO add link when available)
+- Password Recovery: See [Restore Password Process Documentation](./3-restore-password-process.md)

@@ -1,5 +1,4 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import { HtmlEntryPoint } from '../features/htmlEntryPoint';
 import { Main } from '../features/mainPage/Main';
 import { SignIn } from '../features/signIn/SignIn';
 import { RestorePassword } from '../features/restorePassword/RestorePassword';
@@ -7,6 +6,52 @@ import Dashboard from '../features/dashboard/Dashboard';
 import { SignUpProvider } from './contexts/SignUpContext';
 import SignUp from '../features/signInUp/SignUp';
 import { AppProviders } from './providers/AppProviders';
+import { AuthRoute } from './components/AuthRoute';
+import { NotFound } from '../features/notFound/NotFound';
+import { RedirectToSignIn } from './components/RedirectToSignIn';
+import { useAuth } from './contexts/AuthContext';
+
+function AppRoutes() {
+  const { isAuthenticated } = useAuth();
+
+  return (
+    <Routes>
+      <Route path="/" element={<Main />} />
+      <Route
+        path="/sign-in"
+        element={
+          <AuthRoute>
+            <SignIn />
+          </AuthRoute>
+        }
+      />
+      <Route
+        path="/sign-up"
+        element={
+          <AuthRoute>
+            <SignUpProvider>
+              <SignUp />
+            </SignUpProvider>
+          </AuthRoute>
+        }
+      />
+      <Route
+        path="/restore-password"
+        element={
+          <AuthRoute>
+            <RestorePassword />
+          </AuthRoute>
+        }
+      />
+      <Route path="/main" element={<Main />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route
+        path="*"
+        element={isAuthenticated ? <NotFound /> : <RedirectToSignIn />}
+      />
+    </Routes>
+  );
+}
 
 export default function App() {
   return (
@@ -18,21 +63,7 @@ export default function App() {
     >
       <AppProviders>
         <div className="min-h-screen bg-background transition-colors duration-300">
-          <Routes>
-            <Route path="/" element={<HtmlEntryPoint />} />
-            <Route
-              path="/sign-up"
-              element={
-                <SignUpProvider>
-                  <SignUp />
-                </SignUpProvider>
-              }
-            />
-            <Route path='/restore-password' element={<RestorePassword />} />
-            <Route path='/sign-in' element={<SignIn />} />
-            <Route path="/main" element={<Main />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Routes>
+          <AppRoutes />
         </div>
       </AppProviders>
     </BrowserRouter>
