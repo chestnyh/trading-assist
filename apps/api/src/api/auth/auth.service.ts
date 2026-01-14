@@ -1,5 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { Injectable, BadRequestException, NotFoundException, UnauthorizedException, HttpException, HttpStatus } from '@nestjs/common';import { JwtService } from '@nestjs/jwt';
 import { ModelsService } from '@trading-bot/models';
 import { ServicesConfigs } from '@trading-bot/configs';
 import { CryptoUtilsService } from '@trading-bot/crypto-utils';
@@ -124,6 +123,7 @@ export class AuthService {
   /**
    * Verify password reset code - Step 2
    * Validates token and code, marks as verified
+   * Implements brute-force protection with attempt tracking
    */
   async verifyPasswordReset(token: string, code: string) {
     // Find password reset record by token
@@ -147,12 +147,58 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or expired token. Please start the password reset process again.');
     }
 
-    // Verify the code matches
-    if (passwordReset.code !== code) {
-      throw new BadRequestException('Invalid verification code. Please check your email and try again.');
+    // Get maximum attempts from configuration
+    const maxAttempts = this.configService.get('MAX_PASSWORD_RESET_ATTEMPTS');
+    const maxAttemptsNumber = maxAttempts ? parseInt(maxAttempts, 10) : 5;
+
+    // Check if attempts limit has been exceeded
+    if (passwordReset.attemptsCount >= maxAttemptsNumber) {
+      // Delete the reset record to invalidate token
+      await this.modelsService.passwordReset.delete({
+        where: { id: passwordReset.id },
+      });
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.TOO_MANY_REQUESTS,
+          message: 'Maximum attempts exceeded. Please request a new password reset email.',
+          remainingAttempts: 0,
+        },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
     }
 
-    // Mark as verified
+    // Verify the code matches
+    if (passwordReset.code !== code) {
+      // Atomically increment attempts count
+      const updatedPasswordReset = await this.modelsService.passwordReset.update({
+        where: { id: passwordReset.id },
+        data: {
+          attemptsCount: { increment: 1 },
+        },
+      });
+
+      // Check if limit was just reached after increment
+      if (updatedPasswordReset.attemptsCount >= maxAttemptsNumber) {
+        // Delete the reset record to invalidate token
+        await this.modelsService.passwordReset.delete({
+          where: { id: passwordReset.id },
+        });
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.TOO_MANY_REQUESTS,
+            message: 'Maximum attempts exceeded. Please request a new password reset email.',
+            remainingAttempts: 0,
+          },
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
+
+      // Calculate remaining attempts
+      const remainingAttempts = maxAttemptsNumber - updatedPasswordReset.attemptsCount;
+      throw new BadRequestException(`Invalid code. Remaining attempts: ${remainingAttempts}.`);
+    }
+
+    // Code is correct - Mark as verified
     await this.modelsService.passwordReset.update({
       where: { id: passwordReset.id },
       data: {

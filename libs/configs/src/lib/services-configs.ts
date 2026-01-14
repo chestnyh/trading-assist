@@ -23,12 +23,14 @@ export class ServicesConfigs extends Configs {
       DB_PORT: process.env['DB_PORT'] ? parseInt(process.env['DB_PORT'], 10).toString() : '5432',
       JWT_SECRET: process.env['JWT_SECRET'] || 'your-secret-key',
       JWT_EXPIRES_IN: process.env['JWT_EXPIRES_IN'] || '24h',
+      MAX_PASSWORD_RESET_ATTEMPTS: process.env['MAX_PASSWORD_RESET_ATTEMPTS'] ? parseInt(process.env['MAX_PASSWORD_RESET_ATTEMPTS'], 10).toString() : '5',
     };
   }
 
   protected init(): void {
     this.configs = {
-      PORT: process.env.PORT,
+      ...this.configs,
+      PORT: process.env['PORT'] || this.configs?.['PORT'] || '3000',
     };
   }
 }

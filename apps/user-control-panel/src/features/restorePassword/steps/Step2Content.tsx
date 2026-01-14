@@ -15,6 +15,7 @@ interface Step2ContentProps {
   setFormError: (error: string | null) => void;
   setCodeError: (error: string | null) => void;
   onBack: () => void;
+  onRequestNewCode?: () => void;
 }
 
 export function Step2Content({
@@ -28,7 +29,13 @@ export function Step2Content({
   setFormError,
   setCodeError,
   onBack,
+  onRequestNewCode,
 }: Step2ContentProps) {
+  // Перевірка, чи перевищено ліміт спроб
+  const isMaxAttemptsExceeded = 
+    formError?.toLowerCase().includes("maximum attempts exceeded") || 
+    formError?.toLowerCase().includes("too many requests");
+
   const handleVerifyCode = async () => {
     try {
       setIsLoading(true);
@@ -52,61 +59,62 @@ export function Step2Content({
 
       setStep(2);
     } catch (e: any) {
-      let errorMessage = "Invalid or expired code. Please try again.";
-
-      if (e?.isNetworkError) {
-        errorMessage = e.message || "Failed to connect to the server. Make sure the backend is running.";
-        setFormError(errorMessage);
-        setIsLoading(false);
+      // 1. Обробка 429 (Забагато спроб)
+      if (e?.status === 429 || e?.statusCode === 429) {
+        const msg = e?.message || "Maximum attempts exceeded. This session has been invalidated.";
+        setFormError(msg);
+        localStorage.removeItem("password_reset_token");
         return;
       }
 
-      if (e?.message === 'Validation failed' && e?.errors && Array.isArray(e.errors)) {
-        const codeError = e.errors.find((err: any) => err.path?.includes('code'));
-        if (codeError) {
-          setCodeError(codeError.message);
-          setIsLoading(false);
+      // 2. Обробка 401 (Невірний/прострочений токен)
+      if (e?.status === 401 || e?.statusCode === 401) {
+        setFormError("Session invalid or expired. Please request a new code.");
+        localStorage.removeItem("password_reset_token");
+        return;
+      }
+
+      // 3. Обробка інших помилок (включаючи "Remaining attempts" при 400 Bad Request)
+      let errorMessage = e?.message || "Invalid code. Please try again.";
+
+      // Перевіряємо, чи є вкладені помилки валідації
+      if (e?.errors && Array.isArray(e.errors)) {
+        const specificCodeError = e.errors.find((err: any) => err.path?.includes('code'));
+        if (specificCodeError) {
+          setCodeError(specificCodeError.message);
           return;
         }
-        const tokenError = e.errors.find((err: any) => err.path?.includes('token'));
-        if (tokenError) {
-          setFormError(tokenError.message);
-          setIsLoading(false);
-          return;
-        }
-        errorMessage = e.errors[0]?.message ?? errorMessage;
-      } else if (e?.message) {
-        errorMessage = e.message;
-        if (e?.errors && Array.isArray(e.errors) && e.errors.length > 0) {
-          const codeError = e.errors.find((err: any) => err.path?.includes('code'));
-          if (codeError) {
-            setCodeError(codeError.message);
-            setIsLoading(false);
-            return;
-          }
-        }
-      } else if (e?.errors && Array.isArray(e.errors) && e.errors.length > 0) {
-        const codeError = e.errors.find((err: any) => err.path?.includes('code'));
-        if (codeError) {
-          setCodeError(codeError.message);
-          setIsLoading(false);
-          return;
-        }
-        errorMessage = e.errors[0]?.message ?? errorMessage;
-      } else if (typeof e === 'string') {
-        errorMessage = e;
+        errorMessage = e.errors[0]?.message || errorMessage;
       }
 
       setFormError(errorMessage);
+      
+      // Якщо помилка стосується коду, дублюємо її під інпутом
+      if (errorMessage.toLowerCase().includes("code")) {
+        setCodeError(errorMessage);
+      }
+
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRequestNewCode = () => {
+    localStorage.removeItem("password_reset_token");
+    setFormError(null);
+    setCodeError(null);
+    onCodeChange("");
+    if (onRequestNewCode) {
+      onRequestNewCode();
+    } else {
+      onBack();
     }
   };
 
   return (
     <>
       {formError && (
-        <div className="mt-2 text-sm text-red-500">
+        <div className={`mt-2 text-sm ${isMaxAttemptsExceeded ? 'text-red-600 font-bold' : 'text-red-500'}`}>
           {formError}
         </div>
       )}
@@ -120,22 +128,34 @@ export function Step2Content({
         onChange={(e) => onCodeChange(e.target.value)}
         error={codeError || undefined}
         required
+        disabled={isMaxAttemptsExceeded}
       />
-      <div className="mt-8 flex justify-between gap-3">
-        <Button
-          text="Back"
-          variant="outline"
-          leftIcon={<ArrowLeft />}
-          onClick={onBack}
-        />
-        <Button
-          text="Reset password"
-          rightIcon={<ArrowRight />}
-          onClick={handleVerifyCode}
-          disabled={isLoading || !code}
-        />
-      </div>
+      {isMaxAttemptsExceeded ? (
+        <div className="mt-8">
+          <Button
+            text="Request New Code"
+            onClick={handleRequestNewCode}
+            disabled={isLoading}
+            className="w-full"
+          />
+        </div>
+      ) : (
+        <div className="mt-8 flex justify-between gap-3">
+          <Button
+            text="Back"
+            variant="outline"
+            leftIcon={<ArrowLeft />}
+            onClick={onBack}
+            disabled={isLoading}
+          />
+          <Button
+            text="Reset password"
+            rightIcon={<ArrowRight />}
+            onClick={handleVerifyCode}
+            disabled={isLoading || !code}
+          />
+        </div>
+      )}
     </>
   );
 }
-
