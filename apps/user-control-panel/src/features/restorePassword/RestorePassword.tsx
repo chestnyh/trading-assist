@@ -26,6 +26,21 @@ export function RestorePassword() {
     setStep((prev) => (prev > 0 ? ((prev - 1) as RestorePasswordStep) : prev));
   };
 
+  const handleRequestNewCode = () => {
+    // Clear all form state and go back to Step 1
+    setEmail("");
+    setCode("");
+    setPassword("");
+    setConfirmPassword("");
+    setFormError(null);
+    setEmailError(null);
+    setCodeError(null);
+    setPasswordError(null);
+    setConfirmPasswordError(null);
+    localStorage.removeItem("password_reset_token");
+    setStep(0);
+  };
+
   const handleEmailChange = (value: string) => {
     setEmail(value);
     setEmailError(null);
@@ -75,6 +90,7 @@ export function RestorePassword() {
       setFormError={setFormError}
       setCodeError={setCodeError}
       onBack={goBack}
+      onRequestNewCode={handleRequestNewCode}
     />,
     <Step3Content
       key="step3"

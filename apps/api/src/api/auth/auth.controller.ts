@@ -94,11 +94,15 @@ export class AuthController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Invalid verification code'
+    description: 'Invalid verification code (with remaining attempts count)'
   })
   @ApiResponse({
     status: 401,
     description: 'Invalid or expired token'
+  })
+  @ApiResponse({
+    status: 429,
+    description: 'Maximum attempts exceeded - token invalidated'
   })
   async verifyPasswordReset(@Body() verifyPasswordResetDto: VerifyPasswordResetDto): Promise<VerifyPasswordResetResponseDto> {
     return this.authService.verifyPasswordReset(
