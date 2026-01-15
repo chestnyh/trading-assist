@@ -25,7 +25,7 @@ export function Input({
     onChange,
     error,
     required = false,
-    disabled = false, // 2. Деструктуризуємо з дефолтним значенням
+    disabled = false,
 }: InputProps) {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === "password";
@@ -43,7 +43,7 @@ export function Input({
                     value={value}
                     placeholder={placeholder}
                     onChange={onChange}
-                    disabled={disabled} // 3. Передаємо в нативний інпут
+                    disabled={disabled}
                     className={`
           w-full h-12
           px-4
@@ -61,7 +61,7 @@ export function Input({
           placeholder:text-text-secondary
         `}
                 />
-                {isPassword && !disabled && ( // Додав !disabled, щоб приховати кнопку ока, якщо інпут заблоковано
+                {isPassword && !disabled && (
                     <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}

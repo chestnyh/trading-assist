@@ -12,5 +12,12 @@ export class VerifyPasswordResetResponseDto {
     example: true
   })
   success: boolean;
-}
 
+  @ApiProperty({
+    description: 'Remaining attempts before the token is invalidated',
+    example: 3,
+    required: false,
+    nullable: true,
+  })
+  remainingAttempts?: number | null;
+}

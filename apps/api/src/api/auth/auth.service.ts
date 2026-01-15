@@ -149,7 +149,7 @@ export class AuthService {
 
     // Get maximum attempts from configuration
     const maxAttempts = this.configService.get('MAX_PASSWORD_RESET_ATTEMPTS');
-    const maxAttemptsNumber = maxAttempts ? parseInt(maxAttempts, 10) : 5;
+    const maxAttemptsNumber = parseInt(maxAttempts, 10);
 
     // Check if attempts limit has been exceeded
     if (passwordReset.attemptsCount >= maxAttemptsNumber) {
@@ -195,7 +195,11 @@ export class AuthService {
 
       // Calculate remaining attempts
       const remainingAttempts = maxAttemptsNumber - updatedPasswordReset.attemptsCount;
-      throw new BadRequestException(`Invalid code. Remaining attempts: ${remainingAttempts}.`);
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: `Invalid code. Remaining attempts: ${remainingAttempts}.`,
+        remainingAttempts,
+      });
     }
 
     // Code is correct - Mark as verified
