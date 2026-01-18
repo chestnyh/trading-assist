@@ -3,10 +3,12 @@ import { Main } from '../features/mainPage/Main';
 import { SignIn } from '../features/signIn/SignIn';
 import { RestorePassword } from '../features/restorePassword/RestorePassword';
 import Dashboard from '../features/dashboard/Dashboard';
+import Settings from '../features/settings/Settings';
 import { SignUpProvider } from './contexts/SignUpContext';
 import SignUp from '../features/signInUp/SignUp';
 import { AppProviders } from './providers/AppProviders';
 import { AuthRoute } from './components/AuthRoute';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { NotFound } from '../features/notFound/NotFound';
 import { RedirectToSignIn } from './components/RedirectToSignIn';
 import { useAuth } from './contexts/AuthContext';
@@ -45,6 +47,14 @@ function AppRoutes() {
       />
       <Route path="/main" element={<Main />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="*"
         element={isAuthenticated ? <NotFound /> : <RedirectToSignIn />}
