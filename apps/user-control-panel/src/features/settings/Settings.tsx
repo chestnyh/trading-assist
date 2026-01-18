@@ -1,17 +1,18 @@
 import ExternalServiceSettingsGroup from "./components/ExternalServiceSettingsGroup";
 
+const LOGOS_BASE = "/logos";
 const SERVICES = [
-  { key: "binance", name: "Binance" },
-  { key: "bybit", name: "Bybit" },
-  { key: "kraken", name: "Kraken" },
-  { key: "telegram", name: "Telegram" },
-  { key: "whatsapp-business-api", name: "WhatsApp Business API" },
-  { key: "discord-webhooks", name: "Discord Webhooks" },
-  { key: "slack-webhooks", name: "Slack Webhooks" },
-  { key: "sms-twilio", name: "SMS (via Twilio)" },
-  { key: "push-notifications-onesignal", name: "Push Notifications (One Signal)" },
-  { key: "email", name: "Email" },
-  { key: "webhooks", name: "Webhooks" },
+  { key: "binance", name: "Binance", logoUrl: `${LOGOS_BASE}/binance.svg` },
+  { key: "bybit", name: "Bybit", logoUrl: `${LOGOS_BASE}/bybit.jpg` },
+  { key: "kraken", name: "Kraken", logoUrl: `${LOGOS_BASE}/kraken.png` },
+  { key: "telegram", name: "Telegram", logoUrl: `${LOGOS_BASE}/telegram.png` },
+  { key: "whatsapp-business", name: "WhatsApp Business API", logoUrl: `${LOGOS_BASE}/whatsapp-business-api.svg` },
+  { key: "discord-webhooks", name: "Discord Webhooks", logoUrl: `${LOGOS_BASE}/discord.svg` },
+  { key: "slack-webhooks", name: "Slack Webhooks", logoUrl: `${LOGOS_BASE}/slack.png` },
+  { key: "sms-twilio", name: "SMS (via Twilio)", logoUrl: `${LOGOS_BASE}/twilio.svg` },
+  { key: "push-notifications-onesignal", name: "Push Notifications (One Signal)", logoUrl: `${LOGOS_BASE}/onesignal.svg` },
+  { key: "email", name: "Email", logoUrl: `${LOGOS_BASE}/email.png` },
+  { key: "webhooks", name: "Webhooks", logoUrl: `${LOGOS_BASE}/webhooks.png` },
 ];
 
 export default function Settings() {
@@ -23,11 +24,11 @@ export default function Settings() {
           <ExternalServiceSettingsGroup
             key={s.key}
             name={s.name}
-            logoTag={`logo-${s.key}`}
+            logoUrl={s.logoUrl}
+            logoKey={s.key}
           />
         ))}
       </div>
     </div>
   );
 }
-
