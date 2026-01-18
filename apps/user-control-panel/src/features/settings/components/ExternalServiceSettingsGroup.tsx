@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddRulesSettingsButton from "./AddRulesSettingsButton";
+import RuleSetting from "./RuleSetting";
 
 interface ExternalServiceSettingsGroupProps {
   name: string;
@@ -81,7 +82,21 @@ export default function ExternalServiceSettingsGroup({
 
       {expanded && (
         <div className="px-4 pb-4">
-          <AddRulesSettingsButton />
+          <div className="flex flex-col gap-3">
+            <RuleSetting
+              name="Spot Settings"
+              code="spot-settings"
+              tags={["Tag1", "Tag2", "Tag3"]}
+              details={[
+                { label: "Api Key", value: "ABCD1234EFGH5678IJKL9012MNOP3456QRST7890" },
+                { label: "Api Secret", value: "xYzAbCDefGhIJKlmNoPqRsTuVwXyZ1234567890abcdef1234567890abcdef" },
+                { label: "Base Url", value: "https://api.binance.com" },
+              ]}
+            />
+          </div>
+          <div className="mt-3">
+            <AddRulesSettingsButton />
+          </div>
         </div>
       )}
     </div>
