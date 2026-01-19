@@ -17,6 +17,7 @@ interface RuleSettingFormProps {
   initialCode?: string;
   initialTags?: string[];
   detailsSchema: DetailField[];
+  initialDetails?: Record<string, string>;
   onCancel?: () => void;
   onSave?: (data: {
     name: string;
@@ -31,6 +32,7 @@ export default function RuleSettingForm({
   initialCode,
   initialTags,
   detailsSchema,
+  initialDetails,
   onCancel,
   onSave,
 }: RuleSettingFormProps) {
@@ -42,7 +44,7 @@ export default function RuleSettingForm({
   const [detailValues, setDetailValues] = useState<Record<string, string>>(() => {
     const obj: Record<string, string> = {};
     detailsSchema.forEach((f) => {
-      obj[f.key] = "";
+      obj[f.key] = initialDetails?.[f.key] ?? "";
     });
     return obj;
   });

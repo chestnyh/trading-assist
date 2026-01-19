@@ -21,6 +21,7 @@ export default function ExternalServiceSettingsGroup({
   const [srcIndex, setSrcIndex] = useState(0);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [settings, setSettings] = useState<
     {
       name: string;
@@ -183,21 +184,62 @@ export default function ExternalServiceSettingsGroup({
                 code={s.code}
                 tags={s.tags}
                 details={s.details}
+                onEdit={() => {
+                  setEditingIndex(i);
+                  setShowForm(true);
+                }}
               />
             ))}
             {showForm && (
               <RuleSettingForm
                 detailsSchema={detailsSchema}
-                onCancel={() => setShowForm(false)}
-                onSave={(data) => {
-                  setSettings((prev) => [...prev, data]);
+                initialName={
+                  editingIndex !== null ? settings[editingIndex].name : undefined
+                }
+                initialCode={
+                  editingIndex !== null ? settings[editingIndex].code : undefined
+                }
+                initialTags={
+                  editingIndex !== null ? settings[editingIndex].tags : undefined
+                }
+                initialDetails={
+                  editingIndex !== null
+                    ? Object.fromEntries(
+                        detailsSchema.map((f) => {
+                          const found = settings[editingIndex].details.find(
+                            (d) => d.label === f.label
+                          );
+                          return [f.key, found?.value ?? ""];
+                        })
+                      )
+                    : undefined
+                }
+                onCancel={() => {
                   setShowForm(false);
+                  setEditingIndex(null);
+                }}
+                onSave={(data) => {
+                  setSettings((prev) => {
+                    if (editingIndex === null) {
+                      return [...prev, data];
+                    }
+                    const next = [...prev];
+                    next[editingIndex] = data;
+                    return next;
+                  });
+                  setShowForm(false);
+                  setEditingIndex(null);
                 }}
               />
             )}
           </div>
           <div className="mt-3">
-            <AddRulesSettingsButton onClick={() => setShowForm(true)} />
+            <AddRulesSettingsButton
+              onClick={() => {
+                setEditingIndex(null);
+                setShowForm(true);
+              }}
+            />
           </div>
         </div>
       )}
