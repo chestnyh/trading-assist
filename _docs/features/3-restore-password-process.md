@@ -19,6 +19,7 @@ The Restore Password process is a multi-step flow that allows users who have for
 - Multi-step form with progress indication
 - Email verification for security
 - Secure password reset flow
+- Brute-force protection with attempt limits
 - Form validation and error handling
 - Light/dark theme support
 - Responsive design
@@ -227,6 +228,8 @@ Both client-side validation errors and server-side errors are possible at this s
 - Validation errors display below field if verification code is invalid
 - Field with validation error is highlighted (error state with red border)
 - "Reset password" button becomes inactive after unsuccessful validation attempt until valid code is entered
+- After each failed attempt, user sees remaining attempts count (e.g., "Invalid code. 3 attempts left")
+- If maximum attempts are exceeded, form is disabled and "Request New Code" button is displayed
 - After successful verification, user is navigated to Step 3
 
 #### Technical Implementation
@@ -303,9 +306,18 @@ Both client-side validation errors and server-side errors are possible at this s
 
 **Server-Side Errors:**
 - **Invalid code** (400 Bad Request):
-  - Error message: "Invalid verification code. Please check your email and try again."
+  - Error message: "Invalid code. Remaining attempts: {N}."
   - Displayed as form level error
+  - Shows remaining attempts count
   - User remains on Step 2
+  - User can retry with correct code
+- **Maximum attempts exceeded** (429 Too Many Requests):
+  - Error message: "Maximum attempts exceeded. Please request a new password reset email."
+  - Displayed as form level error
+  - Code input field and submit button are disabled
+  - "Request New Code" button is displayed
+  - User must return to Step 1 to request a new code
+  - Token is invalidated and cannot be reused
 - **Expired code** (400 Bad Request):
   - Error message: "Verification code has expired. Please request a new code."
   - Displayed as form level error
@@ -332,6 +344,7 @@ Both client-side validation errors and server-side errors are possible at this s
 
 **Server-Side Verification Process:**
 - Token validation: Verifies that the password reset token is valid and not expired
+- Attempt limit check: Verifies that the number of failed attempts has not exceeded the maximum allowed (configurable via `MAX_PASSWORD_RESET_ATTEMPTS` environment variable, default: 5)
 - Code validation: Verifies that the verification code matches the code sent to user's email
 - Code expiration check: Verifies that the verification code has not expired
 - User lookup: Finds the user record associated with the token
@@ -341,10 +354,22 @@ Both client-side validation errors and server-side errors are possible at this s
   - Token is validated and marked as verified
   - User can proceed to Step 3 to set new password
 - If verification fails:
+  - Attempt counter is incremented atomically in the database
+  - If attempts exceed limit: Token is deleted and 429 error is returned
+  - If attempts remain: 400 error is returned with remaining attempts count
   - User must retry verification or request a new code
 
+**Brute-Force Protection:**
+- Each password reset token tracks failed verification attempts (`attemptsCount` field)
+- Maximum attempts are configurable via `MAX_PASSWORD_RESET_ATTEMPTS` environment variable (default: 5)
+- When maximum attempts are reached, the token is permanently deleted
+- This prevents brute-force attacks by limiting the number of code verification attempts per token
+- Legitimate users can request a new password reset email if they exhaust attempts
+
 **Response:**
-- On success: Returns success response indicating verification is complete
+- On success (200 OK): Returns success response indicating verification is complete
+- On invalid code with attempts remaining (400 Bad Request): Returns error with remaining attempts count
+- On maximum attempts exceeded (429 Too Many Requests): Returns error indicating token is invalidated
 - On failure: Returns appropriate error messages (e.g., invalid code, expired code, invalid token)
 
 ### Step 3: New Password
