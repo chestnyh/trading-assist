@@ -12,6 +12,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { NotFound } from '../features/notFound/NotFound';
 import { RedirectToSignIn } from './components/RedirectToSignIn';
 import { useAuth } from './contexts/AuthContext';
+import { Test } from '../features/test/Test';
 
 function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -55,6 +56,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="/test" element={<Test />} />
       <Route
         path="*"
         element={isAuthenticated ? <NotFound /> : <RedirectToSignIn />}
