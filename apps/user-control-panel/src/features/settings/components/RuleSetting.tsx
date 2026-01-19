@@ -101,10 +101,11 @@ export default function RuleSetting({
               h-8 w-8
               flex items-center justify-center
               rounded-md
-              hover:bg-danger/30
-              text-danger
+              bg-red-500/20
+              text-red-500
               transition
-              border border-border
+              border border-red-500
+              hover:bg-red-500/40
             "
             aria-label="Delete rule setting"
           >
