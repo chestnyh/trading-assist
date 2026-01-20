@@ -56,7 +56,18 @@ export default function RuleSetting({
             <div className="text-primary text-sm md:text-base font-medium truncate">
               {name}
             </div>
-            <div className="text-muted text-xs md:text-sm truncate">{code}</div>
+            <span
+              className="
+                px-2 py-0.5
+                rounded-md
+                text-xs
+                border border-border
+                bg-accent-hover/40
+                text-accent
+              "
+            >
+              {code}
+            </span>
             <div className="flex items-center gap-2 flex-wrap">
               {tags.map((t, i) => (
                 <span

@@ -20,8 +20,8 @@ export default function ExternalServiceSettingsGroup({
   const [expanded, setExpanded] = useState(false);
   const [srcIndex, setSrcIndex] = useState(0);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
-  const [showForm, setShowForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
   const [settings, setSettings] = useState<
     {
       name: string;
@@ -177,67 +177,66 @@ export default function ExternalServiceSettingsGroup({
       {expanded && (
         <div className="px-4 pb-4">
           <div className="flex flex-col gap-3">
-            {settings.map((s, i) => (
-              <RuleSetting
-                key={`${s.code}-${i}`}
-                name={s.name}
-                code={s.code}
-                tags={s.tags}
-                details={s.details}
-                onEdit={() => {
-                  setEditingIndex(i);
-                  setShowForm(true);
-                }}
-              />
-            ))}
-            {showForm && (
+            {settings.map((s, i) =>
+              editingIndex === i ? (
+                <RuleSettingForm
+                  key={`${s.code}-${i}-edit`}
+                  detailsSchema={detailsSchema}
+                  initialName={s.name}
+                  initialCode={s.code}
+                  initialTags={s.tags}
+                  initialDetails={Object.fromEntries(
+                    detailsSchema.map((f) => {
+                      const found = s.details.find((d) => d.label === f.label);
+                      return [f.key, found?.value ?? ""];
+                    })
+                  )}
+                  onCancel={() => {
+                    setEditingIndex(null);
+                  }}
+                  onSave={(data) => {
+                    setSettings((prev) => {
+                      const next = [...prev];
+                      next[i] = data;
+                      return next;
+                    });
+                    setEditingIndex(null);
+                  }}
+                />
+              ) : (
+                <RuleSetting
+                  key={`${s.code}-${i}`}
+                  name={s.name}
+                  code={s.code}
+                  tags={s.tags}
+                  details={s.details}
+                  onEdit={() => {
+                    setEditingIndex(i);
+                    setIsAdding(false);
+                  }}
+                />
+              )
+            )}
+            {isAdding && editingIndex === null && (
               <RuleSettingForm
+                key="new-setting"
                 detailsSchema={detailsSchema}
-                initialName={
-                  editingIndex !== null ? settings[editingIndex].name : undefined
-                }
-                initialCode={
-                  editingIndex !== null ? settings[editingIndex].code : undefined
-                }
-                initialTags={
-                  editingIndex !== null ? settings[editingIndex].tags : undefined
-                }
-                initialDetails={
-                  editingIndex !== null
-                    ? Object.fromEntries(
-                        detailsSchema.map((f) => {
-                          const found = settings[editingIndex].details.find(
-                            (d) => d.label === f.label
-                          );
-                          return [f.key, found?.value ?? ""];
-                        })
-                      )
-                    : undefined
-                }
                 onCancel={() => {
-                  setShowForm(false);
-                  setEditingIndex(null);
+                  setIsAdding(false);
                 }}
                 onSave={(data) => {
-                  setSettings((prev) => {
-                    if (editingIndex === null) {
-                      return [...prev, data];
-                    }
-                    const next = [...prev];
-                    next[editingIndex] = data;
-                    return next;
-                  });
-                  setShowForm(false);
-                  setEditingIndex(null);
+                  setSettings((prev) => [...prev, data]);
+                  setIsAdding(false);
                 }}
               />
             )}
           </div>
           <div className="mt-3">
             <AddRulesSettingsButton
+              disabled={editingIndex !== null}
               onClick={() => {
-                setEditingIndex(null);
-                setShowForm(true);
+                if (editingIndex !== null) return;
+                setIsAdding(true);
               }}
             />
           </div>
