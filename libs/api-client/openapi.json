@@ -102,6 +102,120 @@
         ]
       }
     },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset code sent (or would be sent if user exists)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForgotPasswordResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid email format"
+          }
+        },
+        "summary": "Request password reset - sends verification code to email",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/verify-password-reset": {
+      "post": {
+        "operationId": "AuthController_verifyPasswordReset",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyPasswordResetDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification code verified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyPasswordResetResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid verification code (with remaining attempts count)"
+          },
+          "401": {
+            "description": "Invalid or expired token"
+          },
+          "429": {
+            "description": "Maximum attempts exceeded - token invalidated"
+          }
+        },
+        "summary": "Verify password reset code",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResetPasswordResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid password or token not verified"
+          },
+          "401": {
+            "description": "Invalid or expired token"
+          }
+        },
+        "summary": "Reset password with verified token",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/v1/rules": {
       "post": {
         "operationId": "RulesController_create",
@@ -530,6 +644,123 @@
           "success": {
             "type": "boolean",
             "description": "Indicates if verification was successful",
+            "example": true
+          }
+        },
+        "required": [
+          "message",
+          "success"
+        ]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "example": "user@example.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ForgotPasswordResponseDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Password reset token required for subsequent steps",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "message": {
+            "type": "string",
+            "description": "Success message",
+            "example": "If an account with this email exists, a password reset code has been sent to your email."
+          }
+        },
+        "required": [
+          "token",
+          "message"
+        ]
+      },
+      "VerifyPasswordResetDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "6-digit verification code sent to user email",
+            "example": "123456",
+            "minLength": 6,
+            "maxLength": 6
+          },
+          "token": {
+            "type": "string",
+            "description": "Password reset token received from forgot-password endpoint",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          }
+        },
+        "required": [
+          "code",
+          "token"
+        ]
+      },
+      "VerifyPasswordResetResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Success message",
+            "example": "Verification code verified successfully"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if verification was successful",
+            "example": true
+          },
+          "remainingAttempts": {
+            "type": "object",
+            "description": "Remaining attempts before the token is invalidated",
+            "example": 3,
+            "nullable": true
+          }
+        },
+        "required": [
+          "message",
+          "success"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "description": "New password",
+            "example": "NewSecurePassword123!",
+            "minLength": 8
+          },
+          "token": {
+            "type": "string",
+            "description": "Password reset token received from forgot-password endpoint",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          }
+        },
+        "required": [
+          "password",
+          "token"
+        ]
+      },
+      "ResetPasswordResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Success message",
+            "example": "Password has been reset successfully. Please sign in with your new password."
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if password reset was successful",
             "example": true
           }
         },
