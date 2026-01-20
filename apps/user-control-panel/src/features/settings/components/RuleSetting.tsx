@@ -1,9 +1,17 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronRight, ChevronDown, Pencil, Trash2 } from "lucide-react";
 
 type DetailItem = {
   label: string;
   value: string;
+};
+
+type DetailField = {
+  key: string;
+  label: string;
+  required?: boolean;
+  placeholder?: string;
+  type?: "string" | "array";
 };
 
 interface RuleSettingProps {
@@ -12,6 +20,10 @@ interface RuleSettingProps {
   tags?: string[];
   details?: DetailItem[];
   initiallyExpanded?: boolean;
+  mode?: "view" | "edit";
+  detailsSchema?: DetailField[];
+  onSave?: (data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }) => void;
+  onCancel?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 }
@@ -22,10 +34,149 @@ export default function RuleSetting({
   tags = [],
   details = [],
   initiallyExpanded,
+  mode,
+  detailsSchema = [],
+  onSave,
+  onCancel,
   onEdit,
   onDelete,
 }: RuleSettingProps) {
   const [expanded, setExpanded] = useState(Boolean(initiallyExpanded));
+  const [editName, setEditName] = useState(name);
+  const [editCode, setEditCode] = useState(code);
+  const [tagsInput, setTagsInput] = useState((tags || []).join(", "));
+  const [detailValues, setDetailValues] = useState<Record<string, string>>(() => {
+    const map: Record<string, string> = {};
+    if (detailsSchema.length > 0) {
+      detailsSchema.forEach((f) => {
+        const found = details.find((d) => d.label === f.label);
+        map[f.key] = found?.value ?? "";
+      });
+    }
+    return map;
+  });
+  const parsedTags = useMemo(
+    () =>
+      tagsInput
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
+    [tagsInput]
+  );
+
+  const isValid = useMemo(() => {
+    if (!editName.trim() || !editCode.trim()) return false;
+    if (detailsSchema.length === 0) return true;
+    for (const f of detailsSchema) {
+      if (!f.required) continue;
+      const raw = (detailValues[f.key] ?? "").trim();
+      if (f.type === "array") {
+        const items = raw
+          .split(",")
+          .map((i) => i.trim())
+          .filter(Boolean);
+        if (items.length === 0) return false;
+      } else {
+        if (!raw) return false;
+      }
+    }
+    return true;
+  }, [editName, editCode, detailValues, detailsSchema]);
+
+  if (mode === "edit") {
+    return (
+      <div className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <div className="text-primary text-xs mb-1">Setting Name *</div>
+            <input
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
+              placeholder="Insert Name here…"
+            />
+          </div>
+          <div>
+            <div className="text-primary text-xs mb-1">Setting Code *</div>
+            <input
+              value={editCode}
+              onChange={(e) => setEditCode(e.target.value)}
+              className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
+              placeholder="Insert Code here…"
+            />
+          </div>
+        </div>
+
+        <div className="mt-3">
+          <div className="text-primary text-xs mb-1">Setting Tags</div>
+          <input
+            value={tagsInput}
+            onChange={(e) => setTagsInput(e.target.value)}
+            className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
+            placeholder="Tags… (comma separated)"
+          />
+        </div>
+
+        <div className="mt-3 flex flex-col gap-2">
+          {detailsSchema.map((f) => (
+            <div key={f.key}>
+              <div className="text-primary text-xs mb-1">
+                {f.label} {f.required ? "*" : ""}
+              </div>
+              <input
+                value={detailValues[f.key] ?? ""}
+                onChange={(e) =>
+                  setDetailValues((prev) => ({ ...prev, [f.key]: e.target.value }))
+                }
+                className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
+                placeholder={f.placeholder || ""}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              const det = detailsSchema.map((f) => {
+                const raw = detailValues[f.key] ?? "";
+                if (f.type === "array") {
+                  const items = raw
+                    .split(",")
+                    .map((i) => i.trim())
+                    .filter(Boolean);
+                  return { label: f.label, value: items.join(", ") };
+                }
+                return { label: f.label, value: raw.trim() };
+              });
+              onSave?.({
+                name: editName.trim(),
+                code: editCode.trim(),
+                tags: parsedTags,
+                details: det,
+              });
+            }}
+            disabled={!isValid}
+            className={`px-4 py-2 rounded-md border-2 border-border text-primary transition ${
+              isValid ? "bg-accent-hover/50 hover:bg-accent-hover cursor-pointer" : "bg-background opacity-60 cursor-not-allowed"
+            }`}
+          >
+            Save
+          </button>
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-4 py-2 rounded-md border-2 border-border bg-background text-primary hover:bg-accent-hover/40 transition"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50">
@@ -56,7 +207,18 @@ export default function RuleSetting({
             <div className="text-primary text-sm md:text-base font-medium truncate">
               {name}
             </div>
-            <div className="text-muted text-xs md:text-sm truncate">{code}</div>
+            <span
+              className="
+                px-2 py-0.5
+                rounded-md
+                text-xs
+                border border-border
+                bg-accent-hover/40
+                text-accent
+              "
+            >
+              {code}
+            </span>
             <div className="flex items-center gap-2 flex-wrap">
               {tags.map((t, i) => (
                 <span

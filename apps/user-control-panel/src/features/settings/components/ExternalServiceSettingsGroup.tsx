@@ -2,7 +2,17 @@ import { useMemo, useState } from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddRulesSettingsButton from "./AddRulesSettingsButton";
 import RuleSetting from "./RuleSetting";
-import RuleSettingForm, { DetailField } from "./RuleSettingForm";
+type DetailField = {
+  key: string;
+  label: string;
+  required?: boolean;
+  placeholder?: string;
+  minLength?: number;
+  maxLength?: number;
+  exactLength?: number;
+  pattern?: RegExp;
+  type?: "string" | "array";
+};
 
 interface ExternalServiceSettingsGroupProps {
   name: string;
@@ -20,7 +30,8 @@ export default function ExternalServiceSettingsGroup({
   const [expanded, setExpanded] = useState(false);
   const [srcIndex, setSrcIndex] = useState(0);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
   const [settings, setSettings] = useState<
     {
       name: string;
@@ -176,28 +187,68 @@ export default function ExternalServiceSettingsGroup({
       {expanded && (
         <div className="px-4 pb-4">
           <div className="flex flex-col gap-3">
-            {settings.map((s, i) => (
+            {settings.map((s, i) =>
+              editingIndex === i ? (
+                <RuleSetting
+                  key={`${s.code}-${i}-edit`}
+                  mode="edit"
+                  name={s.name}
+                  code={s.code}
+                  tags={s.tags}
+                  details={s.details}
+                  detailsSchema={detailsSchema}
+                  onCancel={() => {
+                    setEditingIndex(null);
+                  }}
+                  onSave={(data) => {
+                    setSettings((prev) => {
+                      const next = [...prev];
+                      next[i] = data;
+                      return next;
+                    });
+                    setEditingIndex(null);
+                  }}
+                />
+              ) : (
+                <RuleSetting
+                  key={`${s.code}-${i}`}
+                  name={s.name}
+                  code={s.code}
+                  tags={s.tags}
+                  details={s.details}
+                  onEdit={() => {
+                    setEditingIndex(i);
+                    setIsAdding(false);
+                  }}
+                />
+              )
+            )}
+            {isAdding && editingIndex === null && (
               <RuleSetting
-                key={`${s.code}-${i}`}
-                name={s.name}
-                code={s.code}
-                tags={s.tags}
-                details={s.details}
-              />
-            ))}
-            {showForm && (
-              <RuleSettingForm
+                mode="edit"
+                name=""
+                code=""
+                tags={[]}
+                details={[]}
                 detailsSchema={detailsSchema}
-                onCancel={() => setShowForm(false)}
+                onCancel={() => {
+                  setIsAdding(false);
+                }}
                 onSave={(data) => {
                   setSettings((prev) => [...prev, data]);
-                  setShowForm(false);
+                  setIsAdding(false);
                 }}
               />
             )}
           </div>
           <div className="mt-3">
-            <AddRulesSettingsButton onClick={() => setShowForm(true)} />
+            <AddRulesSettingsButton
+              disabled={editingIndex !== null}
+              onClick={() => {
+                if (editingIndex !== null) return;
+                setIsAdding(true);
+              }}
+            />
           </div>
         </div>
       )}
