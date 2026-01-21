@@ -10,6 +10,19 @@ const cryptoService = new CryptoUtilsService();
 
 export default async function main() {
     return {
+        externalServices: [
+            { where: { name: 'Binance' }, create: { name: 'Binance' }, update: {} },
+            { where: { name: 'Bybit' }, create: { name: 'Bybit' }, update: {} },
+            { where: { name: 'Kraken' }, create: { name: 'Kraken' }, update: {} },
+            { where: { name: 'Telegram' }, create: { name: 'Telegram' }, update: {} },
+            { where: { name: 'Email' }, create: { name: 'Email' }, update: {} },
+            { where: { name: 'Discord Webhooks' }, create: { name: 'Discord Webhooks' }, update: {} },
+            { where: { name: 'Slack Webhooks' }, create: { name: 'Slack Webhooks' }, update: {} },
+            { where: { name: 'SMS (Twilio)' }, create: { name: 'SMS (Twilio)' }, update: {} },
+            { where: { name: 'Push Notifications (OneSignal)' }, create: { name: 'Push Notifications (OneSignal)' }, update: {} },
+            { where: { name: 'WhatsApp Business API' }, create: { name: 'WhatsApp Business API' }, update: {} },
+            { where: { name: 'Webhooks' }, create: { name: 'Webhooks' }, update: {} },
+        ],
         user: [
             {
                 where: {
@@ -59,6 +72,26 @@ export default async function main() {
                                 name: 'Telegram Settings',
                                 description: 'Telegram settings',
                                 apiToken: '1234567890',
+                            }
+                        ]
+                    },
+                    ruleSettings : {
+                        create: [
+                            {
+                                name: "Production Binance Bot",
+                                code: "code",
+                                description: "Real-world example with fake credentials",
+                                externalService: {
+                                    connect: { name: 'Binance' }
+                                    },
+                                configuration: {
+                                    service: "Binance",
+                                    config: {
+                                            apiKey: "b1n4nc3_4p1_k3y_32_ch4rs_l0ng_123",
+                                            apiSecret: "s3cr3t_64_ch4rs_l0ng_v3ry_v3ry_v3ry_v3ry_v3ry_v3ry_v3ry_v3ry_1234",
+                                            baseUrl: "https://api.binance.com"
+                                        }
+                                    }
                             }
                         ]
                     }

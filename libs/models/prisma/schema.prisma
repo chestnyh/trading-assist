@@ -92,6 +92,7 @@ model RuleSettingsTags {
   userId Int
   user User @relation(fields: [userId], references: [id])
   rules RuleSettingsToRuleSettingsTags[]
+  @@unique([name, userId])
 }
 
 model RuleSettingsToRuleSettingsTags {
