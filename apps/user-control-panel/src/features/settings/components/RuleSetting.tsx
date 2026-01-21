@@ -34,13 +34,16 @@ export default function RuleSetting({
   tags = [],
   details = [],
   initiallyExpanded,
-  mode,
+  mode: controlledMode,
   detailsSchema = [],
   onSave,
   onCancel,
   onEdit,
   onDelete,
 }: RuleSettingProps) {
+  const [internalMode, setInternalMode] = useState<"view" | "edit">("view");
+  const mode = controlledMode ?? internalMode;
+
   const [expanded, setExpanded] = useState(Boolean(initiallyExpanded));
   const [editName, setEditName] = useState(name);
   const [editCode, setEditCode] = useState(code);
@@ -65,27 +68,45 @@ export default function RuleSetting({
   );
 
   const isValid = useMemo(() => {
-    if (!editName.trim() || !editCode.trim()) return false;
-    if (detailsSchema.length === 0) return true;
-    for (const f of detailsSchema) {
-      if (!f.required) continue;
-      const raw = (detailValues[f.key] ?? "").trim();
-      if (f.type === "array") {
-        const items = raw
-          .split(",")
-          .map((i) => i.trim())
-          .filter(Boolean);
-        if (items.length === 0) return false;
-      } else {
-        if (!raw) return false;
+    const isNameValid = editName.trim().length > 0;
+    const isCodeValid = editCode.trim().length > 0;
+    const areDetailsValid = detailsSchema.every((field) => {
+      if (field.required) {
+        return (detailValues[field.key] || "").trim().length > 0;
       }
-    }
-    return true;
-  }, [editName, editCode, detailValues, detailsSchema]);
+      return true;
+    });
+    return isNameValid && isCodeValid && areDetailsValid;
+  }, [editName, editCode, detailsSchema, detailValues]);
 
   if (mode === "edit") {
     return (
-      <div className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50 p-4">
+      <form
+        className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50 p-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const det = detailsSchema.map((f) => {
+            const raw = detailValues[f.key] ?? "";
+            if (f.type === "array") {
+              const items = raw
+                .split(",")
+                .map((i) => i.trim())
+                .filter(Boolean);
+              return { label: f.label, value: items.join(", ") };
+            }
+            return { label: f.label, value: raw.trim() };
+          });
+          onSave?.({
+            name: editName.trim(),
+            code: editCode.trim(),
+            tags: parsedTags,
+            details: det,
+          });
+          if (!controlledMode) {
+            setInternalMode("view");
+          }
+        }}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <div className="text-primary text-xs mb-1">Setting Name *</div>
@@ -137,44 +158,31 @@ export default function RuleSetting({
 
         <div className="mt-4 flex items-center gap-2">
           <button
-            type="button"
-            onClick={() => {
-              const det = detailsSchema.map((f) => {
-                const raw = detailValues[f.key] ?? "";
-                if (f.type === "array") {
-                  const items = raw
-                    .split(",")
-                    .map((i) => i.trim())
-                    .filter(Boolean);
-                  return { label: f.label, value: items.join(", ") };
-                }
-                return { label: f.label, value: raw.trim() };
-              });
-              onSave?.({
-                name: editName.trim(),
-                code: editCode.trim(),
-                tags: parsedTags,
-                details: det,
-              });
-            }}
+            type="submit"
             disabled={!isValid}
             className={`px-4 py-2 rounded-md border-2 border-border text-primary transition ${
-              isValid ? "bg-accent-hover/50 hover:bg-accent-hover cursor-pointer" : "bg-background opacity-60 cursor-not-allowed"
+              isValid
+                ? "bg-accent-hover/50 hover:bg-accent-hover cursor-pointer"
+                : "bg-background opacity-60 cursor-not-allowed"
             }`}
           >
             Save
           </button>
-          {onCancel && (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-4 py-2 rounded-md border-2 border-border bg-background text-primary hover:bg-accent-hover/40 transition"
-            >
-              Cancel
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => {
+              if (onCancel) {
+                onCancel();
+              } else if (!controlledMode) {
+                setInternalMode("view");
+              }
+            }}
+            className="px-4 py-2 rounded-md border-2 border-border bg-background text-primary hover:bg-accent-hover/40 transition"
+          >
+            Cancel
+          </button>
         </div>
-      </div>
+      </form>
     );
   }
 
@@ -242,7 +250,13 @@ export default function RuleSetting({
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={onEdit}
+            onClick={() => {
+              if (onEdit) {
+                onEdit();
+              } else if (!controlledMode) {
+                setInternalMode("edit");
+              }
+            }}
             className="
               h-8 w-8
               flex items-center justify-center
