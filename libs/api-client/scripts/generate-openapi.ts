@@ -30,6 +30,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 import { ApiModule } from '../../../apps/api/src/api/api.module';
+import { applySwaggerConfig } from '../../../apps/api/src/swagger.config';
 
 async function generateOpenApi() {
   // Set mock environment variables to avoid DB connection requirements
@@ -53,15 +54,7 @@ async function generateOpenApi() {
   // Set global prefix (same as in main.ts)
   app.setGlobalPrefix('api/v1');
 
-  // Create Swagger document configuration (same as in main.ts)
-  const config = new DocumentBuilder()
-    .setTitle('Trading Bot API')
-    .setDescription('API for trading bot user management and authentication')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .addTag('auth', 'Authentication endpoints')
-    .addTag('users', 'User management endpoints')
-    .build();
+  const config = applySwaggerConfig(new DocumentBuilder()).build();
 
   // Generate the OpenAPI document
   const document = SwaggerModule.createDocument(app, config);
@@ -73,7 +66,7 @@ async function generateOpenApi() {
   writeFileSync(outputPath, JSON.stringify(document, null, 2));
 
   console.log(`✅ OpenAPI spec generated: ${outputPath}`);
-  
+
   // Close the app
   await app.close();
 }
@@ -82,4 +75,3 @@ generateOpenApi().catch((error) => {
   console.error('Error generating OpenAPI spec:', error);
   process.exit(1);
 });
-
