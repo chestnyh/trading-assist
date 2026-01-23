@@ -6,7 +6,7 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { applySwaggerConfig } from './swagger.config'
+import { createSwaggerConfig } from './swagger.config'
 import { ApiModule } from './api/api.module';
 
 async function bootstrap() {
@@ -33,7 +33,7 @@ async function bootstrap() {
     transform: true,
   }));
 
-  const config = applySwaggerConfig(new DocumentBuilder()).build();
+  const config = createSwaggerConfig();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
