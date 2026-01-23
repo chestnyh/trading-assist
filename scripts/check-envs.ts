@@ -43,3 +43,4 @@ if (hasError) {
   console.log('✅ All good! Your local envs match the examples.');
   process.exit(0);
 }
+
