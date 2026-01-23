@@ -12,3 +12,4 @@ export const createSwaggerConfig = () => {
     .addTag('tags', 'Endpoints for managing tags associated with trading rules')
     .build();
 };
+
