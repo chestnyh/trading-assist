@@ -420,6 +420,245 @@
           "rules"
         ]
       }
+    },
+    "/api/v1/rules-settings": {
+      "post": {
+        "operationId": "RulesSettingsController_createSetting",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRuleSettingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Setting created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleSettingResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new universal rule setting",
+        "tags": [
+          "rules-settings"
+        ]
+      },
+      "get": {
+        "operationId": "RulesSettingsController_findAllSettings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of rule settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RuleSettingResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all universal rule settings for user",
+        "tags": [
+          "rules-settings"
+        ]
+      }
+    },
+    "/api/v1/rules-settings/{id}": {
+      "patch": {
+        "operationId": "RulesSettingsController_updateSetting",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRuleSettingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Setting updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleSettingResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a rule setting",
+        "tags": [
+          "rules-settings"
+        ]
+      },
+      "delete": {
+        "operationId": "RulesSettingsController_removeSetting",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Setting deleted successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a rule setting",
+        "tags": [
+          "rules-settings"
+        ]
+      }
+    },
+    "/api/v1/tags": {
+      "post": {
+        "operationId": "RulesSettingsTagsController_createTag",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTagDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The tag has been successfully created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new tag for rule settings",
+        "tags": [
+          "tags"
+        ]
+      },
+      "get": {
+        "operationId": "RulesSettingsTagsController_findAllTags",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return all tags for the current user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TagResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all user tags",
+        "tags": [
+          "tags"
+        ]
+      }
+    },
+    "/api/v1/tags/{id}": {
+      "delete": {
+        "operationId": "RulesSettingsTagsController_removeTag",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tag has been successfully deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a tag",
+        "tags": [
+          "tags"
+        ]
+      }
     }
   },
   "info": {
@@ -436,6 +675,14 @@
     {
       "name": "users",
       "description": "User management endpoints"
+    },
+    {
+      "name": "rules-settings",
+      "description": "Endpoints for managing individual user trading rule configurations"
+    },
+    {
+      "name": "tags",
+      "description": "Endpoints for managing tags associated with trading rules"
     }
   ],
   "servers": [],
@@ -865,6 +1112,141 @@
             }
           }
         }
+      },
+      "CreateUserRuleSettingDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Binance Bot"
+          },
+          "code": {
+            "type": "string",
+            "example": "BINANCE_MAIN_01"
+          },
+          "description": {
+            "type": "string",
+            "example": "Rule for spot trading"
+          },
+          "externalServiceId": {
+            "type": "number",
+            "example": 1
+          },
+          "configuration": {
+            "type": "object",
+            "example": {
+              "ApiKey": "...",
+              "ApiSecret": "...",
+              "BaseUrl": "..."
+            }
+          }
+        },
+        "required": [
+          "name",
+          "code",
+          "externalServiceId",
+          "configuration"
+        ]
+      },
+      "RuleSettingResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "BTC Price Alert"
+          },
+          "description": {
+            "type": "string",
+            "example": "Sends a Telegram alert when BTC price drops below $50,000"
+          },
+          "ruleBody": {
+            "type": "object",
+            "example": {
+              "type": "log",
+              "arguments": {
+                "message": "This message will be logged"
+              }
+            }
+          },
+          "authorId": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "ruleBody",
+          "authorId"
+        ]
+      },
+      "UpdateUserRuleSettingDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Binance Bot"
+          },
+          "code": {
+            "type": "string",
+            "example": "BINANCE_MAIN_01"
+          },
+          "description": {
+            "type": "string",
+            "example": "Rule for spot trading"
+          },
+          "externalServiceId": {
+            "type": "number",
+            "example": 1
+          },
+          "configuration": {
+            "type": "object",
+            "example": {
+              "ApiKey": "...",
+              "ApiSecret": "...",
+              "BaseUrl": "..."
+            }
+          }
+        }
+      },
+      "CreateTagDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Production"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "TagResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Production"
+          },
+          "userId": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "userId"
+        ]
       }
     }
   }
