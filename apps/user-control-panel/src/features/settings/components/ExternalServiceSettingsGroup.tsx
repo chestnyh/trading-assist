@@ -31,7 +31,6 @@ export default function ExternalServiceSettingsGroup({
   fieldsSchema,
 }: ExternalServiceSettingsGroupProps) {
   const [expanded, setExpanded] = useState(false);
-  const [srcIndex, setSrcIndex] = useState(0);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
   const [settings, setSettings] = useState<
     {
@@ -43,27 +42,7 @@ export default function ExternalServiceSettingsGroup({
     }[]
   >([]);
 
-  const candidates = useMemo(() => {
-    const base = "/logos";
-    const key = (logoKey || name).toLowerCase().replace(/\s+/g, "-");
-    const list = [
-      `${base}/${key}.svg`,
-      `${base}/${key}.png`,
-      `${base}/${key}.jpg`,
-      `${base}/${key}.jpeg`,
-      `${base}/${key}.webp`,
-      `${base}/${key}.ico`,
-    ];
-    return logoUrl ? [logoUrl, ...list] : list;
-  }, [logoUrl, logoKey, name]);
-
-  const detailsSchema: DetailField[] = useMemo(() => {
-    if (fieldsSchema) return fieldsSchema;
-    return [
-      { key: "endpoint", label: "Endpoint", required: true, placeholder: "Insert endpoint…" },
-      { key: "token", label: "Token", required: false, placeholder: "Insert token…" },
-    ];
-  }, [fieldsSchema]);
+  const hasSchema = Boolean(fieldsSchema && fieldsSchema.length > 0);
 
   return (
     <div className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50">
@@ -71,16 +50,11 @@ export default function ExternalServiceSettingsGroup({
         <div className="w-10 h-10 flex items-center justify-center rounded-md bg-background border border-border overflow-hidden">
           {!showPlaceholder ? (
             <img
-              src={candidates[srcIndex]}
+              src={logoUrl || ""}
               alt={`${name} logo`}
               className="w-full h-full object-contain"
               onError={() => {
-                const next = srcIndex + 1;
-                if (next < candidates.length) {
-                  setSrcIndex(next);
-                } else {
-                  setShowPlaceholder(true);
-                }
+                setShowPlaceholder(true);
               }}
             />
           ) : (
@@ -113,46 +87,54 @@ export default function ExternalServiceSettingsGroup({
 
       {expanded && (
         <div className="px-4 pb-4">
-          <div className="flex flex-col gap-3">
-            {settings.map((s, i) => (
-              <RuleSetting
-                key={`${s.code}-${i}`}
-                name={s.name}
-                code={s.code}
-                tags={s.tags}
-                details={s.details}
-                detailsSchema={detailsSchema}
-                mode={s.isNew ? "edit" : undefined}
-                onSave={(data) => {
-                  setSettings((prev) => {
-                    const next = [...prev];
-                    next[i] = { ...data, isNew: false };
-                    return next;
-                  });
-                }}
-                onCancel={
-                  s.isNew
-                    ? () => {
-                        setSettings((prev) => prev.filter((_, idx) => idx !== i));
-                      }
-                    : undefined
-                }
-                onDelete={() => {
-                   setSettings((prev) => prev.filter((_, idx) => idx !== i));
-                }}
-              />
-            ))}
-          </div>
-          <div className="mt-3">
-            <AddRulesSettingsButton
-              onClick={() => {
-                 setSettings((prev) => [
-                   ...prev,
-                   { name: "", code: "", tags: [], details: [], isNew: true },
-                 ]);
-              }}
-            />
-          </div>
+          {!hasSchema ? (
+            <div className="mt-2 text-secondary text-sm">
+              No fields schema configured for this service. Settings cannot be created or saved.
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col gap-3">
+                {settings.map((s, i) => (
+                  <RuleSetting
+                    key={`${s.code}-${i}`}
+                    name={s.name}
+                    code={s.code}
+                    tags={s.tags}
+                    details={s.details}
+                    detailsSchema={fieldsSchema!}
+                    mode={s.isNew ? "edit" : "view"}
+                    onSave={(data) => {
+                      setSettings((prev) => {
+                        const next = [...prev];
+                        next[i] = { ...data, isNew: false };
+                        return next;
+                      });
+                    }}
+                    onCancel={
+                      s.isNew
+                        ? () => {
+                            setSettings((prev) => prev.filter((_, idx) => idx !== i));
+                          }
+                        : undefined
+                    }
+                    onDelete={() => {
+                       setSettings((prev) => prev.filter((_, idx) => idx !== i));
+                    }}
+                  />
+                ))}
+              </div>
+              <div className="mt-3">
+                <AddRulesSettingsButton
+                  onClick={() => {
+                     setSettings((prev) => [
+                       ...prev,
+                       { name: "", code: "", tags: [], details: [], isNew: true },
+                     ]);
+                  }}
+                />
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

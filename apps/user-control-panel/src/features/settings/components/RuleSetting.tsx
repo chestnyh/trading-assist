@@ -14,13 +14,15 @@ type DetailField = {
   type?: "string" | "array";
 };
 
+type RuleSettingMode = "view" | "edit";
+
 interface RuleSettingProps {
   name: string;
   code: string;
   tags?: string[];
   details?: DetailItem[];
   initiallyExpanded?: boolean;
-  mode?: "view" | "edit";
+  mode?: RuleSettingMode;
   detailsSchema?: DetailField[];
   onSave?: (data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }) => void;
   onCancel?: () => void;
@@ -34,15 +36,14 @@ export default function RuleSetting({
   tags = [],
   details = [],
   initiallyExpanded,
-  mode: controlledMode,
+  mode: modeProp = "view",
   detailsSchema = [],
   onSave,
   onCancel,
   onEdit,
   onDelete,
 }: RuleSettingProps) {
-  const [internalMode, setInternalMode] = useState<"view" | "edit">("view");
-  const mode = controlledMode ?? internalMode;
+  const [mode, setMode] = useState<RuleSettingMode>(modeProp);
 
   const [expanded, setExpanded] = useState(Boolean(initiallyExpanded));
   const [editName, setEditName] = useState(name);
@@ -102,9 +103,7 @@ export default function RuleSetting({
             tags: parsedTags,
             details: det,
           });
-          if (!controlledMode) {
-            setInternalMode("view");
-          }
+          setMode("view");
         }}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -173,8 +172,8 @@ export default function RuleSetting({
             onClick={() => {
               if (onCancel) {
                 onCancel();
-              } else if (!controlledMode) {
-                setInternalMode("view");
+              } else {
+                setMode("view");
               }
             }}
             className="px-4 py-2 rounded-md border-2 border-border bg-background text-primary hover:bg-accent-hover/40 transition"
@@ -253,8 +252,8 @@ export default function RuleSetting({
             onClick={() => {
               if (onEdit) {
                 onEdit();
-              } else if (!controlledMode) {
-                setInternalMode("edit");
+              } else {
+                setMode("edit");
               }
             }}
             className="
