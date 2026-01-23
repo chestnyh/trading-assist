@@ -42,7 +42,9 @@
     "all:lint": "nx run-many --target=lint --all",
     "docker:external:up": "docker compose --env-file .env.dev --profile external up",
     "docker:init-external:up": "docker compose --env-file .env.dev --profile init-external up",
-    "docker:int-test:up": "docker compose --env-file .env.api-int-tests up"
+    "docker:int-test:up": "docker compose --env-file .env.api-int-tests up",
+    "check:envs": "ts-node scripts/check-envs.ts",
+    "prepare": "husky"
   },
   "author": "",
   "license": "ISC",
@@ -155,6 +157,7 @@
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
     "gh-pages": "^6.3.0",
+    "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-environment-node": "^29.7.0",
