@@ -9,10 +9,11 @@ export default function AddRulesSettingsButton({ onClick, disabled }: AddRulesSe
   return (
     <button
       type="button"
-      onClick={disabled ? undefined : onClick}
+      onClick={onClick}
       disabled={disabled}
-      className={`
+      className="
         w-full
+        text-primary
         rounded-lg
         py-6
         text-xl
@@ -20,12 +21,12 @@ export default function AddRulesSettingsButton({ onClick, disabled }: AddRulesSe
         flex items-center justify-center
         border-2 border-border
         transition
-        ${
-          disabled
-            ? "bg-background text-muted cursor-not-allowed opacity-60"
-            : "bg-accent-hover/50 text-primary hover:bg-accent-hover cursor-pointer"
-        }
-      `}
+      "
+      style={{
+        backgroundColor: disabled ? "var(--background)" : "color-mix(in oklab, var(--accent-hover), transparent 50%)",
+        opacity: disabled ? 0.6 : 1,
+        cursor: disabled ? "not-allowed" : "pointer",
+      }}
     >
       <Plus className="w-6 h-6 mr-2" />
       Add settings rules

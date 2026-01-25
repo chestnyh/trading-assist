@@ -5,6 +5,8 @@ import { ModelsModule } from '@trading-bot/models';
 import { UsersApiModule } from "./users/users.api.module";
 import { AuthModule } from "./auth/auth.module";
 import { RulesModule } from "./rules/rules.module";
+import { RulesSettingsModule } from './rules-settings/rules-settings.module';
+import { RulesSettingsTagsModule } from './tags/tags.module';
 
 @Module({
   imports: [
@@ -22,7 +24,9 @@ import { RulesModule } from "./rules/rules.module";
     }),
     UsersApiModule,
     AuthModule,
-    RulesModule
+    RulesModule,
+    RulesSettingsModule,
+    RulesSettingsTagsModule
   ],
   controllers: [],
   providers: [],

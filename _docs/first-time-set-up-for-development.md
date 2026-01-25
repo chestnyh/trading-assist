@@ -1,7 +1,7 @@
 # First Time Setup for Development
 
-This document is created to help developers (and others) run the local project setup. 
-It consists of a list of commands with short descriptions that should be executed. 
+This document is created to help developers (and others) run the local project setup.
+It consists of a list of commands with short descriptions that should be executed.
 
 ## Step-by-Step Setup
 
@@ -43,7 +43,7 @@ Launch all required external services(with the `-d` flag for daemon mode):
 ```bash
 pnpm docker:init-external:up -d
 ```
-This command should deploy external services via docker with proper credentials + run migration + seeding with initial data 
+This command should deploy external services via docker with proper credentials + run migration + seeding with initial data
 
 ### 7. Start All Services
 Launch all services to verify everything works properly:
@@ -53,4 +53,4 @@ pnpm all:start
 
 ### 8. Log in into platform
 In browser go to http://localhost:4200 (or different port if you changed its value in .env.dev file).
-And try to Sign In with email - `admin@tb.com` and password - `password` 
+And try to Sign In with email - `admin@tb.com` and password - `Password123!`
