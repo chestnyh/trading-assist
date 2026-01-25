@@ -118,7 +118,7 @@ export default function ExternalServiceSettingsGroup({
                         : undefined
                     }
                     onDelete={() => {
-                       setSettings((prev) => prev.filter((_, idx) => idx !== i));
+                      setSettings((prev) => prev.filter((_, idx) => idx !== i));
                     }}
                   />
                 ))}
@@ -126,10 +126,10 @@ export default function ExternalServiceSettingsGroup({
               <div className="mt-3">
                 <AddRulesSettingsButton
                   onClick={() => {
-                     setSettings((prev) => [
-                       ...prev,
-                       { name: "", code: "", tags: [], details: [], isNew: true },
-                     ]);
+                    setSettings((prev) => [
+                      ...prev,
+                      { name: "", code: "", tags: [], details: [], isNew: true },
+                    ]);
                   }}
                 />
               </div>

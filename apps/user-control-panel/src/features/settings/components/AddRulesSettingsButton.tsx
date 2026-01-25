@@ -21,11 +21,11 @@ export default function AddRulesSettingsButton({ onClick, disabled }: AddRulesSe
         flex items-center justify-center
         border-2 border-border
         transition
-        "
+      "
       style={{
         backgroundColor: disabled ? "var(--background)" : "color-mix(in oklab, var(--accent-hover), transparent 50%)",
         opacity: disabled ? 0.6 : 1,
-        cursor: disabled ? "not-allowed" as const : "pointer",
+        cursor: disabled ? "not-allowed" : "pointer",
       }}
     >
       <Plus className="w-6 h-6 mr-2" />
