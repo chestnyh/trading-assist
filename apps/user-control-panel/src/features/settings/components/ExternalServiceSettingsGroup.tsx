@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddRulesSettingsButton from "./AddRulesSettingsButton";
 import RuleSetting from "./RuleSetting";
+import { ConfirmationModal } from "../../../shared/ui/modals/ConfirmationModal";
 
 export type DetailField = {
   key: string;
@@ -32,6 +33,7 @@ export default function ExternalServiceSettingsGroup({
 }: ExternalServiceSettingsGroupProps) {
   const [expanded, setExpanded] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
+  const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
   const [settings, setSettings] = useState<
     {
       name: string;
@@ -118,7 +120,7 @@ export default function ExternalServiceSettingsGroup({
                         : undefined
                     }
                     onDelete={() => {
-                      setSettings((prev) => prev.filter((_, idx) => idx !== i));
+                      setDeletingIndex(i);
                     }}
                   />
                 ))}
@@ -137,6 +139,17 @@ export default function ExternalServiceSettingsGroup({
           )}
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={deletingIndex !== null}
+        onClose={() => setDeletingIndex(null)}
+        onConfirm={() => {
+          if (deletingIndex !== null) {
+            setSettings((prev) => prev.filter((_, idx) => idx !== deletingIndex));
+            setDeletingIndex(null);
+          }
+        }}
+      />
     </div>
   );
 }
