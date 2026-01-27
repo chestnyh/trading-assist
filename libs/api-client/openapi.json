@@ -659,6 +659,36 @@
           "tags"
         ]
       }
+    },
+    "/api/v1/external-services": {
+      "get": {
+        "operationId": "ExternalServicesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of external services",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExternalServiceResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all external services",
+        "tags": [
+          "external-services"
+        ]
+      }
     }
   },
   "info": {
@@ -1246,6 +1276,46 @@
           "id",
           "name",
           "userId"
+        ]
+      },
+      "ExternalServiceResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Binance"
+          },
+          "code": {
+            "type": "string",
+            "example": "binance"
+          },
+          "logoUrl": {
+            "type": "object",
+            "example": "/logos/binance.svg",
+            "nullable": true
+          },
+          "fieldsSchema": {
+            "type": "object",
+            "example": [
+              {
+                "key": "apiKey",
+                "label": "ApiKey",
+                "required": true,
+                "exactLength": 32,
+                "placeholder": "Insert api key…"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "code",
+          "fieldsSchema"
         ]
       }
     }

@@ -8,20 +8,251 @@ import { CryptoUtilsService } from '@trading-bot/crypto-utils';
 
 const cryptoService = new CryptoUtilsService();
 
+const LOGOS_BASE = "/logos";
+
 export default async function main() {
     return {
         externalServices: [
-            { where: { name: 'Binance' }, create: { name: 'Binance' }, update: {} },
-            { where: { name: 'Bybit' }, create: { name: 'Bybit' }, update: {} },
-            { where: { name: 'Kraken' }, create: { name: 'Kraken' }, update: {} },
-            { where: { name: 'Telegram' }, create: { name: 'Telegram' }, update: {} },
-            { where: { name: 'Email' }, create: { name: 'Email' }, update: {} },
-            { where: { name: 'Discord Webhooks' }, create: { name: 'Discord Webhooks' }, update: {} },
-            { where: { name: 'Slack Webhooks' }, create: { name: 'Slack Webhooks' }, update: {} },
-            { where: { name: 'SMS (Twilio)' }, create: { name: 'SMS (Twilio)' }, update: {} },
-            { where: { name: 'Push Notifications (OneSignal)' }, create: { name: 'Push Notifications (OneSignal)' }, update: {} },
-            { where: { name: 'WhatsApp Business API' }, create: { name: 'WhatsApp Business API' }, update: {} },
-            { where: { name: 'Webhooks' }, create: { name: 'Webhooks' }, update: {} },
+            {
+                where: { name: 'Binance' },
+                create: {
+                    name: 'Binance',
+                    code: 'binance',
+                    logoUrl: `${LOGOS_BASE}/binance.svg`,
+                    fieldsSchema: [
+                        { key: "apiKey", label: "ApiKey", required: true, exactLength: 32, placeholder: "Insert api key…" },
+                        { key: "apiSecret", label: "ApiSecret", required: true, exactLength: 64, placeholder: "Insert secret key…" },
+                        { key: "baseUrl", label: "BaseUrl", required: true, minLength: 20, maxLength: 100, placeholder: "Insert base url…" },
+                    ]
+                },
+                update: {
+                    code: 'binance',
+                    logoUrl: `${LOGOS_BASE}/binance.svg`,
+                    fieldsSchema: [
+                        { key: "apiKey", label: "ApiKey", required: true, exactLength: 32, placeholder: "Insert api key…" },
+                        { key: "apiSecret", label: "ApiSecret", required: true, exactLength: 64, placeholder: "Insert secret key…" },
+                        { key: "baseUrl", label: "BaseUrl", required: true, minLength: 20, maxLength: 100, placeholder: "Insert base url…" },
+                    ]
+                }
+            },
+            {
+                where: { name: 'Bybit' },
+                create: {
+                    name: 'Bybit',
+                    code: 'bybit',
+                    logoUrl: `${LOGOS_BASE}/bybit.jpg`,
+                    fieldsSchema: [
+                        { key: "apiKey", label: "ApiKey", required: true, exactLength: 32, placeholder: "Insert api key…" },
+                        { key: "apiSecret", label: "ApiSecret", required: true, exactLength: 64, placeholder: "Insert secret key…" },
+                        { key: "baseUrl", label: "BaseUrl", required: true, minLength: 20, maxLength: 100, placeholder: "Insert base url…" },
+                    ]
+                },
+                update: {
+                    code: 'bybit',
+                    logoUrl: `${LOGOS_BASE}/bybit.jpg`,
+                    fieldsSchema: [
+                        { key: "apiKey", label: "ApiKey", required: true, exactLength: 32, placeholder: "Insert api key…" },
+                        { key: "apiSecret", label: "ApiSecret", required: true, exactLength: 64, placeholder: "Insert secret key…" },
+                        { key: "baseUrl", label: "BaseUrl", required: true, minLength: 20, maxLength: 100, placeholder: "Insert base url…" },
+                    ]
+                }
+            },
+            {
+                where: { name: 'Kraken' },
+                create: {
+                    name: 'Kraken',
+                    code: 'kraken',
+                    logoUrl: `${LOGOS_BASE}/kraken.png`,
+                    fieldsSchema: [
+                        { key: "apiKey", label: "ApiKey", required: true, minLength: 50, maxLength: 64, placeholder: "Insert api key…" },
+                        { key: "apiSecret", label: "ApiSecret", required: true, minLength: 80, maxLength: 96, placeholder: "Insert secret key…" },
+                        { key: "baseUrl", label: "BaseUrl", required: true, minLength: 20, maxLength: 100, placeholder: "Insert base url…" },
+                    ]
+                },
+                update: {
+                    code: 'kraken',
+                    logoUrl: `${LOGOS_BASE}/kraken.png`,
+                    fieldsSchema: [
+                        { key: "apiKey", label: "ApiKey", required: true, minLength: 50, maxLength: 64, placeholder: "Insert api key…" },
+                        { key: "apiSecret", label: "ApiSecret", required: true, minLength: 80, maxLength: 96, placeholder: "Insert secret key…" },
+                        { key: "baseUrl", label: "BaseUrl", required: true, minLength: 20, maxLength: 100, placeholder: "Insert base url…" },
+                    ]
+                }
+            },
+            {
+                where: { name: 'Telegram' },
+                create: {
+                    name: 'Telegram',
+                    code: 'telegram',
+                    logoUrl: `${LOGOS_BASE}/telegram.png`,
+                    fieldsSchema: [
+                        { key: "botToken", label: "BotToken", required: true, minLength: 45, maxLength: 50, placeholder: "Insert bot token…" },
+                        { key: "baseUrl", label: "BaseUrl", required: false, minLength: 20, maxLength: 100, placeholder: "Insert base url…" },
+                    ]
+                },
+                update: {
+                    code: 'telegram',
+                    logoUrl: `${LOGOS_BASE}/telegram.png`,
+                    fieldsSchema: [
+                        { key: "botToken", label: "BotToken", required: true, minLength: 45, maxLength: 50, placeholder: "Insert bot token…" },
+                        { key: "baseUrl", label: "BaseUrl", required: false, minLength: 20, maxLength: 100, placeholder: "Insert base url…" },
+                    ]
+                }
+            },
+            {
+                where: { name: 'Email' },
+                create: {
+                    name: 'Email',
+                    code: 'email',
+                    logoUrl: `${LOGOS_BASE}/email.png`,
+                    fieldsSchema: [
+                        { key: "email", label: "EmailAddress", required: true, pattern: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$", placeholder: "user.name@some-domain.com" },
+                    ]
+                },
+                update: {
+                    code: 'email',
+                    logoUrl: `${LOGOS_BASE}/email.png`,
+                    fieldsSchema: [
+                        { key: "email", label: "EmailAddress", required: true, pattern: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$", placeholder: "user.name@some-domain.com" },
+                    ]
+                }
+            },
+            {
+                where: { name: 'Discord Webhooks' },
+                create: {
+                    name: 'Discord Webhooks',
+                    code: 'discord-webhooks',
+                    logoUrl: `${LOGOS_BASE}/discord.svg`,
+                    fieldsSchema: [
+                        { key: "webhookUrl", label: "WebhookUrl", required: true, minLength: 80, maxLength: 120, placeholder: "Insert webhook url…" },
+                        { key: "userName", label: "UserName", required: false, placeholder: "Optional user name…" },
+                        { key: "avatarUrl", label: "AvatarUrl", required: false, placeholder: "Optional avatar url…" },
+                    ]
+                },
+                update: {
+                    code: 'discord-webhooks',
+                    logoUrl: `${LOGOS_BASE}/discord.svg`,
+                    fieldsSchema: [
+                        { key: "webhookUrl", label: "WebhookUrl", required: true, minLength: 80, maxLength: 120, placeholder: "Insert webhook url…" },
+                        { key: "userName", label: "UserName", required: false, placeholder: "Optional user name…" },
+                        { key: "avatarUrl", label: "AvatarUrl", required: false, placeholder: "Optional avatar url…" },
+                    ]
+                }
+            },
+            {
+                where: { name: 'Slack Webhooks' },
+                create: {
+                    name: 'Slack Webhooks',
+                    code: 'slack-webhooks',
+                    logoUrl: `${LOGOS_BASE}/slack.png`,
+                    fieldsSchema: [
+                        { key: "webhookUrl", label: "WebhookUrl", required: true, minLength: 80, maxLength: 120, placeholder: "Insert webhook url…" },
+                        { key: "channel", label: "Channel", required: false, placeholder: "Optional channel…" },
+                        { key: "userName", label: "UserName", required: false, placeholder: "Optional user name…" },
+                        { key: "iconUrl", label: "IconUrl", required: false, placeholder: "Optional icon url…" },
+                    ]
+                },
+                update: {
+                    code: 'slack-webhooks',
+                    logoUrl: `${LOGOS_BASE}/slack.png`,
+                    fieldsSchema: [
+                        { key: "webhookUrl", label: "WebhookUrl", required: true, minLength: 80, maxLength: 120, placeholder: "Insert webhook url…" },
+                        { key: "channel", label: "Channel", required: false, placeholder: "Optional channel…" },
+                        { key: "userName", label: "UserName", required: false, placeholder: "Optional user name…" },
+                        { key: "iconUrl", label: "IconUrl", required: false, placeholder: "Optional icon url…" },
+                    ]
+                }
+            },
+            {
+                where: { name: 'SMS (via Twilio)' },
+                create: {
+                    name: 'SMS (via Twilio)',
+                    code: 'sms-twilio',
+                    logoUrl: `${LOGOS_BASE}/twilio.svg`,
+                    fieldsSchema: [
+                        { key: "accountSid", label: "AccountSID", required: true, exactLength: 34, placeholder: "Insert Account SID…" },
+                        { key: "authToken", label: "AuthToken", required: true, exactLength: 32, placeholder: "Insert Auth Token…" },
+                        { key: "fromNumber", label: "FromNumber", required: true, pattern: "^\\+?[0-9]{7,15}$", placeholder: "Insert from number…" },
+                        { key: "toNumber", label: "ToNumber", required: true, pattern: "^\\+?[0-9]{7,15}$", placeholder: "Insert to number…" },
+                        { key: "message", label: "Message", required: true, placeholder: "Insert message…" },
+                    ]
+                },
+                update: {
+                    name: 'SMS (via Twilio)',
+                    code: 'sms-twilio',
+                    logoUrl: `${LOGOS_BASE}/twilio.svg`,
+                    fieldsSchema: [
+                        { key: "accountSid", label: "AccountSID", required: true, exactLength: 34, placeholder: "Insert Account SID…" },
+                        { key: "authToken", label: "AuthToken", required: true, exactLength: 32, placeholder: "Insert Auth Token…" },
+                        { key: "fromNumber", label: "FromNumber", required: true, pattern: "^\\+?[0-9]{7,15}$", placeholder: "Insert from number…" },
+                        { key: "toNumber", label: "ToNumber", required: true, pattern: "^\\+?[0-9]{7,15}$", placeholder: "Insert to number…" },
+                        { key: "message", label: "Message", required: true, placeholder: "Insert message…" },
+                    ]
+                }
+            },
+            {
+                where: { name: 'Push Notifications (One Signal)' },
+                create: {
+                    name: 'Push Notifications (One Signal)',
+                    code: 'push-notifications-onesignal',
+                    logoUrl: `${LOGOS_BASE}/onesignal.svg`,
+                    fieldsSchema: [
+                        { key: "appId", label: "AppId", required: true, exactLength: 36, placeholder: "Insert App ID…" },
+                        { key: "apiKey", label: "ApiKey", required: true, minLength: 32, maxLength: 50, placeholder: "Insert API key…" },
+                        { key: "playerIds", label: "PlayerIds", required: true, type: "array", placeholder: "Comma separated player IDs…" },
+                    ]
+                },
+                update: {
+                    name: 'Push Notifications (One Signal)',
+                    code: 'push-notifications-onesignal',
+                    logoUrl: `${LOGOS_BASE}/onesignal.svg`,
+                    fieldsSchema: [
+                        { key: "appId", label: "AppId", required: true, exactLength: 36, placeholder: "Insert App ID…" },
+                        { key: "apiKey", label: "ApiKey", required: true, minLength: 32, maxLength: 50, placeholder: "Insert API key…" },
+                        { key: "playerIds", label: "PlayerIds", required: true, type: "array", placeholder: "Comma separated player IDs…" },
+                    ]
+                }
+            },
+            {
+                where: { name: 'WhatsApp Business API' },
+                create: {
+                    name: 'WhatsApp Business API',
+                    code: 'whatsapp-business',
+                    logoUrl: `${LOGOS_BASE}/whatsapp-business-api.svg`,
+                    fieldsSchema: [
+                        { key: "phoneNumberId", label: "PhoneNumberId", required: true, pattern: "^\\+?[0-9]{7,15}$", placeholder: "Insert phone number…" },
+                        { key: "accessToken", label: "AccessToken", required: true, minLength: 200, maxLength: 300, placeholder: "Insert access token…" },
+                        { key: "recipientNumber", label: "RecipientNumber", required: true, pattern: "^\\+?[0-9]{7,15}$", placeholder: "Insert recipient number…" },
+                    ]
+                },
+                update: {
+                    code: 'whatsapp-business',
+                    logoUrl: `${LOGOS_BASE}/whatsapp-business-api.svg`,
+                    fieldsSchema: [
+                        { key: "phoneNumberId", label: "PhoneNumberId", required: true, pattern: "^\\+?[0-9]{7,15}$", placeholder: "Insert phone number…" },
+                        { key: "accessToken", label: "AccessToken", required: true, minLength: 200, maxLength: 300, placeholder: "Insert access token…" },
+                        { key: "recipientNumber", label: "RecipientNumber", required: true, pattern: "^\\+?[0-9]{7,15}$", placeholder: "Insert recipient number…" },
+                    ]
+                }
+            },
+            {
+                where: { name: 'Webhooks' },
+                create: {
+                    name: 'Webhooks',
+                    code: 'webhooks',
+                    logoUrl: `${LOGOS_BASE}/webhooks.png`,
+                    fieldsSchema: [
+                        { key: "webhookUrl", label: "WebhookUrl", required: true, minLength: 80, maxLength: 120, placeholder: "Insert webhook url…" },
+                    ]
+                },
+                update: {
+                    code: 'webhooks',
+                    logoUrl: `${LOGOS_BASE}/webhooks.png`,
+                    fieldsSchema: [
+                        { key: "webhookUrl", label: "WebhookUrl", required: true, minLength: 80, maxLength: 120, placeholder: "Insert webhook url…" },
+                    ]
+                }
+            },
         ],
         user: [
             {
@@ -156,7 +387,7 @@ export default async function main() {
                                 name: "Twilio SMS Gateway",
                                 code: "twilio_sms_008",
                                 description: "Emergency SMS notifications",
-                                externalService: { connect: { name: 'SMS (Twilio)' } },
+                                externalService: { connect: { name: 'SMS (via Twilio)' } },
                                 configuration: {
                                     accountSID: "AC12345678901234567890123456789012",
                                     authToken: "auth_token_32_chars_long_1234567",
@@ -169,7 +400,7 @@ export default async function main() {
                                 name: "OneSignal Mobile Push",
                                 code: "onesignal_push_009",
                                 description: "Mobile app push notifications",
-                                externalService: { connect: { name: 'Push Notifications (OneSignal)' } },
+                                externalService: { connect: { name: 'Push Notifications (One Signal)' } },
                                 configuration: {
                                     appId: "550e8400-e29b-41d4-a716-446655440000",
                                     apiKey: "onesignal_api_key_40_chars_long_example",
@@ -198,9 +429,8 @@ export default async function main() {
                             }
                         ]
                     }
-                },
-                update: {}
+                }
             }
         ]
-    }
-};
+    };
+}

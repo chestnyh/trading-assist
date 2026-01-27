@@ -92,6 +92,8 @@ export interface LoginDto {
    * @minLength 6
    */
   password: string;
+  /** Remember me option to stay logged in */
+  rememberMe?: boolean;
 }
 
 /**
@@ -121,6 +123,66 @@ export interface VerifyEmailResponseDto {
   /** Success message */
   message: string;
   /** Indicates if verification was successful */
+  success: boolean;
+}
+
+export interface ForgotPasswordDto {
+  /** User email address */
+  email: string;
+}
+
+export interface ForgotPasswordResponseDto {
+  /** Password reset token required for subsequent steps */
+  token: string;
+  /** Success message */
+  message: string;
+}
+
+export interface VerifyPasswordResetDto {
+  /**
+   * 6-digit verification code sent to user email
+   * @minLength 6
+   * @maxLength 6
+   */
+  code: string;
+  /** Password reset token received from forgot-password endpoint */
+  token: string;
+}
+
+/**
+ * Remaining attempts before the token is invalidated
+ * @nullable
+ */
+export type VerifyPasswordResetResponseDtoRemainingAttempts = {
+  [key: string]: unknown;
+} | null;
+
+export interface VerifyPasswordResetResponseDto {
+  /** Success message */
+  message: string;
+  /** Indicates if verification was successful */
+  success: boolean;
+  /**
+   * Remaining attempts before the token is invalidated
+   * @nullable
+   */
+  remainingAttempts?: VerifyPasswordResetResponseDtoRemainingAttempts;
+}
+
+export interface ResetPasswordDto {
+  /**
+   * New password
+   * @minLength 8
+   */
+  password: string;
+  /** Password reset token received from forgot-password endpoint */
+  token: string;
+}
+
+export interface ResetPasswordResponseDto {
+  /** Success message */
+  message: string;
+  /** Indicates if password reset was successful */
   success: boolean;
 }
 
@@ -170,6 +232,64 @@ export interface UpdateRuleDto {
   ruleBody?: UpdateRuleDtoRuleBody;
 }
 
+export type CreateUserRuleSettingDtoConfiguration = { [key: string]: unknown };
+
+export interface CreateUserRuleSettingDto {
+  name: string;
+  code: string;
+  description?: string;
+  externalServiceId: number;
+  configuration: CreateUserRuleSettingDtoConfiguration;
+}
+
+export type RuleSettingResponseDtoRuleBody = { [key: string]: unknown };
+
+export interface RuleSettingResponseDto {
+  id: number;
+  name: string;
+  description: string;
+  ruleBody: RuleSettingResponseDtoRuleBody;
+  authorId: number;
+}
+
+export type UpdateUserRuleSettingDtoConfiguration = { [key: string]: unknown };
+
+export interface UpdateUserRuleSettingDto {
+  name?: string;
+  code?: string;
+  description?: string;
+  externalServiceId?: number;
+  configuration?: UpdateUserRuleSettingDtoConfiguration;
+}
+
+export interface CreateTagDto {
+  name: string;
+}
+
+export interface TagResponseDto {
+  id: number;
+  name: string;
+  userId: number;
+}
+
+/**
+ * @nullable
+ */
+export type ExternalServiceResponseDtoLogoUrl = {
+  [key: string]: unknown;
+} | null;
+
+export type ExternalServiceResponseDtoFieldsSchema = { [key: string]: unknown };
+
+export interface ExternalServiceResponseDto {
+  id: number;
+  name: string;
+  code: string;
+  /** @nullable */
+  logoUrl?: ExternalServiceResponseDtoLogoUrl;
+  fieldsSchema: ExternalServiceResponseDtoFieldsSchema;
+}
+
 /**
  * @summary Create a user
  */
@@ -212,6 +332,11 @@ export type authControllerLoginResponse200 = {
   status: 200;
 };
 
+export type authControllerLoginResponse400 = {
+  data: void;
+  status: 400;
+};
+
 export type authControllerLoginResponse401 = {
   data: void;
   status: 401;
@@ -221,10 +346,12 @@ export type authControllerLoginResponseSuccess =
   authControllerLoginResponse200 & {
     headers: Headers;
   };
-export type authControllerLoginResponseError =
-  authControllerLoginResponse401 & {
-    headers: Headers;
-  };
+export type authControllerLoginResponseError = (
+  | authControllerLoginResponse400
+  | authControllerLoginResponse401
+) & {
+  headers: Headers;
+};
 
 export type authControllerLoginResponse =
   | authControllerLoginResponseSuccess
@@ -297,6 +424,161 @@ export const authControllerVerifyEmail = async (
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...options?.headers },
       body: JSON.stringify(verifyEmailDto),
+    }
+  );
+};
+
+/**
+ * @summary Request password reset - sends verification code to email
+ */
+export type authControllerForgotPasswordResponse200 = {
+  data: ForgotPasswordResponseDto;
+  status: 200;
+};
+
+export type authControllerForgotPasswordResponse400 = {
+  data: void;
+  status: 400;
+};
+
+export type authControllerForgotPasswordResponseSuccess =
+  authControllerForgotPasswordResponse200 & {
+    headers: Headers;
+  };
+export type authControllerForgotPasswordResponseError =
+  authControllerForgotPasswordResponse400 & {
+    headers: Headers;
+  };
+
+export type authControllerForgotPasswordResponse =
+  | authControllerForgotPasswordResponseSuccess
+  | authControllerForgotPasswordResponseError;
+
+export const getAuthControllerForgotPasswordUrl = () => {
+  return `/api/v1/auth/forgot-password`;
+};
+
+export const authControllerForgotPassword = async (
+  forgotPasswordDto: ForgotPasswordDto,
+  options?: RequestInit
+): Promise<authControllerForgotPasswordResponse> => {
+  return customInstance<authControllerForgotPasswordResponse>(
+    getAuthControllerForgotPasswordUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(forgotPasswordDto),
+    }
+  );
+};
+
+/**
+ * @summary Verify password reset code
+ */
+export type authControllerVerifyPasswordResetResponse200 = {
+  data: VerifyPasswordResetResponseDto;
+  status: 200;
+};
+
+export type authControllerVerifyPasswordResetResponse400 = {
+  data: void;
+  status: 400;
+};
+
+export type authControllerVerifyPasswordResetResponse401 = {
+  data: void;
+  status: 401;
+};
+
+export type authControllerVerifyPasswordResetResponse429 = {
+  data: void;
+  status: 429;
+};
+
+export type authControllerVerifyPasswordResetResponseSuccess =
+  authControllerVerifyPasswordResetResponse200 & {
+    headers: Headers;
+  };
+export type authControllerVerifyPasswordResetResponseError = (
+  | authControllerVerifyPasswordResetResponse400
+  | authControllerVerifyPasswordResetResponse401
+  | authControllerVerifyPasswordResetResponse429
+) & {
+  headers: Headers;
+};
+
+export type authControllerVerifyPasswordResetResponse =
+  | authControllerVerifyPasswordResetResponseSuccess
+  | authControllerVerifyPasswordResetResponseError;
+
+export const getAuthControllerVerifyPasswordResetUrl = () => {
+  return `/api/v1/auth/verify-password-reset`;
+};
+
+export const authControllerVerifyPasswordReset = async (
+  verifyPasswordResetDto: VerifyPasswordResetDto,
+  options?: RequestInit
+): Promise<authControllerVerifyPasswordResetResponse> => {
+  return customInstance<authControllerVerifyPasswordResetResponse>(
+    getAuthControllerVerifyPasswordResetUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(verifyPasswordResetDto),
+    }
+  );
+};
+
+/**
+ * @summary Reset password with verified token
+ */
+export type authControllerResetPasswordResponse200 = {
+  data: ResetPasswordResponseDto;
+  status: 200;
+};
+
+export type authControllerResetPasswordResponse400 = {
+  data: void;
+  status: 400;
+};
+
+export type authControllerResetPasswordResponse401 = {
+  data: void;
+  status: 401;
+};
+
+export type authControllerResetPasswordResponseSuccess =
+  authControllerResetPasswordResponse200 & {
+    headers: Headers;
+  };
+export type authControllerResetPasswordResponseError = (
+  | authControllerResetPasswordResponse400
+  | authControllerResetPasswordResponse401
+) & {
+  headers: Headers;
+};
+
+export type authControllerResetPasswordResponse =
+  | authControllerResetPasswordResponseSuccess
+  | authControllerResetPasswordResponseError;
+
+export const getAuthControllerResetPasswordUrl = () => {
+  return `/api/v1/auth/reset-password`;
+};
+
+export const authControllerResetPassword = async (
+  resetPasswordDto: ResetPasswordDto,
+  options?: RequestInit
+): Promise<authControllerResetPasswordResponse> => {
+  return customInstance<authControllerResetPasswordResponse>(
+    getAuthControllerResetPasswordUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(resetPasswordDto),
     }
   );
 };
@@ -550,6 +832,266 @@ export const rulesControllerRemove = async (
     {
       ...options,
       method: 'DELETE',
+    }
+  );
+};
+
+/**
+ * @summary Create a new universal rule setting
+ */
+export type rulesSettingsControllerCreateSettingResponse201 = {
+  data: RuleSettingResponseDto;
+  status: 201;
+};
+
+export type rulesSettingsControllerCreateSettingResponseSuccess =
+  rulesSettingsControllerCreateSettingResponse201 & {
+    headers: Headers;
+  };
+export type rulesSettingsControllerCreateSettingResponse =
+  rulesSettingsControllerCreateSettingResponseSuccess;
+
+export const getRulesSettingsControllerCreateSettingUrl = () => {
+  return `/api/v1/rules-settings`;
+};
+
+export const rulesSettingsControllerCreateSetting = async (
+  createUserRuleSettingDto: CreateUserRuleSettingDto,
+  options?: RequestInit
+): Promise<rulesSettingsControllerCreateSettingResponse> => {
+  return customInstance<rulesSettingsControllerCreateSettingResponse>(
+    getRulesSettingsControllerCreateSettingUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(createUserRuleSettingDto),
+    }
+  );
+};
+
+/**
+ * @summary Get all universal rule settings for user
+ */
+export type rulesSettingsControllerFindAllSettingsResponse200 = {
+  data: RuleSettingResponseDto[];
+  status: 200;
+};
+
+export type rulesSettingsControllerFindAllSettingsResponseSuccess =
+  rulesSettingsControllerFindAllSettingsResponse200 & {
+    headers: Headers;
+  };
+export type rulesSettingsControllerFindAllSettingsResponse =
+  rulesSettingsControllerFindAllSettingsResponseSuccess;
+
+export const getRulesSettingsControllerFindAllSettingsUrl = () => {
+  return `/api/v1/rules-settings`;
+};
+
+export const rulesSettingsControllerFindAllSettings = async (
+  options?: RequestInit
+): Promise<rulesSettingsControllerFindAllSettingsResponse> => {
+  return customInstance<rulesSettingsControllerFindAllSettingsResponse>(
+    getRulesSettingsControllerFindAllSettingsUrl(),
+    {
+      ...options,
+      method: 'GET',
+    }
+  );
+};
+
+/**
+ * @summary Update a rule setting
+ */
+export type rulesSettingsControllerUpdateSettingResponse200 = {
+  data: RuleSettingResponseDto;
+  status: 200;
+};
+
+export type rulesSettingsControllerUpdateSettingResponseSuccess =
+  rulesSettingsControllerUpdateSettingResponse200 & {
+    headers: Headers;
+  };
+export type rulesSettingsControllerUpdateSettingResponse =
+  rulesSettingsControllerUpdateSettingResponseSuccess;
+
+export const getRulesSettingsControllerUpdateSettingUrl = (id: number) => {
+  return `/api/v1/rules-settings/${id}`;
+};
+
+export const rulesSettingsControllerUpdateSetting = async (
+  id: number,
+  updateUserRuleSettingDto: UpdateUserRuleSettingDto,
+  options?: RequestInit
+): Promise<rulesSettingsControllerUpdateSettingResponse> => {
+  return customInstance<rulesSettingsControllerUpdateSettingResponse>(
+    getRulesSettingsControllerUpdateSettingUrl(id),
+    {
+      ...options,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(updateUserRuleSettingDto),
+    }
+  );
+};
+
+/**
+ * @summary Delete a rule setting
+ */
+export type rulesSettingsControllerRemoveSettingResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type rulesSettingsControllerRemoveSettingResponseSuccess =
+  rulesSettingsControllerRemoveSettingResponse200 & {
+    headers: Headers;
+  };
+export type rulesSettingsControllerRemoveSettingResponse =
+  rulesSettingsControllerRemoveSettingResponseSuccess;
+
+export const getRulesSettingsControllerRemoveSettingUrl = (id: number) => {
+  return `/api/v1/rules-settings/${id}`;
+};
+
+export const rulesSettingsControllerRemoveSetting = async (
+  id: number,
+  options?: RequestInit
+): Promise<rulesSettingsControllerRemoveSettingResponse> => {
+  return customInstance<rulesSettingsControllerRemoveSettingResponse>(
+    getRulesSettingsControllerRemoveSettingUrl(id),
+    {
+      ...options,
+      method: 'DELETE',
+    }
+  );
+};
+
+/**
+ * @summary Create a new tag for rule settings
+ */
+export type rulesSettingsTagsControllerCreateTagResponse201 = {
+  data: TagResponseDto;
+  status: 201;
+};
+
+export type rulesSettingsTagsControllerCreateTagResponseSuccess =
+  rulesSettingsTagsControllerCreateTagResponse201 & {
+    headers: Headers;
+  };
+export type rulesSettingsTagsControllerCreateTagResponse =
+  rulesSettingsTagsControllerCreateTagResponseSuccess;
+
+export const getRulesSettingsTagsControllerCreateTagUrl = () => {
+  return `/api/v1/tags`;
+};
+
+export const rulesSettingsTagsControllerCreateTag = async (
+  createTagDto: CreateTagDto,
+  options?: RequestInit
+): Promise<rulesSettingsTagsControllerCreateTagResponse> => {
+  return customInstance<rulesSettingsTagsControllerCreateTagResponse>(
+    getRulesSettingsTagsControllerCreateTagUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(createTagDto),
+    }
+  );
+};
+
+/**
+ * @summary Get all user tags
+ */
+export type rulesSettingsTagsControllerFindAllTagsResponse200 = {
+  data: TagResponseDto[];
+  status: 200;
+};
+
+export type rulesSettingsTagsControllerFindAllTagsResponseSuccess =
+  rulesSettingsTagsControllerFindAllTagsResponse200 & {
+    headers: Headers;
+  };
+export type rulesSettingsTagsControllerFindAllTagsResponse =
+  rulesSettingsTagsControllerFindAllTagsResponseSuccess;
+
+export const getRulesSettingsTagsControllerFindAllTagsUrl = () => {
+  return `/api/v1/tags`;
+};
+
+export const rulesSettingsTagsControllerFindAllTags = async (
+  options?: RequestInit
+): Promise<rulesSettingsTagsControllerFindAllTagsResponse> => {
+  return customInstance<rulesSettingsTagsControllerFindAllTagsResponse>(
+    getRulesSettingsTagsControllerFindAllTagsUrl(),
+    {
+      ...options,
+      method: 'GET',
+    }
+  );
+};
+
+/**
+ * @summary Delete a tag
+ */
+export type rulesSettingsTagsControllerRemoveTagResponse200 = {
+  data: TagResponseDto;
+  status: 200;
+};
+
+export type rulesSettingsTagsControllerRemoveTagResponseSuccess =
+  rulesSettingsTagsControllerRemoveTagResponse200 & {
+    headers: Headers;
+  };
+export type rulesSettingsTagsControllerRemoveTagResponse =
+  rulesSettingsTagsControllerRemoveTagResponseSuccess;
+
+export const getRulesSettingsTagsControllerRemoveTagUrl = (id: number) => {
+  return `/api/v1/tags/${id}`;
+};
+
+export const rulesSettingsTagsControllerRemoveTag = async (
+  id: number,
+  options?: RequestInit
+): Promise<rulesSettingsTagsControllerRemoveTagResponse> => {
+  return customInstance<rulesSettingsTagsControllerRemoveTagResponse>(
+    getRulesSettingsTagsControllerRemoveTagUrl(id),
+    {
+      ...options,
+      method: 'DELETE',
+    }
+  );
+};
+
+/**
+ * @summary Get all external services
+ */
+export type externalServicesControllerFindAllResponse200 = {
+  data: ExternalServiceResponseDto[];
+  status: 200;
+};
+
+export type externalServicesControllerFindAllResponseSuccess =
+  externalServicesControllerFindAllResponse200 & {
+    headers: Headers;
+  };
+export type externalServicesControllerFindAllResponse =
+  externalServicesControllerFindAllResponseSuccess;
+
+export const getExternalServicesControllerFindAllUrl = () => {
+  return `/api/v1/external-services`;
+};
+
+export const externalServicesControllerFindAll = async (
+  options?: RequestInit
+): Promise<externalServicesControllerFindAllResponse> => {
+  return customInstance<externalServicesControllerFindAllResponse>(
+    getExternalServicesControllerFindAllUrl(),
+    {
+      ...options,
+      method: 'GET',
     }
   );
 };
