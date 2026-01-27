@@ -272,22 +272,17 @@ export interface TagResponseDto {
   userId: number;
 }
 
-/**
- * @nullable
- */
-export type ExternalServiceResponseDtoLogoUrl = {
+export type ExternalServiceResponseDtoFieldsSchemaItem = {
   [key: string]: unknown;
-} | null;
-
-export type ExternalServiceResponseDtoFieldsSchema = { [key: string]: unknown };
+};
 
 export interface ExternalServiceResponseDto {
   id: number;
   name: string;
   code: string;
   /** @nullable */
-  logoUrl?: ExternalServiceResponseDtoLogoUrl;
-  fieldsSchema: ExternalServiceResponseDtoFieldsSchema;
+  logoUrl?: string | null;
+  fieldsSchema: ExternalServiceResponseDtoFieldsSchemaItem[];
 }
 
 /**

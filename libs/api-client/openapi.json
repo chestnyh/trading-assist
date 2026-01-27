@@ -1294,12 +1294,11 @@
             "example": "binance"
           },
           "logoUrl": {
-            "type": "object",
+            "type": "string",
             "example": "/logos/binance.svg",
             "nullable": true
           },
           "fieldsSchema": {
-            "type": "object",
             "example": [
               {
                 "key": "apiKey",
@@ -1308,7 +1307,11 @@
                 "exactLength": 32,
                 "placeholder": "Insert api key…"
               }
-            ]
+            ],
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
           }
         },
         "required": [

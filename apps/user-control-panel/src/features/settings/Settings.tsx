@@ -29,15 +29,24 @@ export default function Settings() {
     <div className="px-4 md:px-8 lg:px-12 py-6 max-w-5xl mx-auto">
       <h1 className="text-h4 text-primary mb-6">Rules Settings</h1>
       <div className="flex flex-col gap-3">
-        {services.map((s) => (
-          <ExternalServiceSettingsGroup
-            key={s.code}
-            name={s.name}
-            logoUrl={s.logoUrl || undefined}
-            logoKey={s.code}
-            fieldsSchema={s.fieldsSchema as DetailField[]}
-          />
-        ))}
+        {services.map((s) => {
+          const logo =
+            typeof s.logoUrl === "string" ? s.logoUrl : undefined;
+          const schema =
+            Array.isArray(s.fieldsSchema)
+              ? (s.fieldsSchema as unknown as DetailField[])
+              : undefined;
+
+          return (
+            <ExternalServiceSettingsGroup
+              key={s.code}
+              name={s.name}
+              logoUrl={logo}
+              logoKey={s.code}
+              fieldsSchema={schema}
+            />
+          );
+        })}
       </div>
     </div>
   );
