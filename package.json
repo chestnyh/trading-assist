@@ -36,6 +36,7 @@
     "models:migrations:generate": "nx run models:migrations:generate",
     "models:migrations:migrate-and-seed": "nx run models:migrations:run; nx run models:migrations:seed seed/initial.js",
     "configs:build": "nx run configs:build",
+    "check:envs": "ts-node scripts/check-envs.ts",
     "all:build": "nx run-many --target=build --all",
     "all:start": "nx run-many --target=serve --all",
     "all:test": "nx run-many --target=test --all",
@@ -43,7 +44,6 @@
     "docker:external:up": "docker compose --env-file .env.dev --profile external up",
     "docker:init-external:up": "docker compose --env-file .env.dev --profile init-external up",
     "docker:int-test:up": "docker compose --env-file .env.api-int-tests up",
-    "check:envs": "ts-node scripts/check-envs.ts",
     "prepare": "husky"
   },
   "author": "",

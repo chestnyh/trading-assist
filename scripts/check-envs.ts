@@ -1,3 +1,19 @@
+/**
+ * DESCRIPTION:
+ * This script ensures consistency between local environment files (.env.***)
+ * and their corresponding template files (.env.***.example).
+ *
+ * MOTIVATION:
+ * To prevent runtime errors caused by missing environment variables after
+ * pulling new code or adding new features.
+ *
+ * USAGE:
+ * 1. Automatically runs via Husky hooks:
+ * - pre-commit: Prevents committing if .example files are not updated with new local keys.
+ * - post-merge: Prompts to add new keys to local .env files after git pull.
+ * 2. Can be run manually: pnpm check:envs
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { parse } from 'dotenv';
