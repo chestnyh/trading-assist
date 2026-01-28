@@ -429,7 +429,8 @@ export default async function main() {
                             }
                         ]
                     }
-                }
+                },
+                update: {}
             }
         ]
     };
