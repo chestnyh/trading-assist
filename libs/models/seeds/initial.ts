@@ -430,7 +430,9 @@ export default async function main() {
                         ]
                     }
                 },
-                update: {}
+                update: {
+                    password: await cryptoService.hashPassword('Password123!'),
+                }
             }
         ]
     };
