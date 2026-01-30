@@ -3,7 +3,6 @@ import ExternalServiceSettingsGroup, { DetailField } from "./components/External
 import { 
   externalServicesControllerFindAll, 
   ExternalServiceResponseDto,
-  rulesSettingsControllerFindAllSettings,
   RuleSettingResponseDto 
 } from "@trading-bot/api-client";
 import { useAuth } from "../../app/contexts/AuthContext";
@@ -11,7 +10,6 @@ import { ErrorAlert } from "../../shared/ui/feedback/ErrorAlert";
 
 export default function Settings() {
   const [services, setServices] = useState<ExternalServiceResponseDto[]>([]);
-  const [ruleSettings, setRuleSettings] = useState<RuleSettingResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { token, logout } = useAuth();
@@ -21,16 +19,10 @@ export default function Settings() {
       try {
         setError(null);
         const options = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
-        const [servicesRes, settingsRes] = await Promise.all([
-          externalServicesControllerFindAll(options),
-          rulesSettingsControllerFindAllSettings(options)
-        ]);
+        const servicesRes = await externalServicesControllerFindAll(options);
 
         if (servicesRes.status === 200) {
           setServices(servicesRes.data);
-        }
-        if (settingsRes.status === 200) {
-          setRuleSettings(settingsRes.data);
         }
       } catch (e: unknown) {
         console.error("Failed to fetch settings", e);
@@ -78,10 +70,6 @@ export default function Settings() {
             Array.isArray(s.fieldsSchema)
               ? (s.fieldsSchema as unknown as DetailField[])
               : undefined;
-          
-          const serviceRules = ruleSettings.filter(
-            (r) => r.externalServiceId === s.id
-          );
 
           return (
             <ExternalServiceSettingsGroup
@@ -90,7 +78,7 @@ export default function Settings() {
               logoUrl={logo}
               logoKey={s.code}
               fieldsSchema={schema}
-              ruleSettings={serviceRules}
+              externalServiceId={s.id}
             />
           );
         })}

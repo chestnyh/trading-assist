@@ -36,6 +36,25 @@ export class RulesSettingsService {
   }
 
   /**
+   * Get user settings filtered by external service with pagination
+   */
+  async findSettingsByService(userId: number, externalServiceId: number, page = 1, limit = 20) {
+    const skip = Math.max(0, (page - 1) * limit);
+    return this.modelsService.userRuleSettings.findMany({
+      where: {
+        authorId: userId,
+        externalServiceId,
+      },
+      include: {
+        externalService: true,
+      },
+      skip,
+      take: limit,
+      orderBy: { id: 'desc' },
+    });
+  }
+
+  /**
    * Update setting
    */
   async updateSetting(id: number, userId: number, dto: UpdateUserRuleSettingDto) {

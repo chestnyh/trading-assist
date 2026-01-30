@@ -8,7 +8,8 @@ import {
   Delete,
   UseGuards,
   Request,
-  ParseIntPipe
+  ParseIntPipe,
+  Query
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -16,6 +17,8 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiParam,
+  ApiQuery
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RulesSettingsService } from './rules-settings.service';
@@ -48,6 +51,24 @@ export class RulesSettingsController {
   })
   async findAllSettings(@Request() req) {
     return this.rulesSettingsService.findAllSettingsByUser(req.user.id);
+  }
+
+  @Get('by-service/:externalServiceId')
+  @ApiOperation({ summary: 'Get user rule settings by external service with pagination' })
+  @ApiParam({ name: 'externalServiceId', type: Number, description: 'External Service ID' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 20)' })
+  @ApiOkResponse({
+    description: 'List of rule settings filtered by external service',
+    type: [RuleSettingResponseDto]
+  })
+  async findSettingsByService(
+    @Request() req,
+    @Param('externalServiceId', ParseIntPipe) externalServiceId: number,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number
+  ) {
+    return this.rulesSettingsService.findSettingsByService(req.user.id, externalServiceId, page, limit);
   }
 
   @Patch(':id')

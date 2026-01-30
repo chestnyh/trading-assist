@@ -899,6 +899,48 @@ export const rulesSettingsControllerFindAllSettings = async (
 };
 
 /**
+ * @summary Get user rule settings by external service with pagination
+ */
+export type rulesSettingsControllerFindSettingsByServiceResponse200 = {
+  data: RuleSettingResponseDto[];
+  status: 200;
+};
+
+export type rulesSettingsControllerFindSettingsByServiceResponseSuccess =
+  rulesSettingsControllerFindSettingsByServiceResponse200 & {
+    headers: Headers;
+  };
+export type rulesSettingsControllerFindSettingsByServiceResponse =
+  rulesSettingsControllerFindSettingsByServiceResponseSuccess;
+
+export const getRulesSettingsControllerFindSettingsByServiceUrl = (
+  externalServiceId: number,
+  page?: number,
+  limit?: number
+) => {
+  const searchParams = new URLSearchParams();
+  if (page !== undefined) searchParams.set('page', String(page));
+  if (limit !== undefined) searchParams.set('limit', String(limit));
+  const query = searchParams.toString();
+  return `/api/v1/rules-settings/by-service/${externalServiceId}${query ? `?${query}` : ''}`;
+};
+
+export const rulesSettingsControllerFindSettingsByService = async (
+  externalServiceId: number,
+  page?: number,
+  limit?: number,
+  options?: RequestInit
+): Promise<rulesSettingsControllerFindSettingsByServiceResponse> => {
+  return customInstance<rulesSettingsControllerFindSettingsByServiceResponse>(
+    getRulesSettingsControllerFindSettingsByServiceUrl(externalServiceId, page, limit),
+    {
+      ...options,
+      method: 'GET',
+    }
+  );
+};
+
+/**
  * @summary Update a rule setting
  */
 export type rulesSettingsControllerUpdateSettingResponse200 = {

@@ -3,7 +3,8 @@ import { ChevronRight, ChevronDown } from "lucide-react";
 import AddRulesSettingsButton from "./AddRulesSettingsButton";
 import RuleSetting from "./RuleSetting";
 import { ConfirmationModal } from "../../../shared/ui/modals/ConfirmationModal";
-import { RuleSettingResponseDto } from "@trading-bot/api-client";
+import { rulesSettingsControllerFindSettingsByService, RuleSettingResponseDto } from "@trading-bot/api-client";
+import { useAuth } from "../../../app/contexts/AuthContext";
 
 export type DetailField = {
   key: string;
@@ -23,7 +24,7 @@ interface ExternalServiceSettingsGroupProps {
   logoTag?: string;
   logoKey?: string;
   fieldsSchema?: DetailField[];
-  ruleSettings?: RuleSettingResponseDto[];
+  externalServiceId: number;
 }
 
 export default function ExternalServiceSettingsGroup({
@@ -32,7 +33,7 @@ export default function ExternalServiceSettingsGroup({
   logoTag,
   logoKey,
   fieldsSchema,
-  ruleSettings = [],
+  externalServiceId,
 }: ExternalServiceSettingsGroupProps) {
   const [expanded, setExpanded] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
@@ -47,29 +48,58 @@ export default function ExternalServiceSettingsGroup({
       isEditing?: boolean;
     }[]
   >([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const limit = 20;
+  const { token } = useAuth();
 
   const hasSchema = Boolean(fieldsSchema && fieldsSchema.length > 0);
 
-  useEffect(() => {
-    if (ruleSettings.length > 0 && fieldsSchema) {
-      const mappedSettings = ruleSettings.map((rule) => {
-        const details = fieldsSchema.map((field) => ({
-          label: field.label,
-          value: (rule.configuration[field.key] as string) || "",
-        }));
-        
-        return {
-          name: rule.name,
-          code: rule.code,
-          tags: [], // Tags not yet supported in DTO?
-          details,
-          isNew: false,
-          isEditing: false,
-        };
-      });
-      setSettings(mappedSettings);
+  const mapRulesToSettings = (rules: RuleSettingResponseDto[]) => {
+    if (!fieldsSchema) return [];
+    return rules.map((rule) => {
+      const details = fieldsSchema.map((field) => ({
+        label: field.label,
+        value: (rule.configuration[field.key] as string) || "",
+      }));
+      return {
+        name: rule.name,
+        code: rule.code,
+        tags: [],
+        details,
+        isNew: false,
+        isEditing: false,
+      };
+    });
+  };
+
+  const fetchSettingsPage = async (nextPage: number) => {
+    if (!token || !hasSchema) return;
+    try {
+      setError(null);
+      setLoading(true);
+      const options = { headers: { Authorization: `Bearer ${token}` } };
+      const res = await rulesSettingsControllerFindSettingsByService(externalServiceId, nextPage, limit, options);
+      if (res.status === 200) {
+        const mapped = mapRulesToSettings(res.data);
+        setSettings((prev) => [...prev, ...mapped]);
+        setPage(nextPage);
+      }
+    } catch (e: any) {
+      const msg = e?.message ? String(e.message) : "Failed to load settings";
+      setError(msg);
+    } finally {
+      setLoading(false);
     }
-  }, [ruleSettings, fieldsSchema]);
+  };
+
+  useEffect(() => {
+    if (expanded && settings.length === 0) {
+      fetchSettingsPage(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expanded]);
 
   return (
     <div className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50">
@@ -120,6 +150,8 @@ export default function ExternalServiceSettingsGroup({
             </div>
           ) : (
             <>
+              {loading && <div className="text-secondary text-sm">Loading settings…</div>}
+              {error && <div className="text-error text-sm">{error}</div>}
               <div className="flex flex-col gap-3">
                 {settings.map((s, i) => (
                   <RuleSetting
@@ -160,6 +192,16 @@ export default function ExternalServiceSettingsGroup({
                     }}
                   />
                 ))}
+              </div>
+              <div className="mt-2">
+                <button
+                  type="button"
+                  className="px-3 py-1 text-sm rounded-md border border-border hover:bg-accent-hover/40 text-accent transition"
+                  onClick={() => fetchSettingsPage(page + 1)}
+                  disabled={loading}
+                >
+                  Load more
+                </button>
               </div>
               <div className="mt-3">
                 <AddRulesSettingsButton
