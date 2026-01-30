@@ -7,16 +7,19 @@ import {
   RuleSettingResponseDto 
 } from "@trading-bot/api-client";
 import { useAuth } from "../../app/contexts/AuthContext";
+import { ErrorAlert } from "../../shared/ui/feedback/ErrorAlert";
 
 export default function Settings() {
   const [services, setServices] = useState<ExternalServiceResponseDto[]>([]);
   const [ruleSettings, setRuleSettings] = useState<RuleSettingResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { token, logout } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setError(null);
         const options = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
         const [servicesRes, settingsRes] = await Promise.all([
           externalServicesControllerFindAll(options),
@@ -29,10 +32,21 @@ export default function Settings() {
         if (settingsRes.status === 200) {
           setRuleSettings(settingsRes.data);
         }
-      } catch (error: unknown) {
-        console.error("Failed to fetch settings", error);
-        if (error && typeof error === 'object' && 'status' in error && (error as any).status === 401) {
+      } catch (e: unknown) {
+        console.error("Failed to fetch settings", e);
+        if (e && typeof e === 'object' && 'status' in e && (e as any).status === 401) {
           logout();
+        } else {
+          let errorMessage = "Unable to load settings. Please try again later.";
+          if (e && typeof e === "object" && "message" in e) {
+            const message = String((e as any).message);
+            if (message === "Failed to fetch" || message.includes("fetch")) {
+              errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
+            } else {
+              errorMessage = message;
+            }
+          }
+          setError(errorMessage);
         }
       } finally {
         setLoading(false);
@@ -51,6 +65,7 @@ export default function Settings() {
   return (
     <div className="px-4 md:px-8 lg:px-12 py-6 max-w-5xl mx-auto">
       <h1 className="text-h4 text-primary mb-6">Rules Settings</h1>
+      <ErrorAlert message={error} />
       <div className="flex flex-col gap-3">
         {services.map((s) => {
           const resolveLogoUrl = (url?: string | null) => {
@@ -79,6 +94,9 @@ export default function Settings() {
             />
           );
         })}
+        {!error && !loading && services.length === 0 && (
+          <div className="text-center text-secondary">No external services available.</div>
+        )}
       </div>
     </div>
   );
