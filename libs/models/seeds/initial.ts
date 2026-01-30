@@ -3,7 +3,6 @@ import timeoutRule from './units/rules/2-timeout';
 import intervalRule from './units/rules/3-interval';
 import sequenceRule from './units/rules/4-sequence';
 import parallelRule from './units/rules/5-parallel';
-// TODO: should make it @trading-bot/crypto-utils
 import { CryptoUtilsService } from '@trading-bot/crypto-utils';
 
 const cryptoService = new CryptoUtilsService();
@@ -218,7 +217,7 @@ export default async function main() {
                 create: {
                     name: 'WhatsApp Business API',
                     code: 'whatsapp-business',
-                    logoUrl: `${LOGOS_BASE}/whatsapp-business-api.svg`,
+                    logoUrl: `${LOGOS_BASE}/whatsapp-business.svg`,
                     fieldsSchema: [
                         { key: "phoneNumberId", label: "PhoneNumberId", required: true, pattern: "^\\+?[0-9]{7,15}$", placeholder: "Insert phone number…" },
                         { key: "accessToken", label: "AccessToken", required: true, minLength: 200, maxLength: 300, placeholder: "Insert access token…" },
@@ -227,7 +226,7 @@ export default async function main() {
                 },
                 update: {
                     code: 'whatsapp-business',
-                    logoUrl: `${LOGOS_BASE}/whatsapp-business-api.svg`,
+                    logoUrl: `${LOGOS_BASE}/whatsapp-business.svg`,
                     fieldsSchema: [
                         { key: "phoneNumberId", label: "PhoneNumberId", required: true, pattern: "^\\+?[0-9]{7,15}$", placeholder: "Insert phone number…" },
                         { key: "accessToken", label: "AccessToken", required: true, minLength: 200, maxLength: 300, placeholder: "Insert access token…" },

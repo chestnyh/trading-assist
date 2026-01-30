@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddRulesSettingsButton from "./AddRulesSettingsButton";
 import RuleSetting from "./RuleSetting";
 import { ConfirmationModal } from "../../../shared/ui/modals/ConfirmationModal";
+import { RuleSettingResponseDto } from "@trading-bot/api-client";
 
 export type DetailField = {
   key: string;
@@ -22,6 +23,7 @@ interface ExternalServiceSettingsGroupProps {
   logoTag?: string;
   logoKey?: string;
   fieldsSchema?: DetailField[];
+  ruleSettings?: RuleSettingResponseDto[];
 }
 
 export default function ExternalServiceSettingsGroup({
@@ -30,6 +32,7 @@ export default function ExternalServiceSettingsGroup({
   logoTag,
   logoKey,
   fieldsSchema,
+  ruleSettings = [],
 }: ExternalServiceSettingsGroupProps) {
   const [expanded, setExpanded] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
@@ -41,10 +44,32 @@ export default function ExternalServiceSettingsGroup({
       tags: string[];
       details: { label: string; value: string }[];
       isNew?: boolean;
+      isEditing?: boolean;
     }[]
   >([]);
 
   const hasSchema = Boolean(fieldsSchema && fieldsSchema.length > 0);
+
+  useEffect(() => {
+    if (ruleSettings.length > 0 && fieldsSchema) {
+      const mappedSettings = ruleSettings.map((rule) => {
+        const details = fieldsSchema.map((field) => ({
+          label: field.label,
+          value: (rule.configuration[field.key] as string) || "",
+        }));
+        
+        return {
+          name: rule.name,
+          code: rule.code,
+          tags: [], // Tags not yet supported in DTO?
+          details,
+          isNew: false,
+          isEditing: false,
+        };
+      });
+      setSettings(mappedSettings);
+    }
+  }, [ruleSettings, fieldsSchema]);
 
   return (
     <div className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50">
@@ -103,22 +128,33 @@ export default function ExternalServiceSettingsGroup({
                     code={s.code}
                     tags={s.tags}
                     details={s.details}
-                    detailsSchema={fieldsSchema!}
-                    mode={s.isNew ? "edit" : "view"}
+                    detailsSchema={fieldsSchema || []}
+                    mode={s.isNew || s.isEditing ? "edit" : "view"}
                     onSave={(data) => {
                       setSettings((prev) => {
                         const next = [...prev];
-                        next[i] = { ...data, isNew: false };
+                        next[i] = { ...data, isNew: false, isEditing: false };
                         return next;
                       });
                     }}
-                    onCancel={
-                      s.isNew
-                        ? () => {
-                            setSettings((prev) => prev.filter((_, idx) => idx !== i));
-                          }
-                        : undefined
-                    }
+                    onEdit={() => {
+                      setSettings((prev) => {
+                        const next = [...prev];
+                        next[i] = { ...next[i], isEditing: true };
+                        return next;
+                      });
+                    }}
+                    onCancel={() => {
+                      if (s.isNew) {
+                        setSettings((prev) => prev.filter((_, idx) => idx !== i));
+                      } else {
+                        setSettings((prev) => {
+                          const next = [...prev];
+                          next[i] = { ...next[i], isEditing: false };
+                          return next;
+                        });
+                      }
+                    }}
                     onDelete={() => {
                       setDeletingIndex(i);
                     }}

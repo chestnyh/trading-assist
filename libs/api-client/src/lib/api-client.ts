@@ -242,14 +242,16 @@ export interface CreateUserRuleSettingDto {
   configuration: CreateUserRuleSettingDtoConfiguration;
 }
 
-export type RuleSettingResponseDtoRuleBody = { [key: string]: unknown };
+export type RuleSettingResponseDtoConfiguration = { [key: string]: unknown };
 
 export interface RuleSettingResponseDto {
   id: number;
   name: string;
+  code: string;
   description: string;
-  ruleBody: RuleSettingResponseDtoRuleBody;
+  configuration: RuleSettingResponseDtoConfiguration;
   authorId: number;
+  externalServiceId: number;
 }
 
 export type UpdateUserRuleSettingDtoConfiguration = { [key: string]: unknown };

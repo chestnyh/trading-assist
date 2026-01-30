@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       let access_token: string | undefined;
       let userData: User | undefined;
 
-      if ('status' in response && response.status === 200 && 'data' in response && response.data) {
+      if ('status' in response && (response.status === 200 || (response.status as number) === 201) && 'data' in response && response.data) {
         access_token = response.data.access_token;
         userData = response.data.user as unknown as User;
       } else if ('access_token' in response && 'user' in response && typeof response === 'object' && response !== null) {
