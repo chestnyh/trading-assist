@@ -1,2 +1,3 @@
 exec < /dev/tty
-pnpm check:envs --silent
+pnpm all:check-envs:after-pull
+

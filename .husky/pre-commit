@@ -1,2 +1,3 @@
 exec < /dev/tty
-pnpm check:envs
+pnpm all:check-envs:before-commit
+

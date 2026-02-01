@@ -64,15 +64,14 @@ Models library. More info [here](../libs/models/README.md)
 ### configs
 Configs library. More info [here](../libs/configs/README.md)
  * **configs:build** - Build configs library
-### check
-Commands for validating project consistency and environment configuration.
- * **check:envs** - Run bidirectional synchronization check between local `.env` files and their `.example` templates. Ensures all required variables are present before committing or after merging.
 ### all
 `all` domain run specific command in all monorepo services/libraries/tools that consist this information
  * **all:build** - Build all services and libraries
  * **all:start** - Start all services
  * **all:test** - Run tests for all services and libraries
  * **all:lint** - Run linting for all services and libraries
+ * **all:check-envs:before-commit** - Automated check used by Husky `pre-commit` hook. Ensures no local keys are missing from `.example` files.
+ * **all:check-envs:after-pull** - Automated check used by Husky `post-merge` hook. Interactively prompts to add new keys from `.example` to local `.env` files.
 ### docker
 `docker` domain to work with external services
  * **docker:external:up** - Start external services (PostgreSQL)
