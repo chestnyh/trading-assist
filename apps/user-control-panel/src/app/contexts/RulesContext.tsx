@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useAuth } from "./AuthContext";
+import { API_URL } from "libs/configs/src/lib/api-base-url";
 
 export type Rule = {
   id: string;
@@ -32,10 +33,10 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(false);
       return;
     }
-    
+
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/api/v1/rules", {
+      const response = await fetch(`${API_URL}/api/v1/rules`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -56,12 +57,12 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     if (!token) {
       return false;
     }
-    
+
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/api/v1/rules", {
+      const response = await fetch(`${API_URL}/api/v1/rules`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
@@ -83,12 +84,12 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     if (!token) {
       return false;
     }
-    
+
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/v1/rules/${id}`, {
+      const response = await fetch(`${API_URL}/api/v1/rules/${id}`, {
         method: "PUT",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
@@ -110,10 +111,10 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     if (!token) {
       return false;
     }
-    
+
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/v1/rules/${id}`, {
+      const response = await fetch(`${API_URL}/api/v1/rules/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

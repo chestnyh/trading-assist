@@ -2,6 +2,10 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { NxReactWebpackPlugin } = require('@nx/react/webpack-plugin');
 const { join } = require('path');
+const webpack = require('webpack');
+const dotenv = require('dotenv');
+
+dotenv.config({ path: join(__dirname, '../../.env.dev') });
 
 module.exports = {
   output: {
@@ -32,6 +36,10 @@ module.exports = {
       // Uncomment this line if you don't want to use SVGR
       // See: https://react-svgr.com/
       // svgr: false
+    }),
+    new webpack.DefinePlugin({
+      'process.env.NX_API_BASE_URL': JSON.stringify(process.env.NX_API_BASE_URL),
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     }),
   ],
 };
