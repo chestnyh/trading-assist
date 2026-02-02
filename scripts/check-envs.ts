@@ -24,8 +24,6 @@ const getDifference = (source: string[], target: string[]): string[] => {
 };
 
 const run = async () => {
-  let hasError = false;
-  let hasChanges = false;
 
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   const ask = (query: string): Promise<string> => new Promise((resolve) => rl.question(query, resolve));
@@ -53,10 +51,9 @@ const run = async () => {
 
             fs.appendFileSync(localPath, `${newLine}${key}=${value}\n`);
             console.log(`✅ Added: ${key}=${value}`);
-            hasChanges = true;
           } else {
             console.log(`⏭️  Skipped ${key}. Please update it manually later.`);
-            hasError = true;
+            process.exit(0);
           }
         }
       }
@@ -68,25 +65,12 @@ const run = async () => {
       if (missingInExample.length > 0) {
         console.error(`\n❌ Commit blocked!\n❌ Error: New keys in ${local} missing in ${example}:`);
         missingInExample.forEach(key => console.error(`   - ${key}`));
-        hasError = true;
+        process.exit(1);
       }
     }
   }
 
   rl.close();
-
-  if (isBeforeCommit && hasError) {
-    process.exit(1);
-  }
-
-  if (hasChanges) {
-    console.log('\n✅ Local environments updated successfully!');
-    process.exit(0);
-  }
-
-  if (hasError && isAfterPull) {
-    process.exit(0);
-  }
 
   console.log('\n✅ Everything is up to date.');
   process.exit(0);
