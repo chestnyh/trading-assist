@@ -287,6 +287,21 @@ export interface ExternalServiceResponseDto {
   fieldsSchema: ExternalServiceResponseDtoFieldsSchemaItem[];
 }
 
+export type RulesSettingsControllerFindAllSettingsParams = {
+  /**
+   * Filter by External Service ID
+   */
+  externalServiceId?: number;
+  /**
+   * Page number
+   */
+  page?: number;
+  /**
+   * Items per page
+   */
+  limit?: number;
+};
+
 /**
  * @summary Create a user
  */
@@ -882,57 +897,30 @@ export type rulesSettingsControllerFindAllSettingsResponseSuccess =
 export type rulesSettingsControllerFindAllSettingsResponse =
   rulesSettingsControllerFindAllSettingsResponseSuccess;
 
-export const getRulesSettingsControllerFindAllSettingsUrl = () => {
-  return `/api/v1/rules-settings`;
+export const getRulesSettingsControllerFindAllSettingsUrl = (
+  params?: RulesSettingsControllerFindAllSettingsParams
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/rules-settings?${stringifiedParams}`
+    : `/api/v1/rules-settings`;
 };
 
 export const rulesSettingsControllerFindAllSettings = async (
+  params?: RulesSettingsControllerFindAllSettingsParams,
   options?: RequestInit
 ): Promise<rulesSettingsControllerFindAllSettingsResponse> => {
   return customInstance<rulesSettingsControllerFindAllSettingsResponse>(
-    getRulesSettingsControllerFindAllSettingsUrl(),
-    {
-      ...options,
-      method: 'GET',
-    }
-  );
-};
-
-/**
- * @summary Get user rule settings by external service with pagination
- */
-export type rulesSettingsControllerFindSettingsByServiceResponse200 = {
-  data: RuleSettingResponseDto[];
-  status: 200;
-};
-
-export type rulesSettingsControllerFindSettingsByServiceResponseSuccess =
-  rulesSettingsControllerFindSettingsByServiceResponse200 & {
-    headers: Headers;
-  };
-export type rulesSettingsControllerFindSettingsByServiceResponse =
-  rulesSettingsControllerFindSettingsByServiceResponseSuccess;
-
-export const getRulesSettingsControllerFindSettingsByServiceUrl = (
-  externalServiceId: number,
-  page?: number,
-  limit?: number
-) => {
-  const searchParams = new URLSearchParams();
-  if (page !== undefined) searchParams.set('page', String(page));
-  if (limit !== undefined) searchParams.set('limit', String(limit));
-  const query = searchParams.toString();
-  return `/api/v1/rules-settings/by-service/${externalServiceId}${query ? `?${query}` : ''}`;
-};
-
-export const rulesSettingsControllerFindSettingsByService = async (
-  externalServiceId: number,
-  page?: number,
-  limit?: number,
-  options?: RequestInit
-): Promise<rulesSettingsControllerFindSettingsByServiceResponse> => {
-  return customInstance<rulesSettingsControllerFindSettingsByServiceResponse>(
-    getRulesSettingsControllerFindSettingsByServiceUrl(externalServiceId, page, limit),
+    getRulesSettingsControllerFindAllSettingsUrl(params),
     {
       ...options,
       method: 'GET',

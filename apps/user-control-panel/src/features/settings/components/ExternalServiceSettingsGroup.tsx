@@ -3,7 +3,7 @@ import { ChevronRight, ChevronDown } from "lucide-react";
 import AddRulesSettingsButton from "./AddRulesSettingsButton";
 import RuleSetting from "./RuleSetting";
 import { ConfirmationModal } from "../../../shared/ui/modals/ConfirmationModal";
-import { rulesSettingsControllerFindSettingsByService, RuleSettingResponseDto } from "@trading-bot/api-client";
+import { rulesSettingsControllerFindAllSettings, RuleSettingResponseDto } from "@trading-bot/api-client";
 import { useAuth } from "../../../app/contexts/AuthContext";
 
 export type DetailField = {
@@ -80,7 +80,7 @@ export default function ExternalServiceSettingsGroup({
       setError(null);
       setLoading(true);
       const options = { headers: { Authorization: `Bearer ${token}` } };
-      const res = await rulesSettingsControllerFindSettingsByService(externalServiceId, nextPage, limit, options);
+      const res = await rulesSettingsControllerFindAllSettings({ externalServiceId, page: nextPage, limit }, options);
       if (res.status === 200) {
         const mapped = mapRulesToSettings(res.data);
         setSettings((prev) => [...prev, ...mapped]);

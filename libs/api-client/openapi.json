@@ -459,7 +459,35 @@
       },
       "get": {
         "operationId": "RulesSettingsController_findAllSettings",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "externalServiceId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by External Service ID",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of rule settings",
@@ -1189,11 +1217,15 @@
             "type": "string",
             "example": "BTC Price Alert"
           },
+          "code": {
+            "type": "string",
+            "example": "BTC_ALERT_01"
+          },
           "description": {
             "type": "string",
             "example": "Sends a Telegram alert when BTC price drops below $50,000"
           },
-          "ruleBody": {
+          "configuration": {
             "type": "object",
             "example": {
               "type": "log",
@@ -1205,14 +1237,20 @@
           "authorId": {
             "type": "number",
             "example": 1
+          },
+          "externalServiceId": {
+            "type": "number",
+            "example": 1
           }
         },
         "required": [
           "id",
           "name",
+          "code",
           "description",
-          "ruleBody",
-          "authorId"
+          "configuration",
+          "authorId",
+          "externalServiceId"
         ]
       },
       "UpdateUserRuleSettingDto": {

@@ -45,30 +45,23 @@ export class RulesSettingsController {
 
   @Get('')
   @ApiOperation({ summary: 'Get all universal rule settings for user' })
+  @ApiQuery({ name: 'externalServiceId', required: false, type: Number, description: 'Filter by External Service ID' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
   @ApiOkResponse({
     description: 'List of rule settings',
     type: [RuleSettingResponseDto]
   })
-  async findAllSettings(@Request() req) {
-    return this.rulesSettingsService.findAllSettingsByUser(req.user.id);
-  }
-
-  @Get('by-service/:externalServiceId')
-  @ApiOperation({ summary: 'Get user rule settings by external service with pagination' })
-  @ApiParam({ name: 'externalServiceId', type: Number, description: 'External Service ID' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 20)' })
-  @ApiOkResponse({
-    description: 'List of rule settings filtered by external service',
-    type: [RuleSettingResponseDto]
-  })
-  async findSettingsByService(
+  async findAllSettings(
     @Request() req,
-    @Param('externalServiceId', ParseIntPipe) externalServiceId: number,
+    @Query('externalServiceId') externalServiceId?: number,
     @Query('page') page?: number,
     @Query('limit') limit?: number
   ) {
-    return this.rulesSettingsService.findSettingsByService(req.user.id, externalServiceId, page, limit);
+    const serviceId = externalServiceId ? +externalServiceId : undefined;
+    const pageNum = page ? +page : undefined;
+    const limitNum = limit ? +limit : undefined;
+    return this.rulesSettingsService.findAllSettingsByUser(req.user.id, serviceId, pageNum, limitNum);
   }
 
   @Patch(':id')
