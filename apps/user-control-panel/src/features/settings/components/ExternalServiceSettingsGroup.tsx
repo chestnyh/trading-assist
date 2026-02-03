@@ -3,7 +3,7 @@ import { ChevronRight, ChevronDown } from "lucide-react";
 import AddRulesSettingsButton from "./AddRulesSettingsButton";
 import RuleSetting from "./RuleSetting";
 import { ConfirmationModal } from "../../../shared/ui/modals/ConfirmationModal";
-import { rulesSettingsControllerFindAllSettings, rulesSettingsControllerCreateSetting, RuleSettingResponseDto, CreateUserRuleSettingDto } from "@trading-bot/api-client";
+import { rulesSettingsControllerFindAllSettings, rulesSettingsControllerCreateSetting, rulesSettingsControllerUpdateSetting, RuleSettingResponseDto, CreateUserRuleSettingDto, UpdateUserRuleSettingDto } from "@trading-bot/api-client";
 import { useAuth } from "../../../app/contexts/AuthContext";
 
 export type DetailField = {
@@ -211,11 +211,44 @@ export default function ExternalServiceSettingsGroup({
                           setLoading(false);
                         }
                       } else {
-                        setSettings((prev) => {
-                          const next = [...prev];
-                          next[i] = { ...data, isNew: false, isEditing: false, id: s.id };
-                          return next;
-                        });
+                        try {
+                          if (!token) return;
+                          setLoading(true);
+                          setError(null);
+
+                          const configuration: Record<string, any> = {};
+                          if (fieldsSchema) {
+                            data.details.forEach((d) => {
+                              const field = fieldsSchema.find((f) => f.label === d.label);
+                              if (field) {
+                                configuration[field.key] = d.value;
+                              }
+                            });
+                          }
+
+                          const dto: UpdateUserRuleSettingDto = {
+                            name: data.name,
+                            code: data.code,
+                            configuration,
+                            tags: data.tags,
+                          };
+
+                          const res = await rulesSettingsControllerUpdateSetting(s.id!, dto, {
+                            headers: { Authorization: `Bearer ${token}` },
+                          });
+
+                          if (res.status === 200) {
+                            setSettings((prev) => {
+                              const next = [...prev];
+                              next[i] = { ...data, isEditing: false, id: s.id };
+                              return next;
+                            });
+                          }
+                        } catch (e: any) {
+                          setError(e.message || "Failed to update setting");
+                        } finally {
+                          setLoading(false);
+                        }
                       }
                     }}
                     onEdit={() => {

@@ -58,6 +58,9 @@ export default function RuleSetting({
     }
     return map;
   });
+  
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
   const parsedTags = useMemo(
     () =>
       tagsInput
@@ -90,7 +93,31 @@ export default function RuleSetting({
     setDetailValues(map);
   }, [details, detailsSchema]);
 
-  const isValid = editName.trim().length > 0 && editCode.trim().length > 0;
+  const errors = useMemo(() => {
+    const errs: Record<string, string> = {};
+    if (editName.trim().length === 0) {
+      errs.name = "Setting Name is required";
+    }
+    if (editCode.trim().length === 0) {
+      errs.code = "Setting Code is required";
+    }
+    
+    detailsSchema.forEach((f) => {
+      if (f.required) {
+        const val = detailValues[f.key] ?? "";
+        if (val.trim().length === 0) {
+          errs[f.key] = `${f.label} is required`;
+        }
+      }
+    });
+    return errs;
+  }, [editName, editCode, detailValues, detailsSchema]);
+
+  const isValid = Object.keys(errors).length === 0;
+
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
 
   if (mode === "edit") {
     return (
@@ -98,6 +125,14 @@ export default function RuleSetting({
         className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50 p-4"
         onSubmit={(e) => {
           e.preventDefault();
+          
+          if (!isValid) {
+             const allTouched: Record<string, boolean> = { name: true, code: true };
+             detailsSchema.forEach(f => allTouched[f.key] = true);
+             setTouched(allTouched);
+             return;
+          }
+
           const det = detailsSchema.map((f) => {
             const raw = detailValues[f.key] ?? "";
             if (f.type === "array") {
@@ -126,18 +161,22 @@ export default function RuleSetting({
             <input
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
+              onBlur={() => handleBlur('name')}
+              className={`w-full rounded-md border ${touched.name && errors.name ? 'border-red-500' : 'border-border'} bg-background text-primary px-3 py-2`}
               placeholder="Insert Name here…"
             />
+            {touched.name && errors.name && <div className="text-red-500 text-xs mt-1">{errors.name}</div>}
           </div>
           <div>
             <div className="text-primary text-xs mb-1">Setting Code *</div>
             <input
               value={editCode}
               onChange={(e) => setEditCode(e.target.value)}
-              className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
+              onBlur={() => handleBlur('code')}
+              className={`w-full rounded-md border ${touched.code && errors.code ? 'border-red-500' : 'border-border'} bg-background text-primary px-3 py-2`}
               placeholder="Insert Code here…"
             />
+            {touched.code && errors.code && <div className="text-red-500 text-xs mt-1">{errors.code}</div>}
           </div>
         </div>
 
@@ -162,9 +201,11 @@ export default function RuleSetting({
                 onChange={(e) =>
                   setDetailValues((prev) => ({ ...prev, [f.key]: e.target.value }))
                 }
-                className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
+                onBlur={() => handleBlur(f.key)}
+                className={`w-full rounded-md border ${touched[f.key] && errors[f.key] ? 'border-red-500' : 'border-border'} bg-background text-primary px-3 py-2`}
                 placeholder={f.placeholder || ""}
               />
+              {touched[f.key] && errors[f.key] && <div className="text-red-500 text-xs mt-1">{errors[f.key]}</div>}
             </div>
           ))}
         </div>
