@@ -7,13 +7,14 @@ const prisma = new PrismaClient();
 async function main() {
     const {default: seedDataGetter} = await import(filePath);
     const seedData = await seedDataGetter();
-    Object.keys(seedData).forEach(async (modelName) => {
+    const keys = Object.keys(seedData);
+    for (const modelName of keys) {
         const items = seedData[modelName];
-        console.log(items);
-        items.forEach(async (item) => {
-            await prisma[modelName].upsert(item)
-        });
-    });
+        console.log(`Seeding ${modelName}...`);
+        for (const item of items) {
+            await prisma[modelName].upsert(item);
+        }
+    }
 }
 main()
     .then(async () => {

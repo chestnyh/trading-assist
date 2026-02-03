@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { ChevronRight, ChevronDown, Pencil, Trash2 } from "lucide-react";
 
 type DetailItem = {
@@ -66,6 +66,29 @@ export default function RuleSetting({
         .filter(Boolean),
     [tagsInput]
   );
+
+  useEffect(() => {
+    setEditName(name);
+  }, [name]);
+
+  useEffect(() => {
+    setEditCode(code);
+  }, [code]);
+
+  useEffect(() => {
+    setTagsInput((tags || []).join(", "));
+  }, [tags]);
+
+  useEffect(() => {
+    const map: Record<string, string> = {};
+    if (detailsSchema.length > 0) {
+      detailsSchema.forEach((f) => {
+        const found = details.find((d) => d.label === f.label);
+        map[f.key] = found?.value ?? "";
+      });
+    }
+    setDetailValues(map);
+  }, [details, detailsSchema]);
 
   const isValid = editName.trim().length > 0 && editCode.trim().length > 0;
 
