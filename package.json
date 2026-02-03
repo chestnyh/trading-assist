@@ -34,7 +34,7 @@
     "models:migrations:seed": "nx run models:migrations:seed",
     "models:migrations:reset": "nx run models:migrations:reset",
     "models:migrations:generate": "nx run models:migrations:generate",
-    "models:migrations:migrate-and-seed": "nx run models:migrations:run; nx run models:migrations:seed seed/initial.js",
+    "models:migrations:migrate-and-seed": "nx run models:migrations:run; nx run models:migrations:seed",
     "configs:build": "nx run configs:build",
     "all:build": "nx run-many --target=build --all",
     "all:start": "nx run-many --target=serve --all",

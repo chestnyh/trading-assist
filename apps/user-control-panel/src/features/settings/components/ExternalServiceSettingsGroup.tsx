@@ -1,8 +1,10 @@
-import { useMemo, useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddRulesSettingsButton from "./AddRulesSettingsButton";
 import RuleSetting from "./RuleSetting";
 import { ConfirmationModal } from "../../../shared/ui/modals/ConfirmationModal";
+import { rulesSettingsControllerFindAllSettings, RuleSettingResponseDto } from "@trading-bot/api-client";
+import { useAuth } from "../../../app/contexts/AuthContext";
 
 export type DetailField = {
   key: string;
@@ -22,6 +24,7 @@ interface ExternalServiceSettingsGroupProps {
   logoTag?: string;
   logoKey?: string;
   fieldsSchema?: DetailField[];
+  externalServiceId: number;
 }
 
 export default function ExternalServiceSettingsGroup({
@@ -30,6 +33,7 @@ export default function ExternalServiceSettingsGroup({
   logoTag,
   logoKey,
   fieldsSchema,
+  externalServiceId,
 }: ExternalServiceSettingsGroupProps) {
   const [expanded, setExpanded] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
@@ -41,10 +45,61 @@ export default function ExternalServiceSettingsGroup({
       tags: string[];
       details: { label: string; value: string }[];
       isNew?: boolean;
+      isEditing?: boolean;
     }[]
   >([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const limit = 20;
+  const { token } = useAuth();
 
   const hasSchema = Boolean(fieldsSchema && fieldsSchema.length > 0);
+
+  const mapRulesToSettings = (rules: RuleSettingResponseDto[]) => {
+    if (!fieldsSchema) return [];
+    return rules.map((rule) => {
+      const details = fieldsSchema.map((field) => ({
+        label: field.label,
+        value: (rule.configuration[field.key] as string) || "",
+      }));
+      return {
+        name: rule.name,
+        code: rule.code,
+        tags: [],
+        details,
+        isNew: false,
+        isEditing: false,
+      };
+    });
+  };
+
+  const fetchSettingsPage = async (nextPage: number) => {
+    if (!token || !hasSchema) return;
+    try {
+      setError(null);
+      setLoading(true);
+      const options = { headers: { Authorization: `Bearer ${token}` } };
+      const res = await rulesSettingsControllerFindAllSettings({ externalServiceId, page: nextPage, limit }, options);
+      if (res.status === 200) {
+        const mapped = mapRulesToSettings(res.data);
+        setSettings((prev) => [...prev, ...mapped]);
+        setPage(nextPage);
+      }
+    } catch (e: any) {
+      const msg = e?.message ? String(e.message) : "Failed to load settings";
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (expanded && settings.length === 0) {
+      fetchSettingsPage(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expanded]);
 
   return (
     <div className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50">
@@ -95,6 +150,8 @@ export default function ExternalServiceSettingsGroup({
             </div>
           ) : (
             <>
+              {loading && <div className="text-secondary text-sm">Loading settings…</div>}
+              {error && <div className="text-error text-sm">{error}</div>}
               <div className="flex flex-col gap-3">
                 {settings.map((s, i) => (
                   <RuleSetting
@@ -103,27 +160,48 @@ export default function ExternalServiceSettingsGroup({
                     code={s.code}
                     tags={s.tags}
                     details={s.details}
-                    detailsSchema={fieldsSchema!}
-                    mode={s.isNew ? "edit" : "view"}
+                    detailsSchema={fieldsSchema || []}
+                    mode={s.isNew || s.isEditing ? "edit" : "view"}
                     onSave={(data) => {
                       setSettings((prev) => {
                         const next = [...prev];
-                        next[i] = { ...data, isNew: false };
+                        next[i] = { ...data, isNew: false, isEditing: false };
                         return next;
                       });
                     }}
-                    onCancel={
-                      s.isNew
-                        ? () => {
-                            setSettings((prev) => prev.filter((_, idx) => idx !== i));
-                          }
-                        : undefined
-                    }
+                    onEdit={() => {
+                      setSettings((prev) => {
+                        const next = [...prev];
+                        next[i] = { ...next[i], isEditing: true };
+                        return next;
+                      });
+                    }}
+                    onCancel={() => {
+                      if (s.isNew) {
+                        setSettings((prev) => prev.filter((_, idx) => idx !== i));
+                      } else {
+                        setSettings((prev) => {
+                          const next = [...prev];
+                          next[i] = { ...next[i], isEditing: false };
+                          return next;
+                        });
+                      }
+                    }}
                     onDelete={() => {
                       setDeletingIndex(i);
                     }}
                   />
                 ))}
+              </div>
+              <div className="mt-2">
+                <button
+                  type="button"
+                  className="px-3 py-1 text-sm rounded-md border border-border hover:bg-accent-hover/40 text-accent transition"
+                  onClick={() => fetchSettingsPage(page + 1)}
+                  disabled={loading}
+                >
+                  Load more
+                </button>
               </div>
               <div className="mt-3">
                 <AddRulesSettingsButton

@@ -24,15 +24,28 @@ export class RulesSettingsService {
   }
 
   /**
-   * Getting all universal user settings
+   * Getting all universal user settings with optional filtering and pagination
    */
-  async findAllSettingsByUser(userId: number) {
-	return this.modelsService.userRuleSettings.findMany({
-	  where: { authorId: userId },
-	  include: {
-		externalService: true,
-	  },
-	});
+  async findAllSettingsByUser(userId: number, externalServiceId?: number, page?: number, limit?: number) {
+    const where: any = { authorId: userId };
+    if (externalServiceId) {
+      where.externalServiceId = externalServiceId;
+    }
+
+    const query: any = {
+      where,
+      include: {
+        externalService: true,
+      },
+      orderBy: { id: 'desc' },
+    };
+
+    if (page && limit) {
+      query.skip = Math.max(0, (page - 1) * limit);
+      query.take = limit;
+    }
+
+    return this.modelsService.userRuleSettings.findMany(query);
   }
 
   /**
