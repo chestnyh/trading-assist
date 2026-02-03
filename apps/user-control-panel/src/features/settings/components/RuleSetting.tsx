@@ -11,6 +11,10 @@ type DetailField = {
   label: string;
   required?: boolean;
   placeholder?: string;
+  minLength?: number;
+  maxLength?: number;
+  exactLength?: number;
+  pattern?: RegExp;
   type?: "string" | "array";
 };
 
@@ -103,10 +107,22 @@ export default function RuleSetting({
     }
     
     detailsSchema.forEach((f) => {
-      if (f.required) {
-        const val = detailValues[f.key] ?? "";
-        if (val.trim().length === 0) {
-          errs[f.key] = `${f.label} is required`;
+      const val = (detailValues[f.key] ?? "").trim();
+      
+      if (f.required && val.length === 0) {
+        errs[f.key] = `${f.label} is required`;
+      } else if (val.length > 0) {
+        if (f.minLength && val.length < f.minLength) {
+          errs[f.key] = `${f.label} must be at least ${f.minLength} characters`;
+        }
+        if (f.maxLength && val.length > f.maxLength) {
+          errs[f.key] = `${f.label} must be at most ${f.maxLength} characters`;
+        }
+        if (f.exactLength && val.length !== f.exactLength) {
+          errs[f.key] = `${f.label} must be exactly ${f.exactLength} characters`;
+        }
+        if (f.pattern && !f.pattern.test(val)) {
+          errs[f.key] = `${f.label} is invalid`;
         }
       }
     });
