@@ -1,22 +1,12 @@
 import { useState, useEffect } from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddRulesSettingsButton from "./AddRulesSettingsButton";
-import RuleSetting from "./RuleSetting";
 import { ConfirmationModal } from "../../../shared/ui/modals/ConfirmationModal";
 import { rulesSettingsControllerFindAllSettings, rulesSettingsControllerCreateSetting, rulesSettingsControllerUpdateSetting, RuleSettingResponseDto, CreateUserRuleSettingDto, UpdateUserRuleSettingDto } from "@trading-bot/api-client";
 import { useAuth } from "../../../app/contexts/AuthContext";
+import RuleSetting, { DetailField } from "./RuleSetting";
 
-export type DetailField = {
-  key: string;
-  label: string;
-  required?: boolean;
-  placeholder?: string;
-  minLength?: number;
-  maxLength?: number;
-  exactLength?: number;
-  pattern?: RegExp;
-  type?: "string" | "array";
-};
+export type { DetailField };
 
 interface ExternalServiceSettingsGroupProps {
   name: string;
@@ -233,9 +223,15 @@ export default function ExternalServiceSettingsGroup({
                             tags: data.tags,
                           };
 
-                          const res = await rulesSettingsControllerUpdateSetting(s.id!, dto, {
-                            headers: { Authorization: `Bearer ${token}` },
-                          });
+                          if (!s.id) {
+              setError("Setting ID is missing");
+              setLoading(false);
+              return;
+            }
+
+            const res = await rulesSettingsControllerUpdateSetting(s.id, dto, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
 
                           if (res.status === 200) {
                             setSettings((prev) => {

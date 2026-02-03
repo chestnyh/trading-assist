@@ -6,7 +6,7 @@ type DetailItem = {
   value: string;
 };
 
-type DetailField = {
+export type DetailField = {
   key: string;
   label: string;
   required?: boolean;
