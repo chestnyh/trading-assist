@@ -1190,6 +1190,16 @@
             "type": "number",
             "example": 1
           },
+          "tags": {
+            "example": [
+              "crypto",
+              "binance"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "configuration": {
             "type": "object",
             "example": {
@@ -1241,6 +1251,16 @@
           "externalServiceId": {
             "type": "number",
             "example": 1
+          },
+          "tags": {
+            "example": [
+              "crypto",
+              "binance"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -1250,7 +1270,8 @@
           "description",
           "configuration",
           "authorId",
-          "externalServiceId"
+          "externalServiceId",
+          "tags"
         ]
       },
       "UpdateUserRuleSettingDto": {
@@ -1271,6 +1292,16 @@
           "externalServiceId": {
             "type": "number",
             "example": 1
+          },
+          "tags": {
+            "example": [
+              "crypto",
+              "binance"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "configuration": {
             "type": "object",

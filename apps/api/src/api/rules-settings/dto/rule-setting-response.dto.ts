@@ -26,4 +26,7 @@ export class RuleSettingResponseDto {
 
   @ApiProperty({ example: 1 })
   externalServiceId: number;
+
+  @ApiProperty({ example: ['crypto', 'binance'] })
+  tags?: string[];
 }
