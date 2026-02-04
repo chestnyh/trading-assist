@@ -3,7 +3,7 @@ import { ChevronRight, ChevronDown } from "lucide-react";
 import AddRulesSettingsButton from "./AddRulesSettingsButton";
 import RuleSetting from "./RuleSetting";
 import { ConfirmationModal } from "../../../shared/ui/modals/ConfirmationModal";
-import { rulesSettingsControllerFindAllSettings, RuleSettingResponseDto } from "@trading-bot/api-client";
+import { rulesSettingsControllerFindAllSettings, rulesSettingsControllerCreateSetting, RuleSettingResponseDto, CreateUserRuleSettingDto } from "@trading-bot/api-client";
 import { useAuth } from "../../../app/contexts/AuthContext";
 
 export type DetailField = {
@@ -40,6 +40,7 @@ export default function ExternalServiceSettingsGroup({
   const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
   const [settings, setSettings] = useState<
     {
+      id?: number;
       name: string;
       code: string;
       tags: string[];
@@ -64,9 +65,10 @@ export default function ExternalServiceSettingsGroup({
         value: (rule.configuration[field.key] as string) || "",
       }));
       return {
+        id: rule.id,
         name: rule.name,
         code: rule.code,
-        tags: [],
+        tags: rule.tags || [],
         details,
         isNew: false,
         isEditing: false,
@@ -162,12 +164,59 @@ export default function ExternalServiceSettingsGroup({
                     details={s.details}
                     detailsSchema={fieldsSchema || []}
                     mode={s.isNew || s.isEditing ? "edit" : "view"}
-                    onSave={(data) => {
-                      setSettings((prev) => {
-                        const next = [...prev];
-                        next[i] = { ...data, isNew: false, isEditing: false };
-                        return next;
-                      });
+                    onSave={async (data) => {
+                      if (s.isNew) {
+                        try {
+                          if (!token) return;
+                          setLoading(true);
+                          setError(null);
+
+                          const configuration: Record<string, any> = {};
+                          if (fieldsSchema) {
+                            data.details.forEach((d) => {
+                              const field = fieldsSchema.find((f) => f.label === d.label);
+                              if (field) {
+                                configuration[field.key] = d.value;
+                              }
+                            });
+                          }
+
+                          const dto: CreateUserRuleSettingDto = {
+                            name: data.name,
+                            code: data.code,
+                            externalServiceId,
+                            configuration,
+                            tags: data.tags,
+                          };
+
+                          const res = await rulesSettingsControllerCreateSetting(dto, {
+                            headers: { Authorization: `Bearer ${token}` },
+                          });
+
+                          if (res.status === 201) {
+                            setSettings((prev) => {
+                              const next = [...prev];
+                              next[i] = {
+                                ...data,
+                                id: res.data.id,
+                                isNew: false,
+                                isEditing: false,
+                              };
+                              return next;
+                            });
+                          }
+                        } catch (e: any) {
+                          setError(e.message || "Failed to save setting");
+                        } finally {
+                          setLoading(false);
+                        }
+                      } else {
+                        setSettings((prev) => {
+                          const next = [...prev];
+                          next[i] = { ...data, isNew: false, isEditing: false, id: s.id };
+                          return next;
+                        });
+                      }
                     }}
                     onEdit={() => {
                       setSettings((prev) => {

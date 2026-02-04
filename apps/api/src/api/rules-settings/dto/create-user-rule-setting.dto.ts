@@ -24,6 +24,11 @@ export class CreateUserRuleSettingDto {
   @IsNotEmpty()
   externalServiceId: number;
 
+  @ApiProperty({ example: ['crypto', 'binance'], required: false })
+  @IsString({ each: true })
+  @IsOptional()
+  tags?: string[];
+
   @ApiProperty({
     example: { ApiKey: '...', ApiSecret: '...', BaseUrl: '...' }
   })
