@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
@@ -10,6 +10,7 @@ interface ConfirmationModalProps {
   message?: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  isLoading?: boolean;
 }
 
 export function ConfirmationModal({
@@ -20,6 +21,7 @@ export function ConfirmationModal({
   message = "Do you really want to delete these records? This process cannot be undone.",
   confirmLabel = "Delete",
   cancelLabel = "Cancel",
+  isLoading = false,
 }: ConfirmationModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -92,18 +94,19 @@ export function ConfirmationModal({
         <div className="flex gap-3 w-full justify-center">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-md transition-colors min-w-[100px]"
+            disabled={isLoading}
+            className="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-md transition-colors min-w-[100px] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {cancelLabel}
           </button>
           <button
             onClick={() => {
               onConfirm();
-              onClose();
             }}
-            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors min-w-[100px]"
+            disabled={isLoading}
+            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors min-w-[100px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
-            {confirmLabel}
+            {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : confirmLabel}
           </button>
         </div>
       </div>
