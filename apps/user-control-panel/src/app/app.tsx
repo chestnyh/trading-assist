@@ -14,10 +14,12 @@ import { RedirectToSignIn } from './components/RedirectToSignIn';
 import { useAuth } from './contexts/AuthContext';
 
 function AppRoutes() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   return (
-    <Routes>
+    <>
+      {isLoading ? null : (
+        <Routes>
       <Route path="/" element={<Main />} />
       <Route
         path="/sign-in"
@@ -59,7 +61,9 @@ function AppRoutes() {
         path="*"
         element={isAuthenticated ? <NotFound /> : <RedirectToSignIn />}
       />
-    </Routes>
+        </Routes>
+      )}
+    </>
   );
 }
 
