@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddRulesSettingsButton from "./AddRulesSettingsButton";
 import { ConfirmationModal } from "../../../shared/ui/modals/ConfirmationModal";
-import { rulesSettingsControllerFindAllSettings, rulesSettingsControllerCreateSetting, rulesSettingsControllerUpdateSetting, RuleSettingResponseDto, CreateUserRuleSettingDto, UpdateUserRuleSettingDto } from "@trading-bot/api-client";
+import { rulesSettingsControllerFindAllSettings, rulesSettingsControllerCreateSetting,
+  rulesSettingsControllerUpdateSetting,
+  rulesSettingsControllerRemoveSetting,
+  RuleSettingResponseDto, CreateUserRuleSettingDto, UpdateUserRuleSettingDto } from "@trading-bot/api-client";
 import { useAuth } from "../../../app/contexts/AuthContext";
 import RuleSetting, { DetailField } from "./RuleSetting";
 
@@ -28,6 +31,7 @@ export default function ExternalServiceSettingsGroup({
   const [expanded, setExpanded] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
   const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [settings, setSettings] = useState<
     {
       id?: number;
@@ -298,13 +302,37 @@ export default function ExternalServiceSettingsGroup({
 
       <ConfirmationModal
         isOpen={deletingIndex !== null}
-        onClose={() => setDeletingIndex(null)}
-        onConfirm={() => {
-          if (deletingIndex !== null) {
+        onClose={() => !isDeleting && setDeletingIndex(null)}
+        onConfirm={async () => {
+          if (deletingIndex === null) return;
+          const s = settings[deletingIndex];
+          
+          // If it's a new unsaved setting, just remove from list
+          if (s.isNew || !s.id) {
             setSettings((prev) => prev.filter((_, idx) => idx !== deletingIndex));
             setDeletingIndex(null);
+            return;
+          }
+
+          try {
+            if (!token) return;
+            setIsDeleting(true);
+            setError(null);
+            
+            await rulesSettingsControllerRemoveSetting(s.id, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            
+            setSettings((prev) => prev.filter((_, idx) => idx !== deletingIndex));
+            setDeletingIndex(null);
+          } catch (e: any) {
+            setError(e.message || "Failed to delete setting");
+            setDeletingIndex(null);
+          } finally {
+            setIsDeleting(false);
           }
         }}
+        isLoading={isDeleting}
       />
     </div>
   );
