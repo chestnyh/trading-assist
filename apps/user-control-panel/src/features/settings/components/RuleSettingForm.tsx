@@ -132,7 +132,7 @@ export default function RuleSettingForm({
             placeholder="Insert Name here…"
           />
           {errors.name && (
-            <div className="text-danger text-xs mt-1">{errors.name}</div>
+            <div className="text-error text-xs mt-1">{errors.name}</div>
           )}
         </div>
         <div>
@@ -144,7 +144,7 @@ export default function RuleSettingForm({
             placeholder="Insert Code here…"
           />
           {errors.code && (
-            <div className="text-danger text-xs mt-1">{errors.code}</div>
+            <div className="text-error text-xs mt-1">{errors.code}</div>
           )}
         </div>
       </div>
@@ -174,7 +174,7 @@ export default function RuleSettingForm({
               placeholder={f.placeholder || ""}
             />
             {errors[f.key] && (
-              <div className="text-danger text-xs mt-1">{errors[f.key]}</div>
+              <div className="text-error text-xs mt-1">{errors[f.key]}</div>
             )}
           </div>
         ))}
