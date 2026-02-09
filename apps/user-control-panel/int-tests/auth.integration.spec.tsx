@@ -128,9 +128,12 @@ describe("Authorization Flow (Integration)", () => {
     const signInButton = screen.getByRole("button", { name: /^sign in$/i });
     await user.click(signInButton);
 
-    await waitFor(() => {
-      expect(screen.queryByText(/invalid credentials/i)).not.toBeNull();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
     expect(screen.queryByText(/dashboard/i)).toBeNull();
   });
 
@@ -142,11 +145,12 @@ describe("Authorization Flow (Integration)", () => {
     const signInButton = screen.getByRole("button", { name: /^sign in$/i });
     await user.click(signInButton);
 
-    await waitFor(() => {
-      expect(
-        screen.queryByText(/unable to connect/i)
-      ).not.toBeNull();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/unable to connect/i)).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
     expect(screen.queryByText(/dashboard/i)).toBeNull();
   });
 });

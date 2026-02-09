@@ -47,8 +47,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string, rememberMe?: boolean): Promise<LoginResult> => {
     try {
-      setIsLoading(true);
-
       const loginData = {
         email,
         password,
@@ -68,10 +66,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         access_token = directResponse.access_token;
         userData = directResponse.user;
       } else if ('status' in response && response.status === 401) {
-        setIsLoading(false);
         return { success: false, error: "Invalid credentials" };
       } else {
-        setIsLoading(false);
         return { success: false, error: "Unexpected response format from server" };
       }
 
@@ -92,15 +88,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           localStorage.removeItem('user_data');
         }
 
-        setIsLoading(false);
         return { success: true };
       } else {
-        setIsLoading(false);
         return { success: false, error: "Invalid response from server" };
       }
     } catch (error: unknown) {
-      setIsLoading(false);
-
       let errorMessage = "Login failed. Please try again.";
 
       if (error && typeof error === "object") {
