@@ -1,11 +1,20 @@
 import { exec } from 'child_process';
+import { ScriptConfigs } from '@trading-bot/configs'; 
+import { mkdirSync } from 'fs';
 
-// I want to run several commands synchroniously
-// 1) Creating directory for docker volume
-// 2) Starting docker compose from docker-compose.yml file
+const scriptConfigs = new ScriptConfigs();
 
+
+const DOCKER_DB_VOLUME = scriptConfigs.get('DOCKER_DB_VOLUME');
+
+if (!DOCKER_DB_VOLUME) {
+  console.error('DOCKER_DB_VOLUME not found in configuration');
+  process.exit(1);
+}
+// Run docker compose
+const args = process.argv.slice(2).join(' ');
 exec(
-  'dotenv -e .env.api-int-tests -- bash -c \'mkdir -p "${DOCKER_DB_VOLUME}" && docker compose --env-file .env.api-int-tests --profile api-service-int-tests up "$@"\' --',
+  `docker compose --env-file .env.api-int-tests --profile api-service-int-tests up ${args}`,
   (error, stdout, stderr) => {
     if (error) {
       console.error(`error: ${error.message}`);

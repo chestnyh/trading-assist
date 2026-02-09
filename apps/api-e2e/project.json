@@ -16,8 +16,15 @@
     "check-env-file": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node -r tsconfig-paths/register --project apps/api-e2e/tsconfig.spec.json apps/api-e2e/scripts/check-env-file.ts"
+        "command": "NODE_ENV=api-int-tests nx run development:check-env-file"
       }
+    },
+    "create-volume-folder": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_ENV=api-int-tests nx run development:create-volume-folder"
+      },
+      "dependsOn": ["check-env-file"]
     },
     "external-up": {
       "executor": "nx:run-commands",
