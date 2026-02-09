@@ -11,7 +11,7 @@ interface TextAreaProps {
     error?: string;
     required?: boolean;
     disabled?: boolean;
-    rows?: number; // Добавляем управление высотой
+    rows?: number;
 }
 
 export function TextArea({
@@ -24,7 +24,7 @@ export function TextArea({
     error,
     required = false,
     disabled = false,
-    rows = 4, // По умолчанию 4 строки
+    rows = 4,
 }: TextAreaProps) {
     return (
         <div className="w-full pt-5">

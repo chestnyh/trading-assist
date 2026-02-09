@@ -26,7 +26,7 @@ export function RulesPage() {
 			onClick={() => navigate("/rules/add")}
 			leftIcon={<Plus size={30} strokeWidth={2} />}
 		/>
-		{/* Тут будет список правил, когда мы его напишем */}
+		{/* There will be a list of rules here when we write it. */}
     </div>
   );
 }
