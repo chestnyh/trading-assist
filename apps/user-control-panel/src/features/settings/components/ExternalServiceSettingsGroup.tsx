@@ -1,22 +1,15 @@
 import { useState, useEffect } from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
 import AddRulesSettingsButton from "./AddRulesSettingsButton";
-import RuleSetting from "./RuleSetting";
 import { ConfirmationModal } from "../../../shared/ui/modals/ConfirmationModal";
-import { rulesSettingsControllerFindAllSettings, RuleSettingResponseDto } from "@trading-bot/api-client";
+import { rulesSettingsControllerFindAllSettings, rulesSettingsControllerCreateSetting,
+  rulesSettingsControllerUpdateSetting,
+  rulesSettingsControllerRemoveSetting,
+  RuleSettingResponseDto, CreateUserRuleSettingDto, UpdateUserRuleSettingDto } from "@trading-bot/api-client";
 import { useAuth } from "../../../app/contexts/AuthContext";
+import RuleSetting, { DetailField } from "./RuleSetting";
 
-export type DetailField = {
-  key: string;
-  label: string;
-  required?: boolean;
-  placeholder?: string;
-  minLength?: number;
-  maxLength?: number;
-  exactLength?: number;
-  pattern?: RegExp;
-  type?: "string" | "array";
-};
+export type { DetailField };
 
 interface ExternalServiceSettingsGroupProps {
   name: string;
@@ -38,8 +31,10 @@ export default function ExternalServiceSettingsGroup({
   const [expanded, setExpanded] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(false);
   const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [settings, setSettings] = useState<
     {
+      id?: number;
       name: string;
       code: string;
       tags: string[];
@@ -64,9 +59,10 @@ export default function ExternalServiceSettingsGroup({
         value: (rule.configuration[field.key] as string) || "",
       }));
       return {
+        id: rule.id,
         name: rule.name,
         code: rule.code,
-        tags: [],
+        tags: rule.tags || [],
         details,
         isNew: false,
         isEditing: false,
@@ -162,12 +158,98 @@ export default function ExternalServiceSettingsGroup({
                     details={s.details}
                     detailsSchema={fieldsSchema || []}
                     mode={s.isNew || s.isEditing ? "edit" : "view"}
-                    onSave={(data) => {
-                      setSettings((prev) => {
-                        const next = [...prev];
-                        next[i] = { ...data, isNew: false, isEditing: false };
-                        return next;
-                      });
+                    onSave={async (data) => {
+                      if (s.isNew) {
+                        try {
+                          if (!token) return;
+                          setLoading(true);
+                          setError(null);
+
+                          const configuration: Record<string, any> = {};
+                          if (fieldsSchema) {
+                            data.details.forEach((d) => {
+                              const field = fieldsSchema.find((f) => f.label === d.label);
+                              if (field) {
+                                configuration[field.key] = d.value;
+                              }
+                            });
+                          }
+
+                          const dto: CreateUserRuleSettingDto = {
+                            name: data.name,
+                            code: data.code,
+                            externalServiceId,
+                            configuration,
+                            tags: data.tags,
+                          };
+
+                          const res = await rulesSettingsControllerCreateSetting(dto, {
+                            headers: { Authorization: `Bearer ${token}` },
+                          });
+
+                          if (res.status === 201) {
+                            setSettings((prev) => {
+                              const next = [...prev];
+                              next[i] = {
+                                ...data,
+                                id: res.data.id,
+                                isNew: false,
+                                isEditing: false,
+                              };
+                              return next;
+                            });
+                          }
+                        } catch (e: any) {
+                          setError(e.message || "Failed to save setting");
+                        } finally {
+                          setLoading(false);
+                        }
+                      } else {
+                        try {
+                          if (!token) return;
+                          setLoading(true);
+                          setError(null);
+
+                          const configuration: Record<string, any> = {};
+                          if (fieldsSchema) {
+                            data.details.forEach((d) => {
+                              const field = fieldsSchema.find((f) => f.label === d.label);
+                              if (field) {
+                                configuration[field.key] = d.value;
+                              }
+                            });
+                          }
+
+                          const dto: UpdateUserRuleSettingDto = {
+                            name: data.name,
+                            code: data.code,
+                            configuration,
+                            tags: data.tags,
+                          };
+
+                          if (!s.id) {
+              setError("Setting ID is missing");
+              setLoading(false);
+              return;
+            }
+
+            const res = await rulesSettingsControllerUpdateSetting(s.id, dto, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+
+                          if (res.status === 200) {
+                            setSettings((prev) => {
+                              const next = [...prev];
+                              next[i] = { ...data, isEditing: false, id: s.id };
+                              return next;
+                            });
+                          }
+                        } catch (e: any) {
+                          setError(e.message || "Failed to update setting");
+                        } finally {
+                          setLoading(false);
+                        }
+                      }
                     }}
                     onEdit={() => {
                       setSettings((prev) => {
@@ -220,13 +302,37 @@ export default function ExternalServiceSettingsGroup({
 
       <ConfirmationModal
         isOpen={deletingIndex !== null}
-        onClose={() => setDeletingIndex(null)}
-        onConfirm={() => {
-          if (deletingIndex !== null) {
+        onClose={() => !isDeleting && setDeletingIndex(null)}
+        onConfirm={async () => {
+          if (deletingIndex === null) return;
+          const s = settings[deletingIndex];
+          
+          // If it's a new unsaved setting, just remove from list
+          if (s.isNew || !s.id) {
             setSettings((prev) => prev.filter((_, idx) => idx !== deletingIndex));
             setDeletingIndex(null);
+            return;
+          }
+
+          try {
+            if (!token) return;
+            setIsDeleting(true);
+            setError(null);
+            
+            await rulesSettingsControllerRemoveSetting(s.id, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            
+            setSettings((prev) => prev.filter((_, idx) => idx !== deletingIndex));
+            setDeletingIndex(null);
+          } catch (e: any) {
+            setError(e.message || "Failed to delete setting");
+            setDeletingIndex(null);
+          } finally {
+            setIsDeleting(false);
           }
         }}
+        isLoading={isDeleting}
       />
     </div>
   );

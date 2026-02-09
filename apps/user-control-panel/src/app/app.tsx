@@ -16,10 +16,12 @@ import { RulesPage } from '../features/rules/RulesPage';
 import { AddRulePage } from '../features/rules/AddRulePage';
 
 function AppRoutes() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   return (
-    <Routes>
+    <>
+      {isLoading ? null : (
+        <Routes>
       <Route path="/" element={<Main />} />
       <Route
         path="/sign-in"
@@ -63,7 +65,9 @@ function AppRoutes() {
         path="*"
         element={isAuthenticated ? <NotFound /> : <RedirectToSignIn />}
       />
-    </Routes>
+        </Routes>
+      )}
+    </>
   );
 }
 
