@@ -3,7 +3,6 @@ import { Button } from "../../shared/ui/buttons/Button";
 import { EmptyState } from "./EmptyState";
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
-// import { RulesList } from "./components/RulesList";
 
 export function RulesPage() {
   const { rules, isLoading } = useRules();
