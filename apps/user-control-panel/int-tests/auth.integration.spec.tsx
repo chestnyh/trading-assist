@@ -2,14 +2,15 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "../src/test/setupTests";
 import userEvent from "@testing-library/user-event";
 import App from "../src/app/app";
-import { authControllerLogin } from "@trading-bot/api-client";
 
-// Mock the API client
-jest.mock("@trading-bot/api-client", () => ({
-  __esModule: true,
-  ...jest.requireActual("@trading-bot/api-client"),
-  authControllerLogin: jest.fn(),
-}));
+const mockFetchJsonOnce = (status: number, data: unknown) => {
+  (global.fetch as jest.Mock).mockResolvedValueOnce({
+    ok: status >= 200 && status < 300,
+    status,
+    headers: new Headers({ "content-type": "application/json" }),
+    json: async () => data,
+  } as unknown as Response);
+};
 
 const setupRender = async () => {
   const user = userEvent.setup();
@@ -32,6 +33,12 @@ const fillValidForm = async (user: ReturnType<typeof userEvent.setup>) => {
 describe("Authorization Flow (Integration)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({}),
+    } as unknown as Response);
     // Ensure unauthenticated state
     try {
       window.localStorage.clear();
@@ -40,7 +47,7 @@ describe("Authorization Flow (Integration)", () => {
   });
 
   it("allows navigation to Sign In from Main via header button", async () => {
-    const { user } = await setupRender();
+    await setupRender();
     expect(screen.getByText(/sign in into your account/i)).toBeInTheDocument();
   });
 
@@ -58,7 +65,7 @@ describe("Authorization Flow (Integration)", () => {
     await waitFor(() => {
       expect(screen.queryByText(/please provide a valid email address/i)).not.toBeNull();
     });
-    expect(authControllerLogin).not.toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 
   it("shows password validation error for short password and does not call API", async () => {
@@ -71,16 +78,13 @@ describe("Authorization Flow (Integration)", () => {
     await waitFor(() => {
       expect(screen.queryByText(/password must be at least 8 characters long/i)).not.toBeNull();
     });
-    expect(authControllerLogin).not.toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 
   it("logs in successfully and navigates to Dashboard", async () => {
-    (authControllerLogin as jest.Mock).mockResolvedValueOnce({
-      status: 201,
-      data: {
-        access_token: "test-token",
-        user: { id: 1, email: "test@example.com", nickname: "tester" },
-      },
+    mockFetchJsonOnce(201, {
+      access_token: "test-token",
+      user: { id: 1, email: "test@example.com", nickname: "tester" },
     });
 
     const { user } = await setupRender();
@@ -91,18 +95,22 @@ describe("Authorization Flow (Integration)", () => {
     await waitFor(() => {
       expect(screen.getAllByText(/dashboard/i).length).toBeGreaterThan(0);
     });
+
+    const loginCall = (global.fetch as jest.Mock).mock.calls.find(([url]) =>
+      String(url).match(/\/api\/v1\/auth\/login$/)
+    );
+    expect(loginCall).toBeTruthy();
+    const [url, options] = loginCall as unknown as [string, RequestInit];
+    expect(String(url)).toMatch(/\/api\/v1\/auth\/login$/);
+    expect(options.method).toBe("POST");
+    const parsedBody = JSON.parse(String(options.body));
+    expect(parsedBody.rememberMe).toBeUndefined();
   });
 
   it("includes rememberMe when checkbox checked", async () => {
-    (authControllerLogin as jest.Mock).mockImplementationOnce((data) => {
-      expect(data.rememberMe).toBe(true);
-      return Promise.resolve({
-        status: 201,
-        data: {
-          access_token: "test-token",
-          user: { id: 1, email: "test@example.com", nickname: "tester" },
-        },
-      });
+    mockFetchJsonOnce(201, {
+      access_token: "test-token",
+      user: { id: 1, email: "test@example.com", nickname: "tester" },
     });
 
     const { user } = await setupRender();
@@ -115,13 +123,18 @@ describe("Authorization Flow (Integration)", () => {
     await waitFor(() => {
       expect(screen.getAllByText(/dashboard/i).length).toBeGreaterThan(0);
     });
+
+    const loginCall = (global.fetch as jest.Mock).mock.calls.find(([url]) =>
+      String(url).match(/\/api\/v1\/auth\/login$/)
+    );
+    expect(loginCall).toBeTruthy();
+    const [, options] = loginCall as unknown as [string, RequestInit];
+    const parsedBody = JSON.parse(String(options.body));
+    expect(parsedBody.rememberMe).toBe(true);
   });
 
   it("shows 'Invalid credentials' error on 401 and does not navigate", async () => {
-    (authControllerLogin as jest.Mock).mockResolvedValueOnce({
-      status: 401,
-      message: "Invalid credentials",
-    });
+    mockFetchJsonOnce(401, { statusCode: 401, message: "Invalid credentials" });
 
     const { user } = await setupRender();
     await fillValidForm(user);
@@ -138,7 +151,7 @@ describe("Authorization Flow (Integration)", () => {
   });
 
   it("shows network error message when fetch fails and does not navigate", async () => {
-    (authControllerLogin as jest.Mock).mockRejectedValueOnce(new Error("Failed to fetch"));
+    (global.fetch as jest.Mock).mockRejectedValueOnce(new TypeError("Failed to fetch"));
 
     const { user } = await setupRender();
     await fillValidForm(user);
