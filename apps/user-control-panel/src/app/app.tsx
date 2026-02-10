@@ -12,6 +12,8 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { NotFound } from '../features/notFound/NotFound';
 import { RedirectToSignIn } from './components/RedirectToSignIn';
 import { useAuth } from './contexts/AuthContext';
+import { RulesPage } from '../features/rules/RulesPage';
+import { AddRulePage } from '../features/rules/AddRulePage';
 
 function AppRoutes() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -49,6 +51,8 @@ function AppRoutes() {
       />
       <Route path="/main" element={<Main />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/rules" element={<RulesPage />} />
+      <Route path="/rules/add" element={<AddRulePage />} />
       <Route
         path="/settings"
         element={
