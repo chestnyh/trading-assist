@@ -306,7 +306,7 @@ describe('SignIn', () => {
             const forgotPasswordButton = screen.getByRole('button', { name: /forgot password/i });
             await user.click(forgotPasswordButton);
 
-            expect(mockNavigate).toHaveBeenCalledWith('/restore-password-1');
+            expect(mockNavigate).toHaveBeenCalledWith('/restore-password');
         });
 
         it('navigates to sign up page when "Create account" is clicked', async () => {
