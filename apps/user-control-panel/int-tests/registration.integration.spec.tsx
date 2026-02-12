@@ -57,6 +57,19 @@ const fillStep2SkipOptional = async (user: ReturnType<typeof userEvent.setup>) =
   await screen.findByText(/account info/i);
 };
 
+const fillStep2Valid = async (user: ReturnType<typeof userEvent.setup>) => {
+  await screen.findByText(/trading preferences/i);
+
+  await user.click(screen.getByLabelText(/beginner/i));
+  await user.selectOptions(screen.getByLabelText(/primary trading strategy/i), "Scalping");
+  await user.click(screen.getByLabelText(/moderate/i));
+  await user.click(screen.getByLabelText(/^binance$/i));
+  await user.click(screen.getByLabelText(/^kraken$/i));
+
+  await user.click(screen.getByRole("button", { name: /^next$/i }));
+  await screen.findByText(/account info/i);
+};
+
 const fillStep3Valid = async (user: ReturnType<typeof userEvent.setup>) => {
   await screen.findByPlaceholderText(/enter your email/i);
 
@@ -139,6 +152,77 @@ describe("Registration Flow (Integration)", () => {
     expect(screen.queryByText(/email confirmation/i)).toBeNull();
   });
 
+  it("stores step 2 data and keeps it when navigating to step 3", async () => {
+    const { user } = await setupRender();
+    await fillStep1Valid(user);
+
+    await screen.findByText(/trading preferences/i);
+    await user.click(screen.getByLabelText(/advanced/i));
+    await user.selectOptions(screen.getByLabelText(/primary trading strategy/i), "Automated");
+    await user.click(screen.getByLabelText(/aggressive/i));
+    await user.click(screen.getByLabelText(/^bybit$/i));
+
+    await user.click(screen.getByRole("button", { name: /^next$/i }));
+    await screen.findByText(/account info/i);
+
+    const stored = window.localStorage.getItem("signUp.step2");
+    expect(stored).toBeTruthy();
+
+    const parsed = JSON.parse(String(stored));
+    expect(parsed).toMatchObject({
+      tradingExperienceLevel: "Advanced",
+      primaryTradingStrategy: "Automated",
+      riskTolerance: "Aggressive",
+      preferredTradingPlatforms: ["Bybit"],
+    });
+  });
+
+  it("shows email validation error and does not call API", async () => {
+    const { user } = await setupRender();
+    await fillStep1Valid(user);
+    await fillStep2SkipOptional(user);
+
+    await screen.findByPlaceholderText(/enter your email/i);
+
+    await user.type(screen.getByPlaceholderText(/enter your email/i), "not-an-email");
+    await user.type(screen.getByPlaceholderText(/enter your nickname/i), "tester");
+    await user.type(screen.getByPlaceholderText(/^enter your password$/i), "Password123*");
+    await user.type(screen.getByPlaceholderText(/confirm your password/i), "Password123*");
+    await user.click(screen.getByLabelText(/terms of service and privacy policy/i));
+
+    await user.click(screen.getByRole("button", { name: /^next$/i }));
+
+    await waitFor(() => {
+      expect(screen.queryByText(/valid email address/i)).not.toBeNull();
+    });
+
+    expect(findFetchCall(/\/api\/v1\/users$/)).toBeUndefined();
+    expect(screen.queryByText(/email confirmation/i)).toBeNull();
+  });
+
+  it("shows nickname validation error and does not call API", async () => {
+    const { user } = await setupRender();
+    await fillStep1Valid(user);
+    await fillStep2SkipOptional(user);
+
+    await screen.findByPlaceholderText(/enter your email/i);
+
+    await user.type(screen.getByPlaceholderText(/enter your email/i), "test@example.com");
+    await user.type(screen.getByPlaceholderText(/enter your nickname/i), "ab");
+    await user.type(screen.getByPlaceholderText(/^enter your password$/i), "Password123*");
+    await user.type(screen.getByPlaceholderText(/confirm your password/i), "Password123*");
+    await user.click(screen.getByLabelText(/terms of service and privacy policy/i));
+
+    await user.click(screen.getByRole("button", { name: /^next$/i }));
+
+    await waitFor(() => {
+      expect(screen.queryByText(/nickname must be at least 3 characters/i)).not.toBeNull();
+    });
+
+    expect(findFetchCall(/\/api\/v1\/users$/)).toBeUndefined();
+    expect(screen.queryByText(/email confirmation/i)).toBeNull();
+  });
+
   it("registers successfully and sends correct payload to API", async () => {
     mockFetchJson(/\/api\/v1\/users$/, 201, {
       emailVerificationToken: verificationToken,
@@ -167,6 +251,37 @@ describe("Registration Flow (Integration)", () => {
       email: "test@example.com",
       nickname: "tester",
       password: "Password123*",
+    });
+  });
+
+  it("registers successfully with full payload from step 2 (optional fields)", async () => {
+    mockFetchJson(/\/api\/v1\/users$/, 201, {
+      emailVerificationToken: verificationToken,
+    });
+
+    const { user } = await setupRender();
+    await fillStep1Valid(user);
+    await fillStep2Valid(user);
+    await fillStep3Valid(user);
+
+    await user.click(screen.getByRole("button", { name: /^next$/i }));
+    await screen.findByText(/email confirmation/i);
+
+    const call = findFetchCall(/\/api\/v1\/users$/);
+    expect(call).toBeTruthy();
+
+    const [, options] = call as unknown as [string, RequestInit];
+    const body = JSON.parse(String(options.body));
+    expect(body).toMatchObject({
+      firstName: "John",
+      lastName: "Doe",
+      email: "test@example.com",
+      nickname: "tester",
+      password: "Password123*",
+      tradingExperienceLevel: "Beginner",
+      primaryTradingStrategy: "Scalping",
+      riskTolerance: "Moderate",
+      preferredTradingPlatforms: ["Binance", "Kraken"],
     });
   });
 
@@ -218,5 +333,57 @@ describe("Registration Flow (Integration)", () => {
       code: "123456",
       token: verificationToken,
     });
+  });
+
+  it("shows validation error when Verify is clicked with empty code and does not call API", async () => {
+    mockFetchJson(/\/api\/v1\/users$/, 201, {
+      emailVerificationToken: verificationToken,
+    });
+
+    const { user } = await setupRender();
+    await fillStep1Valid(user);
+    await fillStep2SkipOptional(user);
+    await fillStep3Valid(user);
+
+    await user.click(screen.getByRole("button", { name: /^next$/i }));
+    await screen.findByText(/email confirmation/i);
+
+    await user.click(screen.getByRole("button", { name: /^verify$/i }));
+
+    await waitFor(() => {
+      expect(screen.queryByText(/verification code is required/i)).not.toBeNull();
+    });
+
+    expect(findFetchCall(/\/api\/v1\/auth\/verify-email$/)).toBeUndefined();
+  });
+
+  it("shows server message when verification response is not verified", async () => {
+    mockFetchJson(/\/api\/v1\/users$/, 201, {
+      emailVerificationToken: verificationToken,
+    });
+    mockFetchJson(/\/api\/v1\/auth\/verify-email$/, 200, {
+      success: false,
+      message: "Wrong code",
+    });
+
+    const { user } = await setupRender();
+    await fillStep1Valid(user);
+    await fillStep2SkipOptional(user);
+    await fillStep3Valid(user);
+
+    await user.click(screen.getByRole("button", { name: /^next$/i }));
+    await screen.findByText(/email confirmation/i);
+
+    fireEvent.change(screen.getByLabelText(/verification code/i), {
+      target: { value: "123456" },
+    });
+
+    await user.click(screen.getByRole("button", { name: /^verify$/i }));
+
+    await waitFor(() => {
+      expect(screen.queryByText(/wrong code/i)).not.toBeNull();
+    });
+
+    expect(screen.queryByText(/email verified!/i)).toBeNull();
   });
 });
