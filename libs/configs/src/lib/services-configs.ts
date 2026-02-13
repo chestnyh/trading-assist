@@ -8,7 +8,7 @@ export class ServicesConfigs extends Configs {
     super();
     this.configs = {
       ...this.configs,
-      PORT: process.env['PORT'] ? parseInt(process.env['PORT'], 10).toString() : '3000',
+      API_PORT: process.env['API_PORT'] ? parseInt(process.env['API_PORT'], 10).toString() : '3001',
       DB_USER: process.env['DB_USER'],
       DB_PASSWORD: process.env['DB_PASSWORD'],
       DB_NAME: process.env['DB_NAME'],

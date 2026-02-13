@@ -4,15 +4,6 @@
   "projectType": "application",
   "implicitDependencies": ["api"],
   "targets": {
-    "e2e": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
-      "options": {
-        "jestConfig": "apps/api-e2e/jest.config.ts",
-        "passWithNoTests": true
-      },
-      "dependsOn": ["api:build"]
-    },
     "check-env-file": {
       "executor": "nx:run-commands",
       "options": {
@@ -24,14 +15,89 @@
       "options": {
         "command": "NODE_ENV=api-int-tests nx run development:create-volume-folder"
       },
-      "dependsOn": ["check-env-file"]
+      "dependsOn": []
     },
     "external-up": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node -r tsconfig-paths/register --project apps/api-e2e/tsconfig.spec.json apps/api-e2e/scripts/external-up.ts"
+        "command": "NODE_ENV=api-int-tests nx run development:external-up"
       },
-      "dependsOn": ["check-env-file"]
+      "dependsOn": []
+    },
+    "data-reset": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_ENV=api-int-tests nx run development:source-config-and-run -- nx run models:migrations:reset --force"
+      },
+      "dependsOn": []
+    },
+    "data-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_ENV=api-int-tests nx run development:source-config-and-run -- nx run models:migrations:seed"
+      },
+      "dependsOn": []
+    },
+    "pre-e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          {
+            "command": "nx run api-e2e:check-env-file"
+          },
+          {
+            "command": "nx run api-e2e:create-volume-folder"
+          },
+          {
+            "command": "nx run api-e2e:external-up -d"
+          },
+          {
+            "command": "nx run api-e2e:data-reset"
+          },
+          {
+            "command": "NODE_ENV=api-int-tests pm2 start \"pnpm api:start\" --name \"api-e2e-test\""
+          } 
+        ]
+      },
+      "dependsOn": []
+    },
+    "e2e": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
+      "options": {
+        "jestConfig": "apps/api-e2e/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "post-e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pm2 stop api-e2e-test; pm2 delete api-e2e-test"
+      },
+      "dependsOn": []
+    },
+    "run-e2e-flow": {
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          {
+            "command": "nx run api-e2e:pre-e2e"
+          },
+          {
+            "command": "sleep 10"
+          },
+          {
+            "command": "nx run api-e2e:e2e"
+          },
+          {
+            "command": "nx run api-e2e:post-e2e"
+          }
+        ]
+      },
+      "dependsOn": []
     }
+    
   }
 }

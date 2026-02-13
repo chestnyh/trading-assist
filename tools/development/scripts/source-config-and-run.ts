@@ -4,12 +4,11 @@ import { ScriptConfigs } from '@trading-bot/configs';
 const scriptConfigs = new ScriptConfigs();
 
 const ENV_FILE = scriptConfigs.get('ENV_FILE');
-const DOCKER_PROFILE = scriptConfigs.get('DOCKER_PROFILE');
 
 const args = process.argv.slice(2).join(' ');
 
 exec(
-  `docker compose --env-file ${ENV_FILE} --profile ${DOCKER_PROFILE} up ${args}`,
+  `dotenv -e ${ENV_FILE} -- ${args}`,
   (error, stdout, stderr) => {
     if (error) {
       console.error(`error: ${error.message}`);

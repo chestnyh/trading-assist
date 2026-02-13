@@ -36,6 +36,7 @@ services:
     profiles:
       - development
       - api-service
+      - external
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -47,28 +48,6 @@ services:
       - api-service-int-tests
     volumes:
       - postgres_data_int_tests:/var/lib/postgresql/data
-    networks:
-      - trading_bot_int_tests_network
-# Seems like not perfect idea to use migration as a docker container.
-  migrations:
-    <<: *migrations-common
-    container_name: migrations
-    environment:
-      <<: *db-env
-      DB_HOST: postgres
-    profiles:
-      - not-used
-    networks:
-      - trading_bot_network
-
-  migrations-int-tests:
-    <<: *migrations-common
-    container_name: migrations-int-tests
-    environment:
-      <<: *db-env
-      DB_HOST: postgres-int-tests
-    profiles:
-      - not-used
     networks:
       - trading_bot_int_tests_network
 
