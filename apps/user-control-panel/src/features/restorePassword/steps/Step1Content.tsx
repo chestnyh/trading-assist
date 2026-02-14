@@ -31,15 +31,21 @@ export function Step1Content({
       setFormError(null);
       setEmailError(null);
 
-      const data = await customInstance<{ token: string; message: string }>(
+      const response = await customInstance<{
+        token?: string;
+        message?: string;
+        data?: { token?: string; message?: string };
+      }>(
         "/api/v1/auth/forgot-password",
         {
           method: "POST",
           body: JSON.stringify({ email }),
         }
       );
-      if (data.token) {
-        localStorage.setItem("password_reset_token", data.token);
+      const token = response.token ?? response.data?.token;
+
+      if (token) {
+        localStorage.setItem("password_reset_token", token);
       }
 
       setStep(1);
