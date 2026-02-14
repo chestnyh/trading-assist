@@ -9,6 +9,7 @@ export class DevopsConfigs extends Configs {
     super();
     dotenv.config({ path: './.env.devops' });
     this.configs = {
+      ...this.configs,
       AWS_ECR_REGION: process.env['AWS_ECR_REGION'],
       AWS_ECR_ACCOUNT_ID: process.env['AWS_ECR_ACCOUNT_ID'],
       AWS_ECR_REPO_NAMESPACE: process.env['AWS_ECR_REPO_NAMESPACE'],

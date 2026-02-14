@@ -15,11 +15,11 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@trading-bot/api-client": ["libs/api-client/src/index.ts"],
       "@trading-bot/configs": ["libs/configs/src/index.ts"],
       "@trading-bot/crypto-utils": ["libs/crypto-utils/src/index.ts"],
       "@trading-bot/models": ["libs/models/src/index.ts"],
-      "@trading-bot/object-navigator": ["libs/object-navigator/src/index.ts"],
-      "@trading-bot/api-client": ["libs/api-client/src/index.ts"]
+      "@trading-bot/object-navigator": ["libs/object-navigator/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
