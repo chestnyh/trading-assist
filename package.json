@@ -60,7 +60,7 @@
     "//development": "Docker is a tool that is responsible for the docker of the trading assist.",
     "development:external-up": "nx run development:external-up",
     "development:check-env-file": "nx run development:check-env-file",
-    "development:create-volume-folder": "nx run development:create-volume-folder"
+    "development:create-volume-folder": "nx run development:create-volume-folder",
     "docker:external:up": "docker compose --env-file .env.dev --profile external up",
     "docker:init-external:up": "docker compose --env-file .env.dev --profile init-external up",
     "docker:int-test:up": "docker compose --env-file .env.api-int-tests up",
