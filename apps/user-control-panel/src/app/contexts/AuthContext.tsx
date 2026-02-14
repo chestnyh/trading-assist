@@ -47,8 +47,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string, rememberMe?: boolean): Promise<LoginResult> => {
     try {
-      setIsLoading(true);
-
       const loginData = {
         email,
         password,
@@ -60,7 +58,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       let access_token: string | undefined;
       let userData: User | undefined;
 
-      if ('status' in response && response.status === 200 && 'data' in response && response.data) {
+      if ('status' in response && (response.status === 200 || (response.status as number) === 201) && 'data' in response && response.data) {
         access_token = response.data.access_token;
         userData = response.data.user as unknown as User;
       } else if ('access_token' in response && 'user' in response && typeof response === 'object' && response !== null) {
@@ -68,10 +66,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         access_token = directResponse.access_token;
         userData = directResponse.user;
       } else if ('status' in response && response.status === 401) {
-        setIsLoading(false);
         return { success: false, error: "Invalid credentials" };
       } else {
-        setIsLoading(false);
         return { success: false, error: "Unexpected response format from server" };
       }
 
@@ -92,18 +88,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           localStorage.removeItem('user_data');
         }
 
-        setIsLoading(false);
         return { success: true };
       } else {
-        setIsLoading(false);
         return { success: false, error: "Invalid response from server" };
       }
     } catch (error: unknown) {
-      setIsLoading(false);
-
       let errorMessage = "Login failed. Please try again.";
 
       if (error && typeof error === "object") {
+        if ("isNetworkError" in error && (error as { isNetworkError?: boolean }).isNetworkError) {
+          errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
+          return { success: false, error: errorMessage };
+        }
+
         if ("message" in error) {
           const message = String(error.message);
 
@@ -114,6 +111,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         } else if ("status" in error) {
           const status = (error as { status: number }).status;
+          if (status === 0) {
+            errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
+          } else 
           if (status === 400) {
             errorMessage = "Please verify your email address before logging in. Check your email for the verification code.";
           } else if (status === 401) {

@@ -48,7 +48,6 @@ export default function RuleSettingForm({
     });
     return obj;
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const tags = useMemo(
     () =>
@@ -59,7 +58,7 @@ export default function RuleSettingForm({
     [tagsInput]
   );
 
-  const validate = () => {
+  const errors = useMemo(() => {
     const e: Record<string, string> = {};
     if (!name.trim()) e.name = "Required";
     if (!code.trim()) e.code = "Required";
@@ -75,10 +74,13 @@ export default function RuleSettingForm({
       } else {
         if (f.required && !val) e[f.key] = "Required";
         if (val) {
+          const isBaseUrl =
+            (typeof f.label === "string" && /base\s*url/i.test(f.label)) ||
+            (typeof f.key === "string" && /^(baseurl|baseUrl)$/i.test(f.key));
           if (typeof f.exactLength === "number" && val.length !== f.exactLength) {
             e[f.key] = `Length must be ${f.exactLength} (current ${val.length})`;
           } else {
-            if (typeof f.minLength === "number" && val.length < f.minLength) {
+            if (!isBaseUrl && typeof f.minLength === "number" && val.length < f.minLength) {
               e[f.key] = `Min length ${f.minLength} (current ${val.length})`;
             }
             if (typeof f.maxLength === "number" && val.length > f.maxLength) {
@@ -91,48 +93,13 @@ export default function RuleSettingForm({
         }
       }
     });
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
-  const isValid = useMemo(() => {
-    const e: Record<string, string> = {};
-    if (!name.trim()) e.name = "Required";
-    if (!code.trim()) e.code = "Required";
-    detailsSchema.forEach((f) => {
-      const raw = detailValues[f.key] || "";
-      const val = raw.trim();
-      if (f.type === "array") {
-        const items = val
-          .split(",")
-          .map((i) => i.trim())
-          .filter(Boolean);
-        if (f.required && items.length === 0) e[f.key] = "Required";
-      } else {
-        if (f.required && !val) e[f.key] = "Required";
-        if (val) {
-          if (typeof f.exactLength === "number" && val.length !== f.exactLength) {
-            e[f.key] = `Length must be ${f.exactLength} (current ${val.length})`;
-          } else {
-            if (typeof f.minLength === "number" && val.length < f.minLength) {
-              e[f.key] = `Min length ${f.minLength} (current ${val.length})`;
-            }
-            if (typeof f.maxLength === "number" && val.length > f.maxLength) {
-              e[f.key] = `Max length ${f.maxLength} (current ${val.length})`;
-            }
-          }
-          if (f.pattern && !f.pattern.test(val)) {
-            e[f.key] = "Invalid format";
-          }
-        }
-      }
-    });
-    setErrors(e);
-    return Object.keys(e).length === 0;
+    return e;
   }, [name, code, detailValues, detailsSchema]);
 
+  const isValid = useMemo(() => Object.keys(errors).length === 0, [errors]);
+
   const handleSave = () => {
-    if (!validate()) return;
+    if (!isValid) return;
     const details = detailsSchema.map((f) => {
       const raw = detailValues[f.key] || "";
       const val = raw.trim();
@@ -165,7 +132,7 @@ export default function RuleSettingForm({
             placeholder="Insert Name here…"
           />
           {errors.name && (
-            <div className="text-danger text-xs mt-1">{errors.name}</div>
+            <div className="text-error text-xs mt-1">{errors.name}</div>
           )}
         </div>
         <div>
@@ -177,7 +144,7 @@ export default function RuleSettingForm({
             placeholder="Insert Code here…"
           />
           {errors.code && (
-            <div className="text-danger text-xs mt-1">{errors.code}</div>
+            <div className="text-error text-xs mt-1">{errors.code}</div>
           )}
         </div>
       </div>
@@ -207,7 +174,7 @@ export default function RuleSettingForm({
               placeholder={f.placeholder || ""}
             />
             {errors[f.key] && (
-              <div className="text-danger text-xs mt-1">{errors[f.key]}</div>
+              <div className="text-error text-xs mt-1">{errors[f.key]}</div>
             )}
           </div>
         ))}

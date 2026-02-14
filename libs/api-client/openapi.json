@@ -459,7 +459,35 @@
       },
       "get": {
         "operationId": "RulesSettingsController_findAllSettings",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "externalServiceId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by External Service ID",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of rule settings",
@@ -657,6 +685,36 @@
         "summary": "Delete a tag",
         "tags": [
           "tags"
+        ]
+      }
+    },
+    "/api/v1/external-services": {
+      "get": {
+        "operationId": "ExternalServicesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of external services",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExternalServiceResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all external services",
+        "tags": [
+          "external-services"
         ]
       }
     }
@@ -1132,6 +1190,16 @@
             "type": "number",
             "example": 1
           },
+          "tags": {
+            "example": [
+              "crypto",
+              "binance"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "configuration": {
             "type": "object",
             "example": {
@@ -1159,11 +1227,15 @@
             "type": "string",
             "example": "BTC Price Alert"
           },
+          "code": {
+            "type": "string",
+            "example": "BTC_ALERT_01"
+          },
           "description": {
             "type": "string",
             "example": "Sends a Telegram alert when BTC price drops below $50,000"
           },
-          "ruleBody": {
+          "configuration": {
             "type": "object",
             "example": {
               "type": "log",
@@ -1175,14 +1247,31 @@
           "authorId": {
             "type": "number",
             "example": 1
+          },
+          "externalServiceId": {
+            "type": "number",
+            "example": 1
+          },
+          "tags": {
+            "example": [
+              "crypto",
+              "binance"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
           "id",
           "name",
+          "code",
           "description",
-          "ruleBody",
-          "authorId"
+          "configuration",
+          "authorId",
+          "externalServiceId",
+          "tags"
         ]
       },
       "UpdateUserRuleSettingDto": {
@@ -1203,6 +1292,16 @@
           "externalServiceId": {
             "type": "number",
             "example": 1
+          },
+          "tags": {
+            "example": [
+              "crypto",
+              "binance"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "configuration": {
             "type": "object",
@@ -1246,6 +1345,49 @@
           "id",
           "name",
           "userId"
+        ]
+      },
+      "ExternalServiceResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Binance"
+          },
+          "code": {
+            "type": "string",
+            "example": "binance"
+          },
+          "logoUrl": {
+            "type": "string",
+            "example": "/logos/binance.svg",
+            "nullable": true
+          },
+          "fieldsSchema": {
+            "example": [
+              {
+                "key": "apiKey",
+                "label": "ApiKey",
+                "required": true,
+                "exactLength": 32,
+                "placeholder": "Insert api key…"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "code",
+          "fieldsSchema"
         ]
       }
     }

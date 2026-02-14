@@ -77,13 +77,19 @@ export function Step4Content() {
                 token: emailVerificationToken,
             });
 
-            const result = response as unknown as { success?: boolean; message?: string };
+            const result = response as unknown as {
+                success?: boolean;
+                message?: string;
+                data?: { success?: boolean; message?: string };
+            };
+            const isVerified = result.success === true || result.data?.success === true;
+            const serverMessage = result.message ?? result.data?.message;
 
-            if (result.success === true) {
+            if (isVerified) {
                 setIsSuccess(true);
                 clearStorage();
             } else {
-                const errorMessage = result.message || step4.errors.verificationFailed;
+                const errorMessage = serverMessage || step4.errors.verificationFailed;
                 setServerError(errorMessage);
                 setFieldError(step4.errors.invalidCodeField);
             }
