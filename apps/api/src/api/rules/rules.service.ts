@@ -34,9 +34,14 @@ export class RulesService {
   /**
    * Get all rules for a user
    */
-  async findAllByUser(userId: number): Promise<RuleResponseDto[]> {
-    const rules = await this.modelsService.userRules.findMany({
+  async findAllByUser(userId: number, page: number = 1, limit: number = 20): Promise<{ rules: RuleResponseDto[], total: number }> {
+  const skip = (page - 1) * limit;
+
+  const [rules, total] = await Promise.all([
+    this.modelsService.userRules.findMany({
       where: { authorId: userId },
+      skip: skip,
+      take: limit,
       select: {
         id: true,
         name: true,
@@ -44,9 +49,14 @@ export class RulesService {
         ruleBody: true,
         authorId: true,
       },
-    });
+      orderBy: { id: 'desc' },
+    }),
+    this.modelsService.userRules.count({
+      where: { authorId: userId },
+      }),
+    ]);
 
-    return rules;
+    return { rules, total };
   }
 
   /**
@@ -54,9 +64,9 @@ export class RulesService {
    */
   async findOne(ruleId: number, userId: number): Promise<RuleResponseDto> {
     const rule = await this.modelsService.userRules.findFirst({
-      where: { 
+      where: {
         id: ruleId,
-        authorId: userId 
+        authorId: userId
       },
       select: {
         id: true,
@@ -80,9 +90,9 @@ export class RulesService {
   async update(ruleId: number, userId: number, updateRuleDto: UpdateRuleDto): Promise<RuleResponseDto> {
     // First check if the rule exists and belongs to the user
     const existingRule = await this.modelsService.userRules.findFirst({
-      where: { 
+      where: {
         id: ruleId,
-        authorId: userId 
+        authorId: userId
       }
     });
 
@@ -115,9 +125,9 @@ export class RulesService {
   async remove(ruleId: number, userId: number): Promise<void> {
     // First check if the rule exists and belongs to the user
     const existingRule = await this.modelsService.userRules.findFirst({
-      where: { 
+      where: {
         id: ruleId,
-        authorId: userId 
+        authorId: userId
       }
     });
 

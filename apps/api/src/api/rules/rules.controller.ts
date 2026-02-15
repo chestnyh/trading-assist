@@ -1,19 +1,20 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
   UseGuards,
   Request,
-  ParseIntPipe
+  ParseIntPipe,
+  Query
 } from '@nestjs/common';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiResponse, 
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
   ApiBearerAuth,
   ApiBody,
   ApiParam
@@ -34,18 +35,18 @@ export class RulesController {
   @Post()
   @ApiOperation({ summary: 'Create a new trading rule' })
   @ApiBody({ type: CreateRuleDto })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Rule created successfully',
     type: RuleResponseDto
   })
-  @ApiResponse({ 
-    status: 400, 
-    description: 'Invalid input data' 
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data'
   })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Unauthorized' 
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized'
   })
   async create(@Request() req, @Body() createRuleDto: CreateRuleDto): Promise<RuleResponseDto> {
     return this.rulesService.create(req.user.id, createRuleDto);
@@ -53,36 +54,41 @@ export class RulesController {
 
   @Get()
   @ApiOperation({ summary: 'Get all rules for the authenticated user' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Rules retrieved successfully',
     type: [RuleResponseDto]
   })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Unauthorized' 
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized'
   })
-  async findAll(@Request() req): Promise<RuleResponseDto[]> {
-    // TODO: Add pagination
-    // TODO: Add possibility for admin to get all rules
-    return this.rulesService.findAllByUser(req.user.id);
+  async findAll(
+    @Request() req,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number
+  ): Promise<{ rules: RuleResponseDto[], total: number }> {
+    // TODO: Add possibility for admin to get any rule
+    const pageNum = page ? +page : 1;
+    const limitNum = limit ? +limit : 20;
+    return this.rulesService.findAllByUser(req.user.id, pageNum, limitNum);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a specific rule by ID' })
   @ApiParam({ name: 'id', description: 'Rule ID', type: 'number' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Rule retrieved successfully',
     type: RuleResponseDto
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: 'Rule not found' 
+  @ApiResponse({
+    status: 404,
+    description: 'Rule not found'
   })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Unauthorized' 
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized'
   })
   async findOne(@Request() req, @Param('id', ParseIntPipe) id: number): Promise<RuleResponseDto> {
     // TODO: Add possibility for admin to get any rule
@@ -93,26 +99,26 @@ export class RulesController {
   @ApiOperation({ summary: 'Update a rule' })
   @ApiParam({ name: 'id', description: 'Rule ID', type: 'number' })
   @ApiBody({ type: UpdateRuleDto })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Rule updated successfully',
     type: RuleResponseDto
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: 'Rule not found' 
+  @ApiResponse({
+    status: 404,
+    description: 'Rule not found'
   })
-  @ApiResponse({ 
-    status: 400, 
-    description: 'Invalid input data' 
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data'
   })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Unauthorized' 
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized'
   })
   async update(
-    @Request() req, 
-    @Param('id', ParseIntPipe) id: number, 
+    @Request() req,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateRuleDto: UpdateRuleDto
   ): Promise<RuleResponseDto> {
     // TODO: Add possibility for admin to update any rule
@@ -122,17 +128,17 @@ export class RulesController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a rule' })
   @ApiParam({ name: 'id', description: 'Rule ID', type: 'number' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Rule deleted successfully' 
+  @ApiResponse({
+    status: 200,
+    description: 'Rule deleted successfully'
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: 'Rule not found' 
+  @ApiResponse({
+    status: 404,
+    description: 'Rule not found'
   })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Unauthorized' 
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized'
   })
   async remove(@Request() req, @Param('id', ParseIntPipe) id: number): Promise<{ message: string }> {
     // TODO: Add possibility for admin to remove any rule
