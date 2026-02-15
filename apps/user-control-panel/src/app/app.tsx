@@ -14,6 +14,7 @@ import { RedirectToSignIn } from './components/RedirectToSignIn';
 import { useAuth } from './contexts/AuthContext';
 import { RulesPage } from '../features/rules/RulesPage';
 import { AddRulePage } from '../features/rules/AddRulePage';
+import { RuleDetailsPage } from '../features/rules/RuleDetailsPage';
 
 function AppRoutes() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -53,6 +54,7 @@ function AppRoutes() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/rules" element={<RulesPage />} />
       <Route path="/rules/add" element={<AddRulePage />} />
+      <Route path="/rules/:id" element={<RuleDetailsPage />} />
       <Route
         path="/settings"
         element={
