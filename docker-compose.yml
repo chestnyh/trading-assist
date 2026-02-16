@@ -22,40 +22,32 @@ x-db-env: &db-env
   DB_PASSWORD: ${DB_PASSWORD}
   DB_NAME: ${DB_NAME}
 
-x-volume-common: &volume-common
-  driver: local
-  driver_opts:
-    type: none
-    o: bind
-    device: ${DOCKER_DB_VOLUME}
-
 services:
   postgres:
     <<: *postgres-common
-    container_name: postgres
     profiles:
       - development
       - api-service
       - external
+      - init-external
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ${DOCKER_DB_VOLUME}:/var/lib/postgresql/data
     networks:
       - trading_bot_network
-  postgres-int-tests:
-    <<: *postgres-common
-    container_name: postgres-int-tests
+
+  migrations:
+    <<: *migrations-common
+    environment:
+      <<: *db-env
     profiles:
-      - api-service-int-tests
-    volumes:
-      - postgres_data_int_tests:/var/lib/postgresql/data
+      - init-external
     networks:
-      - trading_bot_int_tests_network
+      - trading_bot_network
 
   auto-trader:
     build:
       context: .
       dockerfile: apps/auto-trader/Dockerfile
-    container_name: auto-trader
     restart: always
     ports:
       - "3000:3000"
@@ -65,15 +57,6 @@ services:
       - development
     networks:
       - trading_bot_network
-
-volumes:
-  postgres_data:
-    <<: *volume-common
-  postgres_data_int_tests:
-    <<: *volume-common
-
 networks:
   trading_bot_network:
-    driver: bridge
-  trading_bot_int_tests_network:
     driver: bridge
