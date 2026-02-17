@@ -1,33 +1,23 @@
 #version: '3.8'
 
-name: ${DOCKER_PROJECT_NAME:-trading_assist}
-
-x-postgres-common: &postgres-common
-  image: postgres:16
-  restart: always
-  environment:
-    POSTGRES_USER: ${DB_USER}
-    POSTGRES_PASSWORD: ${DB_PASSWORD}
-    POSTGRES_DB: ${DB_NAME}
-  ports:
-    - "${DB_PORT}:5432"
-
-x-db-env: &db-env
-  DB_HOST: postgres
-  DB_PORT: "5432"
-  DB_USER: ${DB_USER}
-  DB_PASSWORD: ${DB_PASSWORD}
-  DB_NAME: ${DB_NAME}
+name: ${DOCKER_PROJECT_NAME}
 
 services:
   postgres:
-    <<: *postgres-common
-    container_name: ${DOCKER_PROJECT_NAME:-trading_assist}-postgres
+    image: postgres:16
+    restart: always
+    container_name: ${DOCKER_PROJECT_NAME}-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     profiles:
       - development
       - api-service
       - external
       - init-external
+    ports:
+      - "${DB_PORT}:5432"
     volumes:
       - ${DOCKER_DB_VOLUME}:/var/lib/postgresql/data
     networks:
@@ -41,7 +31,11 @@ services:
     ports:
       - "3000:3000"
     environment:
-      <<: *db-env
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
     profiles:
       - development
     networks:
