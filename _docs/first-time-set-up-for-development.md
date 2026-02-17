@@ -35,14 +35,21 @@ pnpm install
 ### 5. Prepare Docker Volumes
 Create necessary directories for Docker volumes:
 ```bash
-source .env.dev && mkdir -p ${DOCKER_DB_VOLUME}
+pnpm development:create-volume-folder
 ```
 
 ### 6. Start External Services
 Launch all required external services(with the `-d` flag for daemon mode):
 ```bash
-pnpm docker:init-external:up -d
+pnpm development:external-up -d
 ```
+
+### 7. Run migrations and seeds
+Create database structure and fill it with demo data:
+```bash
+pnpm models:migrations:migrate-and-seed
+```
+
 This command should deploy external services via docker with proper credentials + run migration + seeding with initial data
 
 ### 7. Start All Services

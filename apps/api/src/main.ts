@@ -5,9 +5,11 @@
 
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
 import { createSwaggerConfig } from './swagger.config'
 import { ApiModule } from './api/api.module';
+import { ServicesConfigs } from '@trading-bot/configs';
+const configs = new ServicesConfigs();
 
 async function bootstrap() {
   const app = await NestFactory.create(ApiModule);
@@ -39,7 +41,7 @@ async function bootstrap() {
 
   const globalPrefix = 'api/v1';
   app.setGlobalPrefix(globalPrefix);
-  const port = process.env.API_PORT || 3001;
+  const port = configs.get('API_PORT');
   await app.listen(port);
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
