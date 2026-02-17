@@ -16,18 +16,25 @@ export function Pagination({ current, total, pageSize, onChange }: PaginationPro
     const pages: (number | string)[] = [];
     const delta = 2;
 
+    const left = current - delta;
+    const right = current + delta;
+
     for (let i = 1; i <= totalPages; i++) {
-      if (
-        i === 1 ||
-        i === totalPages ||
-        (i >= current - delta && i <= current + delta)
-      ) {
+
+      if (i === 1 || i === totalPages || (i >= left && i <= right)) {
         pages.push(i);
-      } else if (
-        (i === current - delta - 1) ||
-        (i === current + delta + 1)
-      ) {
+      }
+
+      else if (i === left - 1) {
         pages.push("...");
+      }
+
+      else if (i === right + 1) {
+        pages.push("...");
+      }
+
+      if (i > right && i < totalPages - 1) {
+        i = totalPages - 1;
       }
     }
     return pages;

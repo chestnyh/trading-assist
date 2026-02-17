@@ -1,22 +1,27 @@
-import { useEffect } from "react"; //
+import { useEffect } from "react";
 import { useRules } from "../../app/contexts/RulesContext";
 import { Button } from "../../shared/ui/buttons/Button";
 import { EmptyState } from "./EmptyState";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { RuleItem } from "../../app/components/RuleItem";
 import { Pagination } from "../../app/components/Pagination";
+import { ErrorAlert } from "../../shared/ui/feedback/ErrorAlert";
+import { NotFound } from "../notFound/NotFound";
 
 export function RulesPage() {
-  const { rules, isLoading, fetchRules, totalCount, currentPage } = useRules();
+  const { rules, isLoading, fetchRules, totalCount, error } = useRules();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const LIMIT = 20;
 
   useEffect(() => {
-    fetchRules(1);
-  }, []);
+    fetchRules(currentPage);
+  }, [currentPage]);
 
   const handlePageChange = (page: number) => {
-    fetchRules(page);
+    setSearchParams({ page: page.toString() });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -28,8 +33,23 @@ export function RulesPage() {
     );
   }
 
-  if (rules.length === 0 && !isLoading) {
+  if (error && rules.length === 0) {
+    return (
+      <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto">
+        <ErrorAlert message={error} />
+        <Button text="Retry" onClick={() => fetchRules(currentPage)} className="mt-4" />
+      </div>
+    );
+  }
+
+  if (totalCount === 0 && !isLoading) {
     return <EmptyState />;
+  }
+
+  if (rules.length === 0 && totalCount > 0 && !isLoading) {
+    return (
+      <NotFound />
+    );
   }
 
   return (
@@ -56,7 +76,7 @@ export function RulesPage() {
           <Pagination
             current={currentPage}
             total={totalCount}
-            pageSize={20}
+            pageSize={LIMIT}
             onChange={handlePageChange}
           />
         </div>

@@ -2,28 +2,42 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { useRules, Rule } from "../../app/contexts/RulesContext";
+import { NotFound } from "../notFound/NotFound";
 
 export function RuleDetailsPage() {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
-	const { rules } = useRules();
+	const { rules, getRuleById } = useRules();
 	const [rule, setRule] = useState<Rule | null>(null);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-	const foundRule = rules.find((r) => Number(r.id) === Number(id));
+    const loadRule = async () => {
+      setLoading(true);
+		if (id) {
+			const data = await getRuleById(id);
+			setRule(data);
+		}
+		setLoading(false);
+		};
+		loadRule();
+	}, [id, getRuleById]);
 
-	if (foundRule) {
-		setRule(foundRule);
-	}
-	}, [id, rules]);
-
-	if (!rule) return <div className="p-8 text-center">Rule not found</div>;
+	if (loading)
+		return (
+			<div className="flex justify-center items-center min-h-[400px]">
+				<div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+			</div>
+			);
+	if (!rule) return (
+		<NotFound />
+	)
 
 	return (
 		<div className="px-4 md:px-8 lg:px-12 py-6 max-w-5xl mx-auto">
 		<button
 			onClick={() => navigate("/rules")}
-			className="flex items-center gap-1 text-accent hover:underline mb-6 transition-all"
+			className="flex items-center gap-1 text-accent hover:underline mb-6 transition-all text-primary"
 		>
 			<ChevronLeft size={20} />
 			<span>Back</span>

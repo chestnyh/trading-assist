@@ -24,6 +24,7 @@ import { CreateRuleDto } from './dto/create-rule.dto';
 import { UpdateRuleDto } from './dto/update-rule.dto';
 import { RuleResponseDto } from './dto/rule-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PaginatedRulesDto } from './dto/paginated-rules.dto';
 
 @ApiTags('rules')
 @Controller('rules')
@@ -53,11 +54,11 @@ export class RulesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all rules for the authenticated user' })
+  @ApiOperation({ summary: 'Get all rules for the authenticated user with pagination' })
   @ApiResponse({
     status: 200,
     description: 'Rules retrieved successfully',
-    type: [RuleResponseDto]
+    type: PaginatedRulesDto
   })
   @ApiResponse({
     status: 401,
@@ -67,7 +68,7 @@ export class RulesController {
     @Request() req,
     @Query('page') page?: number,
     @Query('limit') limit?: number
-  ): Promise<{ rules: RuleResponseDto[], total: number }> {
+  ): Promise<PaginatedRulesDto> {
     // TODO: Add possibility for admin to get any rule
     const pageNum = page ? +page : 1;
     const limitNum = limit ? +limit : 20;

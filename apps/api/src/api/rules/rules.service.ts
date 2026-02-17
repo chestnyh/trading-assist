@@ -7,6 +7,7 @@ import { RuleResponseDto } from './dto/rule-response.dto';
 @Injectable()
 export class RulesService {
   constructor(private modelsService: ModelsService) {}
+  private readonly MAX_LIMIT = 100;
 
   /**
    * Create a new rule for a user
@@ -35,13 +36,15 @@ export class RulesService {
    * Get all rules for a user
    */
   async findAllByUser(userId: number, page: number = 1, limit: number = 20): Promise<{ rules: RuleResponseDto[], total: number }> {
-  const skip = (page - 1) * limit;
+  const safeLimit = Math.min(Math.max(1, limit), this.MAX_LIMIT);
+
+  const skip = (page - 1) * safeLimit;
 
   const [rules, total] = await Promise.all([
     this.modelsService.userRules.findMany({
       where: { authorId: userId },
       skip: skip,
-      take: limit,
+      take: safeLimit,
       select: {
         id: true,
         name: true,
