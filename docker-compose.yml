@@ -1,5 +1,7 @@
 #version: '3.8'
 
+name: ${DOCKER_PROJECT_NAME:-trading_assist}
+
 x-postgres-common: &postgres-common
   image: postgres:16
   restart: always
@@ -9,11 +11,6 @@ x-postgres-common: &postgres-common
     POSTGRES_DB: ${DB_NAME}
   ports:
     - "${DB_PORT}:5432"
-
-x-migrations-common: &migrations-common
-  build:
-    context: .
-    dockerfile: libs/models/Dockerfile
 
 x-db-env: &db-env
   DB_HOST: postgres
@@ -25,6 +22,7 @@ x-db-env: &db-env
 services:
   postgres:
     <<: *postgres-common
+    container_name: ${DOCKER_PROJECT_NAME:-trading_assist}-postgres
     profiles:
       - development
       - api-service
@@ -32,15 +30,6 @@ services:
       - init-external
     volumes:
       - ${DOCKER_DB_VOLUME}:/var/lib/postgresql/data
-    networks:
-      - trading_bot_network
-
-  migrations:
-    <<: *migrations-common
-    environment:
-      <<: *db-env
-    profiles:
-      - init-external
     networks:
       - trading_bot_network
 

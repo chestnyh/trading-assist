@@ -16,7 +16,7 @@ export abstract class Configs {
     this.configs['NODE_ENV'] = process?.env?.['NODE_ENV'];
 
     if (envFile) {
-      dotenv.config({ path: envFile });
+      dotenv.config({ path: envFile, override: true });
     }
 
   }
