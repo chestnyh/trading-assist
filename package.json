@@ -22,7 +22,6 @@
     "api-client:generate-openapi": "nx run api-client:generate-openapi",
     "api-client:generate-client": "nx run api-client:generate-client",
     "//user-control-panel": "User control panel is a microservice that is responsible for the user control panel of the trading bot.",
-    "api:test-int": "nx run api-e2e:run-e2e-flow",
     "user-control-panel:start": "nx run user-control-panel:serve",
     "user-control-panel:build": "nx run user-control-panel:build",
     "user-control-panel:test": "nx run user-control-panel:test",

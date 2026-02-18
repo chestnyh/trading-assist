@@ -20,8 +20,6 @@ services:
       - "${DB_PORT}:5432"
     volumes:
       - ${DOCKER_DB_VOLUME}:/var/lib/postgresql/data
-    networks:
-      - trading_bot_network
 
   auto-trader:
     build:
@@ -38,8 +36,4 @@ services:
       DB_NAME: ${DB_NAME}
     profiles:
       - development
-    networks:
-      - trading_bot_network
-networks:
-  trading_bot_network:
-    driver: bridge
+

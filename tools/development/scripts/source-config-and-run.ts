@@ -1,14 +1,13 @@
 import { spawn } from 'child_process';
-import fs from 'fs';
-import dotenv from 'dotenv';
 import { ScriptConfigs } from '@trading-bot/configs'; 
 
 const scriptConfigs = new ScriptConfigs();
+let fileEnv: Record<string, string>;
 
-const ENV_FILE = scriptConfigs.get('ENV_FILE');
-
-if (!ENV_FILE) {
-  console.error('ENV_FILE not found in configuration');
+try {
+  fileEnv = scriptConfigs.getEnvFromFile();
+} catch (error) {
+  console.error(`error: ${(error as Error).message}`);
   process.exit(1);
 }
 
@@ -19,7 +18,6 @@ if (cliArgs.length === 0) {
   process.exit(1);
 }
 
-const fileEnv = dotenv.parse(fs.readFileSync(ENV_FILE));
 const childEnv: NodeJS.ProcessEnv = {
   ...process.env,
   ...fileEnv,

@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import * as fs from 'fs';
 export abstract class Configs {
   protected configs: Record<string, string | undefined> = {};
 
@@ -23,5 +24,18 @@ export abstract class Configs {
 
   get(configName: string): string {
     return this.configs[configName];
+  }
+
+  getRequired(configName: string): string {
+    const value = this.get(configName);
+    if (!value) {
+      throw new Error(`${configName} not found in configuration`);
+    }
+    return value;
+  }
+
+  getEnvFromFile(): Record<string, string> {
+    const envFile = this.getRequired('ENV_FILE');
+    return dotenv.parse(fs.readFileSync(envFile));
   }
 }

@@ -3,19 +3,16 @@ import { ScriptConfigs } from '@trading-bot/configs';
 
 const scriptConfigs = new ScriptConfigs();
 
-const ENV_FILE = scriptConfigs.get('ENV_FILE');
-const DOCKER_PROFILE = scriptConfigs.get('DOCKER_PROFILE');
-const DOCKER_PROJECT_NAME = scriptConfigs.get('DOCKER_PROJECT_NAME');
+let ENV_FILE: string;
+let DOCKER_PROFILE: string;
+let DOCKER_PROJECT_NAME: string;
 
-if (!ENV_FILE) {
-  console.error('ENV_FILE not found in configuration');
-  process.exit(1);
-}
-
-if (!DOCKER_PROJECT_NAME) {
-  console.error(
-    `DOCKER_PROJECT_NAME not found in configuration. Please set DOCKER_PROJECT_NAME (or legacy COMPOSE_PROJECT_NAME) in ${ENV_FILE}`
-  );
+try {
+  ENV_FILE = scriptConfigs.getRequired('ENV_FILE');
+  DOCKER_PROFILE = scriptConfigs.getRequired('DOCKER_PROFILE');
+  DOCKER_PROJECT_NAME = scriptConfigs.getRequired('DOCKER_PROJECT_NAME');
+} catch (error) {
+  console.error(`error: ${(error as Error).message}`);
   process.exit(1);
 }
 
