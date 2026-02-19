@@ -1,25 +1,40 @@
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
 import { ScriptConfigs } from '@trading-bot/configs'; 
 
 const scriptConfigs = new ScriptConfigs();
 
-const ENV_FILE = scriptConfigs.get('ENV_FILE');
-const DOCKER_PROFILE = scriptConfigs.get('DOCKER_PROFILE');
+let ENV_FILE: string;
+let DOCKER_PROFILE: string;
+let DOCKER_PROJECT_NAME: string;
 
-const args = process.argv.slice(2).join(' ');
+try {
+  ENV_FILE = scriptConfigs.getRequired('ENV_FILE');
+  DOCKER_PROFILE = scriptConfigs.getRequired('DOCKER_PROFILE');
+  DOCKER_PROJECT_NAME = scriptConfigs.getRequired('DOCKER_PROJECT_NAME');
+} catch (error) {
+  console.error(`error: ${(error as Error).message}`);
+  process.exit(1);
+}
 
-exec(
-  `docker compose --env-file ${ENV_FILE} --profile ${DOCKER_PROFILE} up ${args}`,
-  (error, stdout, stderr) => {
-    if (error) {
-      console.error(`error: ${error.message}`);
-      process.exit(1);
-    }
-    if (stderr) {
-      console.warn(`stderr: ${stderr}`);
-    }
-    if (stdout) {
-      console.log(stdout);
-    }
+const args = process.argv.slice(2);
+
+const child = spawn(
+  'docker',
+  ['compose', '--env-file', ENV_FILE, '--profile', DOCKER_PROFILE, 'up', ...args],
+  {
+    stdio: 'inherit',
+    env: {
+      ...process.env,
+      ...(DOCKER_PROJECT_NAME ? { DOCKER_PROJECT_NAME } : null),
+    },
   }
 );
+
+child.on('error', (error) => {
+  console.error(`error: ${error.message}`);
+  process.exit(1);
+});
+
+child.on('exit', (code) => {
+  process.exit(code ?? 1);
+});
