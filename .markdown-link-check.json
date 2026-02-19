@@ -13,8 +13,8 @@
 
     { "pattern": "^(?!https?://)" },
 
-    { "pattern": "^https://github\\.com/chestnyh/trading-assist" },
-    { "pattern": "^https://github\\.com/chestnyh/trading-bot" }
+    { "pattern": "^https://github\\.com/chestnyh/trading-assist" }
+    
   ],
   "replacementPatterns": [
     {
