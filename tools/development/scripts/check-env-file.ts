@@ -1,4 +1,4 @@
-import { exec } from 'child_process';
+import fs from 'fs';
 import { ScriptConfigs } from '@trading-bot/configs';
 
 const scriptConfigs = new ScriptConfigs();
@@ -10,14 +10,9 @@ if (!envFile) {
   process.exit(1);
 }
 
-exec(`dotenv -e ${envFile} -- echo "✓ ${envFile} exists"`, (error, stdout, stderr) => {
-  if (error) {
-    console.error(`error: ${error.message}`);
-    process.exit(1);
-  }
-  if (stderr) {
-    console.error(`stderr: ${stderr}`);
-    process.exit(1);
-  }
-  console.log(`✓ ${envFile} exists`);
-});
+if (!fs.existsSync(envFile)) {
+  console.error(`ENV_FILE does not exist: ${envFile}`);
+  process.exit(1);
+}
+
+console.log(`✓ ${envFile} exists`);

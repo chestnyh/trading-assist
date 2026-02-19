@@ -1,24 +1,41 @@
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
 import { ScriptConfigs } from '@trading-bot/configs'; 
 
 const scriptConfigs = new ScriptConfigs();
+let fileEnv: Record<string, string>;
 
-const ENV_FILE = scriptConfigs.get('ENV_FILE');
+try {
+  fileEnv = scriptConfigs.getEnvFromFile();
+} catch (error) {
+  console.error(`error: ${(error as Error).message}`);
+  process.exit(1);
+}
 
-const args = process.argv.slice(2).join(' ');
+const cliArgs = process.argv.slice(2);
 
-exec(
-  `dotenv -e ${ENV_FILE} -- ${args}`,
-  (error, stdout, stderr) => {
-    if (error) {
-      console.error(`error: ${error.message}`);
-      process.exit(1);
-    }
-    if (stderr) {
-      console.warn(`stderr: ${stderr}`);
-    }
-    if (stdout) {
-      console.log(stdout);
-    }
-  }
-);
+if (cliArgs.length === 0) {
+  console.error('No command provided');
+  process.exit(1);
+}
+
+const childEnv: NodeJS.ProcessEnv = {
+  ...process.env,
+  ...fileEnv,
+};
+
+const [command, ...commandArgs] = cliArgs;
+
+const child = spawn(command, commandArgs, {
+  stdio: 'inherit',
+  env: childEnv,
+  shell: true,
+});
+
+child.on('error', (error) => {
+  console.error(`error: ${error.message}`);
+  process.exit(1);
+});
+
+child.on('exit', (code) => {
+  process.exit(code ?? 1);
+});

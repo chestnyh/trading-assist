@@ -3,11 +3,16 @@ import { ScriptConfigs } from '@trading-bot/configs';
 
 const scriptConfigs = new ScriptConfigs();
 
-const ENV_FILE = scriptConfigs.get('ENV_FILE');
-const DOCKER_PROFILE = scriptConfigs.get('DOCKER_PROFILE') || 'external';
+let ENV_FILE: string;
+let DOCKER_PROFILE: string;
+let DOCKER_PROJECT_NAME: string;
 
-if (!ENV_FILE) {
-  console.error('ENV_FILE not found in configuration');
+try {
+  ENV_FILE = scriptConfigs.getRequired('ENV_FILE');
+  DOCKER_PROFILE = scriptConfigs.getRequired('DOCKER_PROFILE');
+  DOCKER_PROJECT_NAME = scriptConfigs.getRequired('DOCKER_PROJECT_NAME');
+} catch (error) {
+  console.error(`error: ${(error as Error).message}`);
   process.exit(1);
 }
 
@@ -18,6 +23,10 @@ const child = spawn(
   ['compose', '--env-file', ENV_FILE, '--profile', DOCKER_PROFILE, 'up', ...args],
   {
     stdio: 'inherit',
+    env: {
+      ...process.env,
+      ...(DOCKER_PROJECT_NAME ? { DOCKER_PROJECT_NAME } : null),
+    },
   }
 );
 
