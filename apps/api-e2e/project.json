@@ -86,7 +86,7 @@
             "command": "nx run api-e2e:pre-e2e"
           },
           {
-            "command": "sleep 10"
+            "command": "nx run development:sleep -- 10"
           },
           {
             "command": "nx run api-e2e:e2e"
