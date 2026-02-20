@@ -36,28 +36,30 @@ export class RulesService {
    * Get all rules for a user
    */
   async findAllByUser(userId: number, page: number = 1, limit: number = 20): Promise<{ rules: RuleResponseDto[], total: number }> {
-  const safeLimit = Math.min(Math.max(1, limit), this.MAX_LIMIT);
+    const safeLimit = Math.min(Math.max(1, Math.floor(limit)), this.MAX_LIMIT);
 
-  const skip = (page - 1) * safeLimit;
+    const safePage = Math.max(1, Math.floor(page));
 
-  const [rules, total] = await Promise.all([
-    this.modelsService.userRules.findMany({
-      where: { authorId: userId },
-      skip: skip,
-      take: safeLimit,
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        ruleBody: true,
-        authorId: true,
-      },
-      orderBy: { id: 'desc' },
-    }),
-    this.modelsService.userRules.count({
-      where: { authorId: userId },
+    const skip = (safePage - 1) * safeLimit;
+
+    const [rules, total] = await Promise.all([
+      this.modelsService.userRules.findMany({
+        where: { authorId: userId },
+        skip: skip,
+        take: safeLimit,
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          ruleBody: true,
+          authorId: true,
+        },
+        orderBy: { id: 'desc' },
       }),
-    ]);
+      this.modelsService.userRules.count({
+        where: { authorId: userId },
+        }),
+      ]);
 
     return { rules, total };
   }

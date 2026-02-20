@@ -269,11 +269,31 @@ export default async function main() {
                     isEmailVerified: true,
                     rules: {
                         create: [
-                            ...Array.from({ length: 120 }, (_, i) => ({
-                                name: `Rule ${i + 1}: ${["Standard", "Advanced", "Critical", "Legacy", "Experimental"][i % 5]}`,
-                                description: `Automated test rule #${i + 1}. Created for high-load pagination testing.`,
-                                ruleBody: [logRule, timeoutRule, intervalRule, sequenceRule, parallelRule][i % 5]
-                            }))
+                            {
+                                name: "Initial Config",
+                                description: "Initial config ",
+                                ruleBody: logRule
+                            },
+                            {
+                                name: "Timeout Config",
+                                description: "Timeout config",
+                                ruleBody: timeoutRule
+                            },
+                            {
+                                name: "Interval Config",
+                                description: "Interval config",
+                                ruleBody: intervalRule
+                            },
+                            {
+                                name: "Sequence Config",
+                                description: "Sequence config",
+                                ruleBody: sequenceRule
+                            },
+                            {
+                                name: "Parallel Config",
+                                description: "Parallel config",
+                                ruleBody: parallelRule
+                            }
                         ]
                     },
                     telegramSettings: {

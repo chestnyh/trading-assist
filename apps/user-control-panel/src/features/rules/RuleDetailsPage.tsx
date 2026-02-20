@@ -7,7 +7,7 @@ import { NotFound } from "../notFound/NotFound";
 export function RuleDetailsPage() {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
-	const { rules, getRuleById } = useRules();
+	const { getRuleById } = useRules();
 	const [rule, setRule] = useState<Rule | null>(null);
 	const [loading, setLoading] = useState(true);
 

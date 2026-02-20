@@ -63,6 +63,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
 
     } catch (error) {
       console.error("Fetch rules failed", error);
+      setRules([]);
       setError("Failed to load rules. Please try again later.");
     } finally {
       setIsLoading(false);
