@@ -56,7 +56,7 @@
             "command": "nx run api-e2e:data-reset"
           },
           {
-            "command": "NODE_ENV=api-int-tests pm2 start \"pnpm api:start\" --name \"api-e2e-test\""
+            "command": "NODE_ENV=api-int-tests pnpm exec pm2 start \"pnpm api:start\" --name \"api-e2e-test\""
           } 
         ]
       },
@@ -73,7 +73,7 @@
     "post-e2e": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pm2 stop api-e2e-test; pm2 delete api-e2e-test"
+        "command": "pnpm exec pm2 stop api-e2e-test; pnpm exec pm2 delete api-e2e-test"
       },
       "dependsOn": []
     },
