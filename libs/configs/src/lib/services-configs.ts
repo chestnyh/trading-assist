@@ -14,6 +14,13 @@ export class ServicesConfigs extends Configs {
       DB_NAME: process.env['DB_NAME'],
       DB_HOST: process.env['DB_HOST'],
       DB_PORT: process.env['DB_PORT'] ? parseInt(process.env['DB_PORT'], 10).toString() : '5432',
+      RMQ_HOST: process.env['RMQ_HOST'] || 'localhost',
+      RMQ_PORT: process.env['RMQ_PORT'] ? parseInt(process.env['RMQ_PORT'], 10).toString() : '5672',
+      RMQ_MANAGEMENT_PORT: process.env['RMQ_MANAGEMENT_PORT']
+        ? parseInt(process.env['RMQ_MANAGEMENT_PORT'], 10).toString()
+        : '15672',
+      RMQ_USER: process.env['RMQ_USER'] || 'guest',
+      RMQ_PASSWORD: process.env['RMQ_PASSWORD'] || 'guest',
       JWT_SECRET: process.env['JWT_SECRET'] || 'your-secret-key',
       JWT_EXPIRES_IN: process.env['JWT_EXPIRES_IN'] || '24h',
       MAX_PASSWORD_RESET_ATTEMPTS: process.env['MAX_PASSWORD_RESET_ATTEMPTS'] || '5',
