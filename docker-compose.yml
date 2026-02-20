@@ -26,18 +26,18 @@ services:
     restart: always
     container_name: ${DOCKER_PROJECT_NAME}-rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: ${RMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD}
+      RABBITMQ_DEFAULT_USER: ${RMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD:-guest}
     profiles:
       - development
       - api-service
       - external
       - init-external
     ports:
-      - "${RMQ_PORT}:5672"
-      - "${RMQ_MANAGEMENT_PORT}:15672"
+      - "${RMQ_PORT:-5672}:5672"
+      - "${RMQ_MANAGEMENT_PORT:-15672}:15672"
     volumes:
-      - ${DOCKER_RMQ_VOLUME}:/var/lib/rabbitmq
+      - ${DOCKER_RMQ_VOLUME:-./docker/volumes/local_rmq}:/var/lib/rabbitmq
 
   auto-trader:
     build:
