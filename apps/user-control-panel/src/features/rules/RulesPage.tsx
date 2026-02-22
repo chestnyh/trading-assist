@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRules } from "../../app/contexts/RulesContext";
 import { Button } from "../../shared/ui/buttons/Button";
 import { EmptyState } from "./EmptyState";
@@ -8,13 +8,15 @@ import { RuleItem } from "../../app/components/RuleItem";
 import { Pagination } from "../../app/components/Pagination";
 import { ErrorAlert } from "../../shared/ui/feedback/ErrorAlert";
 import { NotFound } from "../notFound/NotFound";
+import { ConfirmationModal } from "../../shared/ui/modals/ConfirmationModal";
 
 export function RulesPage() {
-  const { rules, isLoading, fetchRules, totalCount, error } = useRules();
+  const { rules, isLoading, fetchRules, totalCount, error, deleteRule } = useRules();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
   const LIMIT = 20;
+  const [deletingRuleId, setDeletingRuleId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchRules(currentPage);
@@ -23,6 +25,15 @@ export function RulesPage() {
   const handlePageChange = (page: number) => {
     setSearchParams({ page: page.toString() });
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (deletingRuleId) {
+      const success = await deleteRule(deletingRuleId);
+      if (success) {
+        setDeletingRuleId(null);
+      }
+    }
   };
 
   if (isLoading && rules.length === 0) {
@@ -67,7 +78,7 @@ export function RulesPage() {
 
       <div className={`flex flex-col gap-3 transition-opacity duration-200 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
         {rules.map((rule) => (
-          <RuleItem key={rule.id} rule={rule} />
+          <RuleItem key={rule.id} rule={rule} onDelete={setDeletingRuleId} />
         ))}
       </div>
 
@@ -81,6 +92,16 @@ export function RulesPage() {
           />
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={deletingRuleId !== null}
+        onClose={() => setDeletingRuleId(null)}
+        onConfirm={handleDeleteConfirm}
+        isLoading={isLoading}
+        title="Delete Rule"
+        message="Are you sure you want to delete this rule? This action cannot be undone."
+        confirmLabel="Delete"
+      />
     </div>
   );
 }

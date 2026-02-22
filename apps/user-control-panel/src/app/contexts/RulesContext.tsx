@@ -118,7 +118,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     try {
       const response = await fetch(`http://localhost:3001/api/v1/rules/${id}`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

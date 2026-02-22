@@ -1,8 +1,14 @@
+import React from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { Rule } from "../contexts/RulesContext";
 import { useNavigate } from "react-router-dom";
 
-export function RuleItem({ rule }: { rule: Rule }) {
+interface RuleItemProps {
+  rule: Rule;
+  onDelete: (id: string) => void;
+}
+
+export function RuleItem({ rule, onDelete }: RuleItemProps) {
   const navigate = useNavigate();
 
   const handleRowClick = () => {
@@ -30,6 +36,9 @@ export function RuleItem({ rule }: { rule: Rule }) {
             type="button"
             className="h-8 w-8 flex items-center justify-center rounded-md border border-border hover:bg-accent-hover/40 text-accent transition"
             title="Edit rule"
+            onClick={(e) => {
+              navigate(`/rules/${rule.id}/update`);
+            }}
           >
             <Pencil className="w-4 h-4" />
           </button>
@@ -38,6 +47,9 @@ export function RuleItem({ rule }: { rule: Rule }) {
             type="button"
             className="h-8 w-8 flex items-center justify-center rounded-md border border-border hover:bg-error/10 text-error transition"
             title="Delete rule"
+            onClick={() => {
+              onDelete(rule.id);
+            }}
           >
             <Trash2 className="w-4 h-4" />
           </button>

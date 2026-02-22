@@ -25,11 +25,7 @@ export function Pagination({ current, total, pageSize, onChange }: PaginationPro
         pages.push(i);
       }
 
-      else if (i === left - 1) {
-        pages.push("...");
-      }
-
-      else if (i === right + 1) {
+      else if(i === left - 1 || i === right + 1){
         pages.push("...");
       }
 
