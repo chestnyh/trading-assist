@@ -1,0 +1,1 @@
+export const SERVICE_COMM_OPTIONS = Symbol('SERVICE_COMM_OPTIONS');

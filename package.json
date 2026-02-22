@@ -85,6 +85,8 @@
     "@tanstack/react-table": "^8.21.3",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/user-event": "^14.6.1",
+    "amqp-connection-manager": "^5.0.0",
+    "amqplib": "^0.10.9",
     "apexcharts": "3.50.0",
     "axios": "^1.8.4",
     "bcrypt": "^6.0.0",
