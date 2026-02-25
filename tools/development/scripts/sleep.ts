@@ -1,24 +1,11 @@
-function parseDurationSeconds(arg: string | undefined): number {
-  if (!arg) return 0;
-  const value = Number(arg);
-  if (!Number.isFinite(value) || value < 0) return NaN;
-  return value;
-}
+const args = process.argv.slice(2).filter((arg) => arg !== '--');
+const seconds = Number(args[0]);
 
-async function main() {
-  const seconds = parseDurationSeconds(process.argv[2]);
-
-  if (!Number.isFinite(seconds)) {
-    process.stderr.write('error: invalid duration. Usage: sleep <seconds>\n');
-    process.exit(1);
-  }
-
-  await new Promise<void>((resolve) => {
-    setTimeout(resolve, seconds * 1000);
-  });
-}
-
-main().catch((error) => {
-  process.stderr.write(`error: ${String(error)}\n`);
+if (!args[0] || !Number.isFinite(seconds) || seconds < 0) {
+  process.stderr.write('error: invalid duration. Usage: sleep <seconds>\n');
   process.exit(1);
-});
+}
+
+setTimeout(() => {
+  process.exit(0);
+}, seconds * 1000);
