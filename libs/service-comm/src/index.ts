@@ -1,7 +1,10 @@
+export * from './lib/transport/types';
+export * from './lib/transport/transport';
+export * from './lib/transport/client';
+
 export * from './lib/rmq/types';
 export * from './lib/rmq/connection';
-export * from './lib/rmq/publisher';
-export * from './lib/rmq/consumer';
+export * from './lib/rmq/rmq-transport';
 
 export * from './lib/nest/service-comm.constants';
 export * from './lib/nest/service-comm.module';

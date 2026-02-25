@@ -1,6 +1,6 @@
 # service-comm
 
-Reusable service-to-service communication library built on RabbitMQ.
+Reusable service-to-service communication library with a transport-agnostic API.
 
 Design goals:
 - Provide a small, reusable API for publishing and consuming events.
@@ -31,9 +31,8 @@ Key elements we use:
 
 ### Core (framework-agnostic)
 
-- `createRmqConnection(options)`
-- `createPublisher(connection, topology)`
-- `createConsumer(connection, topology, subscribeOptions, handler)`
+- `ServiceCommTransport` + `ServiceCommClient`
+- RMQ adapter: `createRmqTransport(...)` / `RmqTransport`
 
 Message format is `MessageEnvelope<T>` (JSON):
 - `type`: event name
@@ -49,25 +48,28 @@ Message format is `MessageEnvelope<T>` (JSON):
 
 ## Examples
 
-### Publish (core)
+### Publish (core, transport-agnostic)
 
 ```ts
 import {
-  createRmqConnection,
-  createPublisher,
+  ServiceCommClient,
+  createRmqTransport,
   type MessageEnvelope,
 } from '@trading-bot/service-comm';
 
-const connection = createRmqConnection({
-  host: 'localhost',
-  port: 5672,
-  username: 'guest',
-  password: 'guest',
+const transport = createRmqTransport({
+  connection: {
+    host: 'localhost',
+    port: 5672,
+    username: 'guest',
+    password: 'guest',
+  },
+  topology: {
+    exchange: 'service_comm.topic',
+  },
 });
 
-const publisher = await createPublisher(connection, {
-  exchange: 'service_comm.topic',
-});
+const client = new ServiceCommClient(transport);
 
 const envelope: MessageEnvelope<{ ruleId: string }> = {
   type: 'api.rule.created',
@@ -76,30 +78,35 @@ const envelope: MessageEnvelope<{ ruleId: string }> = {
   payload: { ruleId: '123' },
 };
 
-await publisher.publish(envelope, { routingKey: envelope.type });
+await client.publish(envelope, { topic: envelope.type });
 ```
 
-### Consume (core)
+### Consume (core, transport-agnostic)
 
 ```ts
 import {
-  createRmqConnection,
-  createConsumer,
+  ServiceCommClient,
+  createRmqTransport,
 } from '@trading-bot/service-comm';
 
-const connection = createRmqConnection({
-  host: 'localhost',
-  port: 5672,
-  username: 'guest',
-  password: 'guest',
+const transport = createRmqTransport({
+  connection: {
+    host: 'localhost',
+    port: 5672,
+    username: 'guest',
+    password: 'guest',
+  },
+  topology: {
+    exchange: 'service_comm.topic',
+  },
 });
 
-await createConsumer(
-  connection,
-  { exchange: 'service_comm.topic' },
+const client = new ServiceCommClient(transport);
+
+await client.subscribe(
   {
-    queue: 'auto-trader.api.rule.created',
-    bindingKeys: ['api.rule.created'],
+    consumerGroup: 'auto-trader.api.rule.created',
+    topics: ['api.rule.created'],
     prefetch: 10,
   },
   async (envelope) => {
@@ -121,15 +128,17 @@ import { ServiceCommModule } from '@trading-bot/service-comm';
     ServiceCommModule.forRootAsync({
       inject: [ServicesConfigs],
       useFactory: (cfg: ServicesConfigs) => ({
-        connection: {
-          host: cfg.get('RMQ_HOST'),
-          port: Number(cfg.get('RMQ_PORT')),
-          username: cfg.get('RMQ_USER'),
-          password: cfg.get('RMQ_PASSWORD'),
-        },
-        topology: {
-          exchange: 'service_comm.topic',
-        },
+        rmq: {
+          connection: {
+            host: cfg.get('RMQ_HOST'),
+            port: Number(cfg.get('RMQ_PORT')),
+            username: cfg.get('RMQ_USER'),
+            password: cfg.get('RMQ_PASSWORD'),
+          },
+          topology: {
+            exchange: 'service_comm.topic',
+          },
+        }
       }),
     }),
   ],
@@ -139,8 +148,8 @@ export class AppModule {}
 
 ## Building
 
-Run `nx build service-comm` to build the library.
+Run `pnpm nx build service-comm` to build the library.
 
 ## Running unit tests
 
-Run `nx test service-comm` to execute the unit tests via [Jest](https://jestjs.io).
+Run `pnpm nx test service-comm` to execute the unit tests via [Jest](https://jestjs.io).

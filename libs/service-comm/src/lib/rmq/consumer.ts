@@ -1,10 +1,7 @@
 import type { AmqpConnectionManager, ChannelWrapper } from 'amqp-connection-manager';
-import type {
-  JsonValue,
-  MessageEnvelope,
-  RmqTopologyOptions,
-  SubscribeOptions,
-} from './types';
+import type { ConfirmChannel, ConsumeMessage } from 'amqplib';
+import type { RmqConsumeOptions, RmqTopologyOptions } from './types';
+import type { JsonValue, MessageEnvelope } from '../transport/types';
 
 export type EnvelopeHandler<TPayload extends JsonValue = JsonValue> = (
   envelope: MessageEnvelope<TPayload>
@@ -17,13 +14,13 @@ export interface RmqConsumer {
 export async function createConsumer(
   connection: AmqpConnectionManager,
   topology: RmqTopologyOptions,
-  options: SubscribeOptions,
+  options: RmqConsumeOptions,
   handler: EnvelopeHandler
 ): Promise<RmqConsumer> {
   const exchangeType = topology.exchangeType ?? 'topic';
 
   const channel: ChannelWrapper = connection.createChannel({
-    setup: async (ch) => {
+    setup: async (ch: ConfirmChannel) => {
       await ch.assertExchange(topology.exchange, exchangeType, { durable: true });
 
       await ch.assertQueue(options.queue, {
@@ -38,7 +35,7 @@ export async function createConsumer(
         await ch.prefetch(options.prefetch);
       }
 
-      await ch.consume(options.queue, async (msg) => {
+      await ch.consume(options.queue, async (msg: ConsumeMessage | null) => {
         if (!msg) {
           return;
         }

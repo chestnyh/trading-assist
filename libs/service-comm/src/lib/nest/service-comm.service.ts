@@ -1,68 +1,56 @@
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
-import type { AmqpConnectionManager } from 'amqp-connection-manager';
 import { SERVICE_COMM_OPTIONS } from './service-comm.constants';
+import type { ServiceCommModuleOptions } from './service-comm.module';
+import { ServiceCommClient } from '../transport/client';
 import type {
+  EnvelopeHandler,
   JsonValue,
   MessageEnvelope,
-  PublishOptions,
-  SubscribeOptions,
-} from '../rmq/types';
-import type { ServiceCommModuleOptions } from './service-comm.module';
-import { createRmqConnection } from '../rmq/connection';
-import { createPublisher, type RmqPublisher } from '../rmq/publisher';
-import { createConsumer, type EnvelopeHandler, type RmqConsumer } from '../rmq/consumer';
+  PublishCommand,
+  SubscribeCommand,
+} from '../transport/types';
+import type { SubscriptionHandle } from '../transport/transport';
+import { createRmqTransport, type RmqTransport } from '../rmq/rmq-transport';
 
 @Injectable()
 export class ServiceCommService implements OnModuleDestroy {
-  private connection: AmqpConnectionManager;
-  private publisherPromise: Promise<RmqPublisher> | null = null;
-  private consumers: RmqConsumer[] = [];
+  private client: ServiceCommClient;
+  private transport: RmqTransport | null = null;
+  private subscriptions: SubscriptionHandle[] = [];
 
   constructor(
     @Inject(SERVICE_COMM_OPTIONS) private readonly options: ServiceCommModuleOptions
   ) {
-    this.connection = createRmqConnection(options.connection);
-  }
-
-  private getPublisher(): Promise<RmqPublisher> {
-    if (!this.publisherPromise) {
-      this.publisherPromise = createPublisher(this.connection, this.options.topology);
+    if ('transport' in options) {
+      this.client = new ServiceCommClient(options.transport);
+      return;
     }
-    return this.publisherPromise;
+
+    this.transport = createRmqTransport(options.rmq);
+    this.client = new ServiceCommClient(this.transport);
   }
 
   async publish<TPayload extends JsonValue>(
     envelope: MessageEnvelope<TPayload>,
-    options: PublishOptions
+    command: PublishCommand
   ): Promise<void> {
-    const publisher = await this.getPublisher();
-    await publisher.publish(envelope, options);
+    await this.client.publish(envelope, command);
   }
 
   async subscribe<TPayload extends JsonValue>(
-    options: SubscribeOptions,
+    command: SubscribeCommand,
     handler: EnvelopeHandler<TPayload>
-  ): Promise<void> {
-    const consumer = await createConsumer(
-      this.connection,
-      this.options.topology,
-      options,
-      handler as EnvelopeHandler
-    );
-
-    this.consumers.push(consumer);
+  ): Promise<SubscriptionHandle> {
+    const subscription = await this.client.subscribe(command, handler);
+    this.subscriptions.push(subscription);
+    return subscription;
   }
 
   async onModuleDestroy(): Promise<void> {
-    for (const consumer of this.consumers) {
-      await consumer.close();
+    for (const sub of this.subscriptions) {
+      await sub.close();
     }
 
-    if (this.publisherPromise) {
-      const publisher = await this.publisherPromise;
-      await publisher.close();
-    }
-
-    await this.connection.close();
+    await this.client.close();
   }
 }
