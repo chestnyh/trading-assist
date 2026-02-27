@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ServicesConfigsModule, ServicesConfigs } from '@trading-bot/configs';
 import { ModelsModule } from '@trading-bot/models';
+import { ServiceCommModule } from '@trading-bot/service-comm';
 
 import { UsersApiModule } from "./users/users.api.module";
 import { AuthModule } from "./auth/auth.module";
@@ -12,6 +13,22 @@ import { ExternalServicesModule } from './external-services/external-services.mo
 @Module({
   imports: [
     ServicesConfigsModule,
+    ServiceCommModule.forRootAsync({
+      inject: [ServicesConfigs],
+      useFactory: (cfg: ServicesConfigs) => ({
+        rmq: {
+          connection: {
+            host: cfg.get('RMQ_HOST'),
+            port: Number(cfg.get('RMQ_PORT')),
+            username: cfg.get('RMQ_USER'),
+            password: cfg.get('RMQ_PASSWORD'),
+          },
+          topology: {
+            exchange: 'service_comm.topic',
+          },
+        },
+      }),
+    }),
     // Global module
     ModelsModule.forRootAsync({
       useFactory: async (configService: ServicesConfigs) => ({

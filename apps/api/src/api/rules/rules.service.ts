@@ -1,12 +1,34 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { ModelsService } from '@trading-bot/models';
+import type { JsonValue, MessageEnvelope } from '@trading-bot/service-comm';
+import { ServiceCommService } from '@trading-bot/service-comm';
 import { CreateRuleDto } from './dto/create-rule.dto';
 import { UpdateRuleDto } from './dto/update-rule.dto';
 import { RuleResponseDto } from './dto/rule-response.dto';
 
 @Injectable()
 export class RulesService {
-  constructor(private modelsService: ModelsService) {}
+  private readonly logger = new Logger(RulesService.name);
+
+  constructor(
+    private modelsService: ModelsService,
+    private readonly serviceComm: ServiceCommService
+  ) {}
+
+  private async publishRuleEvent(topic: string, payload: JsonValue): Promise<void> {
+    const envelope: MessageEnvelope = {
+      type: topic,
+      producer: 'api',
+      timestamp: new Date().toISOString(),
+      payload,
+    };
+
+    try {
+      await this.serviceComm.publish(envelope, { topic });
+    } catch (err) {
+      this.logger.error(`Failed to publish rule event: ${topic}`, err as any);
+    }
+  }
 
   /**
    * Create a new rule for a user
@@ -27,6 +49,8 @@ export class RulesService {
         authorId: true,
       }
     });
+
+    await this.publishRuleEvent('api.rule.created', rule as unknown as JsonValue);
 
     return rule;
   }
@@ -106,6 +130,8 @@ export class RulesService {
       }
     });
 
+    await this.publishRuleEvent('api.rule.updated', updatedRule as unknown as JsonValue);
+
     return updatedRule;
   }
 
@@ -127,6 +153,11 @@ export class RulesService {
 
     await this.modelsService.userRules.delete({
       where: { id: ruleId }
+    });
+
+    await this.publishRuleEvent('api.rule.deleted', {
+      id: ruleId,
+      authorId: userId,
     });
   }
 
