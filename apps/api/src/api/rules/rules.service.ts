@@ -1,58 +1,46 @@
-import { Injectable, Logger, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ModelsService } from '@trading-bot/models';
-import type { JsonValue, MessageEnvelope } from '@trading-bot/service-comm';
-import { ServiceCommService } from '@trading-bot/service-comm';
 import { CreateRuleDto } from './dto/create-rule.dto';
 import { UpdateRuleDto } from './dto/update-rule.dto';
 import { RuleResponseDto } from './dto/rule-response.dto';
 
 @Injectable()
 export class RulesService {
-  private readonly logger = new Logger(RulesService.name);
-
-  constructor(
-    private modelsService: ModelsService,
-    private readonly serviceComm: ServiceCommService
-  ) {}
-
-  private async publishRuleEvent(topic: string, payload: JsonValue): Promise<void> {
-    const envelope: MessageEnvelope = {
-      type: topic,
-      producer: 'api',
-      timestamp: new Date().toISOString(),
-      payload,
-    };
-
-    try {
-      await this.serviceComm.publish(envelope, { topic });
-    } catch (err) {
-      this.logger.error(`Failed to publish rule event: ${topic}`, err as any);
-    }
-  }
+  constructor(private modelsService: ModelsService) {}
 
   /**
    * Create a new rule for a user
    */
   async create(userId: number, createRuleDto: CreateRuleDto): Promise<RuleResponseDto> {
-    const rule = await this.modelsService.userRules.create({
-      data: {
-        name: createRuleDto.name,
-        description: createRuleDto.description,
-        ruleBody: createRuleDto.ruleBody,
-        authorId: userId,
-      },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        ruleBody: true,
-        authorId: true,
-      }
+    const rule = await this.modelsService.$transaction(async (tx) => {
+      const createdRule = await tx.userRules.create({
+        data: {
+          name: createRuleDto.name,
+          description: createRuleDto.description,
+          ruleBody: createRuleDto.ruleBody,
+          authorId: userId,
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          ruleBody: true,
+          authorId: true,
+        },
+      });
+
+      await tx.outboxMessage.create({
+        data: {
+          topic: 'api.rule.created',
+          producer: 'api',
+          payload: createdRule as any,
+        },
+      });
+
+      return createdRule;
     });
 
-    await this.publishRuleEvent('api.rule.created', rule as unknown as JsonValue);
-
-    return rule;
+    return rule as RuleResponseDto;
   }
 
   /**
@@ -114,25 +102,35 @@ export class RulesService {
       throw new NotFoundException('Rule not found');
     }
 
-    const updatedRule = await this.modelsService.userRules.update({
-      where: { id: ruleId },
-      data: {
-        ...(updateRuleDto.name && { name: updateRuleDto.name }),
-        ...(updateRuleDto.description && { description: updateRuleDto.description }),
-        ...(updateRuleDto.ruleBody && { ruleBody: updateRuleDto.ruleBody }),
-      },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        ruleBody: true,
-        authorId: true
-      }
+    const updatedRule = await this.modelsService.$transaction(async (tx) => {
+      const rule = await tx.userRules.update({
+        where: { id: ruleId },
+        data: {
+          ...(updateRuleDto.name && { name: updateRuleDto.name }),
+          ...(updateRuleDto.description && { description: updateRuleDto.description }),
+          ...(updateRuleDto.ruleBody && { ruleBody: updateRuleDto.ruleBody }),
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          ruleBody: true,
+          authorId: true,
+        },
+      });
+
+      await tx.outboxMessage.create({
+        data: {
+          topic: 'api.rule.updated',
+          producer: 'api',
+          payload: rule as any,
+        },
+      });
+
+      return rule;
     });
 
-    await this.publishRuleEvent('api.rule.updated', updatedRule as unknown as JsonValue);
-
-    return updatedRule;
+    return updatedRule as RuleResponseDto;
   }
 
   /**
@@ -151,14 +149,18 @@ export class RulesService {
       throw new NotFoundException('Rule not found');
     }
 
-    await this.modelsService.userRules.delete({
-      where: { id: ruleId }
-    });
-
-    await this.publishRuleEvent('api.rule.deleted', {
-      id: ruleId,
-      authorId: userId,
-    });
+    await this.modelsService.$transaction([
+      this.modelsService.userRules.delete({
+        where: { id: ruleId },
+      }),
+      this.modelsService.outboxMessage.create({
+        data: {
+          topic: 'api.rule.deleted',
+          producer: 'api',
+          payload: { id: ruleId } as any,
+        },
+      }),
+    ]);
   }
 
   /**
