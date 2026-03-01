@@ -17,6 +17,7 @@ export function RulesPage() {
   const currentPage = Number(searchParams.get("page")) || 1;
   const LIMIT = 20;
   const [deletingRuleId, setDeletingRuleId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchRules(currentPage);
@@ -28,11 +29,20 @@ export function RulesPage() {
   };
 
   const handleDeleteConfirm = async () => {
-    if (deletingRuleId) {
+    if (!deletingRuleId) return;
+
+    try {
+      setDeleteError(null);
       const success = await deleteRule(deletingRuleId);
+
       if (success) {
         setDeletingRuleId(null);
       }
+    } catch (e: any) {
+      const errorMessage = e.message || "Failed to connect to the server.";
+      setDeleteError(errorMessage);
+
+      setDeletingRuleId(null);
     }
   };
 
@@ -76,9 +86,22 @@ export function RulesPage() {
         />
       </div>
 
+      {deleteError && (
+        <div className="pb-6">
+          <ErrorAlert message={deleteError} />
+        </div>
+      )}
+
       <div className={`flex flex-col gap-3 transition-opacity duration-200 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
         {rules.map((rule) => (
-          <RuleItem key={rule.id} rule={rule} onDelete={setDeletingRuleId} />
+          <RuleItem
+            key={rule.id}
+            rule={rule}
+            onDelete={() => {
+              setDeleteError(null);
+              setDeletingRuleId(rule.id);
+            }}
+          />
         ))}
       </div>
 
@@ -95,7 +118,12 @@ export function RulesPage() {
 
       <ConfirmationModal
         isOpen={deletingRuleId !== null}
-        onClose={() => setDeletingRuleId(null)}
+        onClose={() => {
+          if (!isLoading) {
+            setDeletingRuleId(null);
+            setDeleteError(null);
+          }
+        }}
         onConfirm={handleDeleteConfirm}
         isLoading={isLoading}
         title="Delete Rule"

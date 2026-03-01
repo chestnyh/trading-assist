@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useAuth } from "./AuthContext";
+import { customInstance } from "@trading-bot/api-client";
 
 export type Rule = {
   id: string;
@@ -117,21 +118,16 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/v1/rules/${id}`, {
+      await customInstance(`http://localhost:3001/api/v1/rules/${id}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify(updatedRule),
       });
-      if (response.ok) {
-        await fetchRules(currentPage);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      return false;
+
+      await fetchRules(currentPage);
+      return true;
+
+    } catch (error: any) {
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -144,19 +140,13 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/v1/rules/${id}`, {
+      await customInstance(`http://localhost:3001/api/v1/rules/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
-      if (response.ok) {
-        await fetchRules(currentPage);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      return false;
+      await fetchRules(currentPage);
+      return true;
+    } catch (error: any) {
+      throw error;
     } finally {
       setIsLoading(false);
     }
