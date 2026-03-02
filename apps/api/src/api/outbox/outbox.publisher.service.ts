@@ -4,10 +4,31 @@ import { getEnvelopeCreator, ServiceCommService } from '@trading-bot/service-com
 
 const DEFAULT_POLL_INTERVAL_MS = 2000;
 const DEFAULT_BATCH_SIZE = 50;
+const DEFAULT_CONCURRENCY = 10;
 
 function computeBackoffSeconds(attempts: number): number {
   const base = Math.pow(2, Math.max(0, attempts));
   return Math.min(60, base);
+}
+
+async function mapWithConcurrency<TItem>(
+  items: TItem[],
+  concurrency: number,
+  handler: (item: TItem) => Promise<void>
+): Promise<void> {
+  const limit = Math.max(1, Math.floor(concurrency));
+  let index = 0;
+
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (true) {
+      const current = index;
+      index += 1;
+      if (current >= items.length) return;
+      await handler(items[current]);
+    }
+  });
+
+  await Promise.all(workers);
 }
 
 @Injectable()
@@ -49,14 +70,13 @@ export class OutboxPublisherService implements OnModuleInit, OnModuleDestroy {
         take: DEFAULT_BATCH_SIZE,
       });
 
-      for (const msg of messages) {
+      await mapWithConcurrency(messages, DEFAULT_CONCURRENCY, async (msg) => {
         const envelopeCreator = getEnvelopeCreator(msg.producer);
 
         try {
-          await this.comm.publish(
-            envelopeCreator(msg.topic, msg.payload as any),
-            { topic: msg.topic }
-          );
+          await this.comm.publish(envelopeCreator(msg.topic, msg.payload as any), {
+            topic: msg.topic,
+          });
 
           await this.models.outboxMessage.update({
             where: { id: msg.id },
@@ -80,7 +100,7 @@ export class OutboxPublisherService implements OnModuleInit, OnModuleDestroy {
             },
           });
         }
-      }
+      });
     } finally {
       this.isRunning = false;
     }
