@@ -2,39 +2,22 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ModelsService } from '@trading-bot/models';
 import { getEnvelopeCreator, ServiceCommService } from '@trading-bot/service-comm';
 
-const DEFAULT_POLL_INTERVAL_MS = 2000;
 const DEFAULT_BATCH_SIZE = 50;
-const DEFAULT_CONCURRENCY = 10;
+const DEFAULT_IDLE_SLEEP_MS = 2000;
 
 function computeBackoffSeconds(attempts: number): number {
   const base = Math.pow(2, Math.max(0, attempts));
   return Math.min(60, base);
 }
 
-async function mapWithConcurrency<TItem>(
-  items: TItem[],
-  concurrency: number,
-  handler: (item: TItem) => Promise<void>
-): Promise<void> {
-  const limit = Math.max(1, Math.floor(concurrency));
-  let index = 0;
-
-  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
-    while (true) {
-      const current = index;
-      index += 1;
-      if (current >= items.length) return;
-      await handler(items[current]);
-    }
-  });
-
-  await Promise.all(workers);
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 @Injectable()
 export class OutboxPublisherService implements OnModuleInit, OnModuleDestroy {
-  private timer: NodeJS.Timeout | null = null;
   private isRunning = false;
+  private isStopping = false;
 
   constructor(
     private readonly models: ModelsService,
@@ -42,65 +25,70 @@ export class OutboxPublisherService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   onModuleInit(): void {
-    this.timer = setInterval(() => {
-      void this.tick();
-    }, DEFAULT_POLL_INTERVAL_MS);
+    this.isStopping = false;
+    void this.runLoop();
   }
 
   async onModuleDestroy(): Promise<void> {
-    if (this.timer) {
-      clearInterval(this.timer);
-      this.timer = null;
-    }
+    this.isStopping = true;
   }
 
-  private async tick(): Promise<void> {
+  private async runLoop(): Promise<void> {
     if (this.isRunning) return;
     this.isRunning = true;
 
     try {
-      const now = new Date();
+      while (!this.isStopping) {
+        const now = new Date();
 
-      const messages = await this.models.outboxMessage.findMany({
-        where: {
-          publishedAt: null,
-          OR: [{ nextAttemptAt: null }, { nextAttemptAt: { lte: now } }],
-        },
-        orderBy: { createdAt: 'asc' },
-        take: DEFAULT_BATCH_SIZE,
-      });
+        const messages = await this.models.outboxMessage.findMany({
+          where: {
+            publishedAt: null,
+            OR: [{ nextAttemptAt: null }, { nextAttemptAt: { lte: now } }],
+          },
+          orderBy: { createdAt: 'asc' },
+          take: DEFAULT_BATCH_SIZE,
+        });
 
-      await mapWithConcurrency(messages, DEFAULT_CONCURRENCY, async (msg) => {
-        const envelopeCreator = getEnvelopeCreator(msg.producer);
-
-        try {
-          await this.comm.publish(envelopeCreator(msg.topic, msg.payload as any), {
-            topic: msg.topic,
-          });
-
-          await this.models.outboxMessage.update({
-            where: { id: msg.id },
-            data: {
-              publishedAt: new Date(),
-              lastError: null,
-              nextAttemptAt: null,
-            },
-          });
-        } catch (err) {
-          const attempts = msg.attempts + 1;
-          const backoffSeconds = computeBackoffSeconds(attempts);
-          const nextAttemptAt = new Date(Date.now() + backoffSeconds * 1000);
-
-          await this.models.outboxMessage.update({
-            where: { id: msg.id },
-            data: {
-              attempts,
-              nextAttemptAt,
-              lastError: err instanceof Error ? err.message : String(err),
-            },
-          });
+        if (messages.length === 0) {
+          await sleep(DEFAULT_IDLE_SLEEP_MS);
+          continue;
         }
-      });
+
+        await Promise.allSettled(
+          messages.map(async (msg) => {
+            const envelopeCreator = getEnvelopeCreator(msg.producer);
+
+            try {
+              await this.comm.publish(envelopeCreator(msg.topic, msg.payload as any), {
+                topic: msg.topic,
+              });
+
+              await this.models.outboxMessage.update({
+                where: { id: msg.id },
+                data: {
+                  publishedAt: new Date(),
+                  lastError: null,
+                  nextAttemptAt: null,
+                },
+              });
+            } catch (err) {
+              const attempts = msg.attempts + 1;
+              const backoffSeconds = computeBackoffSeconds(attempts);
+              const nextAttemptAt = new Date(Date.now() + backoffSeconds * 1000);
+
+              await this.models.outboxMessage.update({
+                where: { id: msg.id },
+                data: {
+                  attempts,
+                  nextAttemptAt,
+                  lastError: err instanceof Error ? err.message : String(err),
+                },
+              });
+            }
+          })
+        );
+      }
     } finally {
       this.isRunning = false;
     }
