@@ -63,6 +63,7 @@
     "development:check-env-file": "nx run development:check-env-file",
     "development:create-volume-folder": "nx run development:create-volume-folder",
     "development:external-up": "nx run development:external-up",
+    "development:sleep": "nx run development:sleep",
     "prepare": "husky"
   },
   "author": "",

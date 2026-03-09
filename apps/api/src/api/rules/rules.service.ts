@@ -7,6 +7,7 @@ import { RuleResponseDto } from './dto/rule-response.dto';
 @Injectable()
 export class RulesService {
   constructor(private modelsService: ModelsService) {}
+  private readonly MAX_LIMIT = 100;
 
   /**
    * Create a new rule for a user
@@ -46,19 +47,33 @@ export class RulesService {
   /**
    * Get all rules for a user
    */
-  async findAllByUser(userId: number): Promise<RuleResponseDto[]> {
-    const rules = await this.modelsService.userRules.findMany({
-      where: { authorId: userId },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        ruleBody: true,
-        authorId: true,
-      },
-    });
+  async findAllByUser(userId: number, page: number = 1, limit: number = 20): Promise<{ rules: RuleResponseDto[], total: number }> {
+    const safeLimit = Math.min(Math.max(1, Math.floor(limit)), this.MAX_LIMIT);
 
-    return rules;
+    const safePage = Math.max(1, Math.floor(page));
+
+    const skip = (safePage - 1) * safeLimit;
+
+    const [rules, total] = await Promise.all([
+      this.modelsService.userRules.findMany({
+        where: { authorId: userId },
+        skip: skip,
+        take: safeLimit,
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          ruleBody: true,
+          authorId: true,
+        },
+        orderBy: { id: 'desc' },
+      }),
+      this.modelsService.userRules.count({
+        where: { authorId: userId },
+        }),
+      ]);
+
+    return { rules, total };
   }
 
   /**
@@ -66,9 +81,9 @@ export class RulesService {
    */
   async findOne(ruleId: number, userId: number): Promise<RuleResponseDto> {
     const rule = await this.modelsService.userRules.findFirst({
-      where: { 
+      where: {
         id: ruleId,
-        authorId: userId 
+        authorId: userId
       },
       select: {
         id: true,
@@ -92,9 +107,9 @@ export class RulesService {
   async update(ruleId: number, userId: number, updateRuleDto: UpdateRuleDto): Promise<RuleResponseDto> {
     // First check if the rule exists and belongs to the user
     const existingRule = await this.modelsService.userRules.findFirst({
-      where: { 
+      where: {
         id: ruleId,
-        authorId: userId 
+        authorId: userId
       }
     });
 
@@ -139,9 +154,9 @@ export class RulesService {
   async remove(ruleId: number, userId: number): Promise<void> {
     // First check if the rule exists and belongs to the user
     const existingRule = await this.modelsService.userRules.findFirst({
-      where: { 
+      where: {
         id: ruleId,
-        authorId: userId 
+        authorId: userId
       }
     });
 
