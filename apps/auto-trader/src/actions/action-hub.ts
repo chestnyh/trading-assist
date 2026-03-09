@@ -50,5 +50,17 @@ export class ActionsHub {
 
     }
 
+    dispose(): void {
+        const self = this as any;
+        const disposers: Array<() => void> = self.__disposers ?? [];
+        for (const d of disposers) {
+            try {
+                d();
+            } catch {
+            }
+        }
+        self.__disposers = [];
+    }
+
     
 }
