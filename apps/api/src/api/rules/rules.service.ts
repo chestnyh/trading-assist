@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ModelsService } from '@trading-bot/models';
 import { CreateRuleDto } from './dto/create-rule.dto';
 import { UpdateRuleDto } from './dto/update-rule.dto';
@@ -13,23 +13,35 @@ export class RulesService {
    * Create a new rule for a user
    */
   async create(userId: number, createRuleDto: CreateRuleDto): Promise<RuleResponseDto> {
-    const rule = await this.modelsService.userRules.create({
-      data: {
-        name: createRuleDto.name,
-        description: createRuleDto.description,
-        ruleBody: createRuleDto.ruleBody,
-        authorId: userId,
-      },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        ruleBody: true,
-        authorId: true,
-      }
+    const rule = await this.modelsService.$transaction(async (tx) => {
+      const createdRule = await tx.userRules.create({
+        data: {
+          name: createRuleDto.name,
+          description: createRuleDto.description,
+          ruleBody: createRuleDto.ruleBody,
+          authorId: userId,
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          ruleBody: true,
+          authorId: true,
+        },
+      });
+
+      await tx.outboxMessage.create({
+        data: {
+          topic: 'api.rule.created',
+          producer: 'api',
+          payload: createdRule as any,
+        },
+      });
+
+      return createdRule;
     });
 
-    return rule;
+    return rule as RuleResponseDto;
   }
 
   /**
@@ -105,23 +117,35 @@ export class RulesService {
       throw new NotFoundException('Rule not found');
     }
 
-    const updatedRule = await this.modelsService.userRules.update({
-      where: { id: ruleId },
-      data: {
-        ...(updateRuleDto.name && { name: updateRuleDto.name }),
-        ...(updateRuleDto.description && { description: updateRuleDto.description }),
-        ...(updateRuleDto.ruleBody && { ruleBody: updateRuleDto.ruleBody }),
-      },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        ruleBody: true,
-        authorId: true
-      }
+    const updatedRule = await this.modelsService.$transaction(async (tx) => {
+      const rule = await tx.userRules.update({
+        where: { id: ruleId },
+        data: {
+          ...(updateRuleDto.name && { name: updateRuleDto.name }),
+          ...(updateRuleDto.description && { description: updateRuleDto.description }),
+          ...(updateRuleDto.ruleBody && { ruleBody: updateRuleDto.ruleBody }),
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          ruleBody: true,
+          authorId: true,
+        },
+      });
+
+      await tx.outboxMessage.create({
+        data: {
+          topic: 'api.rule.updated',
+          producer: 'api',
+          payload: rule as any,
+        },
+      });
+
+      return rule;
     });
 
-    return updatedRule;
+    return updatedRule as RuleResponseDto;
   }
 
   /**
@@ -140,9 +164,18 @@ export class RulesService {
       throw new NotFoundException('Rule not found');
     }
 
-    await this.modelsService.userRules.delete({
-      where: { id: ruleId }
-    });
+    await this.modelsService.$transaction([
+      this.modelsService.userRules.delete({
+        where: { id: ruleId },
+      }),
+      this.modelsService.outboxMessage.create({
+        data: {
+          topic: 'api.rule.deleted',
+          producer: 'api',
+          payload: { id: ruleId } as any,
+        },
+      }),
+    ]);
   }
 
   /**
