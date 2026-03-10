@@ -2,6 +2,7 @@ export * from './lib/transport/types';
 export * from './lib/transport/transport';
 export * from './lib/transport/client';
 export * from './lib/transport/envelope-creator';
+export * from './lib/transport/envelope-parser';
 
 export * from './lib/rmq/types';
 export * from './lib/rmq/connection';

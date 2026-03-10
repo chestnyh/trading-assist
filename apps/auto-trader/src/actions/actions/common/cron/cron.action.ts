@@ -19,11 +19,7 @@ export default function cron(
         );
     });
 
-    const self = this as any;
-    if (!self.__disposers) {
-        self.__disposers = [];
-    }
-    self.__disposers.push(() => task.stop());
+    this.addDisposer(() => task.stop());
 
     return;
 }

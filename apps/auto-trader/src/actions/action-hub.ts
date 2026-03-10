@@ -11,6 +11,7 @@ import telegram from './actions/telegram';
 export class ActionsHub {
 
     private heap: ObjectNavigator;
+    private disposers: Array<() => void> = [];
     constructor(
         private ruleBody: any,
         private settings: any,
@@ -28,6 +29,10 @@ export class ActionsHub {
         Object.keys(telegram).forEach(key => {
             this[key] = telegram[key].method;
         });
+    }
+
+    addDisposer(disposer: () => void): void {
+        this.disposers.push(disposer);
     }
 
     run(){
@@ -51,15 +56,13 @@ export class ActionsHub {
     }
 
     dispose(): void {
-        const self = this as any;
-        const disposers: Array<() => void> = self.__disposers ?? [];
-        for (const d of disposers) {
+        for (const d of this.disposers) {
             try {
                 d();
             } catch {
             }
         }
-        self.__disposers = [];
+        this.disposers = [];
     }
 
     

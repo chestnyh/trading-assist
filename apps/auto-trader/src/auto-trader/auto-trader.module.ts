@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
-import { AutoTraderService } from './auto-trader.service';
+import { RuleRunnerService } from './rule-runner.service';
+import { RuleOrchestrationService } from './rule-orchestration.service';
 
 import { ModelsModule } from '@trading-bot/models';
 import { ServiceCommModule } from '@trading-bot/service-comm';
@@ -34,7 +35,8 @@ const config = new ServicesConfigs();
   ],
   controllers: [],
   providers: [
-    AutoTraderService,
+    RuleRunnerService,
+    RuleOrchestrationService,
   ],
 })
 export class AutoTraderModule {}
