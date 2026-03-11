@@ -27,3 +27,13 @@ export function parseEnvelope(raw: string): MessageEnvelope {
 
   return env as MessageEnvelope<JsonValue>;
 }
+
+export function unpackEnvelope<TPayload extends JsonValue>(envelope: MessageEnvelope<TPayload>): {
+  topic: string;
+  payload: TPayload;
+} {
+  return {
+    topic: envelope.type,
+    payload: envelope.payload,
+  };
+}
