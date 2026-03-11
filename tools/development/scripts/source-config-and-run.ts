@@ -5,7 +5,7 @@ const scriptConfigs = new ScriptConfigs();
 let fileEnv: Record<string, string>;
 
 try {
-  fileEnv = scriptConfigs.getEnvFromFile();
+  fileEnv = scriptConfigs.getAll();
 } catch (error) {
   console.error(`error: ${(error as Error).message}`);
   process.exit(1);
