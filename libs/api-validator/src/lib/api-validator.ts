@@ -26,7 +26,7 @@ export function getSchemaValidator(metatype: unknown): SchemaValidator | null {
 }
 
 @Injectable()
-export class ZodValidationPipe implements PipeTransform {
+export class SchemaValidationPipe implements PipeTransform {
   transform(value: unknown, metadata: ArgumentMetadata): unknown {
     const validator = getSchemaValidator(metadata.metatype);
     if (!validator) return value;

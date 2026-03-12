@@ -1,8 +1,3 @@
-/**
- * Zod schemas for API validation
- * These should match the OpenAPI spec
- */
-
 export {
   TradingExperienceLevelSchema,
   PrimaryTradingStrategySchema,
