@@ -24,6 +24,10 @@ export class ServicesConfigs extends Configs {
       JWT_SECRET: process.env['JWT_SECRET'] || 'your-secret-key',
       JWT_EXPIRES_IN: process.env['JWT_EXPIRES_IN'] || '24h',
       MAX_PASSWORD_RESET_ATTEMPTS: process.env['MAX_PASSWORD_RESET_ATTEMPTS'] || '5',
+
+      OUTBOX_CLEANUP_BATCH_SIZE: process.env['OUTBOX_CLEANUP_BATCH_SIZE'] || '500',
+      OUTBOX_CLEANUP_INTERVAL_MS: process.env['OUTBOX_CLEANUP_INTERVAL_MS'] || '60000',
+      OUTBOX_RETENTION_HOURS: process.env['OUTBOX_RETENTION_HOURS'] || '24',
     };
   }
 }

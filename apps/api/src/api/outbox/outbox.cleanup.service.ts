@@ -1,4 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { ServicesConfigs } from '@trading-bot/configs';
 import { ModelsService } from '@trading-bot/models';
 
 const DEFAULT_CLEANUP_BATCH_SIZE = 500;
@@ -14,7 +15,10 @@ export class OutboxCleanupService implements OnModuleInit, OnModuleDestroy {
   private isRunning = false;
   private isStopping = false;
 
-  constructor(private readonly models: ModelsService) {}
+  constructor(
+    private readonly models: ModelsService,
+    private readonly cfg: ServicesConfigs
+  ) {}
 
   onModuleInit(): void {
     this.isStopping = false;
@@ -26,17 +30,17 @@ export class OutboxCleanupService implements OnModuleInit, OnModuleDestroy {
   }
 
   private getCleanupBatchSize(): number {
-    const value = Number(process.env['OUTBOX_CLEANUP_BATCH_SIZE'] ?? DEFAULT_CLEANUP_BATCH_SIZE);
+    const value = Number(this.cfg.get('OUTBOX_CLEANUP_BATCH_SIZE') ?? DEFAULT_CLEANUP_BATCH_SIZE);
     return Number.isFinite(value) && value > 0 ? value : DEFAULT_CLEANUP_BATCH_SIZE;
   }
 
   private getCleanupIntervalMs(): number {
-    const value = Number(process.env['OUTBOX_CLEANUP_INTERVAL_MS'] ?? DEFAULT_CLEANUP_INTERVAL_MS);
+    const value = Number(this.cfg.get('OUTBOX_CLEANUP_INTERVAL_MS') ?? DEFAULT_CLEANUP_INTERVAL_MS);
     return Number.isFinite(value) && value > 0 ? value : DEFAULT_CLEANUP_INTERVAL_MS;
   }
 
   private getRetentionHours(): number {
-    const value = Number(process.env['OUTBOX_RETENTION_HOURS'] ?? DEFAULT_RETENTION_HOURS);
+    const value = Number(this.cfg.get('OUTBOX_RETENTION_HOURS') ?? DEFAULT_RETENTION_HOURS);
     return Number.isFinite(value) && value >= 0 ? value : DEFAULT_RETENTION_HOURS;
   }
 
@@ -51,10 +55,10 @@ export class OutboxCleanupService implements OnModuleInit, OnModuleDestroy {
 
     try {
       while (!this.isStopping) {
-        const batchSize = this.getCleanupBatchSize();
-        const publishedBefore = this.computePublishedBefore();
+        try {
+          const batchSize = this.getCleanupBatchSize();
+          const publishedBefore = this.computePublishedBefore();
 
-        while (!this.isStopping) {
           const rows = await this.models.outboxMessage.findMany({
             where: {
               publishedAt: {
@@ -67,19 +71,19 @@ export class OutboxCleanupService implements OnModuleInit, OnModuleDestroy {
             take: batchSize,
           });
 
-          if (rows.length === 0) {
-            break;
+          if (rows.length > 0) {
+            await this.models.outboxMessage.deleteMany({
+              where: {
+                id: { in: rows.map((r) => r.id) },
+              },
+            });
           }
 
-          await this.models.outboxMessage.deleteMany({
-            where: {
-              id: { in: rows.map((r) => r.id) },
-            },
-          });
-
-          if (rows.length < batchSize) {
-            break;
+          if (rows.length >= batchSize) {
+            continue;
           }
+        } catch {
+          // ignore and retry after sleep
         }
 
         await sleep(this.getCleanupIntervalMs());

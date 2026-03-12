@@ -2,8 +2,7 @@ import { Module } from '@nestjs/common';
 import { ServicesConfigsModule, ServicesConfigs } from '@trading-bot/configs';
 import { ModelsModule } from '@trading-bot/models';
 import { ServiceCommModule } from '@trading-bot/service-comm';
-import { OutboxPublisherService } from './outbox/outbox.publisher.service';
-import { OutboxCleanupService } from './outbox/outbox.cleanup.service';
+import { OutboxModule } from './outbox/outbox.module';
 
 import { UsersApiModule } from "./users/users.api.module";
 import { AuthModule } from "./auth/auth.module";
@@ -47,9 +46,10 @@ import { ExternalServicesModule } from './external-services/external-services.mo
     RulesModule,
     RulesSettingsModule,
     RulesSettingsTagsModule,
-    ExternalServicesModule
+    ExternalServicesModule,
+    OutboxModule,
   ],
   controllers: [],
-  providers: [OutboxPublisherService, OutboxCleanupService],
+  providers: [],
 })
 export class ApiModule {}
