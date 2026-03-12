@@ -1,11 +1,10 @@
 export default {
-  displayName: 'api-client',
+  displayName: 'api-validator',
   preset: '../../jest.preset.cjs',
   testEnvironment: 'node',
-  passWithNoTests: true,
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/libs/api-client',
+  coverageDirectory: '../../coverage/libs/api-validator',
 };

@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, MinLength, MaxLength, Matches, IsEmail, IsEnum, IsArray } from 'class-validator';
 import { TradingExperienceLevel, PrimaryTradingStrategy, RiskTolerance, TradingPlatform } from '@prisma/client';
+import { Validate, CreateUserDtoSchemaValidator } from '@trading-bot/api-validator';
 
 export { TradingExperienceLevel, PrimaryTradingStrategy, RiskTolerance, TradingPlatform };
 
+@Validate(CreateUserDtoSchemaValidator)
 export class CreateUserDto {
   @ApiProperty({
     description: 'Unique nickname for the user',

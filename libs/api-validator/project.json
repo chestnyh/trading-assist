@@ -1,0 +1,19 @@
+{
+  "name": "api-validator",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/api-validator/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/api-validator",
+        "main": "libs/api-validator/src/index.ts",
+        "tsConfig": "libs/api-validator/tsconfig.lib.json",
+        "assets": ["libs/api-validator/*.md"]
+      }
+    }
+  }
+}
