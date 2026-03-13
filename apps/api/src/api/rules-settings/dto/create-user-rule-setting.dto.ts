@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, MinLength, IsObject, IsInt, IsOptional } from 'class-validator';
+import { CreateUserRuleSettingDtoSchemaValidator, Validate } from '@trading-bot/api-validator';
 
+@Validate(CreateUserRuleSettingDtoSchemaValidator)
 export class CreateUserRuleSettingDto {
   @ApiProperty({ example: 'My Binance Bot' })
   @IsString()

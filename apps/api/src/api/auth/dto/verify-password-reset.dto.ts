@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Matches, Length, IsUUID } from 'class-validator';
+import { VerifyPasswordResetDtoSchemaValidator, Validate } from '@trading-bot/api-validator';
 
+@Validate(VerifyPasswordResetDtoSchemaValidator)
 export class VerifyPasswordResetDto {
   @ApiProperty({
     description: '6-digit verification code sent to user email',
