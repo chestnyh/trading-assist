@@ -30,4 +30,28 @@ export class ServicesConfigs extends Configs {
       OUTBOX_RETENTION_HOURS: process.env['OUTBOX_RETENTION_HOURS'] || '24',
     };
   }
+
+  private getFiniteNumber(configName: string, defaultValue: number): number {
+    const raw = this.get(configName);
+    const value = Number(raw);
+    return Number.isFinite(value) ? value : defaultValue;
+  }
+
+  getOutboxCleanupBatchSize(): number {
+    const defaultValue = 500;
+    const value = this.getFiniteNumber('OUTBOX_CLEANUP_BATCH_SIZE', defaultValue);
+    return value > 0 ? value : defaultValue;
+  }
+
+  getOutboxCleanupIntervalMs(): number {
+    const defaultValue = 60_000;
+    const value = this.getFiniteNumber('OUTBOX_CLEANUP_INTERVAL_MS', defaultValue);
+    return value > 0 ? value : defaultValue;
+  }
+
+  getOutboxRetentionHours(): number {
+    const defaultValue = 24;
+    const value = this.getFiniteNumber('OUTBOX_RETENTION_HOURS', defaultValue);
+    return value >= 0 ? value : defaultValue;
+  }
 }

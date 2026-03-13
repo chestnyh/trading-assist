@@ -1,18 +1,19 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { setTimeout } from 'node:timers/promises';
 import { ServicesConfigs } from '@trading-bot/configs';
 import { ModelsService } from '@trading-bot/models';
 
-const DEFAULT_CLEANUP_BATCH_SIZE = 500;
-const DEFAULT_CLEANUP_INTERVAL_MS = 60_000;
-const DEFAULT_RETENTION_HOURS = 24;
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 @Injectable()
+/**
+ * Periodically removes old published outbox messages to prevent the outbox table from growing indefinitely.
+ *
+ * Cleanup loop:
+ * - selects a batch of messages where `publishedAt` is older than retention threshold
+ * - deletes them by ids
+ * - repeats immediately while there is still more work (batch is full)
+ * - sleeps for configured interval between iterations
+ */
 export class OutboxCleanupService implements OnModuleInit, OnModuleDestroy {
-  private isRunning = false;
   private isStopping = false;
 
   constructor(
@@ -29,67 +30,45 @@ export class OutboxCleanupService implements OnModuleInit, OnModuleDestroy {
     this.isStopping = true;
   }
 
-  private getCleanupBatchSize(): number {
-    const value = Number(this.cfg.get('OUTBOX_CLEANUP_BATCH_SIZE') ?? DEFAULT_CLEANUP_BATCH_SIZE);
-    return Number.isFinite(value) && value > 0 ? value : DEFAULT_CLEANUP_BATCH_SIZE;
-  }
-
-  private getCleanupIntervalMs(): number {
-    const value = Number(this.cfg.get('OUTBOX_CLEANUP_INTERVAL_MS') ?? DEFAULT_CLEANUP_INTERVAL_MS);
-    return Number.isFinite(value) && value > 0 ? value : DEFAULT_CLEANUP_INTERVAL_MS;
-  }
-
-  private getRetentionHours(): number {
-    const value = Number(this.cfg.get('OUTBOX_RETENTION_HOURS') ?? DEFAULT_RETENTION_HOURS);
-    return Number.isFinite(value) && value >= 0 ? value : DEFAULT_RETENTION_HOURS;
-  }
-
   private computePublishedBefore(): Date {
-    const retentionMs = this.getRetentionHours() * 60 * 60 * 1000;
+    const retentionMs = this.cfg.getOutboxRetentionHours() * 60 * 60 * 1000;
     return new Date(Date.now() - retentionMs);
   }
 
   private async runLoop(): Promise<void> {
-    if (this.isRunning) return;
-    this.isRunning = true;
+    while (!this.isStopping) {
+      try {
+        const batchSize = this.cfg.getOutboxCleanupBatchSize();
+        const publishedBefore = this.computePublishedBefore();
 
-    try {
-      while (!this.isStopping) {
-        try {
-          const batchSize = this.getCleanupBatchSize();
-          const publishedBefore = this.computePublishedBefore();
-
-          const rows = await this.models.outboxMessage.findMany({
-            where: {
-              publishedAt: {
-                not: null,
-                lt: publishedBefore,
-              },
+        const rows = await this.models.outboxMessage.findMany({
+          where: {
+            publishedAt: {
+              not: null,
+              lt: publishedBefore,
             },
-            select: { id: true },
-            orderBy: { publishedAt: 'asc' },
-            take: batchSize,
+          },
+          select: { id: true },
+          orderBy: { publishedAt: 'asc' },
+          take: batchSize,
+        });
+
+        if (rows.length > 0) {
+          await this.models.outboxMessage.deleteMany({
+            where: {
+              id: { in: rows.map((r) => r.id) },
+            },
           });
-
-          if (rows.length > 0) {
-            await this.models.outboxMessage.deleteMany({
-              where: {
-                id: { in: rows.map((r) => r.id) },
-              },
-            });
-          }
-
-          if (rows.length >= batchSize) {
-            continue;
-          }
-        } catch {
-          // ignore and retry after sleep
         }
 
-        await sleep(this.getCleanupIntervalMs());
+        if (rows.length >= batchSize) {
+          continue;
+        }
+      } catch {
+        // ignore and retry after sleep
       }
-    } finally {
-      this.isRunning = false;
+
+      await setTimeout(this.cfg.getOutboxCleanupIntervalMs());
     }
   }
 }
