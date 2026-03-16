@@ -31,27 +31,27 @@ export class ServicesConfigs extends Configs {
     };
   }
 
-  private getFiniteNumber(configName: string, defaultValue: number): number {
+  private getFiniteNumber(configName: string): number | undefined {
     const raw = this.get(configName);
     const value = Number(raw);
-    return Number.isFinite(value) ? value : defaultValue;
+    return Number.isFinite(value) ? value : undefined;
   }
 
   getOutboxCleanupBatchSize(): number {
     const defaultValue = 500;
-    const value = this.getFiniteNumber('OUTBOX_CLEANUP_BATCH_SIZE', defaultValue);
+    const value = this.getFiniteNumber('OUTBOX_CLEANUP_BATCH_SIZE') ?? defaultValue;
     return value > 0 ? value : defaultValue;
   }
 
   getOutboxCleanupIntervalMs(): number {
     const defaultValue = 60_000;
-    const value = this.getFiniteNumber('OUTBOX_CLEANUP_INTERVAL_MS', defaultValue);
+    const value = this.getFiniteNumber('OUTBOX_CLEANUP_INTERVAL_MS') ?? defaultValue;
     return value > 0 ? value : defaultValue;
   }
 
   getOutboxRetentionHours(): number {
     const defaultValue = 24;
-    const value = this.getFiniteNumber('OUTBOX_RETENTION_HOURS', defaultValue);
+    const value = this.getFiniteNumber('OUTBOX_RETENTION_HOURS') ?? defaultValue;
     return value >= 0 ? value : defaultValue;
   }
 }
