@@ -35,15 +35,23 @@ This document outlines the standard development workflow for this project.
      - Test coverage
      - Documentation updates (if needed)
 
+## Environment Consistency
+
+6. **Environment Variables Check**
+   - We use a custom script to keep local .env files in sync with .example templates.
+   - **Pre-commit**: The check runs automatically before every commit. It will block the commit if you added new variables to your local .env but forgot to update the corresponding .example file.
+   - **Post-merge**: After a git pull or merge, the script runs to check if your teammates added new required variables. It will interactively ask if you want to add missing keys to your local environment.
+   - Manual Check: You can always run this check manually using pnpm check:envs.
+
 ## Merge and Deployment
 
-6. **Merge Requirements**
+7. **Merge Requirements**
    - PRs can be merged only after:
      - **Sufficient approvals**: The required number of approvals from team members
      - **CI/CD passes**: All automated tests and checks must pass successfully
    - Once both conditions are met, the PR can be merged into the `dev` branch
 
-7. **Automatic Deployment**
+8. **Automatic Deployment**
    - After merging, there is an automatic deployment to the staging environment
    - This allows for immediate testing of changes in a production-like environment
    - Monitor the deployment status and verify the changes work as expected in staging

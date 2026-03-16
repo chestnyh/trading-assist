@@ -52,7 +52,32 @@ export default async function timeout(
         timeout 
     } = args;
 
-    await new Promise(resolve => setTimeout(resolve, timeout));
+    let isCanceled = false;
+    let isSettled = false;
+    let timeoutId: NodeJS.Timeout | null = null;
+
+    await new Promise<void>((resolve) => {
+        const settle = () => {
+            if (isSettled) return;
+            isSettled = true;
+            resolve();
+        };
+
+        timeoutId = setTimeout(() => settle(), timeout);
+
+        this.addDisposer(() => {
+            isCanceled = true;
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+                timeoutId = null;
+            }
+            settle();
+        });
+    });
+
+    if (isCanceled) {
+        return;
+    }
 
     const actionType = action.type;
     await this[actionType](action.arguments, {

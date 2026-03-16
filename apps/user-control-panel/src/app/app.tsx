@@ -1,4 +1,4 @@
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { Routes, Route, BrowserRouter, Outlet } from 'react-router-dom';
 import { Main } from '../features/mainPage/Main';
 import { SignIn } from '../features/signIn/SignIn';
 import { RestorePassword } from '../features/restorePassword/RestorePassword';
@@ -12,54 +12,70 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { NotFound } from '../features/notFound/NotFound';
 import { RedirectToSignIn } from './components/RedirectToSignIn';
 import { useAuth } from './contexts/AuthContext';
+import { RulesPage } from '../features/rules/RulesPage';
+import { AddRulePage } from '../features/rules/AddRulePage';
+import { RuleDetailsPage } from '../features/rules/RuleDetailsPage';
+import { UpdateRulePage } from '../features/rules/UpdateRulePage';
 
 function AppRoutes() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   return (
-    <Routes>
-      <Route path="/" element={<Main />} />
-      <Route
-        path="/sign-in"
-        element={
-          <AuthRoute>
-            <SignIn />
-          </AuthRoute>
-        }
-      />
-      <Route
-        path="/sign-up"
-        element={
-          <AuthRoute>
-            <SignUpProvider>
-              <SignUp />
-            </SignUpProvider>
-          </AuthRoute>
-        }
-      />
-      <Route
-        path="/restore-password"
-        element={
-          <AuthRoute>
-            <RestorePassword />
-          </AuthRoute>
-        }
-      />
-      <Route path="/main" element={<Main />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <Settings />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="*"
-        element={isAuthenticated ? <NotFound /> : <RedirectToSignIn />}
-      />
-    </Routes>
+    <>
+      {isLoading ? null : (
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route
+            path="/sign-in"
+            element={
+              <AuthRoute>
+                <SignIn />
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="/sign-up"
+            element={
+              <AuthRoute>
+                <SignUpProvider>
+                  <SignUp />
+                </SignUpProvider>
+              </AuthRoute>
+            }
+          />
+          <Route
+            path="/restore-password"
+            element={
+              <AuthRoute>
+                <RestorePassword />
+              </AuthRoute>
+            }
+          />
+          <Route path="/main" element={<Main />} />
+          <Route
+            element={
+              <ProtectedRoute>
+                <Outlet />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/rules">
+              <Route index element={<RulesPage />} />
+              <Route path="add" element={<AddRulePage />} />
+              <Route path=":id" element={<RuleDetailsPage />} />
+              <Route path=":id/update" element={<UpdateRulePage />} />
+            </Route>
+            <Route path="/settings" element={ <Settings />}
+            />
+          </Route>
+          <Route
+            path="*"
+            element={isAuthenticated ? <NotFound /> : <RedirectToSignIn />}
+          />
+        </Routes>
+      )}
+    </>
   );
 }
 

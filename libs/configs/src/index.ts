@@ -3,3 +3,4 @@ export * from "./lib/services-configs.module";
 export * from "./lib/services-configs.provider";
 export * from "./lib/devops-configs";
 export * from "./lib/api-base-url";
+export * from "./lib/script-configs";

@@ -261,22 +261,28 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
                     let errorMessage = "Registration failed. Please try again.";
 
                     if (error && typeof error === "object") {
-                        if ("message" in error) {
-                            const message = String(error.message);
-
-                            if (message === "Failed to fetch" || message.includes("fetch")) {
-                                errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
-                            } else {
-                                errorMessage = message;
-                            }
+                        if ("isNetworkError" in error && (error as { isNetworkError?: boolean }).isNetworkError) {
+                            errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
                         } else if ("status" in error) {
                             const status = (error as { status: number }).status;
-                            if (status === 409) {
+                            if (status === 0) {
+                                errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
+                            } else if (status === 409) {
                                 errorMessage = "Email or nickname already exists. Please use different credentials.";
                             } else if (status === 400) {
                                 errorMessage = "Some information is incorrect. Please check all fields and try again.";
                             } else if (status >= 500) {
                                 errorMessage = "Server error. Please try again later.";
+                            }
+                        }
+
+                        if ("message" in error) {
+                            const message = String(error.message);
+
+                            if (message === "Failed to fetch" || message.includes("fetch")) {
+                                errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
+                            } else if (errorMessage === "Registration failed. Please try again.") {
+                                errorMessage = message;
                             }
                         }
                     } else if (error instanceof TypeError && error.message === "Failed to fetch") {

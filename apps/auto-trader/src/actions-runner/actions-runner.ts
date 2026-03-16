@@ -17,4 +17,8 @@ export class ActionsRunner {
         this.actionsHub.run();
     }
 
+    stop(): void {
+        this.actionsHub.dispose();
+    }
+
 }    

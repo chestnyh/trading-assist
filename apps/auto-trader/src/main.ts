@@ -10,6 +10,7 @@ import { AutoTraderModule } from './auto-trader/auto-trader.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AutoTraderModule);
+  await app.init();
   Logger.log(
     `🚀 Application is running `
   );

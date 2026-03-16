@@ -39,7 +39,9 @@ export const customInstance = async <T>(
 
   // Add authentication token if available
   const token =
-    typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    typeof window !== 'undefined'
+      ? localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+      : null;
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
@@ -103,16 +105,15 @@ export const customInstance = async <T>(
 
   // Handle empty responses
   const contentType = response.headers.get('content-type');
-  if (!contentType || !contentType.includes('application/json')) {
-    return {} as T;
+  let data: any;
+  if (contentType && contentType.includes('application/json')) {
+    data = await response.json();
   }
 
-  const data = await response.json();
-
   // Validate response if schema is provided
-  if (schema) {
+  if (schema && data !== undefined) {
     try {
-      return schema.parse(data);
+      data = schema.parse(data);
     } catch (error) {
       if (error instanceof z.ZodError) {
         throw {
@@ -124,5 +125,9 @@ export const customInstance = async <T>(
     }
   }
 
-  return data;
+  return {
+    status: response.status,
+    data,
+    headers: response.headers,
+  } as unknown as T;
 };
