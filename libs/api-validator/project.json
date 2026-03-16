@@ -1,6 +1,7 @@
 {
   "name": "api-validator",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "root": "libs/api-validator",
   "sourceRoot": "libs/api-validator/src",
   "projectType": "library",
   "tags": [],

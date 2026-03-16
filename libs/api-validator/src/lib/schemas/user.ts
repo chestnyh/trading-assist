@@ -28,35 +28,43 @@ export const TradingPlatformSchema = z.enum([
   'Other',
 ]);
 
+const EmailSchema = z.string().email('Please provide a valid email address');
+
+const StrongPasswordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters long')
+  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+  .regex(/\d/, 'Password must contain at least one number')
+  .regex(
+    /[@$!%*?&#^()_+\-=[\]{};':"\\|,.<>/]/,
+    'Password must contain at least one special character'
+  );
+
+const FirstNameSchema = z
+  .string()
+  .min(1, 'First name is required')
+  .max(50, 'First name must not exceed 50 characters')
+  .regex(
+    /^[a-zA-Z\s'-]+$/,
+    'First name can only contain letters, spaces, hyphens, and apostrophes'
+  );
+
+const LastNameSchema = z
+  .string()
+  .min(1, 'Last name is required')
+  .max(50, 'Last name must not exceed 50 characters')
+  .regex(
+    /^[a-zA-Z\s'-]+$/,
+    'Last name can only contain letters, spaces, hyphens, and apostrophes'
+  );
+
 export const CreateUserDtoSchema = z.object({
   nickname: z.string().min(3, 'Nickname must be at least 3 characters long'),
-  email: z.string().email('Please provide a valid email address'),
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters long')
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/\d/, 'Password must contain at least one number')
-    .regex(
-      /[@$!%*?&#^()_+\-=[\]{};':"\\|,.<>/]/,
-      'Password must contain at least one special character'
-    ),
-  firstName: z
-    .string()
-    .min(1, 'First name is required')
-    .max(50, 'First name must not exceed 50 characters')
-    .regex(
-      /^[a-zA-Z\s'-]+$/,
-      'First name can only contain letters, spaces, hyphens, and apostrophes'
-    ),
-  lastName: z
-    .string()
-    .min(1, 'Last name is required')
-    .max(50, 'Last name must not exceed 50 characters')
-    .regex(
-      /^[a-zA-Z\s'-]+$/,
-      'Last name can only contain letters, spaces, hyphens, and apostrophes'
-    ),
+  email: EmailSchema,
+  password: StrongPasswordSchema,
+  firstName: FirstNameSchema,
+  lastName: LastNameSchema,
   tradingExperienceLevel: TradingExperienceLevelSchema.optional(),
   primaryTradingStrategy: PrimaryTradingStrategySchema.optional(),
   riskTolerance: RiskToleranceSchema.optional(),
@@ -64,7 +72,7 @@ export const CreateUserDtoSchema = z.object({
 });
 
 export const LoginDtoSchema = z.object({
-  email: z.string().email('Please provide a valid email address'),
+  email: EmailSchema,
   password: z
     .string()
     .min(6, 'Password must be at least 6 characters long'),
@@ -81,10 +89,7 @@ export const VerifyEmailDtoSchema = z.object({
 });
 
 export const ForgotPasswordDtoSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email is required')
-    .email('Please provide a valid email address'),
+  email: EmailSchema,
 });
 
 export const VerifyPasswordResetDtoSchema = z.object({
@@ -97,16 +102,7 @@ export const VerifyPasswordResetDtoSchema = z.object({
 });
 
 export const ResetPasswordDtoSchema = z.object({
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters long')
-    .regex(/.*[A-Z].*/, 'Password must contain at least one uppercase letter')
-    .regex(/.*[a-z].*/, 'Password must contain at least one lowercase letter')
-    .regex(/.*\d.*/, 'Password must contain at least one number')
-    .regex(
-      /.*[@$!%*?&#^()_+\-=[\]{};':"\\|,.<>/]/,
-      'Password must contain at least one special character'
-    ),
+  password: StrongPasswordSchema,
   token: z.string().uuid('Token must be a valid UUID'),
 });
 
