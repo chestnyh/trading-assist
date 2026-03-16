@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Matches, Length, IsUUID } from 'class-validator';
-import { VerifyPasswordResetDtoSchemaValidator, Validate } from '@trading-bot/api-validator';
+import { VerifyPasswordResetDtoSchemaValidator } from '@trading-bot/api-validator';
+import { Validate } from '@trading-bot/api-validator/nest';
 
 @Validate(VerifyPasswordResetDtoSchemaValidator)
 export class VerifyPasswordResetDto {

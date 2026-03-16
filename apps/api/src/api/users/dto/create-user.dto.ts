@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, MinLength, MaxLength, Matches, IsEmail, IsEnum, IsArray } from 'class-validator';
 import { TradingExperienceLevel, PrimaryTradingStrategy, RiskTolerance, TradingPlatform } from '@prisma/client';
-import { Validate, CreateUserDtoSchemaValidator } from '@trading-bot/api-validator';
+import { CreateUserDtoSchemaValidator } from '@trading-bot/api-validator';
+import { Validate } from '@trading-bot/api-validator/nest';
 
 export { TradingExperienceLevel, PrimaryTradingStrategy, RiskTolerance, TradingPlatform };
 

@@ -1,6 +1,6 @@
 import { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { LoginDtoSchema } from "@trading-bot/api-client";
+import { LoginDtoSchema } from "@trading-bot/api-validator";
 import { Input } from "../../shared/ui/forms/Input";
 import { Button } from "../../shared/ui/buttons/Button";
 import { Checkbox } from "../../shared/ui/forms/Checkbox";

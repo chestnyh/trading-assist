@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createSchemaValidator } from '../api-validator';
+import { createSchemaValidator } from '../core';
 
 export const TradingExperienceLevelSchema = z.enum([
   'Beginner',

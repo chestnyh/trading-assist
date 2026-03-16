@@ -1,11 +1,12 @@
 import { z } from 'zod';
-import { createSchemaValidator } from '../api-validator';
+import { createSchemaValidator } from '../core';
 
 export const ExternalServiceResponseDtoSchema = z.object({
   id: z.number().int(),
   name: z.string(),
-  code: z.string(),
-  logoUrl: z.string().nullable(),
+  description: z.string().optional(),
+  isActive: z.boolean(),
+  userId: z.number().int(),
   fieldsSchema: z.array(z.unknown()),
 });
 

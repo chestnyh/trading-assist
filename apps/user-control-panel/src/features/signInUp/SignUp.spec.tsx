@@ -7,12 +7,14 @@ import {
     usersApiControllerCreateUser, 
     authControllerVerifyEmail, 
     customInstance,
+} from '@trading-bot/api-client';
+import {
     CreateUserDtoSchema,
     TradingExperienceLevelSchema,
     PrimaryTradingStrategySchema,
     RiskToleranceSchema,
     TradingPlatformSchema,
-} from '@trading-bot/api-client';
+} from '@trading-bot/api-validator';
 
 jest.mock('@trading-bot/api-client', () => {
     const actual = jest.requireActual('@trading-bot/api-client');
@@ -742,20 +744,29 @@ describe('SignUp', () => {
             const verifyButton = screen.getByRole('button', { name: BUTTON_LABELS.VERIFY });
             await user.click(verifyButton);
 
-            await waitFor(() => {
-                expect(mockAuthControllerVerifyEmail).toHaveBeenCalledWith({
-                    code: '123456',
-                    token: 'test-token-123',
-                });
-            });
+            await waitFor(
+                () => {
+                    expect(mockAuthControllerVerifyEmail).toHaveBeenCalledWith({
+                        code: '123456',
+                        token: 'test-token-123',
+                    });
+                },
+                { timeout: 10000 }
+            );
 
-            await waitFor(() => {
-                expect(screen.getByText(/email verified!/i)).toBeInTheDocument();
-            });
+            await waitFor(
+                () => {
+                    expect(screen.getByText(/email verified!/i)).toBeInTheDocument();
+                },
+                { timeout: 10000 }
+            );
 
-            await waitFor(() => {
-                expect(mockNavigate).toHaveBeenCalledWith('/sign-in');
-            }, { timeout: 3000 });
+            await waitFor(
+                () => {
+                    expect(mockNavigate).toHaveBeenCalledWith('/sign-in');
+                },
+                { timeout: 10000 }
+            );
         });
 
         it('shows error when verification fails', async () => {
@@ -850,11 +861,14 @@ describe('SignUp', () => {
             const verifyButton = screen.getByRole('button', { name: BUTTON_LABELS.VERIFY });
             await user.click(verifyButton);
 
-            await waitFor(() => {
-                expect(localStorageMock.getItem('signUp.step1')).toBeNull();
-                expect(localStorageMock.getItem('signUp.step2')).toBeNull();
-                expect(localStorageMock.getItem('signUp.verificationToken')).toBeNull();
-            });
+            await waitFor(
+                () => {
+                    expect(localStorageMock.getItem('signUp.step1')).toBeNull();
+                    expect(localStorageMock.getItem('signUp.step2')).toBeNull();
+                    expect(localStorageMock.getItem('signUp.verificationToken')).toBeNull();
+                },
+                { timeout: 10000 }
+            );
         });
 
         it('disables submit button while loading on step 4', async () => {

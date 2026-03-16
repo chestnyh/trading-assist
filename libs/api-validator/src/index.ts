@@ -1,3 +1,3 @@
-export * from './lib/api-validator';
+export * from './lib/core';
 
 export * from './lib/schemas';
