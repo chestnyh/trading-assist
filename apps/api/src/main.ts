@@ -9,6 +9,7 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { createSwaggerConfig } from './swagger.config'
 import { ApiModule } from './api/api.module';
 import { ServicesConfigs } from '@trading-bot/configs';
+import { SchemaValidationPipe } from '@trading-bot/api-validator';
 const configs = new ServicesConfigs();
 
 async function bootstrap() {
@@ -29,7 +30,7 @@ async function bootstrap() {
   });
 
   // Enable validation globally
-  app.useGlobalPipes(new ValidationPipe({
+  app.useGlobalPipes(new SchemaValidationPipe(), new ValidationPipe({
     whitelist: true,
     forbidNonWhitelisted: true,
     transform: true,
