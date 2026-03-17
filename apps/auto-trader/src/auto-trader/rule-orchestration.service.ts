@@ -41,15 +41,15 @@ export class RuleOrchestrationService implements OnModuleInit {
         const users = await this.modelsService.user.findMany({
             select: {
                 rules: true,
-                telegramSettings: true,
+                ruleSettings: true,
             },
         });
 
         users.forEach((user) => {
-            const { rules, telegramSettings } = user;
+            const { rules, ruleSettings } = user;
             rules.forEach((rule) => {
                 const { ruleBody, id } = rule as any;
-                this.ruleRunner.startRuleRunner(id, ruleBody, telegramSettings);
+                this.ruleRunner.startRuleRunner(id, ruleBody, ruleSettings);
             });
         });
     }
@@ -62,7 +62,7 @@ export class RuleOrchestrationService implements OnModuleInit {
                 ruleBody: true,
                 author: {
                     select: {
-                        telegramSettings: true,
+                        ruleSettings: true,
                     },
                 },
             },
@@ -73,6 +73,6 @@ export class RuleOrchestrationService implements OnModuleInit {
             return;
         }
 
-        this.ruleRunner.rerunRuleRunner(rule.id, rule.ruleBody as any, rule.author.telegramSettings);
+        this.ruleRunner.rerunRuleRunner(rule.id, rule.ruleBody as any, rule.author.ruleSettings);
     }
 }
