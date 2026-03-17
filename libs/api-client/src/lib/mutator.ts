@@ -10,7 +10,7 @@ import {
   ForgotPasswordDtoSchema,
   VerifyPasswordResetDtoSchema,
   ResetPasswordDtoSchema,
-} from './zod-schemas';
+} from '@trading-bot/api-validator';
 
 // Map URLs to their request body schemas
 const requestSchemas: Record<string, z.ZodSchema<any>> = {

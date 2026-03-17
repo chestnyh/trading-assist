@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, MinLength, IsBoolean, IsOptional } from 'class-validator';
+import { LoginDtoSchemaValidator, Validate } from '@trading-bot/api-validator';
 
+@Validate(LoginDtoSchemaValidator)
 export class LoginDto {
   @ApiProperty({
     description: 'User email address',

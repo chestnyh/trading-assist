@@ -2,6 +2,7 @@ import type { AmqpConnectionManager, ChannelWrapper } from 'amqp-connection-mana
 import type { ConfirmChannel, ConsumeMessage } from 'amqplib';
 import type { RmqConsumeOptions, RmqTopologyOptions } from './types';
 import type { JsonValue, MessageEnvelope } from '../transport/types';
+import { parseEnvelope } from '../transport/envelope-parser';
 
 export type EnvelopeHandler<TPayload extends JsonValue = JsonValue> = (
   envelope: MessageEnvelope<TPayload>
@@ -42,7 +43,7 @@ export async function createConsumer(
 
         try {
           const raw = msg.content.toString('utf-8');
-          const envelope = JSON.parse(raw) as MessageEnvelope;
+          const envelope = parseEnvelope(raw) as MessageEnvelope;
           await handler(envelope);
           ch.ack(msg);
         } catch (error) {
