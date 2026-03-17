@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateUserRuleSettingDtoSchemaValidator, Validate } from '@trading-bot/api-validator';
+import { CreateUserRuleSettingDtoSchemaValidator } from '@trading-bot/api-validator';
+import { Validate } from '@trading-bot/api-validator/nest';
 
 @Validate(CreateUserRuleSettingDtoSchemaValidator)
 export class CreateUserRuleSettingDto {

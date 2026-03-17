@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createSchemaValidator } from '../api-validator';
+import { createSchemaValidator } from '../core';
 
 export const CreateRuleDtoSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters long'),

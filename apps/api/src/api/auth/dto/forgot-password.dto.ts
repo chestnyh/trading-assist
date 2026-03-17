@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ForgotPasswordDtoSchemaValidator, Validate } from '@trading-bot/api-validator';
+import { ForgotPasswordDtoSchemaValidator } from '@trading-bot/api-validator';
+import { Validate } from '@trading-bot/api-validator/nest';
 
 @Validate(ForgotPasswordDtoSchemaValidator)
 export class ForgotPasswordDto {

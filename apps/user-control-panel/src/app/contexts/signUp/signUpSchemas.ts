@@ -5,7 +5,7 @@ import {
     PrimaryTradingStrategySchema,
     RiskToleranceSchema,
     TradingPlatformSchema,
-} from "@trading-bot/api-client";
+} from "@trading-bot/api-validator";
 
 // ---------- Step 1: Personal Information ----------
 

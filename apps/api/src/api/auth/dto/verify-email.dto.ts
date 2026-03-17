@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { VerifyEmailDtoSchemaValidator, Validate } from '@trading-bot/api-validator';
+import { VerifyEmailDtoSchemaValidator } from '@trading-bot/api-validator';
+import { Validate } from '@trading-bot/api-validator/nest';
 
 @Validate(VerifyEmailDtoSchemaValidator)
 export class VerifyEmailDto {
