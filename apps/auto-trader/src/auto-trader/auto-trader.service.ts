@@ -16,18 +16,18 @@ export class AutoTraderService {
         const users = await this.modelsService.user.findMany({
             select: {
               rules: true,
-              telegramSettings: true
+              ruleSettings: true
             },
         });
 
         users.forEach(user => {
-            const {rules, telegramSettings} = user;
+            const {rules, ruleSettings} = user;
             rules.forEach(rule => {
                 const {ruleBody} = rule;
-                const actionsRunner = new ActionsRunner(ruleBody, {telegramSettings});
+                const actionsRunner = new ActionsRunner(ruleBody, ruleSettings);
                 actionsRunner.run();
                 this.actionsRunners.push(actionsRunner);
             });
         });
     }
-}    
+}
