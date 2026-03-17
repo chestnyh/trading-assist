@@ -3,7 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { createSwaggerConfig } from './swagger.config'
@@ -30,11 +30,7 @@ async function bootstrap() {
   });
 
   // Enable validation globally
-  app.useGlobalPipes(new SchemaValidationPipe(), new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(new SchemaValidationPipe());
 
   const config = createSwaggerConfig();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
