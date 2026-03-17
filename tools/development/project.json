@@ -34,6 +34,12 @@
       "options": {
         "command": "ts-node -r tsconfig-paths/register --project tools/development/tsconfig.app.json tools/development/scripts/sleep.ts"
       }
+    },
+    "wait-for-api": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -r tsconfig-paths/register --project tools/development/tsconfig.app.json tools/development/scripts/wait-for-api.ts"
+      }
     }
   }
 }

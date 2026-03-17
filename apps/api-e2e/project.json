@@ -56,7 +56,13 @@
             "command": "nx run api-e2e:data-reset"
           },
           {
-            "command": "NODE_ENV=api-int-tests pnpm exec pm2 start \"pnpm api:start\" --name \"api-e2e-test\""
+            "command": "nx run api-e2e:data-seed"
+          },
+          {
+            "command": "pnpm exec pm2 stop api-e2e-test || true; pnpm exec pm2 delete api-e2e-test || true"
+          },
+          {
+            "command": "NODE_ENV=api-int-tests nx run development:source-config-and-run -- pnpm exec pm2 start pnpm --name api-e2e-test -- api:start"
           } 
         ]
       },
@@ -67,6 +73,7 @@
       "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
       "options": {
         "jestConfig": "apps/api-e2e/jest.config.ts",
+        "runInBand": true,
         "passWithNoTests": true
       }
     },
@@ -86,10 +93,10 @@
             "command": "nx run api-e2e:pre-e2e"
           },
           {
-            "command": "pnpm development:sleep -- 10"
+            "command": "NODE_ENV=api-int-tests nx run development:source-config-and-run -- nx run development:wait-for-api"
           },
           {
-            "command": "nx run api-e2e:e2e"
+            "command": "NODE_ENV=api-int-tests nx run development:source-config-and-run -- nx run api-e2e:e2e"
           },
           {
             "command": "nx run api-e2e:post-e2e"
