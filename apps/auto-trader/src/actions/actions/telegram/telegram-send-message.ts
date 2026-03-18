@@ -52,7 +52,6 @@ export default function telegram_send_message (
 
     try {
         bot.sendMessage(chatId, messageToSend);
-        bot.stopPolling();
     } catch (error) {
         { console.error(error) }
     }
