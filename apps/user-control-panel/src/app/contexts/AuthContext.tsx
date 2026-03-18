@@ -11,6 +11,10 @@ interface User {
 interface LoginResult {
   success: boolean;
   error?: string;
+  fieldErrors?: {
+    email?: string;
+    password?: string;
+  };
 }
 
 interface AuthContextType {
@@ -94,6 +98,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error: unknown) {
       let errorMessage = "Login failed. Please try again.";
+
+      // api-client request validation errors (Zod issues)
+      if (error && typeof error === 'object' && 'errors' in error && Array.isArray((error as any).errors)) {
+        const issues = (error as any).errors as Array<{ path?: Array<string | number>; message?: string }>;
+        const fieldErrors: LoginResult['fieldErrors'] = {};
+
+        for (const issue of issues) {
+          const key = issue.path?.[0];
+          if (key === 'email' && !fieldErrors?.email) fieldErrors.email = issue.message ?? 'Invalid email';
+          if (key === 'password' && !fieldErrors?.password) fieldErrors.password = issue.message ?? 'Invalid password';
+        }
+
+        return {
+          success: false,
+          error: errorMessage,
+          fieldErrors,
+        };
+      }
 
       if (error && typeof error === "object") {
         if ("isNetworkError" in error && (error as { isNetworkError?: boolean }).isNetworkError) {

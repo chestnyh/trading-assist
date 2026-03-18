@@ -35,15 +35,9 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
   const handleValidateAndSubmit = async () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name.trim()) newErrors.name = "Rule Name is required";
-    else if (formData.name.length < 3) newErrors.name = "Rule name is not long enough (3+ chars).";
-
-    if (!formData.description.trim()) newErrors.description = "Rule Description is required";
-    else if (formData.description.length < 10) newErrors.description = "Rule description is not long enough (10+ chars).";
-
     if (!formData.rule.trim()) newErrors.rule = "Rule is required";
 
-    let parsedRuleBody = null;
+    let parsedRuleBody: any = null;
     try {
       parsedRuleBody = JSON.parse(formData.rule);
     } catch (e) {
@@ -55,11 +49,32 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
       return;
     }
 
-    await onSubmit({
-      name: formData.name,
-      description: formData.description,
-      ruleBody: parsedRuleBody
-    });
+    setErrors({});
+
+    try {
+      await onSubmit({
+        name: formData.name,
+        description: formData.description,
+        ruleBody: parsedRuleBody,
+      });
+    } catch (err: any) {
+      const nextErrors: Record<string, string> = {};
+
+      if (err && typeof err === 'object' && Array.isArray(err.errors)) {
+        for (const issue of err.errors as Array<{ path?: Array<string | number>; message?: string }>) {
+          const key = issue.path?.[0];
+          if (typeof key === 'string' && !nextErrors[key]) {
+            nextErrors[key] = issue.message ?? 'Invalid value';
+          }
+        }
+      }
+
+      if (Object.keys(nextErrors).length === 0) {
+        nextErrors.form = err?.message || 'Failed to save rule';
+      }
+
+      setErrors(nextErrors);
+    }
   };
 
   return (
