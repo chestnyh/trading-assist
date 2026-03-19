@@ -25,9 +25,9 @@ export class ServicesConfigs extends Configs {
       JWT_EXPIRES_IN: process.env['JWT_EXPIRES_IN'] || '24h',
       MAX_PASSWORD_RESET_ATTEMPTS: process.env['MAX_PASSWORD_RESET_ATTEMPTS'] || '5',
 
-      OUTBOX_CLEANUP_BATCH_SIZE: process.env['OUTBOX_CLEANUP_BATCH_SIZE'] || '500',
-      OUTBOX_CLEANUP_INTERVAL_MS: process.env['OUTBOX_CLEANUP_INTERVAL_MS'] || '60000',
-      OUTBOX_RETENTION_HOURS: process.env['OUTBOX_RETENTION_HOURS'] || '24',
+      OUTBOX_CLEANUP_BATCH_SIZE: process.env['OUTBOX_CLEANUP_BATCH_SIZE'],
+      OUTBOX_CLEANUP_INTERVAL_MS: process.env['OUTBOX_CLEANUP_INTERVAL_MS'],
+      OUTBOX_RETENTION_HOURS: process.env['OUTBOX_RETENTION_HOURS'],
     };
   }
 
@@ -38,20 +38,17 @@ export class ServicesConfigs extends Configs {
   }
 
   getOutboxCleanupBatchSize(): number {
-    const defaultValue = 500;
-    const value = this.getFiniteNumber('OUTBOX_CLEANUP_BATCH_SIZE') ?? defaultValue;
-    return value > 0 ? value : defaultValue;
+    const value = this.getFiniteNumber('OUTBOX_CLEANUP_BATCH_SIZE');
+    return value !== undefined && value > 0 ? value : 500;
   }
 
   getOutboxCleanupIntervalMs(): number {
-    const defaultValue = 60_000;
-    const value = this.getFiniteNumber('OUTBOX_CLEANUP_INTERVAL_MS') ?? defaultValue;
-    return value > 0 ? value : defaultValue;
+    const value = this.getFiniteNumber('OUTBOX_CLEANUP_INTERVAL_MS');
+    return value !== undefined && value > 0 ? value : 60_000;
   }
 
   getOutboxRetentionHours(): number {
-    const defaultValue = 24;
-    const value = this.getFiniteNumber('OUTBOX_RETENTION_HOURS') ?? defaultValue;
-    return value >= 0 ? value : defaultValue;
+    const value = this.getFiniteNumber('OUTBOX_RETENTION_HOURS');
+    return value !== undefined && value >= 0 ? value : 24;
   }
 }
