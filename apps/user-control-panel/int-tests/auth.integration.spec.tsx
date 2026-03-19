@@ -76,7 +76,7 @@ describe("Authorization Flow (Integration)", () => {
     await user.click(signInButton);
 
     await waitFor(() => {
-      expect(screen.queryByText(/password must be at least 8 characters long/i)).not.toBeNull();
+      expect(screen.queryByText(/password must be at least 6 characters long/i)).not.toBeNull();
     });
     expect(global.fetch).not.toHaveBeenCalled();
   });

@@ -17,6 +17,7 @@
     "paths": {
       "@trading-bot/api-client": ["libs/api-client/src/index.ts"],
       "@trading-bot/api-validator": ["libs/api-validator/src/index.ts"],
+      "@trading-bot/api-validator/nest": ["libs/api-validator/src/nest.ts"],
       "@trading-bot/configs": ["libs/configs/src/index.ts"],
       "@trading-bot/crypto-utils": ["libs/crypto-utils/src/index.ts"],
       "@trading-bot/models": ["libs/models/src/index.ts"],

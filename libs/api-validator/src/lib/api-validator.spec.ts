@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { createSchemaValidator, getSchemaValidator, Validate } from './api-validator';
+import { createSchemaValidator } from './core';
+import { getSchemaValidator, Validate } from './nest';
 
 describe('api-validator', () => {
   it('createSchemaValidator should keep schema reference', () => {
