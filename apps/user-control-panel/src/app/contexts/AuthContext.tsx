@@ -45,6 +45,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(false);
   }, []);
 
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== 'auth_token' && e.key !== 'user_data') return;
+
+      const nextToken = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+      const nextUser = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
+
+      setToken(nextToken);
+      setUser(nextUser ? (JSON.parse(nextUser) as User) : null);
+    };
+
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
   const login = async (email: string, password: string, rememberMe?: boolean): Promise<LoginResult> => {
     try {
       const loginData = {
@@ -75,17 +90,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setToken(access_token);
         setUser(userData);
 
+        localStorage.setItem('auth_token', access_token);
+        localStorage.setItem('user_data', JSON.stringify(userData));
+
         if (rememberMe) {
-          localStorage.setItem('auth_token', access_token);
-          localStorage.setItem('user_data', JSON.stringify(userData));
           sessionStorage.removeItem('auth_token');
           sessionStorage.removeItem('user_data');
         } else {
           sessionStorage.setItem('auth_token', access_token);
           sessionStorage.setItem('user_data', JSON.stringify(userData));
-          // Clear localStorage in case it was used previously
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('user_data');
         }
 
         return { success: true };
