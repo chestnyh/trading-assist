@@ -5,8 +5,8 @@ import { ActionsRunner } from '../actions-runner/actions-runner';
 export class RuleRunnerService {
     private actionsRunnersByRuleId = new Map<number, ActionsRunner>();
 
-    startRuleRunner(ruleId: number, ruleBody: any, telegramSettings: any): void {
-        const actionsRunner = new ActionsRunner(ruleBody, { telegramSettings });
+    startRuleRunner(ruleId: number, ruleBody: any, ruleSettings: any): void {
+        const actionsRunner = new ActionsRunner(ruleBody, ruleSettings);
         actionsRunner.run();
         this.actionsRunnersByRuleId.set(ruleId, actionsRunner);
     }
@@ -18,8 +18,8 @@ export class RuleRunnerService {
         this.actionsRunnersByRuleId.delete(ruleId);
     }
 
-    rerunRuleRunner(ruleId: number, ruleBody: any, telegramSettings: any): void {
+    rerunRuleRunner(ruleId: number, ruleBody: any, ruleSettings: any): void {
         this.stopRuleRunner(ruleId);
-        this.startRuleRunner(ruleId, ruleBody, telegramSettings);
+        this.startRuleRunner(ruleId, ruleBody, ruleSettings);
     }
 }
