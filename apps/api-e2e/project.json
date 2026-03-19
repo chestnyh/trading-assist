@@ -77,6 +77,12 @@
         "passWithNoTests": true
       }
     },
+    "wait-for-api": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -r tsconfig-paths/register --project apps/api-e2e/tsconfig.spec.json apps/api-e2e/scripts/wait-for-api.ts"
+      }
+    },
     "post-e2e": {
       "executor": "nx:run-commands",
       "options": {
@@ -93,7 +99,7 @@
             "command": "nx run api-e2e:pre-e2e"
           },
           {
-            "command": "NODE_ENV=api-int-tests nx run development:source-config-and-run -- nx run development:wait-for-api"
+            "command": "NODE_ENV=api-int-tests nx run development:source-config-and-run -- nx run api-e2e:wait-for-api"
           },
           {
             "command": "NODE_ENV=api-int-tests nx run development:source-config-and-run -- nx run api-e2e:e2e"

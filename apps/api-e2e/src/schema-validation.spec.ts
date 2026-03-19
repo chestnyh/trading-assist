@@ -16,7 +16,9 @@ async function loginAsAdmin(): Promise<string> {
   return res.data.access_token as string;
 }
 
-function expectValidationErrorResponse(res: { status: number; data?: any }) {
+type ValidationErrorResponse = { status: number; data?: any };
+
+function expectValidationErrorResponse(res: ValidationErrorResponse) {
   expect(res.status).toBe(400);
 
   const data = res.data;
@@ -27,6 +29,24 @@ function expectValidationErrorResponse(res: { status: number; data?: any }) {
 
   expect(hasValidationMessage).toBe(true);
   expect(Array.isArray(data?.errors)).toBe(true);
+}
+
+function expectIssueForPath(
+  res: ValidationErrorResponse,
+  path: string,
+  opts?: { messageIncludes?: string }
+) {
+  const errors = Array.isArray(res.data?.errors) ? (res.data.errors as any[]) : [];
+  const issuesForPath = errors.filter((e) => Array.isArray(e?.path) && e.path[0] === path);
+
+  expect(issuesForPath.length).toBeGreaterThan(0);
+
+  if (opts?.messageIncludes) {
+    const hasMatchingMessage = issuesForPath.some(
+      (e) => typeof e?.message === 'string' && e.message.includes(opts.messageIncludes)
+    );
+    expect(hasMatchingMessage).toBe(true);
+  }
 }
 
 describe('Schema validation', () => {
@@ -45,23 +65,27 @@ describe('Schema validation', () => {
       );
 
       expectValidationErrorResponse(res);
+      expectIssueForPath(res, 'email', { messageIncludes: 'valid email' });
     });
 
     it('should return 400 for missing required fields', async () => {
       const res = await axios.post(
         `/api/v1/users`,
-        {
-          email: 'user-missing-fields@example.com',
-        },
+        {},
         { validateStatus: () => true }
       );
 
       expectValidationErrorResponse(res);
+      expectIssueForPath(res, 'nickname');
+      expectIssueForPath(res, 'email');
+      expectIssueForPath(res, 'password');
+      expectIssueForPath(res, 'firstName');
+      expectIssueForPath(res, 'lastName');
     });
   });
 
   describe('rules', () => {
-    it('should return 400 for invalid rule payload', async () => {
+    it('should return 400 for invalid rule payload (wrong format)', async () => {
       const token = await loginAsAdmin();
 
       const res = await axios.post(
@@ -80,6 +104,29 @@ describe('Schema validation', () => {
       );
 
       expectValidationErrorResponse(res);
+      expectIssueForPath(res, 'name');
+      expectIssueForPath(res, 'description');
+      expectIssueForPath(res, 'ruleBody');
+    });
+
+    it('should return 400 for missing required fields', async () => {
+      const token = await loginAsAdmin();
+
+      const res = await axios.post(
+        `/api/v1/rules`,
+        {},
+        {
+          validateStatus: () => true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      expectValidationErrorResponse(res);
+      expectIssueForPath(res, 'name');
+      expectIssueForPath(res, 'description');
+      expectIssueForPath(res, 'ruleBody');
     });
   });
 
@@ -89,8 +136,30 @@ describe('Schema validation', () => {
 
       const res = await axios.post(
         `/api/v1/rules-settings`,
+        {},
         {
-          name: 'ab',
+          validateStatus: () => true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      expectValidationErrorResponse(res);
+      expectIssueForPath(res, 'name');
+      expectIssueForPath(res, 'code');
+      expectIssueForPath(res, 'externalServiceId');
+      expectIssueForPath(res, 'configuration');
+    });
+
+    it('should return 400 for invalid field formats', async () => {
+      const token = await loginAsAdmin();
+
+      const res = await axios.post(
+        `/api/v1/rules-settings`,
+        {
+          name: 'abc',
+          code: 'x',
           externalServiceId: 'not-a-number',
           configuration: 'not-an-object',
         },
@@ -103,11 +172,31 @@ describe('Schema validation', () => {
       );
 
       expectValidationErrorResponse(res);
+      expectIssueForPath(res, 'externalServiceId');
+      expectIssueForPath(res, 'configuration');
     });
   });
 
   describe('tags', () => {
-    it('should return 400 for invalid tag name', async () => {
+    it('should return 400 for missing required fields', async () => {
+      const token = await loginAsAdmin();
+
+      const res = await axios.post(
+        `/api/v1/tags`,
+        {},
+        {
+          validateStatus: () => true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      expectValidationErrorResponse(res);
+      expectIssueForPath(res, 'name');
+    });
+
+    it('should return 400 for invalid tag name format', async () => {
       const token = await loginAsAdmin();
 
       const res = await axios.post(
@@ -124,6 +213,7 @@ describe('Schema validation', () => {
       );
 
       expectValidationErrorResponse(res);
+      expectIssueForPath(res, 'name');
     });
   });
 });
