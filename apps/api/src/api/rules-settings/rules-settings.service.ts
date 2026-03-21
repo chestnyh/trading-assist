@@ -2,10 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { ModelsService } from '@trading-bot/models';
 import { CreateUserRuleSettingDto } from './dto/create-user-rule-setting.dto';
 import { UpdateUserRuleSettingDto } from './dto/update-user-rule-setting.dto';
+import { TelegramHelperService } from './telegram-helper.service';
 
 @Injectable()
 export class RulesSettingsService {
-  constructor(private modelsService: ModelsService) {}
+  constructor(
+    private modelsService: ModelsService,
+    private telegramHelper: TelegramHelperService
+  ) {}
 
   /**
    * Creating a universal rule setting (Binance, Telegram, etc.)
@@ -47,7 +51,7 @@ export class RulesSettingsService {
     if (externalServiceId) {
       where.externalServiceId = externalServiceId;
     }
- 
+
     const query: any = {
       where,
       include: {
@@ -56,12 +60,12 @@ export class RulesSettingsService {
       },
       orderBy: { id: 'desc' },
     };
- 
+
     if (page && limit) {
       query.skip = Math.max(0, (page - 1) * limit);
       query.take = limit;
     }
- 
+
     const settings = await this.modelsService.userRuleSettings.findMany(query);
     return settings.map((s) => this.mapToResponse(s));
   }
@@ -72,7 +76,7 @@ export class RulesSettingsService {
       tags: setting.tags?.map((t: any) => t.ruleSettingTag.name) || [],
     };
   }
- 
+
   /**
    * Update setting
    */
@@ -123,5 +127,23 @@ export class RulesSettingsService {
 	if (!setting) throw new NotFoundException('Setting not found');
 
 	return this.modelsService.userRuleSettings.delete({ where: { id } });
+  }
+
+  /**
+   * Getting Telegram chatId
+   */
+  async getTelegramChatId(settingId: number, userId: number) {
+    const setting = await this.modelsService.userRuleSettings.findFirst({
+      where: { id: settingId, authorId: userId },
+    });
+
+    if (!setting) throw new NotFoundException('Setting not found');
+
+    const config = setting.configuration as any;
+    if (!config?.botToken) throw new Error('In settings for Telegram service is not botToken');
+
+    const chatId = await this.telegramHelper.getChatIdViaPolling(config.botToken);
+
+    return { chatId };
   }
 }
