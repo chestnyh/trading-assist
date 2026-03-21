@@ -87,6 +87,7 @@ export default async function main() {
                     fieldsSchema: [
                         { key: "botToken", label: "BotToken", required: true, minLength: 45, maxLength: 50, placeholder: "Insert bot token…" },
                         { key: "baseUrl", label: "BaseUrl", required: false, minLength: 20, maxLength: 100, placeholder: "Insert base url…" },
+                        { key: "chatId", label: "ChatId", required: true, placeholder: "Insert chat id…" },
                     ]
                 },
                 update: {
@@ -95,6 +96,7 @@ export default async function main() {
                     fieldsSchema: [
                         { key: "botToken", label: "BotToken", required: true, minLength: 45, maxLength: 50, placeholder: "Insert bot token…" },
                         { key: "baseUrl", label: "BaseUrl", required: false, minLength: 20, maxLength: 100, placeholder: "Insert base url…" },
+                        { key: "chatId", label: "ChatId", required: true, placeholder: "Insert chat id…" },
                     ]
                 }
             },
@@ -347,7 +349,8 @@ export default async function main() {
                                 externalService: { connect: { name: 'Telegram' } },
                                 configuration: {
                                     botToken: "123456789:ABCDefGhIJKlmNoPQRstuVWXyz_45chars",
-                                    baseUrl: "https://api.telegram.org"
+                                    baseUrl: "https://api.telegram.org",
+                                    chatId: "1234567890"
                                 }
                             },
                             {
