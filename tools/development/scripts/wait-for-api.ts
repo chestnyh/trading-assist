@@ -1,8 +1,11 @@
-const host = process.env.HOST ?? 'localhost';
-const port = process.env.API_PORT ?? process.env.PORT ?? '3001';
+import { ServicesConfigs } from '@trading-bot/configs';
 
-const timeoutSeconds = Number(process.env.WAIT_FOR_API_TIMEOUT_SECONDS ?? '60');
-const intervalMs = Number(process.env.WAIT_FOR_API_INTERVAL_MS ?? '1000');
+const cfg = new ServicesConfigs();
+const host = cfg.getApiHost();
+const port = cfg.getApiPort();
+
+const timeoutSeconds = 60;
+const intervalMs = 1000;
 
 async function sleep(ms: number) {
   await new Promise((resolve) => setTimeout(resolve, ms));

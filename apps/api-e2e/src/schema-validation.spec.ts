@@ -8,7 +8,6 @@ async function loginAsAdmin(): Promise<string> {
       password: 'Password123!',
       rememberMe: false,
     },
-    { validateStatus: () => true }
   );
 
   expect(res.status).toBe(200);
@@ -18,35 +17,12 @@ async function loginAsAdmin(): Promise<string> {
 
 type ValidationErrorResponse = { status: number; data?: any };
 
-function expectValidationErrorResponse(res: ValidationErrorResponse) {
+function expect400StatusAndDataTopStructure(res: ValidationErrorResponse) {
   expect(res.status).toBe(400);
-
-  const data = res.data;
-  const message = typeof data?.message === 'string' ? data.message : null;
-  const hasValidationMessage =
-    message === 'Validation failed' ||
-    (typeof message === 'string' && message.toLowerCase().includes('validation'));
-
-  expect(hasValidationMessage).toBe(true);
-  expect(Array.isArray(data?.errors)).toBe(true);
-}
-
-function expectIssueForPath(
-  res: ValidationErrorResponse,
-  path: string,
-  opts?: { messageIncludes?: string }
-) {
-  const errors = Array.isArray(res.data?.errors) ? (res.data.errors as any[]) : [];
-  const issuesForPath = errors.filter((e) => Array.isArray(e?.path) && e.path[0] === path);
-
-  expect(issuesForPath.length).toBeGreaterThan(0);
-
-  if (opts?.messageIncludes) {
-    const hasMatchingMessage = issuesForPath.some(
-      (e) => typeof e?.message === 'string' && e.message.includes(opts.messageIncludes)
-    );
-    expect(hasMatchingMessage).toBe(true);
-  }
+  expect(res.data).toMatchObject({
+    message: 'Validation failed',
+    errors: expect.any(Array),
+  });
 }
 
 describe('Schema validation', () => {
@@ -61,33 +37,43 @@ describe('Schema validation', () => {
           firstName: 'John',
           lastName: 'Doe',
         },
-        { validateStatus: () => true }
       );
 
-      expectValidationErrorResponse(res);
-      expectIssueForPath(res, 'email', { messageIncludes: 'valid email' });
+      expect400StatusAndDataTopStructure(res);
+      expect(res.data).toMatchObject({
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            path: ['email'],
+            message: expect.stringContaining('valid email'),
+          }),
+        ]),
+      });
     });
 
     it('should return 400 for missing required fields', async () => {
-      const res = await axios.post(
-        `/api/v1/users`,
-        {},
-        { validateStatus: () => true }
-      );
+      const res = await axios.post(`/api/v1/users`, {});
 
-      expectValidationErrorResponse(res);
-      expectIssueForPath(res, 'nickname');
-      expectIssueForPath(res, 'email');
-      expectIssueForPath(res, 'password');
-      expectIssueForPath(res, 'firstName');
-      expectIssueForPath(res, 'lastName');
+      expect400StatusAndDataTopStructure(res);
+      expect(res.data).toMatchObject({
+        errors: expect.arrayContaining([
+          expect.objectContaining({ path: ['nickname'] }),
+          expect.objectContaining({ path: ['email'] }),
+          expect.objectContaining({ path: ['password'] }),
+          expect.objectContaining({ path: ['firstName'] }),
+          expect.objectContaining({ path: ['lastName'] }),
+        ]),
+      });
     });
   });
 
   describe('rules', () => {
-    it('should return 400 for invalid rule payload (wrong format)', async () => {
-      const token = await loginAsAdmin();
+    let token: string;
 
+    beforeEach(async () => {
+      token = await loginAsAdmin();
+    });
+
+    it('should return 400 for invalid rule payload (wrong format)', async () => {
       const res = await axios.post(
         `/api/v1/rules`,
         {
@@ -96,65 +82,74 @@ describe('Schema validation', () => {
           ruleBody: 'not-an-object',
         },
         {
-          validateStatus: () => true,
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      expectValidationErrorResponse(res);
-      expectIssueForPath(res, 'name');
-      expectIssueForPath(res, 'description');
-      expectIssueForPath(res, 'ruleBody');
+      expect400StatusAndDataTopStructure(res);
+      expect(res.data).toMatchObject({
+        errors: expect.arrayContaining([
+          expect.objectContaining({ path: ['name'] }),
+          expect.objectContaining({ path: ['description'] }),
+          expect.objectContaining({ path: ['ruleBody'] }),
+        ]),
+      });
     });
 
     it('should return 400 for missing required fields', async () => {
-      const token = await loginAsAdmin();
-
       const res = await axios.post(
         `/api/v1/rules`,
         {},
         {
-          validateStatus: () => true,
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      expectValidationErrorResponse(res);
-      expectIssueForPath(res, 'name');
-      expectIssueForPath(res, 'description');
-      expectIssueForPath(res, 'ruleBody');
+      expect400StatusAndDataTopStructure(res);
+      expect(res.data).toMatchObject({
+        errors: expect.arrayContaining([
+          expect.objectContaining({ path: ['name'] }),
+          expect.objectContaining({ path: ['description'] }),
+          expect.objectContaining({ path: ['ruleBody'] }),
+        ]),
+      });
     });
   });
 
   describe('rules-settings', () => {
-    it('should return 400 for missing required fields', async () => {
-      const token = await loginAsAdmin();
+    let token: string;
 
+    beforeEach(async () => {
+      token = await loginAsAdmin();
+    });
+
+    it('should return 400 for missing required fields', async () => {
       const res = await axios.post(
         `/api/v1/rules-settings`,
         {},
         {
-          validateStatus: () => true,
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      expectValidationErrorResponse(res);
-      expectIssueForPath(res, 'name');
-      expectIssueForPath(res, 'code');
-      expectIssueForPath(res, 'externalServiceId');
-      expectIssueForPath(res, 'configuration');
+      expect400StatusAndDataTopStructure(res);
+      expect(res.data).toMatchObject({
+        errors: expect.arrayContaining([
+          expect.objectContaining({ path: ['name'] }),
+          expect.objectContaining({ path: ['code'] }),
+          expect.objectContaining({ path: ['externalServiceId'] }),
+          expect.objectContaining({ path: ['configuration'] }),
+        ]),
+      });
     });
 
     it('should return 400 for invalid field formats', async () => {
-      const token = await loginAsAdmin();
-
       const res = await axios.post(
         `/api/v1/rules-settings`,
         {
@@ -164,56 +159,63 @@ describe('Schema validation', () => {
           configuration: 'not-an-object',
         },
         {
-          validateStatus: () => true,
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      expectValidationErrorResponse(res);
-      expectIssueForPath(res, 'externalServiceId');
-      expectIssueForPath(res, 'configuration');
+      expect400StatusAndDataTopStructure(res);
+      expect(res.data).toMatchObject({
+        errors: expect.arrayContaining([
+          expect.objectContaining({ path: ['externalServiceId'] }),
+          expect.objectContaining({ path: ['configuration'] }),
+        ]),
+      });
     });
   });
 
   describe('tags', () => {
-    it('should return 400 for missing required fields', async () => {
-      const token = await loginAsAdmin();
+    let token: string;
 
+    beforeEach(async () => {
+      token = await loginAsAdmin();
+    });
+
+    it('should return 400 for missing required fields', async () => {
       const res = await axios.post(
         `/api/v1/tags`,
         {},
         {
-          validateStatus: () => true,
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      expectValidationErrorResponse(res);
-      expectIssueForPath(res, 'name');
+      expect400StatusAndDataTopStructure(res);
+      expect(res.data).toMatchObject({
+        errors: expect.arrayContaining([expect.objectContaining({ path: ['name'] })]),
+      });
     });
 
     it('should return 400 for invalid tag name format', async () => {
-      const token = await loginAsAdmin();
-
       const res = await axios.post(
         `/api/v1/tags`,
         {
           name: 'a',
         },
         {
-          validateStatus: () => true,
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      expectValidationErrorResponse(res);
-      expectIssueForPath(res, 'name');
+      expect400StatusAndDataTopStructure(res);
+      expect(res.data).toMatchObject({
+        errors: expect.arrayContaining([expect.objectContaining({ path: ['name'] })]),
+      });
     });
   });
 });

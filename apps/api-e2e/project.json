@@ -80,7 +80,7 @@
     "wait-for-api": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node -r tsconfig-paths/register --project apps/api-e2e/tsconfig.spec.json apps/api-e2e/scripts/wait-for-api.ts"
+        "command": "ts-node -r tsconfig-paths/register --project apps/api-e2e/tsconfig.spec.json tools/development/scripts/wait-for-api.ts"
       }
     },
     "post-e2e": {
