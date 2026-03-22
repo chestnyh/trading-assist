@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authControllerLogin } from '@trading-bot/api-client';
+import { authControllerLogin, extractFirstFieldErrorsFromApiClientError } from '@trading-bot/api-client';
 
 interface User {
   id: number;
@@ -100,15 +100,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       let errorMessage = "Login failed. Please try again.";
 
       // api-client request validation errors (Zod issues)
-      if (error && typeof error === 'object' && 'errors' in error && Array.isArray((error as any).errors)) {
-        const issues = (error as any).errors as Array<{ path?: Array<string | number>; message?: string }>;
+      const validationErrors = extractFirstFieldErrorsFromApiClientError(error);
+      if (Object.keys(validationErrors).length > 0) {
         const fieldErrors: LoginResult['fieldErrors'] = {};
 
-        for (const issue of issues) {
-          const key = issue.path?.[0];
-          if (key === 'email' && !fieldErrors?.email) fieldErrors.email = issue.message ?? 'Invalid email';
-          if (key === 'password' && !fieldErrors?.password) fieldErrors.password = issue.message ?? 'Invalid password';
-        }
+        if (validationErrors.email && !fieldErrors.email) fieldErrors.email = validationErrors.email;
+        if (validationErrors.password && !fieldErrors.password) fieldErrors.password = validationErrors.password;
 
         return {
           success: false,

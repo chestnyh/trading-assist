@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { Input } from "../../shared/ui/forms/Input";
 import { TextArea } from "../../shared/ui/forms/TextArea";
 import { Button } from "../../shared/ui/buttons/Button";
+import { extractFirstFieldErrorsFromApiClientError } from '@trading-bot/api-client';
 
 interface RuleFormProps {
   initialData?: { name: string; description: string; rule: string };
-  onSubmit: (data: { name: string; description: string; ruleBody: any }) => Promise<void>;
+  onSubmit: (data: { name: string; description: string; ruleBody: unknown }) => Promise<void>;
   onCancel: () => void;
   isLoading: boolean;
   submitLabel: string;
@@ -37,10 +38,10 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
 
     if (!formData.rule.trim()) newErrors.rule = "Rule is required";
 
-    let parsedRuleBody: any = null;
+    let parsedRuleBody: unknown = null;
     try {
       parsedRuleBody = JSON.parse(formData.rule);
-    } catch (e) {
+    } catch {
       newErrors.rule = "Invalid JSON format. Please check your syntax.";
     }
 
@@ -57,20 +58,18 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
         description: formData.description,
         ruleBody: parsedRuleBody,
       });
-    } catch (err: any) {
-      const nextErrors: Record<string, string> = {};
-
-      if (err && typeof err === 'object' && Array.isArray(err.errors)) {
-        for (const issue of err.errors as Array<{ path?: Array<string | number>; message?: string }>) {
-          const key = issue.path?.[0];
-          if (typeof key === 'string' && !nextErrors[key]) {
-            nextErrors[key] = issue.message ?? 'Invalid value';
-          }
-        }
-      }
+    } catch (err: unknown) {
+      const nextErrors: Record<string, string> = extractFirstFieldErrorsFromApiClientError(err);
 
       if (Object.keys(nextErrors).length === 0) {
-        nextErrors.form = err?.message || 'Failed to save rule';
+        const fallbackMessage =
+          err &&
+          typeof err === 'object' &&
+          'message' in err &&
+          typeof (err as { message?: unknown }).message === 'string'
+            ? (err as { message: string }).message
+            : undefined;
+        nextErrors.form = fallbackMessage || 'Failed to save rule';
       }
 
       setErrors(nextErrors);
