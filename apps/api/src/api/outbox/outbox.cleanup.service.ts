@@ -21,6 +21,21 @@ export class OutboxCleanupService implements OnModuleInit, OnModuleDestroy {
     private readonly cfg: ServicesConfigs
   ) {}
 
+  private getBatchSize(): number {
+    const value = this.cfg.getFiniteNumber('OUTBOX_CLEANUP_BATCH_SIZE');
+    return value !== undefined && value > 0 ? value : 500;
+  }
+
+  private getIntervalMs(): number {
+    const value = this.cfg.getFiniteNumber('OUTBOX_CLEANUP_INTERVAL_MS');
+    return value !== undefined && value > 0 ? value : 60_000;
+  }
+
+  private getRetentionHours(): number {
+    const value = this.cfg.getFiniteNumber('OUTBOX_RETENTION_HOURS');
+    return value !== undefined && value >= 0 ? value : 24;
+  }
+
   onModuleInit(): void {
     this.isStopping = false;
     void this.runLoop();
@@ -31,14 +46,14 @@ export class OutboxCleanupService implements OnModuleInit, OnModuleDestroy {
   }
 
   private computePublishedBefore(): Date {
-    const retentionMs = this.cfg.getOutboxRetentionHours() * 60 * 60 * 1000;
+    const retentionMs = this.getRetentionHours() * 60 * 60 * 1000;
     return new Date(Date.now() - retentionMs);
   }
 
   private async runLoop(): Promise<void> {
     while (!this.isStopping) {
       try {
-        const batchSize = this.cfg.getOutboxCleanupBatchSize();
+        const batchSize = this.getBatchSize();
         const publishedBefore = this.computePublishedBefore();
 
         const rows = await this.models.outboxMessage.findMany({
@@ -68,7 +83,7 @@ export class OutboxCleanupService implements OnModuleInit, OnModuleDestroy {
         // ignore and retry after sleep
       }
 
-      await setTimeout(this.cfg.getOutboxCleanupIntervalMs());
+      await setTimeout(this.getIntervalMs());
     }
   }
 }

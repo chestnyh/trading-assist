@@ -31,24 +31,9 @@ export class ServicesConfigs extends Configs {
     };
   }
 
-  private getFiniteNumber(configName: string): number | undefined {
+  getFiniteNumber(configName: string): number | undefined {
     const raw = this.get(configName);
     const value = Number(raw);
     return Number.isFinite(value) ? value : undefined;
-  }
-
-  getOutboxCleanupBatchSize(): number {
-    const value = this.getFiniteNumber('OUTBOX_CLEANUP_BATCH_SIZE');
-    return value !== undefined && value > 0 ? value : 500;
-  }
-
-  getOutboxCleanupIntervalMs(): number {
-    const value = this.getFiniteNumber('OUTBOX_CLEANUP_INTERVAL_MS');
-    return value !== undefined && value > 0 ? value : 60_000;
-  }
-
-  getOutboxRetentionHours(): number {
-    const value = this.getFiniteNumber('OUTBOX_RETENTION_HOURS');
-    return value !== undefined && value >= 0 ? value : 24;
   }
 }
