@@ -1,8 +1,8 @@
 import { ServicesConfigs } from '@trading-bot/configs';
 
 const cfg = new ServicesConfigs();
-const host = cfg.getApiHost();
-const port = cfg.getApiPort();
+const apiHost = cfg.getRequired('API_HOST');
+const apiPort = cfg.getRequired('API_PORT');
 
 const timeoutSeconds = 60;
 const intervalMs = 1000;
@@ -11,8 +11,18 @@ async function sleep(ms: number) {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function getApiBaseUrl(host: string, port: string): URL {
+  const hasScheme = /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(host);
+  const base = new URL(hasScheme ? host : `http://${host}`);
+  if (!base.port) {
+    base.port = port;
+  }
+  return base;
+}
+
 async function main() {
-  const url = `http://${host}:${port}/api/v1/users`;
+  const base = getApiBaseUrl(apiHost, apiPort);
+  const url = new URL('/api/v1/users', base).toString();
   const startedAt = Date.now();
 
   // Consider API ready if we get any HTTP response code (including 404/401/etc.).

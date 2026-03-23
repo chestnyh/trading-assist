@@ -8,7 +8,7 @@ export class ServicesConfigs extends Configs {
     super();
     this.configs = {
       ...this.configs,
-      API_HOST: process.env['API_HOST'] || 'localhost',
+      API_HOST: process.env['API_HOST'] || 'http://localhost',
       API_PORT: process.env['API_PORT'] ? parseInt(process.env['API_PORT'], 10).toString() : '3001',
       DB_USER: process.env['DB_USER'],
       DB_PASSWORD: process.env['DB_PASSWORD'],
@@ -26,13 +26,5 @@ export class ServicesConfigs extends Configs {
       JWT_EXPIRES_IN: process.env['JWT_EXPIRES_IN'] || '24h',
       MAX_PASSWORD_RESET_ATTEMPTS: process.env['MAX_PASSWORD_RESET_ATTEMPTS'] || '5',
     };
-  }
-
-  getApiHost(): string {
-    return this.getRequired('API_HOST');
-  }
-
-  getApiPort(): string {
-    return this.getRequired('API_PORT');
   }
 }
