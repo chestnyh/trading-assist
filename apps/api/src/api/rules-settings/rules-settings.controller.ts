@@ -84,4 +84,12 @@ export class RulesSettingsController {
   async removeSetting(@Request() req, @Param('id', ParseIntPipe) id: number) {
     return this.rulesSettingsService.removeSetting(id, req.user.id);
   }
+
+  @Get('telegram-chat-id/:id')
+  @ApiOperation({ summary: 'Get Telegram chat ID for a rule setting' })
+  @ApiParam({ name: 'id', type: Number, description: 'Rule setting ID' })
+  @ApiOkResponse({ description: 'Telegram chat ID', type: String })
+  async getTelegramChatId(@Request() req, @Param('id', ParseIntPipe) id: number) {
+    return this.rulesSettingsService.getTelegramChatId(id, req.user.id);
+  }
 }
