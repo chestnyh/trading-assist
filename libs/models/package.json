@@ -8,7 +8,7 @@
     "tslib": "^2.3.0",
     "@nestjs/common": "^10.4.15",
     "@prisma/client": "^6.5.0",
-    "@trading-bot/configs": "0.0.1"
+    "@trading-bot/configs": "workspace:*"
   },
   "scripts": {
     "generate": "npx prisma generate --schema=./prisma/schema.prisma",

@@ -24,6 +24,7 @@ export class ServicesConfigs extends Configs {
       JWT_SECRET: process.env['JWT_SECRET'] || 'your-secret-key',
       JWT_EXPIRES_IN: process.env['JWT_EXPIRES_IN'] || '24h',
       MAX_PASSWORD_RESET_ATTEMPTS: process.env['MAX_PASSWORD_RESET_ATTEMPTS'] || '5',
+      API_BASE_URL: process.env['API_BASE_URL'] || `http://localhost:${process.env['API_PORT'] || '3001'}`,
     };
   }
 }

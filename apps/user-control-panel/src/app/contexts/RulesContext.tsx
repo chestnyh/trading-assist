@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useAuth } from "./AuthContext";
-import { API_URL } from "libs/configs/src/lib/api-base-url";
 import { customInstance } from "@trading-bot/api-client";
 
 export type Rule = {
@@ -48,7 +47,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     try {
 
       const response = await fetch(
-        `http://localhost:3001/api/v1/rules?page=${page}&limit=${LIMIT}`,
+        `${process.env.API_BASE_URL}/api/v1/rules?page=${page}&limit=${LIMIT}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -75,7 +74,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
 
   const getRuleById = async (id: string): Promise<Rule | null> => {
     try {
-      const response = await fetch(`http://localhost:3001/api/v1/rules/${id}`, {
+      const response = await fetch(`${process.env.API_BASE_URL}/api/v1/rules/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) return null;
@@ -93,7 +92,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/v1/rules`, {
+      const response = await fetch(`${process.env.API_BASE_URL}/api/v1/rules`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +119,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
 
     setIsLoading(true);
     try {
-      await customInstance(`http://localhost:3001/api/v1/rules/${id}`, {
+      await customInstance(`${process.env.API_BASE_URL}/api/v1/rules/${id}`, {
         method: "PATCH",
         body: JSON.stringify(updatedRule),
       });
@@ -142,7 +141,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
 
     setIsLoading(true);
     try {
-      await customInstance(`http://localhost:3001/api/v1/rules/${id}`, {
+      await customInstance(`${process.env.API_BASE_URL}/api/v1/rules/${id}`, {
         method: "DELETE",
       });
       await fetchRules(currentPage);

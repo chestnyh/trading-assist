@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authControllerLogin } from '@trading-bot/api-client';
-import { API_URL } from 'libs/configs/src/lib/api-base-url';
 
 interface User {
   id: number;
@@ -143,7 +142,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signUp = async (email: string, password: string, name: string, nickname: string): Promise<boolean> => {
     try {
       // Call your API sign up endpoint
-      const response = await fetch(`${API_URL}/api/v1/users`, {
+      const response = await fetch(`${process.env.API_BASE_URL}/api/v1/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -28,7 +28,7 @@ export const customInstance = async <T>(
   schema?: z.ZodSchema<T>
 ): Promise<T> => {
   // Base URL configuration
-  const baseURL = process.env['NX_API_BASE_URL'] || 'http://localhost:3001';
+  const baseURL = process.env['API_BASE_URL'];
   const fullUrl = url.startsWith('http') ? url : `${baseURL}${url}`;
 
   // Merge default headers

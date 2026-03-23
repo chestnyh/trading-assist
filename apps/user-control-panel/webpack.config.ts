@@ -3,10 +3,11 @@ const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { NxReactWebpackPlugin } = require('@nx/react/webpack-plugin');
 const { join } = require('path');
 const webpack = require('webpack');
-const dotenv = require('dotenv');
-
-dotenv.config({ path: join(__dirname, '../../.env.dev') });
-
+const { ServicesConfigs } = require('@trading-bot/configs');
+const configs = new ServicesConfigs();
+console.log("ggggggggggg =", configs.get('API_BASE_URL'));
+console.log("ggggggggggg =", configs.get('ENV_FILE'));
+console.log("ggggggggggg =", configs.get('NODE_ENV'));
 module.exports = {
   output: {
     path: join(__dirname, '../../dist/apps/user-control-panel'),
@@ -37,9 +38,10 @@ module.exports = {
       // See: https://react-svgr.com/
       // svgr: false
     }),
-    new webpack.DefinePlugin({
-      'process.env.NX_API_BASE_URL': JSON.stringify(process.env.NX_API_BASE_URL),
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    new webpack.DefinePlugin(() => {
+      return {
+        'process.env.API_BASE_URL': configs.get('API_BASE_URL')
+      }
     }),
   ],
 };
