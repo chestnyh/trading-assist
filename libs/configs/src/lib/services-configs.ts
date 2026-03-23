@@ -4,6 +4,11 @@ import { Configs } from "./configs";
  * TODO add description
  */
 export class ServicesConfigs extends Configs {
+  private static finiteNumber(raw: string | undefined): number | undefined {
+    const value = Number(raw);
+    return Number.isFinite(value) ? value : undefined;
+  }
+
   constructor() {
     super();
     this.configs = {
@@ -25,15 +30,14 @@ export class ServicesConfigs extends Configs {
       JWT_EXPIRES_IN: process.env['JWT_EXPIRES_IN'] || '24h',
       MAX_PASSWORD_RESET_ATTEMPTS: process.env['MAX_PASSWORD_RESET_ATTEMPTS'] || '5',
 
-      OUTBOX_CLEANUP_BATCH_SIZE: process.env['OUTBOX_CLEANUP_BATCH_SIZE'],
-      OUTBOX_CLEANUP_INTERVAL_MS: process.env['OUTBOX_CLEANUP_INTERVAL_MS'],
-      OUTBOX_RETENTION_HOURS: process.env['OUTBOX_RETENTION_HOURS'],
+      OUTBOX_CLEANUP_BATCH_SIZE: String(ServicesConfigs.finiteNumber(process.env['OUTBOX_CLEANUP_BATCH_SIZE']) ?? 500),
+      OUTBOX_CLEANUP_INTERVAL_MS: String(ServicesConfigs.finiteNumber(process.env['OUTBOX_CLEANUP_INTERVAL_MS']) ?? 60_000),
+      OUTBOX_RETENTION_HOURS: String(ServicesConfigs.finiteNumber(process.env['OUTBOX_RETENTION_HOURS']) ?? 24),
     };
   }
 
   getFiniteNumber(configName: string): number | undefined {
     const raw = this.get(configName);
-    const value = Number(raw);
-    return Number.isFinite(value) ? value : undefined;
+    return ServicesConfigs.finiteNumber(raw);
   }
 }
