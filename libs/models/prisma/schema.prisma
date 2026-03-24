@@ -13,13 +13,112 @@ datasource db {
   url      = env("DB_URL")
 }
 
+enum TradingExperienceLevel {
+  Beginner
+  Intermediate
+  Advanced
+}
+
+enum PrimaryTradingStrategy {
+  Scalping
+  DayTrading
+  SwingTrading
+  PositionTrading
+  Automated
+}
+
+enum RiskTolerance {
+  Conservative
+  Moderate
+  Aggressive
+}
+
+enum TradingPlatform {
+  Binance
+  Bybit
+  Kraken
+  Other
+}
+
 model User {
   id    Int     @default(autoincrement()) @id
   nickname String @unique
   email String  @unique
-  password String 
-  name  String?
+  password String
+  firstName String
+  lastName String
+  isEmailVerified Boolean @default(false)
+  emailVerificationToken String
+  emailVerificationCode String
+  tradingExperienceLevel TradingExperienceLevel?
+  primaryTradingStrategy PrimaryTradingStrategy?
+  riskTolerance RiskTolerance?
+  preferredTradingPlatforms TradingPlatform[] @default([])
   rules UserRules[]
+  passwordResets PasswordReset[]
+  ruleSettings UserRuleSettings[]
+  tags         RuleSettingsTags[]
+}
+
+model ExternalServices {
+  id Int @id @default(autoincrement())
+  name String @unique
+  code String @unique
+  logoUrl String?
+  fieldsSchema Json @default("[]")
+  userRuleSettings UserRuleSettings[]
+}
+
+model UserRuleSettings {
+  id Int @id @default(autoincrement())
+  name String
+  code String @unique
+  description String?
+
+  authorId Int
+  author User @relation(fields: [authorId], references: [id])
+
+  externalServiceId Int
+  externalService ExternalServices @relation(fields: [externalServiceId], references: [id])
+
+  configuration Json @default("{}")
+  tags RuleSettingsToRuleSettingsTags[]
+
+  @@unique([authorId, code])
+}
+
+model RuleSettingsTags {
+  id Int @id @default(autoincrement())
+  name String
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  rules RuleSettingsToRuleSettingsTags[]
+  @@unique([name, userId])
+}
+
+model RuleSettingsToRuleSettingsTags {
+  ruleSettingId Int
+  ruleSetting UserRuleSettings @relation(fields: [ruleSettingId], references: [id], onDelete: Cascade)
+
+  ruleSettingTagId Int
+  ruleSettingTag RuleSettingsTags @relation(fields: [ruleSettingTagId], references: [id], onDelete: Cascade)
+
+  @@id([ruleSettingId, ruleSettingTagId])
+}
+
+model PasswordReset {
+  id              Int       @default(autoincrement()) @id
+  userId          Int
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token           String    @unique
+  code            String
+  verified        Boolean   @default(false)
+  attemptsCount   Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([token])
+  @@index([userId])
 }
 
 model UserRules {
@@ -29,4 +128,22 @@ model UserRules {
   authorId  Int
   author    User    @relation(fields: [authorId], references: [id])
   ruleBody  Json @default("{}")
+}
+
+model OutboxMessage {
+  id           Int      @id @default(autoincrement())
+  topic        String
+  producer     String
+  payload      Json
+
+  createdAt    DateTime @default(now())
+  publishedAt  DateTime?
+
+  attempts     Int      @default(0)
+  nextAttemptAt DateTime?
+  lastError    String?
+
+  @@index([publishedAt])
+  @@index([nextAttemptAt])
+  @@index([createdAt])
 }

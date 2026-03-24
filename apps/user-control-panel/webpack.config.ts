@@ -1,3 +1,4 @@
+/* eslint-disable */
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { NxReactWebpackPlugin } = require('@nx/react/webpack-plugin');
 const { join } = require('path');
@@ -18,11 +19,12 @@ module.exports = {
     new NxAppWebpackPlugin({
       tsConfig: './tsconfig.app.json',
       compiler: 'babel',
-      main: './src/main.tsx',
+      main: './src/app/index.tsx',
       index: './src/index.html',
       baseHref: '/',
       assets: ['./src/favicon.ico', './src/assets'],
-      styles: ['./src/styles.scss'],
+      // styles: ['./src/styles.scss'],
+      styles: ['./src/index.css'],
       outputHashing: process.env['NODE_ENV'] === 'production' ? 'all' : 'none',
       optimization: process.env['NODE_ENV'] === 'production',
     }),

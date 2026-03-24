@@ -1,0 +1,55 @@
+# Trading Bot Project - Designer Overview
+
+## Main Project Goals
+
+This trading bot project is designed to provide users with a wide range of possibilities and maximum flexibility for trading strategy settings, allowing them to create custom automated workflows through an intuitive visual interface. This comprehensive solution is implemented through a modern web-based control panel with real-time data visualization, multi-exchange integration, and modular action architecture that supports everything from simple price alerts to complex multi-step trading algorithms.
+
+## Project Goals
+
+The primary goal is to revolutionize automated trading workflows by implementing a flexible settings approach that goes beyond traditional form-based interfaces with restricted fields (strings, integers, selects). Instead of limiting traders to predefined form fields, this platform provides dynamic, configurable settings that adapt to different trading strategies, making traders' lives easier and significantly extending the range of possibilities for automated trading solutions.
+
+## Target Audience
+
+This platform is designed for traders who want to move beyond basic automated trading tools and create sophisticated, customized strategies without coding expertise. The target audience includes:
+
+- **Retail Traders**: Individual investors seeking advanced automation capabilities
+- **Crypto Enthusiasts**: Users who want to implement complex strategies like DCA (Dollar Cost Averaging), portfolio rebalancing, and multi-exchange arbitrage
+- **Trading Strategy Developers**: Professionals who need to test and deploy custom algorithms with flexible configuration options
+- **Portfolio Managers**: Users managing multiple trading strategies who require comprehensive oversight and customization tools
+- **Non-Technical Traders**: Individuals with trading knowledge but limited programming skills who want to leverage algorithmic trading benefits
+
+## Design Goals
+
+The design approach prioritizes minimalism and technical focus to ensure users stay concentrated on essential trading functionality:
+
+- **Minimalistic Interface**: Clean, uncluttered design that eliminates distractions and keeps focus on core technical information and trading functionality
+- **Hierarchical Information Architecture**: Most important features and data are prominently accessible, while secondary functions are appropriately de-emphasized
+- **Trading-Focused Design Language**: Interface design inspired by established cryptocurrency exchanges (Binance, Bybit, Kraken, TradingView) that users are already familiar with
+- **Technical Data Priority**: Design emphasizes technical indicators, market data, and strategy performance metrics over decorative elements
+- **Strict Visual Hierarchy**: Clear, disciplined layout that guides users' attention to critical trading information and workflow management
+- **Familiar UX Patterns**: Leverage existing trading platform conventions to reduce learning curve for traders
+
+## Informational Architecture
+
+The platform's information structure prioritizes trading functionality and strategy management through clear, hierarchical organization:
+
+### Primary Navigation Structure:
+- **Dashboard**: Real-time overview of active strategies, portfolio performance, and market data
+- **Strategy Builder**: Visual workflow creation interface with drag-and-drop components
+- **Strategy Library**: Repository of saved strategies with categorization and search functionality
+- **Market Data**: Live price feeds, charts, and technical indicators across multiple exchanges
+- **Portfolio Management**: Account overview, balance tracking, and performance analytics
+- **Settings & Configuration**: User preferences, exchange API connections, and notification settings
+
+### Information Hierarchy:
+1. **Critical Data** (Always Visible): Active strategy status, current portfolio value, real-time P&L
+2. **Important Data** (Primary Tabs): Strategy performance, market charts, order history
+3. **Secondary Data** (Sub-menus): Configuration options, historical data, user settings
+4. **Supporting Data** (Collapsible Sections): Help documentation, advanced settings, logs
+
+### Data Presentation Principles:
+- **Real-time Updates**: Live data prominently displayed with clear visual indicators
+- **Contextual Information**: Related data grouped together (strategy + performance + logs)
+- **Progressive Detail**: Summary views with drill-down capabilities for detailed analysis
+- **Action-Oriented Layout**: Primary actions (create, edit, execute) easily accessible from relevant data views
+

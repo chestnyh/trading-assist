@@ -4,16 +4,21 @@
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "moduleResolution": "node10",
-    "jsx": "react-tsx",
+    "jsx": "react-jsx",
     "types": [
       "jest",
       "node",
+      "@testing-library/jest-dom",
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"
     ]
   },
   "include": [
     "jest.config.ts",
+    "int-tests/**/*.test.ts",
+    "int-tests/**/*.spec.ts",
+    "int-tests/**/*.test.tsx",
+    "int-tests/**/*.spec.tsx",
     "src/**/*.test.ts",
     "src/**/*.spec.ts",
     "src/**/*.test.tsx",

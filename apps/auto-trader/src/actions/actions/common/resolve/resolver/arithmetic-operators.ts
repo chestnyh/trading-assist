@@ -12,15 +12,15 @@ const arithmeticOperators = {
         return left / right;
     },
     __multiply(operands): number {
-        let [left, right] = operands;
+        const [left, right] = operands;
         return this.resolve(left) * this.resolve(right);
     },
     __plus(operands): number {
-        let [left, right] = operands;
+        const [left, right] = operands;
         return this.resolve(left) + this.resolve(right);
     },
     __absolute(operands): number {    
-        let [value] = operands;
+        const [value] = operands;
         return Math.abs(this.resolve(value));
     }
 

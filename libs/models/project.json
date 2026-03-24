@@ -10,6 +10,9 @@
       "outputs": [
         "{options.outputPath}"
       ],
+      "dependsOn": [
+        "migrations:generate"
+      ],
       "options": {
         "outputPath": "dist/libs/models",
         "main": "libs/models/src/index.ts",
