@@ -34,27 +34,13 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
     formData.rule !== (initialData?.rule || "");
 
   const handleSubmit = async () => {
-    const newErrors: Record<string, string> = {};
-
-    let parsedRuleBody: unknown;
-    try {
-      parsedRuleBody = JSON.parse(formData.rule);
-    } catch {
-      newErrors.rule = "Invalid JSON format. Please check your syntax.";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
     setErrors({});
 
     try {
       await onSubmit({
         name: formData.name,
         description: formData.description,
-        ruleBody: parsedRuleBody,
+        ruleBody: formData.rule,
       });
     } catch (err) {
       const error = err as Error;

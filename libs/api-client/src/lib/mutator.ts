@@ -93,7 +93,8 @@ export const customInstance = async <T>(
         typeof config.body === 'string' ? JSON.parse(config.body) : config.body;
       const validationSchema = schema || requestSchema;
       if (validationSchema) {
-        validationSchema.parse(bodyData); // This will throw an error if the data is invalid
+        const parsedBody = validationSchema.parse(bodyData); // This will throw an error if the data is invalid
+        config.body = JSON.stringify(parsedBody);
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
