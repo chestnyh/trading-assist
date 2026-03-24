@@ -1,6 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { useAuth } from "./AuthContext";
-import { customInstance, rulesControllerCreate } from "@trading-bot/api-client";
+import {
+  customInstance,
+  rulesControllerCreate,
+  rulesControllerRemove,
+  rulesControllerUpdate,
+} from "@trading-bot/api-client";
 
 export type Rule = {
   id: string;
@@ -45,20 +50,18 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `http://localhost:3001/api/v1/rules?page=${page}&limit=${LIMIT}`,
+      const response = await customInstance<{ status: number; data: any }>(
+        `/api/v1/rules?page=${page}&limit=${LIMIT}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          method: 'GET',
         }
       );
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error(`Server responded with status ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = response.data;
       setRules(data.rules);
       setTotalCount(data.total);
 
@@ -73,11 +76,14 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
 
   const getRuleById = async (id: string): Promise<Rule | null> => {
     try {
-      const response = await fetch(`http://localhost:3001/api/v1/rules/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) return null;
-      return await response.json();
+      const response = await customInstance<{ status: number; data: any }>(
+        `/api/v1/rules/${id}`,
+        {
+          method: 'GET',
+        }
+      );
+      if (response.status !== 200) return null;
+      return response.data;
     } catch (error) {
       console.error("Failed to fetch rule details", error);
       return null;
@@ -104,12 +110,14 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
       return false;
     }
 
+    const ruleId = Number(id);
+    if (!Number.isFinite(ruleId)) {
+      return false;
+    }
+
     setIsLoading(true);
     try {
-      await customInstance(`http://localhost:3001/api/v1/rules/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify(updatedRule),
-      });
+      await rulesControllerUpdate(ruleId, updatedRule as any);
 
       await fetchRules(currentPage);
       return true;
@@ -123,11 +131,14 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
       return false;
     }
 
+    const ruleId = Number(id);
+    if (!Number.isFinite(ruleId)) {
+      return false;
+    }
+
     setIsLoading(true);
     try {
-      await customInstance(`http://localhost:3001/api/v1/rules/${id}`, {
-        method: "DELETE",
-      });
+      await rulesControllerRemove(ruleId);
       await fetchRules(currentPage);
       return true;
     } finally {

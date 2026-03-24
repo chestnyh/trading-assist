@@ -1,5 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authControllerLogin, extractFirstFieldErrorsFromApiClientError } from '@trading-bot/api-client';
+import {
+  authControllerLogin,
+  extractFieldToMessageFromValidationError,
+  isValidationError,
+} from '@trading-bot/api-client';
 
 interface User {
   id: number;
@@ -96,11 +100,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else {
         return { success: false, error: "Invalid response from server" };
       }
-    } catch (error: unknown) {
+    } catch (err) {
+      const error = err as Error;
       let errorMessage = "Login failed. Please try again.";
 
       // api-client request validation errors (Zod issues)
-      const validationErrors = extractFirstFieldErrorsFromApiClientError(error);
+      const validationErrors = isValidationError(error)
+        ? extractFieldToMessageFromValidationError(error)
+        : {};
       if (Object.keys(validationErrors).length > 0) {
         const fieldErrors: LoginResult['fieldErrors'] = {};
 
@@ -120,8 +127,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           return { success: false, error: errorMessage };
         }
 
-        if ("message" in error) {
-          const message = String(error.message);
+        const message = typeof error.message === 'string' ? error.message : undefined;
+        if (message) {
 
           if (message === "Failed to fetch" || message.includes("fetch")) {
             errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";

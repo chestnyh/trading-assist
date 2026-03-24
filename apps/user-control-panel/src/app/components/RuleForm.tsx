@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Input } from "../../shared/ui/forms/Input";
 import { TextArea } from "../../shared/ui/forms/TextArea";
 import { Button } from "../../shared/ui/buttons/Button";
-import { extractFirstFieldErrorsFromApiClientError } from '@trading-bot/api-client';
+import { extractFieldToMessageFromValidationError, isValidationError } from '@trading-bot/api-client';
 
 interface RuleFormProps {
   initialData?: { name: string; description: string; rule: string };
@@ -33,12 +33,10 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
     formData.description !== (initialData?.description || "") ||
     formData.rule !== (initialData?.rule || "");
 
-  const handleValidateAndSubmit = async () => {
+  const handleSubmit = async () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.rule.trim()) newErrors.rule = "Rule is required";
-
-    let parsedRuleBody: unknown = null;
+    let parsedRuleBody: unknown;
     try {
       parsedRuleBody = JSON.parse(formData.rule);
     } catch {
@@ -58,17 +56,14 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
         description: formData.description,
         ruleBody: parsedRuleBody,
       });
-    } catch (err: unknown) {
-      const nextErrors: Record<string, string> = extractFirstFieldErrorsFromApiClientError(err);
+    } catch (err) {
+      const error = err as Error;
+      const nextErrors: Record<string, string> = isValidationError(error)
+        ? extractFieldToMessageFromValidationError(error)
+        : {};
 
       if (Object.keys(nextErrors).length === 0) {
-        const fallbackMessage =
-          err &&
-          typeof err === 'object' &&
-          'message' in err &&
-          typeof (err as { message?: unknown }).message === 'string'
-            ? (err as { message: string }).message
-            : undefined;
+        const fallbackMessage = typeof error?.message === 'string' ? error.message : undefined;
         nextErrors.form = fallbackMessage || 'Failed to save rule';
       }
 
@@ -138,7 +133,7 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
         <Button
           text={isLoading ? "Processing..." : submitLabel}
           variant="primary"
-          onClick={handleValidateAndSubmit}
+          onClick={handleSubmit}
           disabled={isLoading || !isDirty}
         />
       </div>
