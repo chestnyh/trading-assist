@@ -55,8 +55,6 @@ model User {
   riskTolerance RiskTolerance?
   preferredTradingPlatforms TradingPlatform[] @default([])
   rules UserRules[]
-  telegramSettings UserTelegramSettings[]
-
   passwordResets PasswordReset[]
   ruleSettings UserRuleSettings[]
   tags         RuleSettingsTags[]
@@ -148,13 +146,4 @@ model OutboxMessage {
   @@index([publishedAt])
   @@index([nextAttemptAt])
   @@index([createdAt])
-}
-
-model UserTelegramSettings {
-  id    Int     @default(autoincrement()) @id
-  name String
-  description String
-  apiToken String
-  userId Int
-  user User @relation(fields: [userId], references: [id])
 }

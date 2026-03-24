@@ -298,15 +298,6 @@ export default async function main() {
                             }
                         ]
                     },
-                    telegramSettings: {
-                        create: [
-                            {
-                                name: 'Telegram Settings',
-                                description: 'Telegram settings',
-                                apiToken: '1234567890',
-                            }
-                        ]
-                    },
                     ruleSettings: {
                         create: [
                             {
