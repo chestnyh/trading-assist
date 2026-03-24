@@ -43,7 +43,9 @@ describe("Authorization Flow (Integration)", () => {
     try {
       window.localStorage.clear();
       window.sessionStorage.clear();
-    } catch {}
+    } catch (e) {
+      void e;
+    }
   });
 
   it("allows navigation to Sign In from Main via header button", async () => {

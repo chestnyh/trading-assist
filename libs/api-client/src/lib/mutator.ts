@@ -66,6 +66,9 @@ export const customInstance = async <T>(
   const baseURL = process.env['API_BASE_URL'] || 'http://localhost:3001';
   const fullUrl = url.startsWith('http') ? url : `${baseURL}${url}`;
 
+  // When schema matching, use the URL pathname so absolute URLs are supported.
+  const urlPath = url.startsWith('http') ? new URL(url).pathname : url;
+
   // Merge default headers
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -83,14 +86,15 @@ export const customInstance = async <T>(
   }
 
   // Validate request body using URL-based schema mapping
-  const requestSchema = getRequestSchemaForUrl(url);
+  const requestSchema = getRequestSchemaForUrl(urlPath);
   if (config.body && (schema || requestSchema)) {
     try {
       const bodyData =
         typeof config.body === 'string' ? JSON.parse(config.body) : config.body;
       const validationSchema = schema || requestSchema;
       if (validationSchema) {
-        validationSchema.parse(bodyData); // This will throw an error if the data is invalid
+        const parsedBody = validationSchema.parse(bodyData); // This will throw an error if the data is invalid
+        config.body = JSON.stringify(parsedBody);
       }
     } catch (error) {
       if (error instanceof z.ZodError) {

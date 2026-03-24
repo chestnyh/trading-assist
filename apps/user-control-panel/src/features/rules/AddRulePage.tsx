@@ -7,10 +7,10 @@ export function AddRulePage() {
 	const { addRule, isLoading } = useRules();
 
 	const handleSave = async (data: { name: string; description: string; ruleBody: any }) => {
-        const success = await addRule(data);
-        if (success) {
-            navigate("/rules");
-        }
+		const success = await addRule(data);
+		if (success) {
+			navigate("/rules");
+		}
 	}
 
 	return (

@@ -2,7 +2,6 @@ import { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Check } from "lucide-react";
 import { authControllerVerifyEmail } from "@trading-bot/api-client";
-import { VerifyEmailDtoSchema } from "@trading-bot/api-validator";
 
 import { Input } from "../../../shared/ui/forms/Input";
 import { Button } from "../../../shared/ui/buttons/Button";
@@ -32,11 +31,11 @@ export function Step4Content() {
     }, [isSuccess, navigate]);
 
     const getValidationError = (value: string): string | null => {
-        const result = VerifyEmailDtoSchema.shape.code.safeParse(value);
-        if (!result.success) {
-            return result.error.issues[0]?.message || step4.errors.invalidCodeField;
+        if (!value) {
+            return "Verification code is required";
         }
-        return null;
+
+        return /^\d{6}$/.test(value) ? null : step4.errors.invalidCodeField;
     };
 
     const isCodeValid = getValidationError(code) === null;
