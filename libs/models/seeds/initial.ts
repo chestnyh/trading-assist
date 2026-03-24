@@ -47,15 +47,6 @@ export default async function main() {
                                 ruleBody: parallelRule
                             }
                         ]
-                    },
-                    telegramSettings: {
-                        create: [
-                            {
-                                name: 'Telegram Settings',
-                                description: 'Telegram settings',
-                                apiToken: '1234567890',
-                            }
-                        ]
                     }
                 },
                 update: {}

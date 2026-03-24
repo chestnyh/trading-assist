@@ -20,7 +20,6 @@ model User {
   password String 
   name  String?
   rules UserRules[]
-  telegramSettings UserTelegramSettings[]
 }
 
 model UserRules {
@@ -30,13 +29,4 @@ model UserRules {
   authorId  Int
   author    User    @relation(fields: [authorId], references: [id])
   ruleBody  Json @default("{}")
-}
-
-model UserTelegramSettings {
-  id    Int     @default(autoincrement()) @id
-  name String
-  description String
-  apiToken String
-  userId Int
-  user User @relation(fields: [userId], references: [id])
 }
