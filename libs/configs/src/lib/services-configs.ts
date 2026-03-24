@@ -1,14 +1,10 @@
 import { Configs } from "./configs";
+import { getFiniteNumber } from "./utils";
 
 /**
  * TODO add description
  */
 export class ServicesConfigs extends Configs {
-  private static finiteNumber(raw: string | undefined): number | undefined {
-    const value = Number(raw);
-    return Number.isFinite(value) ? value : undefined;
-  }
-
   constructor() {
     super();
     this.configs = {
@@ -30,14 +26,9 @@ export class ServicesConfigs extends Configs {
       JWT_EXPIRES_IN: process.env['JWT_EXPIRES_IN'] || '24h',
       MAX_PASSWORD_RESET_ATTEMPTS: process.env['MAX_PASSWORD_RESET_ATTEMPTS'] || '5',
 
-      OUTBOX_CLEANUP_BATCH_SIZE: String(ServicesConfigs.finiteNumber(process.env['OUTBOX_CLEANUP_BATCH_SIZE']) ?? 500),
-      OUTBOX_CLEANUP_INTERVAL_MS: String(ServicesConfigs.finiteNumber(process.env['OUTBOX_CLEANUP_INTERVAL_MS']) ?? 60_000),
-      OUTBOX_RETENTION_HOURS: String(ServicesConfigs.finiteNumber(process.env['OUTBOX_RETENTION_HOURS']) ?? 24),
+      OUTBOX_CLEANUP_BATCH_SIZE: String(getFiniteNumber(process.env['OUTBOX_CLEANUP_BATCH_SIZE'] ?? '500') ?? 500),
+      OUTBOX_CLEANUP_INTERVAL_MS: String(getFiniteNumber(process.env['OUTBOX_CLEANUP_INTERVAL_MS'] ?? '60000') ?? 60_000),
+      OUTBOX_RETENTION_HOURS: String(getFiniteNumber(process.env['OUTBOX_RETENTION_HOURS'] ?? '24') ?? 24),
     };
-  }
-
-  getFiniteNumber(configName: string): number | undefined {
-    const raw = this.get(configName);
-    return ServicesConfigs.finiteNumber(raw);
   }
 }

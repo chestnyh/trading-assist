@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { setTimeout } from 'node:timers/promises';
-import { ServicesConfigs } from '@trading-bot/configs';
+import { getFiniteNumber, ServicesConfigs } from '@trading-bot/configs';
 import { ModelsService } from '@trading-bot/models';
 
 @Injectable()
@@ -21,19 +21,36 @@ export class OutboxCleanupService implements OnModuleInit, OnModuleDestroy {
     private readonly cfg: ServicesConfigs
   ) {}
 
+  private getPositiveNumber(configName: string): number | undefined {
+    const raw = this.cfg.get(configName);
+    if (typeof raw !== 'string') {
+      return undefined;
+    }
+
+    const value = getFiniteNumber(raw);
+    return value !== undefined && value > 0 ? value : undefined;
+  }
+
+  private getNonNegativeNumber(configName: string): number | undefined {
+    const raw = this.cfg.get(configName);
+    if (typeof raw !== 'string') {
+      return undefined;
+    }
+
+    const value = getFiniteNumber(raw);
+    return value !== undefined && value >= 0 ? value : undefined;
+  }
+
   private getBatchSize(): number {
-    const value = this.cfg.getFiniteNumber('OUTBOX_CLEANUP_BATCH_SIZE');
-    return value !== undefined && value > 0 ? value : 500;
+    return this.getPositiveNumber('OUTBOX_CLEANUP_BATCH_SIZE') ?? 500;
   }
 
   private getIntervalMs(): number {
-    const value = this.cfg.getFiniteNumber('OUTBOX_CLEANUP_INTERVAL_MS');
-    return value !== undefined && value > 0 ? value : 60_000;
+    return this.getPositiveNumber('OUTBOX_CLEANUP_INTERVAL_MS') ?? 60_000;
   }
 
   private getRetentionHours(): number {
-    const value = this.cfg.getFiniteNumber('OUTBOX_RETENTION_HOURS');
-    return value !== undefined && value >= 0 ? value : 24;
+    return this.getNonNegativeNumber('OUTBOX_RETENTION_HOURS') ?? 24;
   }
 
   onModuleInit(): void {
