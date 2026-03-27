@@ -20,10 +20,12 @@ export interface LogEntry {
 export interface LoggerModuleOptions {
   service: string;
   environment: string;
+  enableConsole?: boolean;
   enableElasticsearch?: boolean;
   elasticsearch?: {
     node: string;
     index: string;
+    headers?: Record<string, string>;
   };
 }
 
