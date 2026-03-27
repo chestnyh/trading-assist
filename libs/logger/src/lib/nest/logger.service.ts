@@ -3,21 +3,31 @@ import { LOGGER_OPTIONS } from './logger.constants';
 import type { LogEntry, LogError, LogLevel, LoggerModuleOptions } from '../types';
 
 @Injectable()
+/**
+ * NestJS-compatible logger.
+ *
+ * - Console transport is enabled by default.
+ * - Elasticsearch transport is enabled only when explicitly configured.
+ */
 export class LoggerService implements NestLoggerService {
   private readonly serviceName: string;
   private readonly environment: string;
+  private readonly enableConsole: boolean;
   private readonly enableElasticsearch: boolean;
   private readonly elasticNode?: string;
   private readonly elasticIndex?: string;
+  private readonly elasticHeaders?: Record<string, string>;
 
   constructor(
     @Inject(LOGGER_OPTIONS) private readonly options: LoggerModuleOptions
   ) {
     this.serviceName = options.service;
     this.environment = options.environment;
+    this.enableConsole = options.enableConsole ?? true;
     this.enableElasticsearch = Boolean(options.enableElasticsearch);
     this.elasticNode = options.elasticsearch?.node;
     this.elasticIndex = options.elasticsearch?.index;
+    this.elasticHeaders = options.elasticsearch?.headers;
   }
 
   log(message: any, ...optionalParams: any[]): void {
@@ -98,7 +108,9 @@ export class LoggerService implements NestLoggerService {
       meta: input.meta ?? {},
     };
 
-    this.consoleTransport(entry);
+    if (this.enableConsole) {
+      this.consoleTransport(entry);
+    }
 
     if (this.shouldSendToElasticsearch()) {
       void this.elasticsearchTransport(entry);
@@ -146,6 +158,8 @@ export class LoggerService implements NestLoggerService {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
+          // Optional auth/custom headers (e.g. Authorization) for protected clusters.
+          ...(this.elasticHeaders ?? {}),
         },
         body,
       });
