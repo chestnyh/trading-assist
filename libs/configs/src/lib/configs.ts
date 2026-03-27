@@ -8,7 +8,7 @@ export abstract class Configs {
     if (process?.env?.['NODE_ENV'] === 'api-int-tests') {
       envFile = './.env.api-int-tests';
     }
-    else if (process?.env?.['NODE_ENV'] !== 'production') {
+    else if (!process?.env?.['NODE_ENV'] || process?.env?.['NODE_ENV'] === 'development') {
       envFile = './.env.dev';
     }
 

@@ -3,17 +3,18 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { createSwaggerConfig } from './swagger.config'
 import { ApiModule } from './api/api.module';
 import { ServicesConfigs } from '@trading-bot/configs';
 import { SchemaValidationPipe } from '@trading-bot/api-validator/nest';
+import { LoggerService } from '@trading-bot/logger';
 const configs = new ServicesConfigs();
 
 async function bootstrap() {
-  const app = await NestFactory.create(ApiModule);
+  const app = await NestFactory.create(ApiModule, { bufferLogs: true });
+  app.useLogger(app.get(LoggerService));
 
   // Enable CORS
   app.enableCors({
@@ -40,7 +41,7 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
   const port = configs.get('API_PORT');
   await app.listen(port);
-  Logger.log(
+  app.get(LoggerService).log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
   );
 }

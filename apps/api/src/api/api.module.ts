@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ServicesConfigsModule, ServicesConfigs } from '@trading-bot/configs';
 import { ModelsModule } from '@trading-bot/models';
 import { ServiceCommModule } from '@trading-bot/service-comm';
+import { LoggerModule } from '@trading-bot/logger';
 import { OutboxModule } from './outbox/outbox.module';
 
 import { UsersApiModule } from "./users/users.api.module";
@@ -14,6 +15,47 @@ import { ExternalServicesModule } from './external-services/external-services.mo
 @Module({
   imports: [
     ServicesConfigsModule,
+    LoggerModule.forRootAsync({
+      inject: [ServicesConfigs],
+      useFactory: (cfg: ServicesConfigs) => ({
+        service: 'api',
+        environment: cfg.get('NODE_ENV') ?? 'development',
+        enableConsole: (cfg.get('LOG_ENABLE_CONSOLE') ?? 'true') === 'true',
+        enableElasticsearch: (cfg.get('LOG_ENABLE_ELASTICSEARCH') ?? 'false') === 'true',
+        elasticsearch:
+          cfg.get('LOG_ELASTICSEARCH_NODE') && cfg.get('LOG_ELASTICSEARCH_INDEX')
+            ? {
+                node: cfg.get('LOG_ELASTICSEARCH_NODE')!,
+                index: cfg.get('LOG_ELASTICSEARCH_INDEX')!,
+                headers: (() => {
+                  const headers: Record<string, string> = {};
+
+                  const explicitAuthHeader = cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER');
+                  if (explicitAuthHeader) {
+                    headers['authorization'] = explicitAuthHeader;
+                    return headers;
+                  }
+
+                  const apiKey = cfg.get('LOG_ELASTICSEARCH_API_KEY');
+                  if (apiKey) {
+                    headers['authorization'] = `ApiKey ${apiKey}`;
+                    return headers;
+                  }
+
+                  const username = cfg.get('LOG_ELASTICSEARCH_USERNAME');
+                  const password = cfg.get('LOG_ELASTICSEARCH_PASSWORD');
+                  if (username && password) {
+                    headers['authorization'] = `Basic ${Buffer.from(
+                      `${username}:${password}`
+                    ).toString('base64')}`;
+                  }
+
+                  return headers;
+                })(),
+              }
+            : undefined,
+      }),
+    }),
     ServiceCommModule.forRootAsync({
       inject: [ServicesConfigs],
       useFactory: (cfg: ServicesConfigs) => ({
