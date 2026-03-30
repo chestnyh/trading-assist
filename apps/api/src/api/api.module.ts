@@ -27,31 +27,7 @@ import { ExternalServicesModule } from './external-services/external-services.mo
             ? {
                 node: cfg.get('LOG_ELASTICSEARCH_NODE')!,
                 index: cfg.get('LOG_ELASTICSEARCH_INDEX')!,
-                headers: (() => {
-                  const headers: Record<string, string> = {};
-
-                  const explicitAuthHeader = cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER');
-                  if (explicitAuthHeader) {
-                    headers['authorization'] = explicitAuthHeader;
-                    return headers;
-                  }
-
-                  const apiKey = cfg.get('LOG_ELASTICSEARCH_API_KEY');
-                  if (apiKey) {
-                    headers['authorization'] = `ApiKey ${apiKey}`;
-                    return headers;
-                  }
-
-                  const username = cfg.get('LOG_ELASTICSEARCH_USERNAME');
-                  const password = cfg.get('LOG_ELASTICSEARCH_PASSWORD');
-                  if (username && password) {
-                    headers['authorization'] = `Basic ${Buffer.from(
-                      `${username}:${password}`
-                    ).toString('base64')}`;
-                  }
-
-                  return headers;
-                })(),
+                headers: cfg.getLoggerElasticsearchHeaders(),
               }
             : undefined,
       }),

@@ -40,4 +40,26 @@ export class ServicesConfigs extends Configs {
       OUTBOX_RETENTION_HOURS: String(getFiniteNumber(process.env['OUTBOX_RETENTION_HOURS'] ?? '24') ?? 24),
     };
   }
+
+  getLoggerElasticsearchHeaders(): Record<string, string> | undefined {
+    const explicitAuthHeader = this.get('LOG_ELASTICSEARCH_AUTH_HEADER');
+    if (explicitAuthHeader) {
+      return { authorization: explicitAuthHeader };
+    }
+
+    const apiKey = this.get('LOG_ELASTICSEARCH_API_KEY');
+    if (apiKey) {
+      return { authorization: `ApiKey ${apiKey}` };
+    }
+
+    const username = this.get('LOG_ELASTICSEARCH_USERNAME');
+    const password = this.get('LOG_ELASTICSEARCH_PASSWORD');
+    if (username && password) {
+      return {
+        authorization: `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`,
+      };
+    }
+
+    return undefined;
+  }
 }
