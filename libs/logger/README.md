@@ -71,3 +71,39 @@ Notes:
 
 - When no auth variables are provided, no `Authorization` header is sent.
 - Only the configured headers are sent; sensitive values should never be committed.
+
+#### Examples: Elasticsearch with credentials
+
+Using a raw authorization header (recommended when your infra provides a ready header value):
+
+```bash
+LOG_ENABLE_ELASTICSEARCH=true
+LOG_ELASTICSEARCH_NODE=https://your-es-host:9200
+LOG_ELASTICSEARCH_INDEX=logs-trading-bot
+LOG_ELASTICSEARCH_AUTH_HEADER="Bearer <token>"
+```
+
+Using Elasticsearch API key:
+
+```bash
+LOG_ENABLE_ELASTICSEARCH=true
+LOG_ELASTICSEARCH_NODE=https://your-es-host:9200
+LOG_ELASTICSEARCH_INDEX=logs-trading-bot
+LOG_ELASTICSEARCH_API_KEY="<base64-api-key>"
+```
+
+Using Basic auth:
+
+```bash
+LOG_ENABLE_ELASTICSEARCH=true
+LOG_ELASTICSEARCH_NODE=https://your-es-host:9200
+LOG_ELASTICSEARCH_INDEX=logs-trading-bot
+LOG_ELASTICSEARCH_USERNAME="elastic"
+LOG_ELASTICSEARCH_PASSWORD="<password>"
+```
+
+## Why not `@elastic/elasticsearch`?
+
+This library uses `fetch` to keep the transport lightweight and dependency-free.
+If we later need bulk indexing, retry/backoff, sniffing, or richer ES features,
+we can switch to the official client.
