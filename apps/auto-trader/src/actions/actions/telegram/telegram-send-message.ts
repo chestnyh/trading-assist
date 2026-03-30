@@ -30,7 +30,7 @@ import renderMessage from '../../utils/render-message.util'
     }
 }
  */
-export default function telegram_send_message (
+export default async function telegram_send_message (
     args: any,
     {
         sequenceContext
@@ -39,7 +39,9 @@ export default function telegram_send_message (
     const settings = this.settings;
     const { botId, message } = args;
 
-    const settingsToUse = settings.find(s => (s.code === botId));
+    const settingsToUse = botId
+        ? settings.find(s => (s.code === botId))
+        : settings[0];
 
     if (!settingsToUse) {
         throw new Error(`Settings for ${botId} not found!`);
@@ -51,8 +53,9 @@ export default function telegram_send_message (
     const messageToSend = renderMessage(message, { heap: this.heap, sequenceContext });
 
     try {
-        bot.sendMessage(chatId, messageToSend);
+        await bot.sendMessage(chatId, messageToSend);
+
     } catch (error) {
-        { console.error(error) }
+        console.error(error);
     }
-};
+}
