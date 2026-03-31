@@ -27,7 +27,26 @@ export class LoggerService implements NestLoggerService {
     this.enableElasticsearch = Boolean(options.enableElasticsearch);
     this.elasticNode = options.elasticsearch?.node;
     this.elasticIndex = options.elasticsearch?.index;
-    this.elasticHeaders = options.elasticsearch?.headers;
+    this.elasticHeaders = this.buildElasticsearchHeaders(options);
+  }
+
+  private buildElasticsearchHeaders(options: LoggerModuleOptions): Record<string, string> | undefined {
+    const headers: Record<string, string> = {
+      ...(options.elasticsearch?.headers ?? {}),
+    };
+
+    const auth = options.elasticsearch?.auth;
+    if (auth) {
+      if ('header' in auth) {
+        headers['authorization'] = auth.header;
+      } else if ('apiKey' in auth) {
+        headers['authorization'] = `ApiKey ${auth.apiKey}`;
+      } else if ('username' in auth && 'password' in auth) {
+        headers['authorization'] = `Basic ${Buffer.from(`${auth.username}:${auth.password}`).toString('base64')}`;
+      }
+    }
+
+    return Object.keys(headers).length ? headers : undefined;
   }
 
   log(message: any, ...optionalParams: any[]): void {
