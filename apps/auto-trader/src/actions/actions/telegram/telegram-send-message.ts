@@ -39,9 +39,7 @@ export default async function telegram_send_message (
     const settings = this.settings;
     const { botId, message } = args;
 
-    const settingsToUse = botId
-        ? settings.find(s => (s.code === botId))
-        : settings[0];
+    const settingsToUse = settings.find(s => (s.code === botId));
 
     if (!settingsToUse) {
         throw new Error(`Settings for ${botId} not found!`);

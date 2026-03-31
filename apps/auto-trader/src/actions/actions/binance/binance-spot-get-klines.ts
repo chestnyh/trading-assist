@@ -25,6 +25,13 @@ type BinanceSpotKline = {
   trades: number;
 };
 
+type BinanceSpotKlineError = {
+  error: {
+    message: string;
+    details?: unknown;
+  };
+};
+
 function parseKline(raw: BinanceKlineRaw): BinanceSpotKline {
   return {
     openTime: Number(raw[0]),
@@ -39,6 +46,14 @@ function parseKline(raw: BinanceKlineRaw): BinanceSpotKline {
   };
 }
 
+/**
+ * Fetches kline (candlestick) data from Binance Spot public API and stores parsed candle fields in sequenceContext.
+ *
+ * - All price/volume fields are stored as numbers (Binance returns them as strings).
+ * - When `limit === 1`, stores a single candle object under `resultKey`.
+ * - When `limit > 1`, stores an array of candle objects under `resultKey`.
+ * - On error, stores `{ error: { message, details? } }` under `resultKey` and returns (does not throw).
+ */
 export default async function binance_spot_get_klines(
   args: any,
   { sequenceContext }: { sequenceContext: any }
@@ -52,47 +67,56 @@ export default async function binance_spot_get_klines(
   }
 
   if (!symbol) {
-    throw new Error('binance_spot_get_klines: "symbol" is required');
+    sequenceContext.set(resultKey, {
+      error: { message: 'binance_spot_get_klines: "symbol" is required' },
+    } satisfies BinanceSpotKlineError);
+    return;
   }
 
   if (!interval) {
-    throw new Error('binance_spot_get_klines: "interval" is required');
+    sequenceContext.set(resultKey, {
+      error: { message: 'binance_spot_get_klines: "interval" is required' },
+    } satisfies BinanceSpotKlineError);
+    return;
   }
 
   const limit = limitRaw === undefined || limitRaw === null ? 1 : Number(limitRaw);
   if (!Number.isFinite(limit) || limit <= 0 || limit > 1000) {
-    throw new Error('binance_spot_get_klines: "limit" must be a number between 1 and 1000');
-  }
-
-  const params = new URLSearchParams({
-    symbol: String(symbol),
-    interval: String(interval),
-    limit: String(limit),
-  });
-
-  const res = await fetch(`https://api.binance.com/api/v3/klines?${params.toString()}`, {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-    },
-  });
-
-  const bodyText = await res.text();
-  if (!res.ok) {
-    throw new Error(`binance_spot_get_klines: Binance API error ${res.status} ${res.statusText}: ${bodyText}`);
-  }
-
-  const data = JSON.parse(bodyText) as BinanceKlineRaw[];
-  const parsed = data.map(parseKline);
-
-  if (limit === 1) {
-    const first = parsed[0];
-    if (!first) {
-      throw new Error('binance_spot_get_klines: empty response from Binance');
-    }
-    sequenceContext.set(resultKey, first);
+    sequenceContext.set(resultKey, {
+      error: {
+        message: 'binance_spot_get_klines: "limit" must be a number between 1 and 1000',
+        details: { limit: limitRaw },
+      },
+    } satisfies BinanceSpotKlineError);
     return;
   }
 
-  sequenceContext.set(resultKey, parsed);
+  try {
+    const { Spot } = await import('@binance/connector');
+    const client = new Spot();
+    const { data } = await client.klines(String(symbol), String(interval), { limit });
+
+    const parsed = (data as BinanceKlineRaw[]).map(parseKline);
+
+    if (limit === 1) {
+      const first = parsed[0];
+      if (!first) {
+        sequenceContext.set(resultKey, {
+          error: { message: 'binance_spot_get_klines: empty response from Binance' },
+        } satisfies BinanceSpotKlineError);
+        return;
+      }
+      sequenceContext.set(resultKey, first);
+      return;
+    }
+
+    sequenceContext.set(resultKey, parsed);
+  } catch (e) {
+    sequenceContext.set(resultKey, {
+      error: {
+        message: 'binance_spot_get_klines: failed to fetch klines from Binance',
+        details: e instanceof Error ? { name: e.name, message: e.message, stack: e.stack } : e,
+      },
+    } satisfies BinanceSpotKlineError);
+  }
 }
