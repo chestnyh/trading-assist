@@ -21,7 +21,7 @@ export abstract class Configs {
 
   }
 
-  get(configName: string): string {
+  get(configName: string): string | undefined {
     return this.configs[configName];
   }
 

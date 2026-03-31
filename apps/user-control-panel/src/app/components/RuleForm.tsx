@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { Input } from "../../shared/ui/forms/Input";
 import { TextArea } from "../../shared/ui/forms/TextArea";
 import { Button } from "../../shared/ui/buttons/Button";
+import { extractFieldToMessageFromValidationError, isValidationError } from '@trading-bot/api-client';
 
 interface RuleFormProps {
   initialData?: { name: string; description: string; rule: string };
-  onSubmit: (data: { name: string; description: string; ruleBody: any }) => Promise<void>;
+  onSubmit: (data: { name: string; description: string; ruleBody: unknown }) => Promise<void>;
   onCancel: () => void;
   isLoading: boolean;
   submitLabel: string;
@@ -32,34 +33,28 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
     formData.description !== (initialData?.description || "") ||
     formData.rule !== (initialData?.rule || "");
 
-  const handleValidateAndSubmit = async () => {
-    const newErrors: Record<string, string> = {};
+  const handleSubmit = async () => {
+    setErrors({});
 
-    if (!formData.name.trim()) newErrors.name = "Rule Name is required";
-    else if (formData.name.length < 3) newErrors.name = "Rule name is not long enough (3+ chars).";
-
-    if (!formData.description.trim()) newErrors.description = "Rule Description is required";
-    else if (formData.description.length < 10) newErrors.description = "Rule description is not long enough (10+ chars).";
-
-    if (!formData.rule.trim()) newErrors.rule = "Rule is required";
-
-    let parsedRuleBody = null;
     try {
-      parsedRuleBody = JSON.parse(formData.rule);
-    } catch (e) {
-      newErrors.rule = "Invalid JSON format. Please check your syntax.";
-    }
+      await onSubmit({
+        name: formData.name,
+        description: formData.description,
+        ruleBody: formData.rule,
+      });
+    } catch (err) {
+      const error = err as Error;
+      const nextErrors: Record<string, string> = isValidationError(error)
+        ? extractFieldToMessageFromValidationError(error)
+        : {};
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
+      if (Object.keys(nextErrors).length === 0) {
+        const fallbackMessage = typeof error?.message === 'string' ? error.message : undefined;
+        nextErrors.form = fallbackMessage || 'Failed to save rule';
+      }
 
-    await onSubmit({
-      name: formData.name,
-      description: formData.description,
-      ruleBody: parsedRuleBody
-    });
+      setErrors(nextErrors);
+    }
   };
 
   return (
@@ -124,7 +119,7 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
         <Button
           text={isLoading ? "Processing..." : submitLabel}
           variant="primary"
-          onClick={handleValidateAndSubmit}
+          onClick={handleSubmit}
           disabled={isLoading || !isDirty}
         />
       </div>

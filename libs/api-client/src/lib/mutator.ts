@@ -5,21 +5,56 @@
 import { z } from 'zod';
 import {
   CreateUserDtoSchema,
+  CreateRuleDtoSchema,
+  CreateTagDtoSchema,
+  CreateUserRuleSettingDtoSchema,
   LoginDtoSchema,
   VerifyEmailDtoSchema,
   ForgotPasswordDtoSchema,
   VerifyPasswordResetDtoSchema,
   ResetPasswordDtoSchema,
-} from './zod-schemas';
+  UpdateRuleDtoSchema,
+  UpdateUserRuleSettingDtoSchema,
+} from '@trading-bot/api-validator';
 
-// Map URLs to their request body schemas
-const requestSchemas: Record<string, z.ZodSchema<any>> = {
-  '/api/v1/users': CreateUserDtoSchema,
-  '/api/v1/auth/login': LoginDtoSchema,
-  '/api/v1/auth/verify-email': VerifyEmailDtoSchema,
-  '/api/v1/auth/forgot-password': ForgotPasswordDtoSchema,
-  '/api/v1/auth/verify-password-reset': VerifyPasswordResetDtoSchema,
-  '/api/v1/auth/reset-password': ResetPasswordDtoSchema,
+type RequestSchemaRule = {
+  url: string | RegExp;
+  schema: z.ZodSchema<any>;
+};
+
+const requestSchemaRules: RequestSchemaRule[] = [
+  { url: '/api/v1/users', schema: CreateUserDtoSchema },
+
+  { url: '/api/v1/auth/login', schema: LoginDtoSchema },
+  { url: '/api/v1/auth/verify-email', schema: VerifyEmailDtoSchema },
+  { url: '/api/v1/auth/forgot-password', schema: ForgotPasswordDtoSchema },
+  { url: '/api/v1/auth/verify-password-reset', schema: VerifyPasswordResetDtoSchema },
+  { url: '/api/v1/auth/reset-password', schema: ResetPasswordDtoSchema },
+
+  { url: '/api/v1/rules', schema: CreateRuleDtoSchema },
+  { url: /^\/api\/v1\/rules\/[\w-]+$/, schema: UpdateRuleDtoSchema },
+
+  { url: '/api/v1/rules-settings', schema: CreateUserRuleSettingDtoSchema },
+  { url: /^\/api\/v1\/rules-settings\/[\w-]+$/, schema: UpdateUserRuleSettingDtoSchema },
+
+  { url: '/api/v1/tags', schema: CreateTagDtoSchema },
+];
+
+const getRequestSchemaForUrl = (url: string): z.ZodSchema<any> | undefined => {
+  for (const rule of requestSchemaRules) {
+    if (typeof rule.url === 'string') {
+      if (rule.url === url) {
+        return rule.schema;
+      }
+      continue;
+    }
+
+    if (rule.url.test(url)) {
+      return rule.schema;
+    }
+  }
+
+  return undefined;
 };
 
 export const customInstance = async <T>(
@@ -30,6 +65,9 @@ export const customInstance = async <T>(
   // Base URL configuration
   const baseURL = process.env['API_BASE_URL'];
   const fullUrl = url.startsWith('http') ? url : `${baseURL}${url}`;
+
+  // When schema matching, use the URL pathname so absolute URLs are supported.
+  const urlPath = url.startsWith('http') ? new URL(url).pathname : url;
 
   // Merge default headers
   const headers: Record<string, string> = {
@@ -48,13 +86,15 @@ export const customInstance = async <T>(
   }
 
   // Validate request body using URL-based schema mapping
-  if (config.body && (schema || requestSchemas[url])) {
+  const requestSchema = getRequestSchemaForUrl(urlPath);
+  if (config.body && (schema || requestSchema)) {
     try {
       const bodyData =
         typeof config.body === 'string' ? JSON.parse(config.body) : config.body;
-      const validationSchema = schema || requestSchemas[url];
+      const validationSchema = schema || requestSchema;
       if (validationSchema) {
-        validationSchema.parse(bodyData); // This will throw an error if the data is invalid
+        const parsedBody = validationSchema.parse(bodyData); // This will throw an error if the data is invalid
+        config.body = JSON.stringify(parsedBody);
       }
     } catch (error) {
       if (error instanceof z.ZodError) {

@@ -1,4 +1,5 @@
 import { Configs } from "./configs";
+import { getFiniteNumber } from "./utils";
 
 /**
  * TODO add description
@@ -8,6 +9,7 @@ export class ServicesConfigs extends Configs {
     super();
     this.configs = {
       ...this.configs,
+      API_HOST: process.env['API_HOST'] || 'http://localhost',
       API_PORT: process.env['API_PORT'] ? parseInt(process.env['API_PORT'], 10).toString() : '3001',
       DB_USER: process.env['DB_USER'],
       DB_PASSWORD: process.env['DB_PASSWORD'],
@@ -24,7 +26,10 @@ export class ServicesConfigs extends Configs {
       JWT_SECRET: process.env['JWT_SECRET'] || 'your-secret-key',
       JWT_EXPIRES_IN: process.env['JWT_EXPIRES_IN'] || '24h',
       MAX_PASSWORD_RESET_ATTEMPTS: process.env['MAX_PASSWORD_RESET_ATTEMPTS'] || '5',
-      API_BASE_URL: process.env['API_BASE_URL'] || `http://localhost:${process.env['API_PORT'] || '3001'}`,
+
+      OUTBOX_CLEANUP_BATCH_SIZE: String(getFiniteNumber(process.env['OUTBOX_CLEANUP_BATCH_SIZE'] ?? '500') ?? 500),
+      OUTBOX_CLEANUP_INTERVAL_MS: String(getFiniteNumber(process.env['OUTBOX_CLEANUP_INTERVAL_MS'] ?? '60000') ?? 60_000),
+      OUTBOX_RETENTION_HOURS: String(getFiniteNumber(process.env['OUTBOX_RETENTION_HOURS'] ?? '24') ?? 24),
     };
   }
 }

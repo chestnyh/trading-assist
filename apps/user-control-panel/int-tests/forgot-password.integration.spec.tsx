@@ -58,7 +58,9 @@ describe("Forgot / Restore Password Flow (Integration)", () => {
     try {
       window.localStorage.clear();
       window.sessionStorage.clear();
-    } catch {}
+    } catch (e) {
+      void e;
+    }
   });
 
   const mockFetchJson = (pattern: RegExp, status: number, data: unknown) => {

@@ -43,7 +43,9 @@ describe("Authorization Flow (Integration)", () => {
     try {
       window.localStorage.clear();
       window.sessionStorage.clear();
-    } catch {}
+    } catch (e) {
+      void e;
+    }
   });
 
   it("allows navigation to Sign In from Main via header button", async () => {
@@ -76,7 +78,7 @@ describe("Authorization Flow (Integration)", () => {
     await user.click(signInButton);
 
     await waitFor(() => {
-      expect(screen.queryByText(/password must be at least 8 characters long/i)).not.toBeNull();
+      expect(screen.queryByText(/password must be at least 6 characters long/i)).not.toBeNull();
     });
     expect(global.fetch).not.toHaveBeenCalled();
   });

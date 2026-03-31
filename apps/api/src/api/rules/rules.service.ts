@@ -47,7 +47,7 @@ export class RulesService {
   /**
    * Get all rules for a user
    */
-  async findAllByUser(userId: number, page: number = 1, limit: number = 20): Promise<{ rules: RuleResponseDto[], total: number }> {
+  async findAllByUser(userId: number, page = 1, limit = 20): Promise<{ rules: RuleResponseDto[], total: number }> {
     const safeLimit = Math.min(Math.max(1, Math.floor(limit)), this.MAX_LIMIT);
 
     const safePage = Math.max(1, Math.floor(page));

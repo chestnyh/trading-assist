@@ -39,6 +39,43 @@ services:
     volumes:
       - ${DOCKER_RMQ_VOLUME:-./docker/volumes/local_rmq}:/var/lib/rabbitmq
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    restart: always
+    container_name: ${DOCKER_PROJECT_NAME}-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=${ELASTICSEARCH_SECURITY_ENABLED:-false}
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS:--Xms512m -Xmx512m}
+    profiles:
+      - development
+      - api-service
+      - external
+      - init-external
+    ports:
+      - "${ELASTICSEARCH_PORT:-9200}:9200"
+    volumes:
+      - ${DOCKER_ELASTICSEARCH_VOLUME:-elasticsearch_data}:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.4
+    restart: always
+    container_name: ${DOCKER_PROJECT_NAME}-kibana
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    profiles:
+      - development
+      - api-service
+      - external
+      - init-external
+    ports:
+      - "${KIBANA_PORT:-5601}:5601"
+    volumes:
+      - ${DOCKER_KIBANA_VOLUME:-kibana_data}:/usr/share/kibana/data
+
   auto-trader:
     build:
       context: .
@@ -54,4 +91,9 @@ services:
       DB_NAME: ${DB_NAME}
     profiles:
       - development
+
+volumes:
+  elasticsearch_data:
+  kibana_data:
+
 
