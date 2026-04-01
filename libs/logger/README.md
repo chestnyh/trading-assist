@@ -39,10 +39,6 @@ app.useLogger(app.get(LoggerService));
 
 - `enableConsole` (default: `true`) controls whether the logger prints human-friendly lines to stdout/stderr.
 
-Environment variable used by services config:
-
-- `LOG_ENABLE_CONSOLE` (`true` / `false`)
-
 ### Elasticsearch
 
 To send logs to Elasticsearch you must:
@@ -50,56 +46,108 @@ To send logs to Elasticsearch you must:
 - Set `enableElasticsearch: true`
 - Provide `elasticsearch.node` and `elasticsearch.index`
 
-Environment variables used by services config:
-
-- `LOG_ENABLE_ELASTICSEARCH` (`true` / `false`)
-- `LOG_ELASTICSEARCH_NODE` (e.g. `http://localhost:9200`)
-- `LOG_ELASTICSEARCH_INDEX` (e.g. `logs-trading-bot`)
-
 #### Authorization
 
-If Elasticsearch is protected (common for staging/production), configure **one** of the following:
+If Elasticsearch is protected (common for staging/production), pass one of the following via module options:
 
-- `LOG_ELASTICSEARCH_AUTH_HEADER`
+- `elasticsearch.auth: { header: string }`
   - Value is used as-is in `Authorization` header.
-- `LOG_ELASTICSEARCH_API_KEY`
+- `elasticsearch.auth: { apiKey: string }`
   - Will be sent as `Authorization: ApiKey <value>`
-- `LOG_ELASTICSEARCH_USERNAME` + `LOG_ELASTICSEARCH_PASSWORD`
+- `elasticsearch.auth: { username: string; password: string }`
   - Will be sent as `Authorization: Basic <base64(username:password)>`
 
 Notes:
 
-- When no auth variables are provided, no `Authorization` header is sent.
+- When no auth options are provided, no `Authorization` header is sent.
 - Only the configured headers are sent; sensitive values should never be committed.
 
 #### Examples: Elasticsearch with credentials
 
 Using a raw authorization header (recommended when your infra provides a ready header value):
 
-```bash
-LOG_ENABLE_ELASTICSEARCH=true
-LOG_ELASTICSEARCH_NODE=https://your-es-host:9200
-LOG_ELASTICSEARCH_INDEX=logs-trading-bot
-LOG_ELASTICSEARCH_AUTH_HEADER="Bearer <token>"
+```ts
+LoggerModule.forRoot({
+  service: 'api',
+  environment: 'staging',
+  enableConsole: true,
+  enableElasticsearch: true,
+  elasticsearch: {
+    node: 'https://your-es-host:9200',
+    index: 'logs-trading-bot',
+    auth: {
+      header: 'Bearer <token>',
+    },
+  },
+});
 ```
 
 Using Elasticsearch API key:
 
-```bash
-LOG_ENABLE_ELASTICSEARCH=true
-LOG_ELASTICSEARCH_NODE=https://your-es-host:9200
-LOG_ELASTICSEARCH_INDEX=logs-trading-bot
-LOG_ELASTICSEARCH_API_KEY="<base64-api-key>"
+```ts
+LoggerModule.forRoot({
+  service: 'api',
+  environment: 'staging',
+  enableConsole: true,
+  enableElasticsearch: true,
+  elasticsearch: {
+    node: 'https://your-es-host:9200',
+    index: 'logs-trading-bot',
+    auth: {
+      apiKey: '<base64-api-key>',
+    },
+  },
+});
 ```
 
 Using Basic auth:
 
-```bash
-LOG_ENABLE_ELASTICSEARCH=true
-LOG_ELASTICSEARCH_NODE=https://your-es-host:9200
-LOG_ELASTICSEARCH_INDEX=logs-trading-bot
-LOG_ELASTICSEARCH_USERNAME="elastic"
-LOG_ELASTICSEARCH_PASSWORD="<password>"
+```ts
+LoggerModule.forRoot({
+  service: 'api',
+  environment: 'staging',
+  enableConsole: true,
+  enableElasticsearch: true,
+  elasticsearch: {
+    node: 'https://your-es-host:9200',
+    index: 'logs-trading-bot',
+    auth: {
+      username: 'elastic',
+      password: '<password>',
+    },
+  },
+});
+```
+
+Using `forRootAsync`:
+
+```ts
+LoggerModule.forRootAsync({
+  inject: [ServicesConfigs],
+  useFactory: (cfg: ServicesConfigs) => ({
+    service: 'api',
+    environment: cfg.get('NODE_ENV')!,
+    enableConsole: cfg.get('LOG_ENABLE_CONSOLE') === 'true',
+    enableElasticsearch: cfg.get('LOG_ENABLE_ELASTICSEARCH') === 'true',
+    elasticsearch:
+      cfg.get('LOG_ELASTICSEARCH_NODE') && cfg.get('LOG_ELASTICSEARCH_INDEX')
+        ? {
+            node: cfg.get('LOG_ELASTICSEARCH_NODE')!,
+            index: cfg.get('LOG_ELASTICSEARCH_INDEX')!,
+            auth: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER')
+              ? { header: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER')! }
+              : cfg.get('LOG_ELASTICSEARCH_API_KEY')
+                ? { apiKey: cfg.get('LOG_ELASTICSEARCH_API_KEY')! }
+                : cfg.get('LOG_ELASTICSEARCH_USERNAME') && cfg.get('LOG_ELASTICSEARCH_PASSWORD')
+                  ? {
+                      username: cfg.get('LOG_ELASTICSEARCH_USERNAME')!,
+                      password: cfg.get('LOG_ELASTICSEARCH_PASSWORD')!,
+                    }
+                  : undefined,
+          }
+        : undefined,
+  }),
+});
 ```
 
 ## Why not `@elastic/elasticsearch`?
