@@ -35,15 +35,17 @@ export class LoggerService implements NestLoggerService {
       ...(options.elasticsearch?.headers ?? {}),
     };
 
-    const auth = options.elasticsearch?.auth;
-    if (auth) {
-      if ('header' in auth) {
-        headers['authorization'] = auth.header;
-      } else if ('apiKey' in auth) {
-        headers['authorization'] = `ApiKey ${auth.apiKey}`;
-      } else if ('username' in auth && 'password' in auth) {
-        headers['authorization'] = `Basic ${Buffer.from(`${auth.username}:${auth.password}`).toString('base64')}`;
-      }
+    const authHeader = options.elasticsearch?.authHeader;
+    const authApiKey = options.elasticsearch?.authApiKey;
+    const authUsername = options.elasticsearch?.authUsername;
+    const authPassword = options.elasticsearch?.authPassword;
+
+    if (authHeader) {
+      headers['authorization'] = authHeader;
+    } else if (authApiKey) {
+      headers['authorization'] = `ApiKey ${authApiKey}`;
+    } else if (authUsername && authPassword) {
+      headers['authorization'] = `Basic ${Buffer.from(`${authUsername}:${authPassword}`).toString('base64')}`;
     }
 
     return Object.keys(headers).length ? headers : undefined;

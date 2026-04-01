@@ -27,16 +27,10 @@ import { ExternalServicesModule } from './external-services/external-services.mo
             ? {
                 node: cfg.get('LOG_ELASTICSEARCH_NODE')!,
                 index: cfg.get('LOG_ELASTICSEARCH_INDEX')!,
-                auth: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER')
-                  ? { header: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER')! }
-                  : cfg.get('LOG_ELASTICSEARCH_API_KEY')
-                    ? { apiKey: cfg.get('LOG_ELASTICSEARCH_API_KEY')! }
-                    : cfg.get('LOG_ELASTICSEARCH_USERNAME') && cfg.get('LOG_ELASTICSEARCH_PASSWORD')
-                      ? {
-                          username: cfg.get('LOG_ELASTICSEARCH_USERNAME')!,
-                          password: cfg.get('LOG_ELASTICSEARCH_PASSWORD')!,
-                        }
-                      : undefined,
+                authHeader: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER'),
+                authApiKey: cfg.get('LOG_ELASTICSEARCH_API_KEY'),
+                authUsername: cfg.get('LOG_ELASTICSEARCH_USERNAME'),
+                authPassword: cfg.get('LOG_ELASTICSEARCH_PASSWORD'),
               }
             : undefined,
       }),

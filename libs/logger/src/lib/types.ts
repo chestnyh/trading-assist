@@ -26,17 +26,10 @@ export interface LoggerModuleOptions {
     node: string;
     index: string;
     headers?: Record<string, string>;
-    auth?:
-      | {
-          header: string;
-        }
-      | {
-          apiKey: string;
-        }
-      | {
-          username: string;
-          password: string;
-        };
+    authHeader?: string;
+    authApiKey?: string;
+    authUsername?: string;
+    authPassword?: string;
   };
 }
 
