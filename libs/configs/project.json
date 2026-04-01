@@ -5,11 +5,18 @@
   "projectType": "library",
   "tags": [],
   "targets": {
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint src",
+        "cwd": "libs/configs"
+      }
+    },
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/configs",
+        "outputPath": "libs/configs/dist",
         "main": "libs/configs/src/index.ts",
         "tsConfig": "libs/configs/tsconfig.lib.json",
         "assets": []

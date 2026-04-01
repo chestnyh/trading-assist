@@ -161,8 +161,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             errorMessage = "Server error. Please try again later.";
           }
         }
-      } else if (error instanceof TypeError && error.message === "Failed to fetch") {
-        errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
       }
 
       return { success: false, error: errorMessage };

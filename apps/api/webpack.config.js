@@ -1,5 +1,6 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { join } = require('path');
+const webpack = require('webpack');
 
 module.exports = {
   output: {
@@ -14,7 +15,19 @@ module.exports = {
       assets: ['./src/assets'],
       optimization: false,
       outputHashing: 'none',
-      generatePackageJson: true,
+      generatePackageJson: false,
+    }),
+    new webpack.IgnorePlugin({
+      checkResource(resource) {
+        const lazyImports = [
+          '@nestjs/microservices',
+          '@nestjs/microservices/microservices-module',
+          '@nestjs/websockets',
+          '@nestjs/websockets/socket-module',
+          'class-transformer/storage',
+        ];
+        return lazyImports.includes(resource);
+      },
     }),
   ],
 };
