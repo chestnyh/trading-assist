@@ -28,8 +28,8 @@ export default {
                                                 "__absolute": [
                                                     {
                                                         "__minus": [
-                                                            { "__var": "__sequenceContext__.btc_candle.close" },
-                                                            { "__var": "__sequenceContext__.btc_candle.open" }
+                                                            { "__var": "__sequenceContext__.btc_candle.[0].close" },
+                                                            { "__var": "__sequenceContext__.btc_candle.[0].open" }
                                                         ]
                                                     }
                                                 ]
@@ -43,7 +43,7 @@ export default {
                                 "type": "telegram_send_message",
                                 "arguments": {
                                     "botId": "tg_bot_004",
-                                    "message": "BTCUSDT 1h candle alert: open=${__sequenceContext__.btc_candle.open}, current=${__sequenceContext__.btc_candle.close}, movement exceeds 100 USDT"
+                                    "message": "BTCUSDT 1h candle alert: open=${__sequenceContext__.btc_candle.[0].open}, current=${__sequenceContext__.btc_candle.[0].close}, movement exceeds 100 USDT"
                                 }
                             }
                         }

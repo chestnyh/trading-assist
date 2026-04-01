@@ -50,8 +50,7 @@ function parseKline(raw: BinanceKlineRaw): BinanceSpotKline {
  * Fetches kline (candlestick) data from Binance Spot public API and stores parsed candle fields in sequenceContext.
  *
  * - All price/volume fields are stored as numbers (Binance returns them as strings).
- * - When `limit === 1`, stores a single candle object under `resultKey`.
- * - When `limit > 1`, stores an array of candle objects under `resultKey`.
+ * - Stores an array of candle objects under `resultKey`.
  * - On error, stores `{ error: { message, details? } }` under `resultKey` and returns (does not throw).
  */
 export default async function binance_spot_get_klines(
@@ -98,15 +97,10 @@ export default async function binance_spot_get_klines(
 
     const parsed = (data as BinanceKlineRaw[]).map(parseKline);
 
-    if (limit === 1) {
-      const first = parsed[0];
-      if (!first) {
-        sequenceContext.set(resultKey, {
-          error: { message: 'binance_spot_get_klines: empty response from Binance' },
-        } satisfies BinanceSpotKlineError);
-        return;
-      }
-      sequenceContext.set(resultKey, first);
+    if (parsed.length === 0) {
+      sequenceContext.set(resultKey, {
+        error: { message: 'binance_spot_get_klines: empty response from Binance' },
+      } satisfies BinanceSpotKlineError);
       return;
     }
 
