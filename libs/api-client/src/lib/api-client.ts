@@ -149,14 +149,6 @@ export interface VerifyPasswordResetDto {
   token: string;
 }
 
-/**
- * Remaining attempts before the token is invalidated
- * @nullable
- */
-export type VerifyPasswordResetResponseDtoRemainingAttempts = {
-  [key: string]: unknown;
-} | null;
-
 export interface VerifyPasswordResetResponseDto {
   /** Success message */
   message: string;
@@ -166,7 +158,7 @@ export interface VerifyPasswordResetResponseDto {
    * Remaining attempts before the token is invalidated
    * @nullable
    */
-  remainingAttempts?: VerifyPasswordResetResponseDtoRemainingAttempts;
+  remainingAttempts?: number | null;
 }
 
 export interface ResetPasswordDto {
@@ -218,6 +210,13 @@ export interface RuleResponseDto {
   authorId: number;
 }
 
+export interface PaginatedRulesDto {
+  /** Array of rules for the requested page */
+  rules: RuleResponseDto[];
+  /** Total number of rules available */
+  total: number;
+}
+
 /**
  * Rule configuration as JSON object
  */
@@ -267,6 +266,10 @@ export interface UpdateUserRuleSettingDto {
   configuration?: UpdateUserRuleSettingDtoConfiguration;
 }
 
+export interface TelegramChatIdResponseDto {
+  chatId: number;
+}
+
 export interface CreateTagDto {
   name: string;
 }
@@ -289,6 +292,11 @@ export interface ExternalServiceResponseDto {
   logoUrl?: string | null;
   fieldsSchema: ExternalServiceResponseDtoFieldsSchemaItem[];
 }
+
+export type RulesControllerFindAllParams = {
+  page: number;
+  limit: number;
+};
 
 export type RulesSettingsControllerFindAllSettingsParams = {
   /**
@@ -651,10 +659,10 @@ export const rulesControllerCreate = async (
 };
 
 /**
- * @summary Get all rules for the authenticated user
+ * @summary Get all rules for the authenticated user with pagination
  */
 export type rulesControllerFindAllResponse200 = {
-  data: RuleResponseDto[];
+  data: PaginatedRulesDto;
   status: 200;
 };
 
@@ -676,15 +684,30 @@ export type rulesControllerFindAllResponse =
   | rulesControllerFindAllResponseSuccess
   | rulesControllerFindAllResponseError;
 
-export const getRulesControllerFindAllUrl = () => {
-  return `/api/v1/rules`;
+export const getRulesControllerFindAllUrl = (
+  params: RulesControllerFindAllParams
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/rules?${stringifiedParams}`
+    : `/api/v1/rules`;
 };
 
 export const rulesControllerFindAll = async (
+  params: RulesControllerFindAllParams,
   options?: RequestInit
 ): Promise<rulesControllerFindAllResponse> => {
   return customInstance<rulesControllerFindAllResponse>(
-    getRulesControllerFindAllUrl(),
+    getRulesControllerFindAllUrl(params),
     {
       ...options,
       method: 'GET',
@@ -994,6 +1017,70 @@ export const rulesSettingsControllerRemoveSetting = async (
     {
       ...options,
       method: 'DELETE',
+    }
+  );
+};
+
+/**
+ * @summary Get Telegram chat ID for a rule setting
+ */
+export type rulesSettingsControllerGetTelegramChatIdResponse200 = {
+  data: TelegramChatIdResponseDto;
+  status: 200;
+};
+
+export type rulesSettingsControllerGetTelegramChatIdResponseSuccess =
+  rulesSettingsControllerGetTelegramChatIdResponse200 & {
+    headers: Headers;
+  };
+export type rulesSettingsControllerGetTelegramChatIdResponse =
+  rulesSettingsControllerGetTelegramChatIdResponseSuccess;
+
+export const getRulesSettingsControllerGetTelegramChatIdUrl = (id: number) => {
+  return `/api/v1/rules-settings/telegram-chat-id/${id}`;
+};
+
+export const rulesSettingsControllerGetTelegramChatId = async (
+  id: number,
+  options?: RequestInit
+): Promise<rulesSettingsControllerGetTelegramChatIdResponse> => {
+  return customInstance<rulesSettingsControllerGetTelegramChatIdResponse>(
+    getRulesSettingsControllerGetTelegramChatIdUrl(id),
+    {
+      ...options,
+      method: 'GET',
+    }
+  );
+};
+
+/**
+ * @summary Get Telegram chat ID for a rule setting
+ */
+export type telegramChatIdControllerGetTelegramChatIdResponse200 = {
+  data: TelegramChatIdResponseDto;
+  status: 200;
+};
+
+export type telegramChatIdControllerGetTelegramChatIdResponseSuccess =
+  telegramChatIdControllerGetTelegramChatIdResponse200 & {
+    headers: Headers;
+  };
+export type telegramChatIdControllerGetTelegramChatIdResponse =
+  telegramChatIdControllerGetTelegramChatIdResponseSuccess;
+
+export const getTelegramChatIdControllerGetTelegramChatIdUrl = (id: number) => {
+  return `/api/v1/telegram-chat-id/${id}`;
+};
+
+export const telegramChatIdControllerGetTelegramChatId = async (
+  id: number,
+  options?: RequestInit
+): Promise<telegramChatIdControllerGetTelegramChatIdResponse> => {
+  return customInstance<telegramChatIdControllerGetTelegramChatIdResponse>(
+    getTelegramChatIdControllerGetTelegramChatIdUrl(id),
+    {
+      ...options,
+      method: 'GET',
     }
   );
 };

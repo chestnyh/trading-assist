@@ -4,6 +4,7 @@ import AddRulesSettingsButton from "./AddRulesSettingsButton";
 import { ConfirmationModal } from "../../../shared/ui/modals/ConfirmationModal";
 import { rulesSettingsControllerFindAllSettings, rulesSettingsControllerCreateSetting,
   rulesSettingsControllerUpdateSetting,
+  telegramChatIdControllerGetTelegramChatId,
   rulesSettingsControllerRemoveSetting,
   RuleSettingResponseDto, CreateUserRuleSettingDto, UpdateUserRuleSettingDto } from "@trading-bot/api-client";
 import { useAuth } from "../../../app/contexts/AuthContext";
@@ -41,6 +42,9 @@ export default function ExternalServiceSettingsGroup({
       details: { label: string; value: string }[];
       isNew?: boolean;
       isEditing?: boolean;
+      telegramStage?: "receive" | "waiting" | "confirm" | "success";
+      telegramChatIdDraft?: string;
+      telegramError?: string | null;
     }[]
   >([]);
   const [loading, setLoading] = useState(false);
@@ -58,6 +62,18 @@ export default function ExternalServiceSettingsGroup({
         label: field.label,
         value: (rule.configuration[field.key] as string) || "",
       }));
+
+      const chatIdField = fieldsSchema.find((f) => f.key === "chatId");
+      const chatIdValue = chatIdField ? (rule.configuration[chatIdField.key] as string) : undefined;
+      const isTelegram = name === "Telegram";
+
+      const telegramStage = (isTelegram && !chatIdValue ? "receive" : undefined) as
+        | "receive"
+        | "waiting"
+        | "confirm"
+        | "success"
+        | undefined;
+
       return {
         id: rule.id,
         name: rule.name,
@@ -66,6 +82,9 @@ export default function ExternalServiceSettingsGroup({
         details,
         isNew: false,
         isEditing: false,
+        telegramStage,
+        telegramChatIdDraft: isTelegram && chatIdValue ? String(chatIdValue) : "",
+        telegramError: null as string | null,
       };
     });
   };
@@ -150,15 +169,15 @@ export default function ExternalServiceSettingsGroup({
               {error && <div className="text-error text-sm">{error}</div>}
               <div className="flex flex-col gap-3">
                 {settings.map((s, i) => (
-                  <RuleSetting
-                    key={`${s.code}-${i}`}
-                    name={s.name}
-                    code={s.code}
-                    tags={s.tags}
-                    details={s.details}
-                    detailsSchema={fieldsSchema || []}
-                    mode={s.isNew || s.isEditing ? "edit" : "view"}
-                    onSave={async (data) => {
+                  <div key={`${s.code}-${i}`} className="flex flex-col gap-2">
+                    <RuleSetting
+                      name={s.name}
+                      code={s.code}
+                      tags={s.tags}
+                      details={s.details}
+                      detailsSchema={fieldsSchema || []}
+                      mode={s.isNew || s.isEditing ? "edit" : "view"}
+                      onSave={async (data) => {
                       if (s.isNew) {
                         try {
                           if (!token) return;
@@ -190,11 +209,21 @@ export default function ExternalServiceSettingsGroup({
                           if (res.status === 201) {
                             setSettings((prev) => {
                               const next = [...prev];
+                              const isTelegram = name === "Telegram";
+                              const chatIdField = (fieldsSchema || []).find((f) => f.key === "chatId");
+                              const createdChatId = chatIdField
+                                ? (res.data.configuration?.[chatIdField.key] as string | undefined)
+                                : undefined;
                               next[i] = {
                                 ...data,
                                 id: res.data.id,
                                 isNew: false,
                                 isEditing: false,
+                                telegramStage:
+                                  isTelegram && !createdChatId ? "receive" : undefined,
+                                telegramChatIdDraft:
+                                  isTelegram && createdChatId ? String(createdChatId) : "",
+                                telegramError: null,
                               };
                               return next;
                             });
@@ -251,14 +280,14 @@ export default function ExternalServiceSettingsGroup({
                         }
                       }
                     }}
-                    onEdit={() => {
+                      onEdit={() => {
                       setSettings((prev) => {
                         const next = [...prev];
                         next[i] = { ...next[i], isEditing: true };
                         return next;
                       });
                     }}
-                    onCancel={() => {
+                      onCancel={() => {
                       if (s.isNew) {
                         setSettings((prev) => prev.filter((_, idx) => idx !== i));
                       } else {
@@ -269,10 +298,186 @@ export default function ExternalServiceSettingsGroup({
                         });
                       }
                     }}
-                    onDelete={() => {
+                      onDelete={() => {
                       setDeletingIndex(i);
                     }}
-                  />
+                    />
+
+                    {name === "Telegram" && !s.isNew && !s.isEditing && s.id && (
+                      <div className="border border-border rounded-md bg-background px-4 py-3">
+                        {s.telegramStage === "receive" && (
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="text-secondary text-sm">
+                              Click “Receive Chat Id”, then send any message to your bot in Telegram.
+                            </div>
+                            <button
+                              type="button"
+                              className="px-4 py-2 rounded-md border-2 border-border bg-accent-hover/50 hover:bg-accent-hover text-primary transition"
+                              onClick={async () => {
+                                if (!token) return;
+                                setSettings((prev) => {
+                                  const next = [...prev];
+                                  next[i] = {
+                                    ...next[i],
+                                    telegramStage: "waiting",
+                                    telegramError: null,
+                                  };
+                                  return next;
+                                });
+
+                                try {
+                                  const res = await telegramChatIdControllerGetTelegramChatId(s.id!, {
+                                    headers: { Authorization: `Bearer ${token}` },
+                                  });
+
+                                  if (res.status === 200) {
+                                    const receivedChatId = String(res.data.chatId);
+                                    setSettings((prev) => {
+                                      const next = [...prev];
+
+                                      const chatIdLabel = (fieldsSchema || []).find((f) => f.key === "chatId")?.label;
+                                      const details = next[i].details.map((d) =>
+                                        chatIdLabel && d.label === chatIdLabel
+                                          ? { ...d, value: receivedChatId }
+                                          : d
+                                      );
+
+                                      next[i] = {
+                                        ...next[i],
+                                        details,
+                                        telegramChatIdDraft: receivedChatId,
+                                        telegramStage: "confirm",
+                                        telegramError: null,
+                                      };
+                                      return next;
+                                    });
+                                  }
+                                } catch (e: any) {
+                                  const msg = e?.message ? String(e.message) : "Failed to receive chat id";
+                                  setSettings((prev) => {
+                                    const next = [...prev];
+                                    next[i] = {
+                                      ...next[i],
+                                      telegramStage: "receive",
+                                      telegramError: msg,
+                                    };
+                                    return next;
+                                  });
+                                }
+                              }}
+                            >
+                              Receive Chat Id
+                            </button>
+                          </div>
+                        )}
+
+                        {s.telegramStage === "waiting" && (
+                          <div className="text-secondary text-sm">
+                            Waiting for your Telegram message… (up to 2 minutes)
+                          </div>
+                        )}
+
+                        {s.telegramStage === "confirm" && (
+                          <div className="flex flex-col gap-2">
+                            <div className="text-secondary text-sm">
+                              Confirm Chat Id and click “Send”.
+                            </div>
+                            <input
+                              value={s.telegramChatIdDraft || ""}
+                              onChange={(e) => {
+                                const v = e.target.value;
+                                setSettings((prev) => {
+                                  const next = [...prev];
+                                  next[i] = { ...next[i], telegramChatIdDraft: v };
+                                  return next;
+                                });
+                              }}
+                              className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
+                              placeholder="Chat Id…"
+                            />
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                type="button"
+                                className="px-4 py-2 rounded-md border-2 border-border bg-accent-hover/50 hover:bg-accent-hover text-primary transition"
+                                onClick={async () => {
+                                  if (!token) return;
+                                  const chatIdLabel = (fieldsSchema || []).find((f) => f.key === "chatId")?.label;
+                                  const botTokenLabel = (fieldsSchema || []).find((f) => f.key === "botToken")?.label;
+
+                                  const chatIdValue = (s.telegramChatIdDraft || "").trim();
+                                  const botTokenValue = botTokenLabel
+                                    ? (s.details.find((d) => d.label === botTokenLabel)?.value || "")
+                                    : "";
+
+                                  const configuration: Record<string, any> = {};
+                                  if (fieldsSchema) {
+                                    if (botTokenValue) configuration["botToken"] = botTokenValue;
+                                    if (chatIdValue) configuration["chatId"] = chatIdValue;
+                                  }
+
+                                  const dto: UpdateUserRuleSettingDto = {
+                                    configuration,
+                                  };
+
+                                  setLoading(true);
+                                  setError(null);
+                                  setSettings((prev) => {
+                                    const next = [...prev];
+                                    next[i] = { ...next[i], telegramError: null };
+                                    return next;
+                                  });
+
+                                  try {
+                                    const res = await rulesSettingsControllerUpdateSetting(s.id!, dto, {
+                                      headers: { Authorization: `Bearer ${token}` },
+                                    });
+                                    if (res.status === 200) {
+                                      setSettings((prev) => {
+                                        const next = [...prev];
+                                        const details = next[i].details.map((d) =>
+                                          chatIdLabel && d.label === chatIdLabel
+                                            ? { ...d, value: chatIdValue }
+                                            : d
+                                        );
+                                        next[i] = {
+                                          ...next[i],
+                                          details,
+                                          telegramStage: "success",
+                                          telegramError: null,
+                                        };
+                                        return next;
+                                      });
+                                    }
+                                  } catch (e: any) {
+                                    const msg = e?.message ? String(e.message) : "Failed to update setting";
+                                    setSettings((prev) => {
+                                      const next = [...prev];
+                                      next[i] = { ...next[i], telegramError: msg };
+                                      return next;
+                                    });
+                                  } finally {
+                                    setLoading(false);
+                                  }
+                                }}
+                              >
+                                Send
+                              </button>
+                            </div>
+                          </div>
+                        )}
+
+                        {s.telegramStage === "success" && (
+                          <div className="text-secondary text-sm">
+                            Chat Id saved successfully.
+                          </div>
+                        )}
+
+                        {s.telegramError && (
+                          <div className="text-error text-sm mt-2">{s.telegramError}</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
               <div className="mt-2">
