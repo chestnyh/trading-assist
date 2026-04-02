@@ -119,36 +119,7 @@ LoggerModule.forRoot({
 });
 ```
 
-Using `forRootAsync`:
-
-```ts
-LoggerModule.forRootAsync({
-  inject: [ServicesConfigs],
-  useFactory: (cfg: ServicesConfigs) => ({
-    service: 'api',
-    environment: cfg.get('NODE_ENV')!,
-    enableConsole: cfg.get('LOG_ENABLE_CONSOLE') === 'true',
-    enableElasticsearch: cfg.get('LOG_ENABLE_ELASTICSEARCH') === 'true',
-    elasticsearch:
-      cfg.get('LOG_ELASTICSEARCH_NODE') && cfg.get('LOG_ELASTICSEARCH_INDEX')
-        ? {
-            node: cfg.get('LOG_ELASTICSEARCH_NODE')!,
-            index: cfg.get('LOG_ELASTICSEARCH_INDEX')!,
-            auth: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER')
-              ? { header: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER')! }
-              : cfg.get('LOG_ELASTICSEARCH_API_KEY')
-                ? { apiKey: cfg.get('LOG_ELASTICSEARCH_API_KEY')! }
-                : cfg.get('LOG_ELASTICSEARCH_USERNAME') && cfg.get('LOG_ELASTICSEARCH_PASSWORD')
-                  ? {
-                      username: cfg.get('LOG_ELASTICSEARCH_USERNAME')!,
-                      password: cfg.get('LOG_ELASTICSEARCH_PASSWORD')!,
-                    }
-                  : undefined,
-          }
-        : undefined,
-  }),
-});
-```
+If your logger options must be loaded asynchronously (e.g. from a remote secret store), you can use `LoggerModule.forRootAsync(...)`.
 
 ## Why not `@elastic/elasticsearch`?
 
