@@ -25,6 +25,7 @@ import { RulesSettingsService } from './rules-settings.service';
 import { CreateUserRuleSettingDto } from './dto/create-user-rule-setting.dto';
 import { UpdateUserRuleSettingDto } from './dto/update-user-rule-setting.dto';
 import { RuleSettingResponseDto } from './dto/rule-setting-response.dto';
+import { TelegramChatIdResponseDto } from './dto/telegram-chat-id-response.dto';
 
 @ApiTags('rules-settings')
 @Controller('rules-settings')
@@ -88,7 +89,7 @@ export class RulesSettingsController {
   @Get('telegram-chat-id/:id')
   @ApiOperation({ summary: 'Get Telegram chat ID for a rule setting' })
   @ApiParam({ name: 'id', type: Number, description: 'Rule setting ID' })
-  @ApiOkResponse({ description: 'Telegram chat ID', type: String })
+  @ApiOkResponse({ description: 'Telegram chat ID', type: TelegramChatIdResponseDto })
   async getTelegramChatId(@Request() req, @Param('id', ParseIntPipe) id: number) {
     return this.rulesSettingsService.getTelegramChatId(id, req.user.id);
   }
