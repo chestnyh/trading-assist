@@ -42,7 +42,6 @@ app.useLogger(app.get(LoggerService));
 Environment variable used by services config:
 
 - `LOG_ENABLE_CONSOLE` (`true` / `false`)
-
 ### Elasticsearch
 
 To send logs to Elasticsearch you must:
@@ -58,16 +57,81 @@ Environment variables used by services config:
 
 #### Authorization
 
-If Elasticsearch is protected (common for staging/production), configure **one** of the following:
+If Elasticsearch is protected (common for staging/production), pass one of the following via module options:
 
-- `LOG_ELASTICSEARCH_AUTH_HEADER`
+- `elasticsearch.auth: { header: string }`
   - Value is used as-is in `Authorization` header.
-- `LOG_ELASTICSEARCH_API_KEY`
+- `elasticsearch.auth: { apiKey: string }`
   - Will be sent as `Authorization: ApiKey <value>`
-- `LOG_ELASTICSEARCH_USERNAME` + `LOG_ELASTICSEARCH_PASSWORD`
+- `elasticsearch.auth: { username: string; password: string }`
   - Will be sent as `Authorization: Basic <base64(username:password)>`
 
 Notes:
 
-- When no auth variables are provided, no `Authorization` header is sent.
+- When no auth options are provided, no `Authorization` header is sent.
 - Only the configured headers are sent; sensitive values should never be committed.
+
+#### Examples: Elasticsearch with credentials
+
+Using a raw authorization header (recommended when your infra provides a ready header value):
+
+```ts
+LoggerModule.forRoot({
+  service: 'api',
+  environment: 'staging',
+  enableConsole: true,
+  enableElasticsearch: true,
+  elasticsearch: {
+    node: 'https://your-es-host:9200',
+    index: 'logs-trading-bot',
+    auth: {
+      header: 'Bearer <token>',
+    },
+  },
+});
+```
+
+Using Elasticsearch API key:
+
+```ts
+LoggerModule.forRoot({
+  service: 'api',
+  environment: 'staging',
+  enableConsole: true,
+  enableElasticsearch: true,
+  elasticsearch: {
+    node: 'https://your-es-host:9200',
+    index: 'logs-trading-bot',
+    auth: {
+      apiKey: '<base64-api-key>',
+    },
+  },
+});
+```
+
+Using Basic auth:
+
+```ts
+LoggerModule.forRoot({
+  service: 'api',
+  environment: 'staging',
+  enableConsole: true,
+  enableElasticsearch: true,
+  elasticsearch: {
+    node: 'https://your-es-host:9200',
+    index: 'logs-trading-bot',
+    auth: {
+      username: 'elastic',
+      password: '<password>',
+    },
+  },
+});
+```
+
+If your logger options must be loaded asynchronously (e.g. from a remote secret store), you can use `LoggerModule.forRootAsync(...)`.
+
+## Why not `@elastic/elasticsearch`?
+
+This library uses `fetch` to keep the transport lightweight and dependency-free.
+If we later need bulk indexing, retry/backoff, sniffing, or richer ES features,
+we can switch to the official client.
