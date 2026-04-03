@@ -39,21 +39,12 @@ app.useLogger(app.get(LoggerService));
 
 - `enableConsole` (default: `true`) controls whether the logger prints human-friendly lines to stdout/stderr.
 
-Environment variable used by services config:
-
-- `LOG_ENABLE_CONSOLE` (`true` / `false`)
 ### Elasticsearch
 
 To send logs to Elasticsearch you must:
 
 - Set `enableElasticsearch: true`
 - Provide `elasticsearch.node` and `elasticsearch.index`
-
-Environment variables used by services config:
-
-- `LOG_ENABLE_ELASTICSEARCH` (`true` / `false`)
-- `LOG_ELASTICSEARCH_NODE` (e.g. `http://localhost:9200`)
-- `LOG_ELASTICSEARCH_INDEX` (e.g. `logs-trading-bot`)
 
 #### Authorization
 
