@@ -30,7 +30,7 @@ import renderMessage from '../../utils/render-message.util'
     }
 }
  */
-export default function telegram_send_message (
+export default async function telegram_send_message (
     args: any,
     {
         sequenceContext
@@ -51,8 +51,9 @@ export default function telegram_send_message (
     const messageToSend = renderMessage(message, { heap: this.heap, sequenceContext });
 
     try {
-        bot.sendMessage(chatId, messageToSend);
+        await bot.sendMessage(chatId, messageToSend);
+
     } catch (error) {
-        { console.error(error) }
+        console.error(error);
     }
-};
+}
