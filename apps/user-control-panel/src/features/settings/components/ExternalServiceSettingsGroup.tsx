@@ -323,7 +323,7 @@ export default function ExternalServiceSettingsGroup({
                       <div className="border border-border rounded-md bg-background px-4 py-3">
                         {s.telegramStage === "receive" && (
                           <div className="flex items-center justify-between gap-3">
-                            <div className="text-foreground text-sm bg-muted/30 rounded px-2 py-1">
+                            <div className="text-gray-100 text-sm bg-black/30 rounded px-2 py-1">
                               Click “Receive Chat Id”, then send any message to your bot in Telegram.
                             </div>
                             <button
@@ -388,14 +388,14 @@ export default function ExternalServiceSettingsGroup({
                         )}
 
                         {s.telegramStage === "waiting" && (
-                          <div className="text-foreground text-sm">
+                          <div className="text-gray-100 text-sm">
                             Waiting for your Telegram message… (up to 2 minutes)
                           </div>
                         )}
 
                         {s.telegramStage === "confirm" && (
                           <div className="flex flex-col gap-2">
-                            <div className="text-foreground text-sm">
+                            <div className="text-gray-100 text-sm">
                               Confirm Chat Id and click “Send”.
                             </div>
                             <input
@@ -483,7 +483,7 @@ export default function ExternalServiceSettingsGroup({
                         )}
 
                         {s.telegramStage === "success" && (
-                          <div className="text-foreground text-sm">
+                          <div className="text-gray-100 text-sm">
                             Chat Id saved successfully.
                           </div>
                         )}
