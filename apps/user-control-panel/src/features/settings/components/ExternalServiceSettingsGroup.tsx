@@ -328,7 +328,7 @@ export default function ExternalServiceSettingsGroup({
                             </div>
                             <button
                               type="button"
-                              className="px-3 py-1.5 rounded border border-border bg-background hover:bg-muted text-sm"
+                              className="px-3 py-1.5 rounded border border-border bg-black/20 hover:bg-black/30 text-gray-100 text-sm"
                               onClick={async () => {
                                 if (!token) return;
                                 setSettings((prev) => {
