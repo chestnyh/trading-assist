@@ -36,8 +36,8 @@ import { ExternalServicesModule } from './external-services/external-services.mo
       useFactory: (cfg: ServicesConfigs) => ({
         service: 'api',
         environment: cfg.get('NODE_ENV')!,
-        enableConsole: cfg.getBoolean('LOG_ENABLE_CONSOLE', true),
-        enableElasticsearch: cfg.getBoolean('LOG_ENABLE_ELASTICSEARCH', false),
+        enableConsole: cfg.getBoolean('LOG_ENABLE_CONSOLE') ?? true,
+        enableElasticsearch: cfg.getBoolean('LOG_ENABLE_ELASTICSEARCH') ?? false,
         elasticsearch:
           cfg.get('LOG_ELASTICSEARCH_NODE') && cfg.get('LOG_ELASTICSEARCH_INDEX')
             ? {

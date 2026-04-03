@@ -25,10 +25,10 @@ export abstract class Configs {
     return this.configs[configName];
   }
 
-  getBoolean(configName: string, defaultValue: boolean): boolean {
+  getBoolean(configName: string): boolean | undefined {
     const value = this.get(configName);
     if (value === undefined) {
-      return defaultValue;
+      return undefined;
     }
 
     const normalized = value.trim().toLowerCase();
@@ -39,7 +39,7 @@ export abstract class Configs {
       return false;
     }
 
-    return defaultValue;
+    return undefined;
   }
 
   getRequired(configName: string): string {
