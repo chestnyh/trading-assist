@@ -25,6 +25,23 @@ export abstract class Configs {
     return this.configs[configName];
   }
 
+  getBoolean(configName: string, defaultValue: boolean): boolean {
+    const value = this.get(configName);
+    if (value === undefined) {
+      return defaultValue;
+    }
+
+    const normalized = value.trim().toLowerCase();
+    if (normalized === 'true' || normalized === '1' || normalized === 'yes') {
+      return true;
+    }
+    if (normalized === 'false' || normalized === '0' || normalized === 'no') {
+      return false;
+    }
+
+    return defaultValue;
+  }
+
   getRequired(configName: string): string {
     const value = this.get(configName);
     if (!value) {

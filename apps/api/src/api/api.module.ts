@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ServicesConfigsModule, ServicesConfigs } from '@trading-bot/configs';
 import { ModelsModule } from '@trading-bot/models';
 import { ServiceCommModule } from '@trading-bot/service-comm';
+import { LoggerModule } from '@trading-bot/logger';
 import { OutboxModule } from './outbox/outbox.module';
 
 import { UsersApiModule } from "./users/users.api.module";
@@ -28,6 +29,32 @@ import { ExternalServicesModule } from './external-services/external-services.mo
             exchange: 'service_comm.topic',
           },
         },
+      }),
+    }),
+    LoggerModule.forRootAsync({
+      inject: [ServicesConfigs],
+      useFactory: (cfg: ServicesConfigs) => ({
+        service: 'api',
+        environment: cfg.get('NODE_ENV')!,
+        enableConsole: cfg.getBoolean('LOG_ENABLE_CONSOLE', true),
+        enableElasticsearch: cfg.getBoolean('LOG_ENABLE_ELASTICSEARCH', false),
+        elasticsearch:
+          cfg.get('LOG_ELASTICSEARCH_NODE') && cfg.get('LOG_ELASTICSEARCH_INDEX')
+            ? {
+                node: cfg.get('LOG_ELASTICSEARCH_NODE')!,
+                index: cfg.get('LOG_ELASTICSEARCH_INDEX')!,
+                auth: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER')
+                  ? { header: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER')! }
+                  : cfg.get('LOG_ELASTICSEARCH_API_KEY')
+                    ? { apiKey: cfg.get('LOG_ELASTICSEARCH_API_KEY')! }
+                    : cfg.get('LOG_ELASTICSEARCH_USERNAME') && cfg.get('LOG_ELASTICSEARCH_PASSWORD')
+                      ? {
+                          username: cfg.get('LOG_ELASTICSEARCH_USERNAME')!,
+                          password: cfg.get('LOG_ELASTICSEARCH_PASSWORD')!,
+                        }
+                      : undefined,
+              }
+            : undefined,
       }),
     }),
     // Global module
