@@ -323,12 +323,12 @@ export default function ExternalServiceSettingsGroup({
                       <div className="border border-border rounded-md bg-background px-4 py-3">
                         {s.telegramStage === "receive" && (
                           <div className="flex items-center justify-between gap-3">
-                            <div className="text-secondary text-sm">
+                            <div className="text-foreground text-sm bg-muted/30 rounded px-2 py-1">
                               Click “Receive Chat Id”, then send any message to your bot in Telegram.
                             </div>
                             <button
                               type="button"
-                              className="px-4 py-2 rounded-md border-2 border-border bg-accent-hover/50 hover:bg-accent-hover text-primary transition"
+                              className="px-3 py-1.5 rounded border border-border bg-background hover:bg-muted text-sm"
                               onClick={async () => {
                                 if (!token) return;
                                 setSettings((prev) => {
@@ -388,14 +388,14 @@ export default function ExternalServiceSettingsGroup({
                         )}
 
                         {s.telegramStage === "waiting" && (
-                          <div className="text-secondary text-sm">
+                          <div className="text-foreground text-sm">
                             Waiting for your Telegram message… (up to 2 minutes)
                           </div>
                         )}
 
                         {s.telegramStage === "confirm" && (
                           <div className="flex flex-col gap-2">
-                            <div className="text-secondary text-sm">
+                            <div className="text-foreground text-sm">
                               Confirm Chat Id and click “Send”.
                             </div>
                             <input
@@ -483,7 +483,7 @@ export default function ExternalServiceSettingsGroup({
                         )}
 
                         {s.telegramStage === "success" && (
-                          <div className="text-secondary text-sm">
+                          <div className="text-foreground text-sm">
                             Chat Id saved successfully.
                           </div>
                         )}
