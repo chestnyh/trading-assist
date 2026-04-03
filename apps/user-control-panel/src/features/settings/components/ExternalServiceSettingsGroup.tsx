@@ -4,7 +4,7 @@ import AddRulesSettingsButton from "./AddRulesSettingsButton";
 import { ConfirmationModal } from "../../../shared/ui/modals/ConfirmationModal";
 import { rulesSettingsControllerFindAllSettings, rulesSettingsControllerCreateSetting,
   rulesSettingsControllerUpdateSetting,
-  telegramChatIdControllerGetTelegramChatId,
+  rulesSettingsControllerGetTelegramChatId,
   rulesSettingsControllerRemoveSetting,
   RuleSettingResponseDto, CreateUserRuleSettingDto, UpdateUserRuleSettingDto } from "@trading-bot/api-client";
 import { useAuth } from "../../../app/contexts/AuthContext";
@@ -53,19 +53,35 @@ export default function ExternalServiceSettingsGroup({
   const limit = 20;
   const { token } = useAuth();
 
-  const hasSchema = Boolean(fieldsSchema && fieldsSchema.length > 0);
+  const isTelegramService = name === "Telegram";
+
+  const visibleFieldsSchema = (fieldsSchema || []).filter((f) => {
+    if (!isTelegramService) return true;
+    if (f.key === "baseUrl") return false;
+    if (f.key === "chatId") return false;
+    return true;
+  });
+
+  const hasSchema = Boolean(visibleFieldsSchema.length > 0);
 
   const mapRulesToSettings = (rules: RuleSettingResponseDto[]) => {
     if (!fieldsSchema) return [];
     return rules.map((rule) => {
-      const details = fieldsSchema.map((field) => ({
+      const chatIdField = fieldsSchema.find((f) => f.key === "chatId");
+      const chatIdValue = chatIdField ? (rule.configuration[chatIdField.key] as string) : undefined;
+
+      const details = fieldsSchema
+        .filter((f) => {
+          if (!isTelegramService) return true;
+          if (f.key === "baseUrl") return false;
+          if (f.key === "chatId" && !chatIdValue) return false;
+          return true;
+        })
+        .map((field) => ({
         label: field.label,
         value: (rule.configuration[field.key] as string) || "",
       }));
-
-      const chatIdField = fieldsSchema.find((f) => f.key === "chatId");
-      const chatIdValue = chatIdField ? (rule.configuration[chatIdField.key] as string) : undefined;
-      const isTelegram = name === "Telegram";
+      const isTelegram = isTelegramService;
 
       const telegramStage = (isTelegram && !chatIdValue ? "receive" : undefined) as
         | "receive"
@@ -175,7 +191,7 @@ export default function ExternalServiceSettingsGroup({
                       code={s.code}
                       tags={s.tags}
                       details={s.details}
-                      detailsSchema={fieldsSchema || []}
+                      detailsSchema={visibleFieldsSchema}
                       mode={s.isNew || s.isEditing ? "edit" : "view"}
                       onSave={async (data) => {
                       if (s.isNew) {
@@ -209,7 +225,7 @@ export default function ExternalServiceSettingsGroup({
                           if (res.status === 201) {
                             setSettings((prev) => {
                               const next = [...prev];
-                              const isTelegram = name === "Telegram";
+                              const isTelegram = isTelegramService;
                               const chatIdField = (fieldsSchema || []).find((f) => f.key === "chatId");
                               const createdChatId = chatIdField
                                 ? (res.data.configuration?.[chatIdField.key] as string | undefined)
@@ -303,7 +319,7 @@ export default function ExternalServiceSettingsGroup({
                     }}
                     />
 
-                    {name === "Telegram" && !s.isNew && !s.isEditing && s.id && (
+                    {isTelegramService && !s.isNew && !s.isEditing && s.id && s.telegramStage && (
                       <div className="border border-border rounded-md bg-background px-4 py-3">
                         {s.telegramStage === "receive" && (
                           <div className="flex items-center justify-between gap-3">
@@ -326,7 +342,7 @@ export default function ExternalServiceSettingsGroup({
                                 });
 
                                 try {
-                                  const res = await telegramChatIdControllerGetTelegramChatId(s.id!, {
+                                  const res = await rulesSettingsControllerGetTelegramChatId(s.id!, {
                                     headers: { Authorization: `Bearer ${token}` },
                                   });
 
