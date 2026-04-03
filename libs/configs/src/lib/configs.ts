@@ -8,7 +8,7 @@ export abstract class Configs {
     if (process?.env?.['NODE_ENV'] === 'api-int-tests') {
       envFile = './.env.api-int-tests';
     }
-    else if (!process?.env?.['NODE_ENV'] || process?.env?.['NODE_ENV'] === 'development') {
+    else if (process?.env?.['NODE_ENV'] !== 'production') {
       envFile = './.env.dev';
     }
 
@@ -23,19 +23,6 @@ export abstract class Configs {
 
   get(configName: string): string | undefined {
     return this.configs[configName];
-  }
-
-  getBoolean(configName: string, defaultValue?: boolean): boolean {
-    const raw = this.get(configName);
-    if (raw === undefined) {
-      return defaultValue ?? false;
-    }
-
-    const normalized = raw.trim().toLowerCase();
-    if (normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'y') return true;
-    if (normalized === 'false' || normalized === '0' || normalized === 'no' || normalized === 'n') return false;
-
-    return defaultValue ?? false;
   }
 
   getRequired(configName: string): string {
