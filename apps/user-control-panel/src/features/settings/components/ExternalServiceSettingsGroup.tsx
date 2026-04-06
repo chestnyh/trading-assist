@@ -190,7 +190,6 @@ export default function ExternalServiceSettingsGroup({
               <div className="flex flex-col gap-3">
                 {settings.map((s, i) => (
                   <div key={s.clientId} className="flex flex-col gap-2">
-                    {flowAdapter.renderProgress(s)}
                     <RuleSetting
                       name={s.name}
                       code={s.code}
@@ -198,6 +197,8 @@ export default function ExternalServiceSettingsGroup({
                       details={s.details}
                       detailsSchema={visibleFieldsSchema}
                       mode={s.isNew || s.isEditing ? "edit" : "view"}
+                      topSlot={flowAdapter.renderProgress(s)}
+                      extraSlot={flowAdapter.renderExtra(s)}
                       onSave={async (data) => {
                       if (s.isNew) {
                         try {
@@ -323,8 +324,6 @@ export default function ExternalServiceSettingsGroup({
                       setDeletingIndex(i);
                     }}
                     />
-
-                    {flowAdapter.renderExtra(s)}
                   </div>
                 ))}
               </div>
