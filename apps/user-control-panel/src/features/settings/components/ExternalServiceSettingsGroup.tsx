@@ -4,11 +4,11 @@ import AddRulesSettingsButton from "./AddRulesSettingsButton";
 import { ConfirmationModal } from "../../../shared/ui/modals/ConfirmationModal";
 import { rulesSettingsControllerFindAllSettings, rulesSettingsControllerCreateSetting,
   rulesSettingsControllerUpdateSetting,
-  rulesSettingsControllerGetTelegramChatId,
   rulesSettingsControllerRemoveSetting,
   RuleSettingResponseDto, CreateUserRuleSettingDto, UpdateUserRuleSettingDto } from "@trading-bot/api-client";
 import { useAuth } from "../../../app/contexts/AuthContext";
 import RuleSetting, { DetailField } from "./RuleSetting";
+import { useExternalServiceFlowAdapter } from "./externalServiceFlowAdapters";
 
 export type { DetailField };
 
@@ -33,20 +33,19 @@ export default function ExternalServiceSettingsGroup({
   const [showPlaceholder, setShowPlaceholder] = useState(false);
   const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [settings, setSettings] = useState<
-    {
-      id?: number;
-      name: string;
-      code: string;
-      tags: string[];
-      details: { label: string; value: string }[];
-      isNew?: boolean;
-      isEditing?: boolean;
-      telegramStage?: "receive" | "waiting" | "confirm" | "success";
-      telegramChatIdDraft?: string;
-      telegramError?: string | null;
-    }[]
-  >([]);
+
+  type SettingItem = {
+    clientId: string;
+    id?: number;
+    name: string;
+    code: string;
+    tags: string[];
+    details: { label: string; value: string }[];
+    isNew?: boolean;
+    isEditing?: boolean;
+  };
+
+  const [settings, setSettings] = useState<SettingItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -64,9 +63,23 @@ export default function ExternalServiceSettingsGroup({
 
   const hasSchema = Boolean(visibleFieldsSchema.length > 0);
 
+  const updateSettingDetails = (clientId: string, nextDetails: { label: string; value: string }[]) => {
+    setSettings((prev) => prev.map((s) => (s.clientId === clientId ? { ...s, details: nextDetails } : s)));
+  };
+
+  const flowAdapter = useExternalServiceFlowAdapter<SettingItem>({
+    serviceName: name,
+    fieldsSchema,
+    token,
+    setLoading,
+    setError,
+    updateSettingDetails,
+  });
+
   const mapRulesToSettings = (rules: RuleSettingResponseDto[]) => {
     if (!fieldsSchema) return [];
     return rules.map((rule) => {
+      const clientId = `rs-${rule.id}`;
       const chatIdField = fieldsSchema.find((f) => f.key === "chatId");
       const chatIdValue = chatIdField ? (rule.configuration[chatIdField.key] as string) : undefined;
 
@@ -81,16 +94,9 @@ export default function ExternalServiceSettingsGroup({
         label: field.label,
         value: (rule.configuration[field.key] as string) || "",
       }));
-      const isTelegram = isTelegramService;
-
-      const telegramStage = (isTelegram && !chatIdValue ? "receive" : undefined) as
-        | "receive"
-        | "waiting"
-        | "confirm"
-        | "success"
-        | undefined;
 
       return {
+        clientId,
         id: rule.id,
         name: rule.name,
         code: rule.code,
@@ -98,9 +104,6 @@ export default function ExternalServiceSettingsGroup({
         details,
         isNew: false,
         isEditing: false,
-        telegramStage,
-        telegramChatIdDraft: isTelegram && chatIdValue ? String(chatIdValue) : "",
-        telegramError: null as string | null,
       };
     });
   };
@@ -114,6 +117,7 @@ export default function ExternalServiceSettingsGroup({
       const res = await rulesSettingsControllerFindAllSettings({ externalServiceId, page: nextPage, limit }, options);
       if (res.status === 200) {
         const mapped = mapRulesToSettings(res.data);
+        flowAdapter.onSettingsLoaded?.(mapped);
         setSettings((prev) => [...prev, ...mapped]);
         setPage(nextPage);
       }
@@ -185,7 +189,8 @@ export default function ExternalServiceSettingsGroup({
               {error && <div className="text-error text-sm">{error}</div>}
               <div className="flex flex-col gap-3">
                 {settings.map((s, i) => (
-                  <div key={`${s.code}-${i}`} className="flex flex-col gap-2">
+                  <div key={s.clientId} className="flex flex-col gap-2">
+                    {flowAdapter.renderProgress(s)}
                     <RuleSetting
                       name={s.name}
                       code={s.code}
@@ -223,26 +228,20 @@ export default function ExternalServiceSettingsGroup({
                           });
 
                           if (res.status === 201) {
+                            const nextSetting: SettingItem = {
+                              ...data,
+                              clientId: s.clientId,
+                              id: res.data.id,
+                              isNew: false,
+                              isEditing: false,
+                            };
                             setSettings((prev) => {
                               const next = [...prev];
-                              const isTelegram = isTelegramService;
-                              const chatIdField = (fieldsSchema || []).find((f) => f.key === "chatId");
-                              const createdChatId = chatIdField
-                                ? (res.data.configuration?.[chatIdField.key] as string | undefined)
-                                : undefined;
-                              next[i] = {
-                                ...data,
-                                id: res.data.id,
-                                isNew: false,
-                                isEditing: false,
-                                telegramStage:
-                                  isTelegram && !createdChatId ? "receive" : undefined,
-                                telegramChatIdDraft:
-                                  isTelegram && createdChatId ? String(createdChatId) : "",
-                                telegramError: null,
-                              };
+                              next[i] = nextSetting;
                               return next;
                             });
+
+                            flowAdapter.onSettingCreated?.(nextSetting, res.data);
                           }
                         } catch (e: any) {
                           setError(e.message || "Failed to save setting");
@@ -283,11 +282,14 @@ export default function ExternalServiceSettingsGroup({
             });
 
                           if (res.status === 200) {
+                            const nextSetting: SettingItem = { ...data, clientId: s.clientId, isEditing: false, id: s.id };
                             setSettings((prev) => {
                               const next = [...prev];
-                              next[i] = { ...data, isEditing: false, id: s.id };
+                              next[i] = nextSetting;
                               return next;
                             });
+
+                            flowAdapter.onSettingCancelEdit?.(nextSetting);
                           }
                         } catch (e: any) {
                           setError(e.message || "Failed to update setting");
@@ -302,16 +304,19 @@ export default function ExternalServiceSettingsGroup({
                         next[i] = { ...next[i], isEditing: true };
                         return next;
                       });
+                      flowAdapter.onSettingEdit?.(s);
                     }}
                       onCancel={() => {
                       if (s.isNew) {
                         setSettings((prev) => prev.filter((_, idx) => idx !== i));
+                        flowAdapter.onSettingRemoved?.(s);
                       } else {
                         setSettings((prev) => {
                           const next = [...prev];
                           next[i] = { ...next[i], isEditing: false };
                           return next;
                         });
+                        flowAdapter.onSettingCancelEdit?.(s);
                       }
                     }}
                       onDelete={() => {
@@ -319,180 +324,7 @@ export default function ExternalServiceSettingsGroup({
                     }}
                     />
 
-                    {isTelegramService && !s.isNew && !s.isEditing && s.id && s.telegramStage && (
-                      <div className="border border-border rounded-md bg-background px-4 py-3">
-                        {s.telegramStage === "receive" && (
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="text-gray-100 text-sm bg-black/30 rounded px-2 py-1">
-                              Click “Receive Chat Id”, then send any message to your bot in Telegram.
-                            </div>
-                            <button
-                              type="button"
-                              className="px-3 py-1.5 rounded border border-border bg-black/20 hover:bg-black/30 text-gray-100 text-sm"
-                              onClick={async () => {
-                                if (!token) return;
-                                setSettings((prev) => {
-                                  const next = [...prev];
-                                  next[i] = {
-                                    ...next[i],
-                                    telegramStage: "waiting",
-                                    telegramError: null,
-                                  };
-                                  return next;
-                                });
-
-                                try {
-                                  const res = await rulesSettingsControllerGetTelegramChatId(s.id!, {
-                                    headers: { Authorization: `Bearer ${token}` },
-                                  });
-
-                                  if (res.status === 200) {
-                                    const receivedChatId = String(res.data.chatId);
-                                    setSettings((prev) => {
-                                      const next = [...prev];
-
-                                      const chatIdLabel = (fieldsSchema || []).find((f) => f.key === "chatId")?.label;
-                                      const details = next[i].details.map((d) =>
-                                        chatIdLabel && d.label === chatIdLabel
-                                          ? { ...d, value: receivedChatId }
-                                          : d
-                                      );
-
-                                      next[i] = {
-                                        ...next[i],
-                                        details,
-                                        telegramChatIdDraft: receivedChatId,
-                                        telegramStage: "confirm",
-                                        telegramError: null,
-                                      };
-                                      return next;
-                                    });
-                                  }
-                                } catch (e: any) {
-                                  const msg = e?.message ? String(e.message) : "Failed to receive chat id";
-                                  setSettings((prev) => {
-                                    const next = [...prev];
-                                    next[i] = {
-                                      ...next[i],
-                                      telegramStage: "receive",
-                                      telegramError: msg,
-                                    };
-                                    return next;
-                                  });
-                                }
-                              }}
-                            >
-                              Receive Chat Id
-                            </button>
-                          </div>
-                        )}
-
-                        {s.telegramStage === "waiting" && (
-                          <div className="text-gray-100 text-sm">
-                            Waiting for your Telegram message… (up to 2 minutes)
-                          </div>
-                        )}
-
-                        {s.telegramStage === "confirm" && (
-                          <div className="flex flex-col gap-2">
-                            <div className="text-gray-100 text-sm">
-                              Confirm Chat Id and click “Send”.
-                            </div>
-                            <input
-                              value={s.telegramChatIdDraft || ""}
-                              onChange={(e) => {
-                                const v = e.target.value;
-                                setSettings((prev) => {
-                                  const next = [...prev];
-                                  next[i] = { ...next[i], telegramChatIdDraft: v };
-                                  return next;
-                                });
-                              }}
-                              className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
-                              placeholder="Chat Id…"
-                            />
-                            <div className="flex items-center justify-end gap-2">
-                              <button
-                                type="button"
-                                className="px-4 py-2 rounded-md border-2 border-border bg-accent-hover/50 hover:bg-accent-hover text-primary transition"
-                                onClick={async () => {
-                                  if (!token) return;
-                                  const chatIdLabel = (fieldsSchema || []).find((f) => f.key === "chatId")?.label;
-                                  const botTokenLabel = (fieldsSchema || []).find((f) => f.key === "botToken")?.label;
-
-                                  const chatIdValue = (s.telegramChatIdDraft || "").trim();
-                                  const botTokenValue = botTokenLabel
-                                    ? (s.details.find((d) => d.label === botTokenLabel)?.value || "")
-                                    : "";
-
-                                  const configuration: Record<string, any> = {};
-                                  if (fieldsSchema) {
-                                    if (botTokenValue) configuration["botToken"] = botTokenValue;
-                                    if (chatIdValue) configuration["chatId"] = chatIdValue;
-                                  }
-
-                                  const dto: UpdateUserRuleSettingDto = {
-                                    configuration,
-                                  };
-
-                                  setLoading(true);
-                                  setError(null);
-                                  setSettings((prev) => {
-                                    const next = [...prev];
-                                    next[i] = { ...next[i], telegramError: null };
-                                    return next;
-                                  });
-
-                                  try {
-                                    const res = await rulesSettingsControllerUpdateSetting(s.id!, dto, {
-                                      headers: { Authorization: `Bearer ${token}` },
-                                    });
-                                    if (res.status === 200) {
-                                      setSettings((prev) => {
-                                        const next = [...prev];
-                                        const details = next[i].details.map((d) =>
-                                          chatIdLabel && d.label === chatIdLabel
-                                            ? { ...d, value: chatIdValue }
-                                            : d
-                                        );
-                                        next[i] = {
-                                          ...next[i],
-                                          details,
-                                          telegramStage: "success",
-                                          telegramError: null,
-                                        };
-                                        return next;
-                                      });
-                                    }
-                                  } catch (e: any) {
-                                    const msg = e?.message ? String(e.message) : "Failed to update setting";
-                                    setSettings((prev) => {
-                                      const next = [...prev];
-                                      next[i] = { ...next[i], telegramError: msg };
-                                      return next;
-                                    });
-                                  } finally {
-                                    setLoading(false);
-                                  }
-                                }}
-                              >
-                                Send
-                              </button>
-                            </div>
-                          </div>
-                        )}
-
-                        {s.telegramStage === "success" && (
-                          <div className="text-gray-100 text-sm">
-                            Chat Id saved successfully.
-                          </div>
-                        )}
-
-                        {s.telegramError && (
-                          <div className="text-error text-sm mt-2">{s.telegramError}</div>
-                        )}
-                      </div>
-                    )}
+                    {flowAdapter.renderExtra(s)}
                   </div>
                 ))}
               </div>
@@ -509,9 +341,12 @@ export default function ExternalServiceSettingsGroup({
               <div className="mt-3">
                 <AddRulesSettingsButton
                   onClick={() => {
+                    const clientId = typeof crypto !== "undefined" && "randomUUID" in crypto
+                      ? (crypto as any).randomUUID()
+                      : `tmp-${Date.now()}-${Math.random().toString(16).slice(2)}`;
                     setSettings((prev) => [
                       ...prev,
-                      { name: "", code: "", tags: [], details: [], isNew: true },
+                      { clientId, name: "", code: "", tags: [], details: [], isNew: true },
                     ]);
                   }}
                 />
@@ -531,6 +366,7 @@ export default function ExternalServiceSettingsGroup({
           // If it's a new unsaved setting, just remove from list
           if (s.isNew || !s.id) {
             setSettings((prev) => prev.filter((_, idx) => idx !== deletingIndex));
+            flowAdapter.onSettingRemoved?.(s);
             setDeletingIndex(null);
             return;
           }
@@ -545,6 +381,7 @@ export default function ExternalServiceSettingsGroup({
             });
             
             setSettings((prev) => prev.filter((_, idx) => idx !== deletingIndex));
+            flowAdapter.onSettingRemoved?.(s);
             setDeletingIndex(null);
           } catch (e: any) {
             setError(e.message || "Failed to delete setting");
