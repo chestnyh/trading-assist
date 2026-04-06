@@ -161,7 +161,7 @@ export function useExternalServiceFlowAdapter<TSetting extends { clientId: strin
         const chatIdLabel = (fieldsSchema || []).find((f) => f.key === "chatId")?.label;
 
         return (
-          <div className="border border-border rounded-md bg-background px-4 py-3">
+          <div>
             {flow.stage === "receive" && (
               <div className="flex flex-col gap-3">
                 <div className="text-gray-100 text-sm bg-black/30 rounded px-2 py-2">
