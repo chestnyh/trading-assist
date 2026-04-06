@@ -23,7 +23,9 @@ export class AuthService {
     
     // Set token expiration based on rememberMe option
     // If rememberMe is true, use 30 days, otherwise use default from config (24h)
-    const expiresIn = rememberMe ? '30d' : this.configService.get('JWT_EXPIRES_IN') || '24h';
+    const expiresIn = rememberMe
+      ? '30d'
+      : (this.configService.get('JWT_EXPIRES_IN') as string) || '24h';
     
     return {
       access_token: this.jwtService.sign(payload, { expiresIn }),
@@ -149,7 +151,7 @@ export class AuthService {
 
     // Get maximum attempts from configuration
     const maxAttempts = this.configService.get('MAX_PASSWORD_RESET_ATTEMPTS');
-    const maxAttemptsNumber = parseInt(maxAttempts, 10);
+    const maxAttemptsNumber = parseInt(maxAttempts as string, 10);
 
     // Check if attempts limit has been exceeded
     if (passwordReset.attemptsCount >= maxAttemptsNumber) {

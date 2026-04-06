@@ -20,10 +20,10 @@ import { ExternalServicesModule } from './external-services/external-services.mo
       useFactory: (cfg: ServicesConfigs) => ({
         rmq: {
           connection: {
-            host: cfg.get('RMQ_HOST'),
+            host: cfg.get('RMQ_HOST') as string,
             port: Number(cfg.get('RMQ_PORT')),
-            username: cfg.get('RMQ_USER'),
-            password: cfg.get('RMQ_PASSWORD'),
+            username: cfg.get('RMQ_USER') as string,
+            password: cfg.get('RMQ_PASSWORD') as string,
           },
           topology: {
             exchange: 'service_comm.topic',
@@ -35,22 +35,22 @@ import { ExternalServicesModule } from './external-services/external-services.mo
       inject: [ServicesConfigs],
       useFactory: (cfg: ServicesConfigs) => ({
         service: 'api',
-        environment: cfg.get('NODE_ENV')!,
-        enableConsole: cfg.getBoolean('LOG_ENABLE_CONSOLE') ?? true,
-        enableElasticsearch: cfg.getBoolean('LOG_ENABLE_ELASTICSEARCH') ?? false,
+        environment: cfg.get('NODE_ENV') as string,
+        enableConsole: cfg.get('LOG_ENABLE_CONSOLE') as boolean,
+        enableElasticsearch: cfg.get('LOG_ENABLE_ELASTICSEARCH') as boolean,
         elasticsearch:
           cfg.get('LOG_ELASTICSEARCH_NODE') && cfg.get('LOG_ELASTICSEARCH_INDEX')
             ? {
-                node: cfg.get('LOG_ELASTICSEARCH_NODE')!,
-                index: cfg.get('LOG_ELASTICSEARCH_INDEX')!,
+                node: cfg.get('LOG_ELASTICSEARCH_NODE') as string,
+                index: cfg.get('LOG_ELASTICSEARCH_INDEX') as string,
                 auth: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER')
-                  ? { header: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER')! }
+                  ? { header: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER') as string }
                   : cfg.get('LOG_ELASTICSEARCH_API_KEY')
-                    ? { apiKey: cfg.get('LOG_ELASTICSEARCH_API_KEY')! }
+                    ? { apiKey: cfg.get('LOG_ELASTICSEARCH_API_KEY') as string }
                     : cfg.get('LOG_ELASTICSEARCH_USERNAME') && cfg.get('LOG_ELASTICSEARCH_PASSWORD')
                       ? {
-                          username: cfg.get('LOG_ELASTICSEARCH_USERNAME')!,
-                          password: cfg.get('LOG_ELASTICSEARCH_PASSWORD')!,
+                          username: cfg.get('LOG_ELASTICSEARCH_USERNAME') as string,
+                          password: cfg.get('LOG_ELASTICSEARCH_PASSWORD') as string,
                         }
                       : undefined,
               }
@@ -60,11 +60,11 @@ import { ExternalServicesModule } from './external-services/external-services.mo
     // Global module
     ModelsModule.forRootAsync({
       useFactory: async (configService: ServicesConfigs) => ({
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        user: configService.get('DB_USER'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_NAME'),
+        host: configService.get('DB_HOST') as string,
+        port: configService.get('DB_PORT') as string,
+        user: configService.get('DB_USER') as string,
+        password: configService.get('DB_PASSWORD') as string,
+        database: configService.get('DB_NAME') as string,
       }),
       inject: [ServicesConfigs],
     }),

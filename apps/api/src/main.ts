@@ -40,7 +40,7 @@ async function bootstrap() {
   const globalPrefix = 'api/v1';
   app.setGlobalPrefix(globalPrefix);
   const port = configs.get('API_PORT');
-  await app.listen(port);
+  await app.listen(port as string);
 
   app
     .get(LoggerService)

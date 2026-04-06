@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 export abstract class Configs {
-  protected configs: Record<string, string | undefined> = {};
+  protected configs: Record<string, string | boolean | undefined> = {};
 
   constructor(){
 
@@ -21,39 +21,22 @@ export abstract class Configs {
 
   }
 
-  get(configName: string): string | undefined {
+  get(configName: string): string | boolean | undefined {
     return this.configs[configName];
   }
 
-  getBoolean(configName: string): boolean | undefined {
+  getRequired(configName: string): string | boolean {
     const value = this.get(configName);
-    if (value === undefined) {
-      return undefined;
-    }
-
-    const normalized = value.trim().toLowerCase();
-    if (normalized === 'true' || normalized === '1' || normalized === 'yes') {
-      return true;
-    }
-    if (normalized === 'false' || normalized === '0' || normalized === 'no') {
-      return false;
-    }
-
-    return undefined;
-  }
-
-  getRequired(configName: string): string {
-    const value = this.get(configName);
-    if (!value) {
+    if (value === undefined || value === '') {
       throw new Error(`${configName} not found in configuration`);
     }
     return value;
   }
 
-  getAll(): Record<string, string> {
-    const result: Record<string, string> = {};
+  getAll(): Record<string, string | boolean> {
+    const result: Record<string, string | boolean> = {};
     for (const [key, value] of Object.entries(this.configs)) {
-      if (typeof value === 'string') {
+      if (typeof value === 'string' || typeof value === 'boolean') {
         result[key] = value;
       }
     }

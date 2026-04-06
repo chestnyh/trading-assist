@@ -23,8 +23,12 @@ export class ServicesConfigs extends Configs {
         : '15672',
       RMQ_USER: process.env['RMQ_USER'] || 'guest',
       RMQ_PASSWORD: process.env['RMQ_PASSWORD'] || 'guest',
-      LOG_ENABLE_CONSOLE: process.env['LOG_ENABLE_CONSOLE'],
-      LOG_ENABLE_ELASTICSEARCH: process.env['LOG_ENABLE_ELASTICSEARCH'],
+      LOG_ENABLE_CONSOLE: process.env['LOG_ENABLE_CONSOLE']
+        ? process.env['LOG_ENABLE_CONSOLE'].trim().toLowerCase() !== 'false'
+        : true,
+      LOG_ENABLE_ELASTICSEARCH: process.env['LOG_ENABLE_ELASTICSEARCH']
+        ? process.env['LOG_ENABLE_ELASTICSEARCH'].trim().toLowerCase() === 'true'
+        : false,
       LOG_ELASTICSEARCH_NODE: process.env['LOG_ELASTICSEARCH_NODE'],
       LOG_ELASTICSEARCH_INDEX: process.env['LOG_ELASTICSEARCH_INDEX'],
       LOG_ELASTICSEARCH_AUTH_HEADER: process.env['LOG_ELASTICSEARCH_AUTH_HEADER'],
