@@ -9,7 +9,7 @@ export class ServicesConfigsProvider {
     this.configs = new ServicesConfigs();
   }
 
-  get(key: string): string {
+  get(key: string): string | boolean | undefined {
     return this.configs.get(key);
   }
 

@@ -3,17 +3,17 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { LoggerService } from '@trading-bot/logger';
 
 import { AutoTraderModule } from './auto-trader/auto-trader.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AutoTraderModule);
+  const app = await NestFactory.create(AutoTraderModule, { bufferLogs: true });
+  app.useLogger(app.get(LoggerService));
   await app.init();
-  Logger.log(
-    `🚀 Application is running `
-  );
+
+  app.get(LoggerService).log('🚀 Application is running');
 }
 
 bootstrap();
