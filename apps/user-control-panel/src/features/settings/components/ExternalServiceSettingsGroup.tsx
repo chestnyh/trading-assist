@@ -7,8 +7,9 @@ import { rulesSettingsControllerFindAllSettings, rulesSettingsControllerCreateSe
   rulesSettingsControllerRemoveSetting,
   RuleSettingResponseDto, CreateUserRuleSettingDto, UpdateUserRuleSettingDto } from "@trading-bot/api-client";
 import { useAuth } from "../../../app/contexts/AuthContext";
-import RuleSetting, { DetailField } from "./RuleSetting";
-import { useExternalServiceFlowAdapter } from "./externalServiceFlowAdapters";
+import type { DetailField } from "./RuleSetting";
+import DefaultRuleSetting, { SettingItem } from "./DefaultRuleSetting";
+import TelegramRuleSetting from "./TelegramRuleSetting";
 
 export type { DetailField };
 
@@ -34,17 +35,6 @@ export default function ExternalServiceSettingsGroup({
   const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  type SettingItem = {
-    clientId: string;
-    id?: number;
-    name: string;
-    code: string;
-    tags: string[];
-    details: { label: string; value: string }[];
-    isNew?: boolean;
-    isEditing?: boolean;
-  };
-
   const [settings, setSettings] = useState<SettingItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,18 +53,9 @@ export default function ExternalServiceSettingsGroup({
 
   const hasSchema = Boolean(visibleFieldsSchema.length > 0);
 
-  const updateSettingDetails = (clientId: string, nextDetails: { label: string; value: string }[]) => {
+  const onDetailsChange = (clientId: string, nextDetails: { label: string; value: string }[]) => {
     setSettings((prev) => prev.map((s) => (s.clientId === clientId ? { ...s, details: nextDetails } : s)));
   };
-
-  const flowAdapter = useExternalServiceFlowAdapter<SettingItem>({
-    serviceName: name,
-    fieldsSchema,
-    token,
-    setLoading,
-    setError,
-    updateSettingDetails,
-  });
 
   const mapRulesToSettings = (rules: RuleSettingResponseDto[]) => {
     if (!fieldsSchema) return [];
@@ -117,7 +98,6 @@ export default function ExternalServiceSettingsGroup({
       const res = await rulesSettingsControllerFindAllSettings({ externalServiceId, page: nextPage, limit }, options);
       if (res.status === 200) {
         const mapped = mapRulesToSettings(res.data);
-        flowAdapter.onSettingsLoaded?.(mapped);
         setSettings((prev) => [...prev, ...mapped]);
         setPage(nextPage);
       }
@@ -135,6 +115,102 @@ export default function ExternalServiceSettingsGroup({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expanded]);
+
+  const handleSave = async (s: SettingItem, i: number, data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }) => {
+    if (s.isNew) {
+      try {
+        if (!token) return;
+        setLoading(true);
+        setError(null);
+
+        const configuration: Record<string, any> = {};
+        if (fieldsSchema) {
+          data.details.forEach((d) => {
+            const field = fieldsSchema.find((f) => f.label === d.label);
+            if (field) {
+              configuration[field.key] = d.value;
+            }
+          });
+        }
+
+        const dto: CreateUserRuleSettingDto = {
+          name: data.name,
+          code: data.code,
+          externalServiceId,
+          configuration,
+          tags: data.tags,
+        };
+
+        const res = await rulesSettingsControllerCreateSetting(dto, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (res.status === 201) {
+          setSettings((prev) => {
+            const next = [...prev];
+            next[i] = {
+              ...data,
+              clientId: s.clientId,
+              id: res.data.id,
+              isNew: false,
+              isEditing: false,
+            };
+            return next;
+          });
+        }
+      } catch (e: any) {
+        setError(e.message || "Failed to save setting");
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    try {
+      if (!token) return;
+      setLoading(true);
+      setError(null);
+
+      const configuration: Record<string, any> = {};
+      if (fieldsSchema) {
+        data.details.forEach((d) => {
+          const field = fieldsSchema.find((f) => f.label === d.label);
+          if (field) {
+            configuration[field.key] = d.value;
+          }
+        });
+      }
+
+      const dto: UpdateUserRuleSettingDto = {
+        name: data.name,
+        code: data.code,
+        configuration,
+        tags: data.tags,
+      };
+
+      if (!s.id) {
+        setError("Setting ID is missing");
+        setLoading(false);
+        return;
+      }
+
+      const res = await rulesSettingsControllerUpdateSetting(s.id, dto, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status === 200) {
+        setSettings((prev) => {
+          const next = [...prev];
+          next[i] = { ...data, clientId: s.clientId, isEditing: false, id: s.id };
+          return next;
+        });
+      }
+    } catch (e: any) {
+      setError(e.message || "Failed to update setting");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50">
@@ -190,140 +266,62 @@ export default function ExternalServiceSettingsGroup({
               <div className="flex flex-col gap-3">
                 {settings.map((s, i) => (
                   <div key={s.clientId} className="flex flex-col gap-2">
-                    <RuleSetting
-                      name={s.name}
-                      code={s.code}
-                      tags={s.tags}
-                      details={s.details}
-                      detailsSchema={visibleFieldsSchema}
-                      mode={s.isNew || s.isEditing ? "edit" : "view"}
-                      topSlot={flowAdapter.renderProgress(s)}
-                      extraSlot={flowAdapter.renderExtra(s)}
-                      onSave={async (data) => {
-                      if (s.isNew) {
-                        try {
-                          if (!token) return;
-                          setLoading(true);
-                          setError(null);
-
-                          const configuration: Record<string, any> = {};
-                          if (fieldsSchema) {
-                            data.details.forEach((d) => {
-                              const field = fieldsSchema.find((f) => f.label === d.label);
-                              if (field) {
-                                configuration[field.key] = d.value;
-                              }
-                            });
-                          }
-
-                          const dto: CreateUserRuleSettingDto = {
-                            name: data.name,
-                            code: data.code,
-                            externalServiceId,
-                            configuration,
-                            tags: data.tags,
-                          };
-
-                          const res = await rulesSettingsControllerCreateSetting(dto, {
-                            headers: { Authorization: `Bearer ${token}` },
+                    {isTelegramService ? (
+                      <TelegramRuleSetting
+                        setting={s}
+                        detailsSchema={visibleFieldsSchema}
+                        fullFieldsSchema={fieldsSchema}
+                        token={token}
+                        setLoading={setLoading}
+                        setError={setError}
+                        onSave={(data) => handleSave(s, i, data)}
+                        onEdit={() => {
+                          setSettings((prev) => {
+                            const next = [...prev];
+                            next[i] = { ...next[i], isEditing: true };
+                            return next;
                           });
-
-                          if (res.status === 201) {
-                            const nextSetting: SettingItem = {
-                              ...data,
-                              clientId: s.clientId,
-                              id: res.data.id,
-                              isNew: false,
-                              isEditing: false,
-                            };
+                        }}
+                        onCancel={() => {
+                          if (s.isNew) {
+                            setSettings((prev) => prev.filter((_, idx) => idx !== i));
+                          } else {
                             setSettings((prev) => {
                               const next = [...prev];
-                              next[i] = nextSetting;
+                              next[i] = { ...next[i], isEditing: false };
                               return next;
                             });
-
-                            flowAdapter.onSettingCreated?.(nextSetting, res.data);
                           }
-                        } catch (e: any) {
-                          setError(e.message || "Failed to save setting");
-                        } finally {
-                          setLoading(false);
-                        }
-                      } else {
-                        try {
-                          if (!token) return;
-                          setLoading(true);
-                          setError(null);
-
-                          const configuration: Record<string, any> = {};
-                          if (fieldsSchema) {
-                            data.details.forEach((d) => {
-                              const field = fieldsSchema.find((f) => f.label === d.label);
-                              if (field) {
-                                configuration[field.key] = d.value;
-                              }
-                            });
-                          }
-
-                          const dto: UpdateUserRuleSettingDto = {
-                            name: data.name,
-                            code: data.code,
-                            configuration,
-                            tags: data.tags,
-                          };
-
-                          if (!s.id) {
-              setError("Setting ID is missing");
-              setLoading(false);
-              return;
-            }
-
-            const res = await rulesSettingsControllerUpdateSetting(s.id, dto, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-
-                          if (res.status === 200) {
-                            const nextSetting: SettingItem = { ...data, clientId: s.clientId, isEditing: false, id: s.id };
+                        }}
+                        onDelete={() => setDeletingIndex(i)}
+                        onDetailsChange={onDetailsChange}
+                      />
+                    ) : (
+                      <DefaultRuleSetting
+                        setting={s}
+                        detailsSchema={visibleFieldsSchema}
+                        onSave={(data) => handleSave(s, i, data)}
+                        onEdit={() => {
+                          setSettings((prev) => {
+                            const next = [...prev];
+                            next[i] = { ...next[i], isEditing: true };
+                            return next;
+                          });
+                        }}
+                        onCancel={() => {
+                          if (s.isNew) {
+                            setSettings((prev) => prev.filter((_, idx) => idx !== i));
+                          } else {
                             setSettings((prev) => {
                               const next = [...prev];
-                              next[i] = nextSetting;
+                              next[i] = { ...next[i], isEditing: false };
                               return next;
                             });
-
-                            flowAdapter.onSettingCancelEdit?.(nextSetting);
                           }
-                        } catch (e: any) {
-                          setError(e.message || "Failed to update setting");
-                        } finally {
-                          setLoading(false);
-                        }
-                      }
-                    }}
-                      onEdit={() => {
-                      setSettings((prev) => {
-                        const next = [...prev];
-                        next[i] = { ...next[i], isEditing: true };
-                        return next;
-                      });
-                      flowAdapter.onSettingEdit?.(s);
-                    }}
-                      onCancel={() => {
-                      if (s.isNew) {
-                        setSettings((prev) => prev.filter((_, idx) => idx !== i));
-                        flowAdapter.onSettingRemoved?.(s);
-                      } else {
-                        setSettings((prev) => {
-                          const next = [...prev];
-                          next[i] = { ...next[i], isEditing: false };
-                          return next;
-                        });
-                        flowAdapter.onSettingCancelEdit?.(s);
-                      }
-                    }}
-                      onDelete={() => {
-                      setDeletingIndex(i);
-                    }}
-                    />
+                        }}
+                        onDelete={() => setDeletingIndex(i)}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
@@ -365,7 +363,6 @@ export default function ExternalServiceSettingsGroup({
           // If it's a new unsaved setting, just remove from list
           if (s.isNew || !s.id) {
             setSettings((prev) => prev.filter((_, idx) => idx !== deletingIndex));
-            flowAdapter.onSettingRemoved?.(s);
             setDeletingIndex(null);
             return;
           }
@@ -380,7 +377,6 @@ export default function ExternalServiceSettingsGroup({
             });
             
             setSettings((prev) => prev.filter((_, idx) => idx !== deletingIndex));
-            flowAdapter.onSettingRemoved?.(s);
             setDeletingIndex(null);
           } catch (e: any) {
             setError(e.message || "Failed to delete setting");
