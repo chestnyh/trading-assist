@@ -44,14 +44,7 @@ export default function ExternalServiceSettingsGroup({
 
   const isTelegramService = name === "Telegram";
 
-  const visibleFieldsSchema = (fieldsSchema || []).filter((f) => {
-    if (!isTelegramService) return true;
-    if (f.key === "baseUrl") return false;
-    if (f.key === "chatId") return false;
-    return true;
-  });
-
-  const hasSchema = Boolean(visibleFieldsSchema.length > 0);
+  const hasSchema = Boolean((fieldsSchema || []).length > 0);
 
   const onDetailsChange = (clientId: string, nextDetails: { label: string; value: string }[]) => {
     setSettings((prev) => prev.map((s) => (s.clientId === clientId ? { ...s, details: nextDetails } : s)));
@@ -61,17 +54,8 @@ export default function ExternalServiceSettingsGroup({
     if (!fieldsSchema) return [];
     return rules.map((rule) => {
       const clientId = `rs-${rule.id}`;
-      const chatIdField = fieldsSchema.find((f) => f.key === "chatId");
-      const chatIdValue = chatIdField ? (rule.configuration[chatIdField.key] as string) : undefined;
 
-      const details = fieldsSchema
-        .filter((f) => {
-          if (!isTelegramService) return true;
-          if (f.key === "baseUrl") return false;
-          if (f.key === "chatId" && !chatIdValue) return false;
-          return true;
-        })
-        .map((field) => ({
+      const details = fieldsSchema.map((field) => ({
         label: field.label,
         value: (rule.configuration[field.key] as string) || "",
       }));
@@ -116,100 +100,117 @@ export default function ExternalServiceSettingsGroup({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expanded]);
 
-  const handleSave = async (s: SettingItem, i: number, data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }) => {
-    if (s.isNew) {
-      try {
-        if (!token) return;
-        setLoading(true);
-        setError(null);
+  const buildConfigurationFromDetails = (details: { label: string; value: string }[]) => {
+    const configuration: Record<string, any> = {};
+    if (!fieldsSchema) return configuration;
 
-        const configuration: Record<string, any> = {};
-        if (fieldsSchema) {
-          data.details.forEach((d) => {
-            const field = fieldsSchema.find((f) => f.label === d.label);
-            if (field) {
-              configuration[field.key] = d.value;
-            }
-          });
-        }
-
-        const dto: CreateUserRuleSettingDto = {
-          name: data.name,
-          code: data.code,
-          externalServiceId,
-          configuration,
-          tags: data.tags,
-        };
-
-        const res = await rulesSettingsControllerCreateSetting(dto, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (res.status === 201) {
-          setSettings((prev) => {
-            const next = [...prev];
-            next[i] = {
-              ...data,
-              clientId: s.clientId,
-              id: res.data.id,
-              isNew: false,
-              isEditing: false,
-            };
-            return next;
-          });
-        }
-      } catch (e: any) {
-        setError(e.message || "Failed to save setting");
-      } finally {
-        setLoading(false);
+    details.forEach((d) => {
+      const field = fieldsSchema.find((f) => f.label === d.label);
+      if (field) {
+        configuration[field.key] = d.value;
       }
+    });
+
+    return configuration;
+  };
+
+  const saveNewSetting = async (s: SettingItem, i: number, data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }) => {
+    if (!token) return;
+
+    const configuration = buildConfigurationFromDetails(data.details);
+    const dto: CreateUserRuleSettingDto = {
+      name: data.name,
+      code: data.code,
+      externalServiceId,
+      configuration,
+      tags: data.tags,
+    };
+
+    const res = await rulesSettingsControllerCreateSetting(dto, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (res.status === 201) {
+      setSettings((prev) => {
+        const next = [...prev];
+        next[i] = {
+          ...data,
+          clientId: s.clientId,
+          id: res.data.id,
+          isNew: false,
+          isEditing: false,
+        };
+        return next;
+      });
+    }
+  };
+
+  const saveExistingSetting = async (s: SettingItem, i: number, data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }) => {
+    if (!token) return;
+
+    if (!s.id) {
+      setError("Setting ID is missing");
       return;
     }
 
+    const configuration = buildConfigurationFromDetails(data.details);
+    const dto: UpdateUserRuleSettingDto = {
+      name: data.name,
+      code: data.code,
+      configuration,
+      tags: data.tags,
+    };
+
+    const res = await rulesSettingsControllerUpdateSetting(s.id, dto, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (res.status === 200) {
+      setSettings((prev) => {
+        const next = [...prev];
+        next[i] = { ...data, clientId: s.clientId, isEditing: false, id: s.id };
+        return next;
+      });
+    }
+  };
+
+  const handleSave = async (s: SettingItem, i: number, data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }) => {
     try {
       if (!token) return;
       setLoading(true);
       setError(null);
 
-      const configuration: Record<string, any> = {};
-      if (fieldsSchema) {
-        data.details.forEach((d) => {
-          const field = fieldsSchema.find((f) => f.label === d.label);
-          if (field) {
-            configuration[field.key] = d.value;
-          }
-        });
-      }
-
-      const dto: UpdateUserRuleSettingDto = {
-        name: data.name,
-        code: data.code,
-        configuration,
-        tags: data.tags,
-      };
-
-      if (!s.id) {
-        setError("Setting ID is missing");
-        setLoading(false);
-        return;
-      }
-
-      const res = await rulesSettingsControllerUpdateSetting(s.id, dto, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (res.status === 200) {
-        setSettings((prev) => {
-          const next = [...prev];
-          next[i] = { ...data, clientId: s.clientId, isEditing: false, id: s.id };
-          return next;
-        });
+      if (s.isNew) {
+        await saveNewSetting(s, i, data);
+      } else {
+        await saveExistingSetting(s, i, data);
       }
     } catch (e: any) {
-      setError(e.message || "Failed to update setting");
+      setError(e.message || "Failed to save setting");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEdit = (index: number) => {
+    setSettings((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], isEditing: true };
+      return next;
+    });
+  };
+
+  const handleCancel = (s: SettingItem, index: number) => {
+    if (s.isNew) {
+      setSettings((prev) => prev.filter((_, idx) => idx !== index));
+      return;
+    }
+
+    setSettings((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], isEditing: false };
+      return next;
+    });
   };
 
   return (
@@ -269,56 +270,23 @@ export default function ExternalServiceSettingsGroup({
                     {isTelegramService ? (
                       <TelegramRuleSetting
                         setting={s}
-                        detailsSchema={visibleFieldsSchema}
-                        fullFieldsSchema={fieldsSchema}
+                        fieldsSchema={fieldsSchema}
                         token={token}
                         setLoading={setLoading}
                         setError={setError}
                         onSave={(data) => handleSave(s, i, data)}
-                        onEdit={() => {
-                          setSettings((prev) => {
-                            const next = [...prev];
-                            next[i] = { ...next[i], isEditing: true };
-                            return next;
-                          });
-                        }}
-                        onCancel={() => {
-                          if (s.isNew) {
-                            setSettings((prev) => prev.filter((_, idx) => idx !== i));
-                          } else {
-                            setSettings((prev) => {
-                              const next = [...prev];
-                              next[i] = { ...next[i], isEditing: false };
-                              return next;
-                            });
-                          }
-                        }}
+                        onEdit={() => handleEdit(i)}
+                        onCancel={() => handleCancel(s, i)}
                         onDelete={() => setDeletingIndex(i)}
                         onDetailsChange={onDetailsChange}
                       />
                     ) : (
                       <DefaultRuleSetting
                         setting={s}
-                        detailsSchema={visibleFieldsSchema}
+                        fieldsSchema={fieldsSchema || []}
                         onSave={(data) => handleSave(s, i, data)}
-                        onEdit={() => {
-                          setSettings((prev) => {
-                            const next = [...prev];
-                            next[i] = { ...next[i], isEditing: true };
-                            return next;
-                          });
-                        }}
-                        onCancel={() => {
-                          if (s.isNew) {
-                            setSettings((prev) => prev.filter((_, idx) => idx !== i));
-                          } else {
-                            setSettings((prev) => {
-                              const next = [...prev];
-                              next[i] = { ...next[i], isEditing: false };
-                              return next;
-                            });
-                          }
-                        }}
+                        onEdit={() => handleEdit(i)}
+                        onCancel={() => handleCancel(s, i)}
                         onDelete={() => setDeletingIndex(i)}
                       />
                     )}

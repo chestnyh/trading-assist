@@ -5,7 +5,7 @@ import {
   UpdateUserRuleSettingDto,
 } from "@trading-bot/api-client";
 import type { DetailField } from "./RuleSetting";
-import RuleSettingCommon from "./RuleSettingCommon";
+import RuleSetting from "./RuleSetting";
 import type { SettingItem } from "./DefaultRuleSetting";
 
 type TelegramStage = "create" | "receive" | "waiting" | "confirm" | "success";
@@ -22,8 +22,7 @@ const getValueByFieldKey = (
 
 export default function TelegramRuleSetting(props: {
   setting: SettingItem;
-  detailsSchema: DetailField[];
-  fullFieldsSchema?: DetailField[];
+  fieldsSchema?: DetailField[];
   token: string | null;
   setLoading: (v: boolean) => void;
   setError: (v: string | null) => void;
@@ -35,8 +34,7 @@ export default function TelegramRuleSetting(props: {
 }) {
   const {
     setting,
-    detailsSchema,
-    fullFieldsSchema,
+    fieldsSchema,
     token,
     setLoading,
     setError,
@@ -47,9 +45,22 @@ export default function TelegramRuleSetting(props: {
     onDetailsChange,
   } = props;
 
+  const visibleFieldsSchema = useMemo(() => {
+    return (fieldsSchema || []).filter((f) => {
+      if (f.key === "baseUrl") return false;
+      if (f.key === "chatId") return false;
+      return true;
+    });
+  }, [fieldsSchema]);
+
+  const visibleDetails = useMemo(() => {
+    const allowedLabels = new Set(visibleFieldsSchema.map((f) => f.label));
+    return (setting.details || []).filter((d) => allowedLabels.has(d.label));
+  }, [setting.details, visibleFieldsSchema]);
+
   const chatIdLabel = useMemo(
-    () => (fullFieldsSchema || []).find((f) => f.key === "chatId")?.label,
-    [fullFieldsSchema]
+    () => (fieldsSchema || []).find((f) => f.key === "chatId")?.label,
+    [fieldsSchema]
   );
 
   const [stage, setStage] = useState<TelegramStage>("create");
@@ -63,8 +74,8 @@ export default function TelegramRuleSetting(props: {
       return;
     }
 
-    const existingChatId = getValueByFieldKey(fullFieldsSchema, setting.details, "chatId");
-    const botToken = getValueByFieldKey(fullFieldsSchema, setting.details, "botToken");
+    const existingChatId = getValueByFieldKey(fieldsSchema, setting.details, "chatId");
+    const botToken = getValueByFieldKey(fieldsSchema, setting.details, "botToken");
 
     if (existingChatId) {
       setStage("success");
@@ -83,7 +94,7 @@ export default function TelegramRuleSetting(props: {
     setStage("create");
     setChatIdDraft("");
     setFlowError(null);
-  }, [fullFieldsSchema, setting.clientId, setting.details, setting.id, setting.isEditing, setting.isNew]);
+  }, [fieldsSchema, setting.clientId, setting.details, setting.id, setting.isEditing, setting.isNew]);
 
   const progress = (() => {
     const stepIndex = stage === "create" ? 0 : stage === "receive" ? 1 : stage === "waiting" ? 2 : stage === "confirm" ? 3 : 4;
@@ -165,7 +176,7 @@ export default function TelegramRuleSetting(props: {
                   if (!token) return;
 
                   const chatIdValue = (chatIdDraft || "").trim();
-                  const botTokenValue = getValueByFieldKey(fullFieldsSchema, setting.details, "botToken");
+                  const botTokenValue = getValueByFieldKey(fieldsSchema, setting.details, "botToken");
 
                   const configuration: Record<string, any> = {};
                   if (botTokenValue) configuration["botToken"] = botTokenValue;
@@ -224,15 +235,15 @@ export default function TelegramRuleSetting(props: {
         )}
       </div>
     );
-  }, [chatIdDraft, chatIdLabel, flowError, fullFieldsSchema, onDetailsChange, setError, setLoading, setting.clientId, setting.details, setting.id, setting.isEditing, setting.isNew, stage, token]);
+  }, [chatIdDraft, chatIdLabel, flowError, fieldsSchema, onDetailsChange, setError, setLoading, setting.clientId, setting.details, setting.id, setting.isEditing, setting.isNew, stage, token]);
 
   return (
-    <RuleSettingCommon
+    <RuleSetting
       name={setting.name}
       code={setting.code}
       tags={setting.tags}
-      details={setting.details}
-      detailsSchema={detailsSchema}
+      details={visibleDetails}
+      detailsSchema={visibleFieldsSchema}
       mode={setting.isNew || setting.isEditing ? "edit" : "view"}
       topSlot={progress}
       extraSlot={extra}
