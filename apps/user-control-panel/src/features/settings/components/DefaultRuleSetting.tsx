@@ -1,5 +1,5 @@
 import type { DetailField } from "./RuleSetting";
-import RuleSettingCommon from "./RuleSettingCommon";
+import RuleSetting from "./RuleSetting";
 
 export type SettingItem = {
   clientId: string;
@@ -14,21 +14,21 @@ export type SettingItem = {
 
 export default function DefaultRuleSetting(props: {
   setting: SettingItem;
-  detailsSchema: DetailField[];
+  fieldsSchema: DetailField[];
   onSave: (data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }) => Promise<void>;
   onEdit: () => void;
   onCancel: () => void;
   onDelete: () => void;
 }) {
-  const { setting, detailsSchema, onSave, onEdit, onCancel, onDelete } = props;
+  const { setting, fieldsSchema, onSave, onEdit, onCancel, onDelete } = props;
 
   return (
-    <RuleSettingCommon
+    <RuleSetting
       name={setting.name}
       code={setting.code}
       tags={setting.tags}
       details={setting.details}
-      detailsSchema={detailsSchema}
+      detailsSchema={fieldsSchema}
       mode={setting.isNew || setting.isEditing ? "edit" : "view"}
       onSave={(data) => {
         void onSave(data);
