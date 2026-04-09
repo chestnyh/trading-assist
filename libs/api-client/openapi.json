@@ -260,17 +260,31 @@
       },
       "get": {
         "operationId": "RulesController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Rules retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RuleResponseDto"
-                  }
+                  "$ref": "#/components/schemas/PaginatedRulesDto"
                 }
               }
             }
@@ -284,7 +298,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get all rules for the authenticated user",
+        "summary": "Get all rules for the authenticated user with pagination",
         "tags": [
           "rules"
         ]
@@ -582,6 +596,80 @@
           }
         ],
         "summary": "Delete a rule setting",
+        "tags": [
+          "rules-settings"
+        ]
+      }
+    },
+    "/api/v1/rules-settings/telegram-chat-id/{id}": {
+      "get": {
+        "operationId": "RulesSettingsController_getTelegramChatId",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Rule setting ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Telegram chat ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramChatIdResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Telegram chat ID for a rule setting",
+        "tags": [
+          "rules-settings"
+        ]
+      }
+    },
+    "/api/v1/telegram-chat-id/{id}": {
+      "get": {
+        "operationId": "TelegramChatIdController_getTelegramChatId",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Rule setting ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Telegram chat ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramChatIdResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Telegram chat ID for a rule setting",
         "tags": [
           "rules-settings"
         ]
@@ -1024,7 +1112,7 @@
             "example": true
           },
           "remainingAttempts": {
-            "type": "object",
+            "type": "number",
             "description": "Remaining attempts before the token is invalidated",
             "example": 3,
             "nullable": true
@@ -1144,6 +1232,27 @@
           "description",
           "ruleBody",
           "authorId"
+        ]
+      },
+      "PaginatedRulesDto": {
+        "type": "object",
+        "properties": {
+          "rules": {
+            "description": "Array of rules for the requested page",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 120,
+            "description": "Total number of rules available"
+          }
+        },
+        "required": [
+          "rules",
+          "total"
         ]
       },
       "UpdateRuleDto": {
@@ -1312,6 +1421,18 @@
             }
           }
         }
+      },
+      "TelegramChatIdResponseDto": {
+        "type": "object",
+        "properties": {
+          "chatId": {
+            "type": "number",
+            "example": 1234567890
+          }
+        },
+        "required": [
+          "chatId"
+        ]
       },
       "CreateTagDto": {
         "type": "object",
