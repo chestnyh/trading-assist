@@ -20,33 +20,53 @@ export default function TagPicker(props: {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
+  const cacheRef = useRef<Map<string, TagResponseDto[]>>(new Map());
+
   const rootRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
+    if (!open) return;
     if (!token) return;
 
-    let canceled = false;
-    const load = async () => {
-      setLoading(true);
-      try {
-        const res = await rulesSettingsTagsControllerFindAllTags({
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!canceled && res.status === 200) {
-          setAllTags(res.data);
-        }
-      } finally {
-        if (!canceled) setLoading(false);
-      }
-    };
+    const raw = normalizeTag(query);
+    const search = raw.length >= 2 ? raw : undefined;
+    const cacheKey = search ? `s:${search.toLowerCase()}` : "__initial__";
 
-    void load();
+    const cached = cacheRef.current.get(cacheKey);
+    if (cached) {
+      setAllTags(cached);
+      return;
+    }
+
+    let canceled = false;
+    const t = setTimeout(() => {
+      const load = async () => {
+        setLoading(true);
+        try {
+          const res = await rulesSettingsTagsControllerFindAllTags(
+            { search, limit: 50 },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          if (!canceled && res.status === 200) {
+            cacheRef.current.set(cacheKey, res.data);
+            setAllTags(res.data);
+          }
+        } finally {
+          if (!canceled) setLoading(false);
+        }
+      };
+
+      void load();
+    }, 250);
 
     return () => {
       canceled = true;
+      clearTimeout(t);
     };
-  }, [token]);
+  }, [open, query, token]);
 
   useEffect(() => {
     const onDocMouseDown = (e: MouseEvent) => {
@@ -119,6 +139,7 @@ export default function TagPicker(props: {
 
       if (res.status === 201) {
         setAllTags((prev) => [...prev, res.data]);
+        cacheRef.current.clear();
         onChange([...selected, res.data.name]);
         setQuery("");
       }
