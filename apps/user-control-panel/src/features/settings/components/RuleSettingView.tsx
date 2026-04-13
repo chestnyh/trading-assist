@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronRight, ChevronDown, Pencil, Trash2 } from "lucide-react";
 import type { DetailField } from "./RuleSetting";
 
@@ -31,6 +31,12 @@ export default function RuleSettingView({
   onDelete,
 }: RuleSettingViewProps) {
   const [expanded, setExpanded] = useState(Boolean(initiallyExpanded));
+
+  useEffect(() => {
+    if (initiallyExpanded) {
+      setExpanded(true);
+    }
+  }, [initiallyExpanded]);
 
   return (
     <div className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50">
