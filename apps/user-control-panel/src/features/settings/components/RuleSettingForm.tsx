@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import { useAuth } from "../../../app/contexts/AuthContext";
+import TagPicker from "./TagPicker";
 
 export type DetailField = {
   key: string;
@@ -38,9 +40,7 @@ export default function RuleSettingForm({
 }: RuleSettingFormProps) {
   const [name, setName] = useState(initialName || "");
   const [code, setCode] = useState(initialCode || "");
-  const [tagsInput, setTagsInput] = useState(
-    (initialTags || []).join(", ")
-  );
+  const [tags, setTags] = useState<string[]>(initialTags || []);
   const [detailValues, setDetailValues] = useState<Record<string, string>>(() => {
     const obj: Record<string, string> = {};
     detailsSchema.forEach((f) => {
@@ -49,14 +49,7 @@ export default function RuleSettingForm({
     return obj;
   });
 
-  const tags = useMemo(
-    () =>
-      tagsInput
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-    [tagsInput]
-  );
+  const { token } = useAuth();
 
   const errors = useMemo(() => {
     const e: Record<string, string> = {};
@@ -151,12 +144,7 @@ export default function RuleSettingForm({
 
       <div className="mt-3">
         <div className="text-primary text-xs mb-1">Setting Tags</div>
-        <input
-          value={tagsInput}
-          onChange={(e) => setTagsInput(e.target.value)}
-          className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
-          placeholder="Tags… (comma separated)"
-        />
+        <TagPicker token={token} value={tags} onChange={setTags} />
       </div>
 
       <div className="mt-3 flex flex-col gap-2">

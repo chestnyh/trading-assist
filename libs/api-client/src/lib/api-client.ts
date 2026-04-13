@@ -1134,15 +1134,35 @@ export type rulesSettingsTagsControllerFindAllTagsResponseSuccess =
 export type rulesSettingsTagsControllerFindAllTagsResponse =
   rulesSettingsTagsControllerFindAllTagsResponseSuccess;
 
-export const getRulesSettingsTagsControllerFindAllTagsUrl = () => {
-  return `/api/v1/tags`;
+export type RulesSettingsTagsControllerFindAllTagsParams = {
+  search?: string;
+  limit?: number;
+};
+
+export const getRulesSettingsTagsControllerFindAllTagsUrl = (
+  params?: RulesSettingsTagsControllerFindAllTagsParams
+) => {
+  const base = `/api/v1/tags`;
+  if (!params) return base;
+
+  const qs = new URLSearchParams();
+  if (typeof params.search === 'string' && params.search.trim()) {
+    qs.set('search', params.search.trim());
+  }
+  if (typeof params.limit === 'number' && Number.isFinite(params.limit)) {
+    qs.set('limit', String(params.limit));
+  }
+
+  const s = qs.toString();
+  return s ? `${base}?${s}` : base;
 };
 
 export const rulesSettingsTagsControllerFindAllTags = async (
+  params?: RulesSettingsTagsControllerFindAllTagsParams,
   options?: RequestInit
 ): Promise<rulesSettingsTagsControllerFindAllTagsResponse> => {
   return customInstance<rulesSettingsTagsControllerFindAllTagsResponse>(
-    getRulesSettingsTagsControllerFindAllTagsUrl(),
+    getRulesSettingsTagsControllerFindAllTagsUrl(params),
     {
       ...options,
       method: 'GET',

@@ -8,6 +8,8 @@ import {
   UseGuards,
   Request,
   ParseIntPipe,
+  Query,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -44,8 +46,12 @@ export class RulesSettingsTagsController {
     description: 'Return all tags for the current user.',
     type: [TagResponseDto],
   })
-  async findAllTags(@Request() req) {
-    return this.rulesSettingsService.findAllTags(req.user.id);
+  async findAllTags(
+    @Request() req,
+    @Query('search') search?: string,
+    @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit?: number,
+  ) {
+    return this.rulesSettingsService.findAllTags(req.user.id, { search, limit });
   }
 
   @Delete(':id')
