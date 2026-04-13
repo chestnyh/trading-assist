@@ -39,6 +39,7 @@ export default function ExternalServiceSettingsGroup({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
   const limit = 20;
   const { token } = useAuth();
 
@@ -82,7 +83,21 @@ export default function ExternalServiceSettingsGroup({
       const res = await rulesSettingsControllerFindAllSettings({ externalServiceId, page: nextPage, limit }, options);
       if (res.status === 200) {
         const mapped = mapRulesToSettings(res.data);
-        setSettings((prev) => [...prev, ...mapped]);
+        if (nextPage === 1 && res.data.length === limit) {
+          const probe = await rulesSettingsControllerFindAllSettings(
+            { externalServiceId, page: 2, limit: 1 },
+            options
+          );
+          setHasMore(probe.status === 200 && probe.data.length > 0);
+        } else {
+          setHasMore(res.data.length === limit);
+        }
+
+        if (mapped.length === 0) {
+          return;
+        }
+
+        setSettings((prev) => (nextPage === 1 ? mapped : [...prev, ...mapped]));
         setPage(nextPage);
       }
     } catch (e: any) {
@@ -95,6 +110,7 @@ export default function ExternalServiceSettingsGroup({
 
   useEffect(() => {
     if (expanded && settings.length === 0) {
+      setHasMore(false);
       fetchSettingsPage(1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -293,16 +309,18 @@ export default function ExternalServiceSettingsGroup({
                   </div>
                 ))}
               </div>
-              <div className="mt-2">
-                <button
-                  type="button"
-                  className="px-3 py-1 text-sm rounded-md border border-border hover:bg-accent-hover/40 text-accent transition"
-                  onClick={() => fetchSettingsPage(page + 1)}
-                  disabled={loading}
-                >
-                  Load more
-                </button>
-              </div>
+              {hasMore && (
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    className="px-3 py-1 text-sm rounded-md border border-border hover:bg-accent-hover/40 text-accent transition"
+                    onClick={() => fetchSettingsPage(page + 1)}
+                    disabled={loading}
+                  >
+                    Load more
+                  </button>
+                </div>
+              )}
               <div className="mt-3">
                 <AddRulesSettingsButton
                   onClick={() => {
