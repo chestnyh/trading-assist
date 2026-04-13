@@ -45,19 +45,6 @@ export default function TelegramRuleSetting(props: {
     onDetailsChange,
   } = props;
 
-  const visibleFieldsSchema = useMemo(() => {
-    return (fieldsSchema || []).filter((f) => {
-      if (f.key === "baseUrl") return false;
-      if (f.key === "chatId") return false;
-      return true;
-    });
-  }, [fieldsSchema]);
-
-  const visibleDetails = useMemo(() => {
-    const allowedLabels = new Set(visibleFieldsSchema.map((f) => f.label));
-    return (setting.details || []).filter((d) => allowedLabels.has(d.label));
-  }, [setting.details, visibleFieldsSchema]);
-
   const chatIdLabel = useMemo(
     () => (fieldsSchema || []).find((f) => f.key === "chatId")?.label,
     [fieldsSchema]
@@ -66,6 +53,20 @@ export default function TelegramRuleSetting(props: {
   const [stage, setStage] = useState<TelegramStage>("create");
   const [chatIdDraft, setChatIdDraft] = useState<string>("");
   const [flowError, setFlowError] = useState<string | null>(null);
+
+  const visibleFieldsSchema = useMemo(() => {
+    const includeChatId = stage === "success";
+    return (fieldsSchema || []).filter((f) => {
+      if (f.key === "baseUrl") return false;
+      if (f.key === "chatId" && !includeChatId) return false;
+      return true;
+    });
+  }, [fieldsSchema, stage]);
+
+  const visibleDetails = useMemo(() => {
+    const allowedLabels = new Set(visibleFieldsSchema.map((f) => f.label));
+    return (setting.details || []).filter((d) => allowedLabels.has(d.label));
+  }, [setting.details, visibleFieldsSchema]);
 
   useEffect(() => {
     if (setting.isNew || setting.isEditing || !setting.id) {
