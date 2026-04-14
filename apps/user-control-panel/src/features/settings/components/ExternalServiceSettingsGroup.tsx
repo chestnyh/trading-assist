@@ -83,17 +83,18 @@ export default function ExternalServiceSettingsGroup({
       const res = await rulesSettingsControllerFindAllSettings({ externalServiceId, page: nextPage, limit }, options);
       if (res.status === 200) {
         const mapped = mapRulesToSettings(res.data);
-        if (nextPage === 1 && res.data.length === limit) {
+        if (res.data.length === limit) {
           const probe = await rulesSettingsControllerFindAllSettings(
-            { externalServiceId, page: 2, limit: 1 },
+            { externalServiceId, page: nextPage + 1, limit: 1 },
             options
           );
           setHasMore(probe.status === 200 && probe.data.length > 0);
         } else {
-          setHasMore(res.data.length === limit);
+          setHasMore(false);
         }
 
         if (mapped.length === 0) {
+          setHasMore(false);
           return;
         }
 
