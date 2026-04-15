@@ -245,6 +245,7 @@ export default function TelegramRuleSetting(props: {
       tags={setting.tags}
       details={visibleDetails}
       detailsSchema={visibleFieldsSchema}
+      initiallyExpanded={stage === "receive" || stage === "waiting" || stage === "confirm"}
       mode={setting.isNew || setting.isEditing ? "edit" : "view"}
       topSlot={progress}
       extraSlot={extra}
