@@ -27,6 +27,8 @@ interface RuleSettingProps {
   initiallyExpanded?: boolean;
   mode?: "view" | "edit";
   detailsSchema?: DetailField[];
+  topSlot?: JSX.Element | null;
+  extraSlot?: JSX.Element | null;
   onSave?: (data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }) => void;
   onCancel?: () => void;
   onEdit?: () => void;
@@ -41,6 +43,8 @@ export default function RuleSetting({
   initiallyExpanded,
   mode: controlledMode,
   detailsSchema = [],
+  topSlot,
+  extraSlot,
   onSave,
   onCancel,
   onEdit,
@@ -101,6 +105,8 @@ export default function RuleSetting({
       tags={tags}
       details={details}
       initiallyExpanded={initiallyExpanded}
+      topSlot={topSlot}
+      extraSlot={extraSlot}
       onEdit={handleEdit}
       onDelete={onDelete}
     />

@@ -3,6 +3,7 @@ import timeoutRule from './units/rules/2-timeout';
 import intervalRule from './units/rules/3-interval';
 import sequenceRule from './units/rules/4-sequence';
 import parallelRule from './units/rules/5-parallel';
+import candlePriceMovementAlertRule from './units/rules/6-candle-price-movement-alert';
 import { CryptoUtilsService } from '@trading-bot/crypto-utils';
 
 const cryptoService = new CryptoUtilsService();
@@ -86,8 +87,7 @@ export default async function main() {
                     logoUrl: `${LOGOS_BASE}/telegram.png`,
                     fieldsSchema: [
                         { key: "botToken", label: "BotToken", required: true, minLength: 45, maxLength: 50, placeholder: "Insert bot token…" },
-                        { key: "baseUrl", label: "BaseUrl", required: false, minLength: 20, maxLength: 100, placeholder: "Insert base url…" },
-                        { key: "chatId", label: "ChatId", required: true, placeholder: "Insert chat id…" },
+                        { key: "chatId", label: "ChatId", required: false, placeholder: "Insert chat id…" },
                     ]
                 },
                 update: {
@@ -95,8 +95,7 @@ export default async function main() {
                     logoUrl: `${LOGOS_BASE}/telegram.png`,
                     fieldsSchema: [
                         { key: "botToken", label: "BotToken", required: true, minLength: 45, maxLength: 50, placeholder: "Insert bot token…" },
-                        { key: "baseUrl", label: "BaseUrl", required: false, minLength: 20, maxLength: 100, placeholder: "Insert base url…" },
-                        { key: "chatId", label: "ChatId", required: true, placeholder: "Insert chat id…" },
+                        { key: "chatId", label: "ChatId", required: false, placeholder: "Insert chat id…" },
                     ]
                 }
             },
@@ -295,6 +294,11 @@ export default async function main() {
                                 name: "Parallel Config",
                                 description: "Parallel config",
                                 ruleBody: parallelRule
+                            },
+                            {
+                                name: "Candle price movement alert",
+                                description: "Every 10 seconds, checks the current 1h BTCUSDT candle. If the price has moved more than 100 USDT from open, sends a Telegram alert.",
+                                ruleBody: candlePriceMovementAlertRule
                             }
                         ]
                     },
@@ -340,7 +344,6 @@ export default async function main() {
                                 externalService: { connect: { name: 'Telegram' } },
                                 configuration: {
                                     botToken: "123456789:ABCDefGhIJKlmNoPQRstuVWXyz_45chars",
-                                    baseUrl: "https://api.telegram.org",
                                     chatId: "1234567890"
                                 }
                             },

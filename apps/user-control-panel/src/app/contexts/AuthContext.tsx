@@ -113,13 +113,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } else {
         return { success: false, error: "Invalid response from server" };
       }
-    } catch (err) {
-      const error = err as Error;
+    } catch (caughtError: unknown) {
       let errorMessage = "Login failed. Please try again.";
 
       // api-client request validation errors (Zod issues)
-      const validationErrors = isValidationError(error)
-        ? extractFieldToMessageFromValidationError(error)
+      const validationErrors = isValidationError(caughtError)
+        ? extractFieldToMessageFromValidationError(caughtError)
         : {};
       if (Object.keys(validationErrors).length > 0) {
         const fieldErrors: LoginResult['fieldErrors'] = {};
@@ -134,13 +133,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
       }
 
-      if (error && typeof error === "object") {
-        if ("isNetworkError" in error && (error as { isNetworkError?: boolean }).isNetworkError) {
+      if (caughtError && typeof caughtError === "object") {
+        if ("isNetworkError" in caughtError && (caughtError as { isNetworkError?: boolean }).isNetworkError) {
           errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
           return { success: false, error: errorMessage };
         }
 
-        const message = typeof error.message === 'string' ? error.message : undefined;
+        const message =
+          "message" in caughtError && typeof (caughtError as any).message === 'string'
+            ? String((caughtError as any).message)
+            : undefined;
         if (message) {
 
           if (message === "Failed to fetch" || message.includes("fetch")) {
@@ -148,8 +150,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           } else {
             errorMessage = message;
           }
-        } else if ("status" in error) {
-          const status = (error as { status: number }).status;
+        } else if ("status" in caughtError) {
+          const status = (caughtError as { status: number }).status;
           if (status === 0) {
             errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
           } else 
@@ -161,6 +163,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             errorMessage = "Server error. Please try again later.";
           }
         }
+      } else if (caughtError instanceof TypeError && caughtError.message === "Failed to fetch") {
+        errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
       }
 
       return { success: false, error: errorMessage };

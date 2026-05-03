@@ -21,9 +21,26 @@ export class RuleSettingsTagsService {
   /**
    * Get all user tags
    */
-  async findAllTags(userId: number) {
+  async findAllTags(userId: number, opts?: { search?: string; limit?: number }) {
+    const search = (opts?.search || '').trim();
+    const limit = typeof opts?.limit === 'number' && Number.isFinite(opts.limit) ? opts.limit : undefined;
+
     return this.modelsService.ruleSettingsTags.findMany({
-      where: { userId: userId },
+      where: {
+        userId: userId,
+        ...(search
+          ? {
+              name: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            }
+          : {}),
+      },
+      ...(limit ? { take: Math.max(1, Math.min(100, limit)) } : {}),
+      orderBy: {
+        name: 'asc',
+      },
     });
   }
 
