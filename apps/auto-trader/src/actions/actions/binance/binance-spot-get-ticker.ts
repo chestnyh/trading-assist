@@ -1,5 +1,12 @@
 import { Spot } from '@binance/connector';
 
+type BinanceTickerError = {
+  error: {
+    message: string;
+    details?: unknown;
+  };
+};
+
 /**
  * Fetches the current ticker price for a specified trading symbol from Binance.
  * 
@@ -32,7 +39,28 @@ export default async function binance_spot_get_ticker (
         symbol
     } = args;
 
-    const client = new Spot();
-    const { data } = await client.tickerPrice(symbol);
-    sequenceContext.set(symbol, data.price);
+    let { resultKey } = args;
+    if (!resultKey) {
+        resultKey = `binance_spot_get_ticker.${symbol}`;
+    }
+
+    if (!symbol) {
+        sequenceContext.set(resultKey, {
+            error: { message: 'binance_spot_get_ticker: "symbol" is required' },
+        } satisfies BinanceTickerError);
+        return;
+    }
+
+    try {
+        const client = new Spot();
+        const { data } = await client.tickerPrice(symbol);
+        sequenceContext.set(resultKey, Number(data.price));
+    } catch (e) {
+        sequenceContext.set(resultKey, {
+            error: {
+                message: 'binance_spot_get_ticker: failed to fetch ticker from Binance',
+                details: e instanceof Error ? { name: e.name, message: e.message, stack: e.stack } : e,
+            },
+        } satisfies BinanceTickerError);
+    }
 };

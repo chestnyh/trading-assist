@@ -3,6 +3,11 @@
  */
 
 const logicalOperators = {
+    __not (operands): boolean {
+        const [operand] = operands;
+        return !this.resolve(operand);
+    },
+
     __and (operands): boolean {
         let result = true;
         for (const operand of operands) {

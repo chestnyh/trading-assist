@@ -1,0 +1,146 @@
+{
+  "name": "Verify Rule Three - New Futures Pairs Notification",
+  "description": "Runs at minute 1 of every hour. Fetches Binance UM futures exchange info, stores previous symbols count in heap, compares with current count and notifies Telegram if number of pairs increased. Also notifies Telegram if Binance request returns an error.\n\nNote: this verifies heap persistence + cron + exchange info actions end-to-end.\nPrereqs: configure Telegram settings in auto-trader settings with codes 'main_bot' and 'error_bot'.",
+  "type": "cron",
+  "arguments": {
+    "schedule": "1 * * * *",
+    "do": {
+      "type": "sequence",
+      "arguments": {
+        "do": [
+          {
+            "type": "binance_um_features_exchange_info",
+            "arguments": {
+              "resultKey": "exchangeInfo"
+            }
+          },
+          {
+            "type": "if_then",
+            "arguments": {
+              "if": {
+                "type": "resolve",
+                "arguments": {
+                  "expression": {
+                    "__var": "__sequenceContext__.exchangeInfo.error.message"
+                  }
+                }
+              },
+              "then": {
+                "type": "telegram_send_message",
+                "arguments": {
+                  "botId": "error_bot",
+                  "message": "[Rule3] Exchange info error: ${__sequenceContext__.exchangeInfo.error.message}"
+                }
+              }
+            }
+          },
+          {
+            "type": "if_then",
+            "arguments": {
+              "if": {
+                "type": "resolve",
+                "arguments": {
+                  "expression": {
+                    "__not": [
+                      { "__var": "__sequenceContext__.exchangeInfo.error.message" }
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "type": "sequence",
+                "arguments": {
+                  "do": [
+                    {
+                      "type": "resolve",
+                      "arguments": {
+                        "expression": {
+                          "__length": [
+                            { "__var": "__sequenceContext__.exchangeInfo.symbols" }
+                          ]
+                        },
+                        "saveTo": "exchangeInfoCount"
+                      }
+                    },
+                    {
+                      "type": "if_then",
+                      "arguments": {
+                        "if": {
+                          "type": "resolve",
+                          "arguments": {
+                            "expression": {
+                              "__not": [
+                                { "__var": "__heap__.exchangeInfo.count" }
+                              ]
+                            }
+                          }
+                        },
+                        "then": {
+                          "type": "add_to_heap",
+                          "arguments": {
+                            "items": [
+                              {
+                                "key": "exchangeInfo.count",
+                                "value": "__sequenceContext__.exchangeInfoCount"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "if_then",
+                      "arguments": {
+                        "if": {
+                          "type": "resolve",
+                          "arguments": {
+                            "expression": {
+                              "__and": [
+                                { "__var": "__heap__.exchangeInfo.count" },
+                                {
+                                  "__gt": [
+                                    { "__var": "__sequenceContext__.exchangeInfoCount" },
+                                    { "__var": "__heap__.exchangeInfo.count" }
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "then": {
+                          "type": "sequence",
+                          "arguments": {
+                            "do": [
+                              {
+                                "type": "telegram_send_message",
+                                "arguments": {
+                                  "botId": "main_bot",
+                                  "message": "[Rule3] New futures pairs detected! previousCount=${__heap__.exchangeInfo.count}, newCount=${__sequenceContext__.exchangeInfoCount}"
+                                }
+                              },
+                              {
+                                "type": "add_to_heap",
+                                "arguments": {
+                                  "items": [
+                                    {
+                                      "key": "exchangeInfo.count",
+                                      "value": "__sequenceContext__.exchangeInfoCount"
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

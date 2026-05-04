@@ -1,0 +1,82 @@
+{
+  "name": "Verify Rule One - Kline Size -> Telegram",
+  "description": "Runs every 15 minutes. Fetches 1 spot kline from Binance, checks candle body size (abs(close-open)) and sends Telegram notification if above threshold. Also sends Telegram notification if Binance API returns an error.\n\nPrereqs: configure Telegram settings in auto-trader settings with codes 'main_bot' and 'error_bot'.",
+  "type": "interval",
+  "arguments": {
+    "interval": 900000,
+    "do": {
+      "type": "sequence",
+      "arguments": {
+        "do": [
+          {
+            "type": "binance_spot_get_klines",
+            "arguments": {
+              "symbol": "BTCUSDT",
+              "interval": "15m",
+              "limit": 1,
+              "resultKey": "klines"
+            }
+          },
+          {
+            "type": "if_then",
+            "arguments": {
+              "if": {
+                "type": "resolve",
+                "arguments": {
+                  "expression": {
+                    "__var": "__sequenceContext__.klines.error.message"
+                  }
+                }
+              },
+              "then": {
+                "type": "telegram_send_message",
+                "arguments": {
+                  "botId": "error_bot",
+                  "message": "[Rule1] Binance kline error: ${__sequenceContext__.klines.error.message}"
+                }
+              }
+            }
+          },
+          {
+            "type": "if_then",
+            "arguments": {
+              "if": {
+                "type": "resolve",
+                "arguments": {
+                  "expression": {
+                    "__gt": [
+                      {
+                        "__absolute": [
+                          {
+                            "__minus": [
+                              {
+                                "__var": "__sequenceContext__.klines.0.close"
+                              },
+                              {
+                                "__var": "__sequenceContext__.klines.0.open"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "__const": 50
+                      }
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "type": "telegram_send_message",
+                "arguments": {
+                  "botId": "main_bot",
+                  "message": "[Rule1] BTCUSDT 15m candle body is large. open=${__sequenceContext__.klines.0.open}, close=${__sequenceContext__.klines.0.close}, absDiff=${__sequenceContext__.klines.0.close} - ${__sequenceContext__.klines.0.open}"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

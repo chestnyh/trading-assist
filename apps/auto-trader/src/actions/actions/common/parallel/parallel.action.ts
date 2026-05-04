@@ -59,6 +59,7 @@ export default async function parallel(
     args: any,
     {
         sequenceContext,
+        heap,
     }
 ) {
     const { 
@@ -67,10 +68,11 @@ export default async function parallel(
 
     const promises = actions.map(action => {
         const actionType = action.type;
-        this[actionType](action.arguments, {
+        return this[actionType](action.arguments, {
             sequenceContext,
+            heap,
         });
     });
 
     await Promise.all(promises)
-} 
+}
