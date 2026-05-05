@@ -1,11 +1,5 @@
 import { Spot } from '@binance/connector';
-
-type BinanceTickerError = {
-  error: {
-    message: string;
-    details?: unknown;
-  };
-};
+import type { ActionError } from '../../types/action-error';
 
 /**
  * Fetches the current ticker price for a specified trading symbol from Binance.
@@ -26,8 +20,18 @@ type BinanceTickerError = {
  *     "symbol": "BTCUSDT"
  *   }
  * }
+ *
+ * @example
+ * // Store under explicit resultKey
+ * {
+ *   "type": "binance_spot_get_ticker",
+ *   "arguments": {
+ *     "symbol": "BTCUSDT",
+ *     "resultKey": "spotPrice"
+ *   }
+ * }
  * 
- * @returns {Promise<void>} Stores the price data in sequenceContext under the symbol key
+ * @returns {Promise<void>} Stores the price (number) in sequenceContext under resultKey. On error stores { error: { message, details? } }.
  */
 export default async function binance_spot_get_ticker (
     args: any, 
@@ -39,16 +43,17 @@ export default async function binance_spot_get_ticker (
         symbol
     } = args;
 
+    if (!symbol) {
+        const resultKey = args?.resultKey || 'binance_spot_get_ticker';
+        sequenceContext.set(resultKey, {
+            error: { message: 'binance_spot_get_ticker: "symbol" is required' },
+        } satisfies ActionError);
+        return;
+    }
+
     let { resultKey } = args;
     if (!resultKey) {
         resultKey = `binance_spot_get_ticker.${symbol}`;
-    }
-
-    if (!symbol) {
-        sequenceContext.set(resultKey, {
-            error: { message: 'binance_spot_get_ticker: "symbol" is required' },
-        } satisfies BinanceTickerError);
-        return;
     }
 
     try {
@@ -61,6 +66,6 @@ export default async function binance_spot_get_ticker (
                 message: 'binance_spot_get_ticker: failed to fetch ticker from Binance',
                 details: e instanceof Error ? { name: e.name, message: e.message, stack: e.stack } : e,
             },
-        } satisfies BinanceTickerError);
+        } satisfies ActionError);
     }
 };

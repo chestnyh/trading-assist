@@ -1,11 +1,5 @@
 import { UMFutures } from "@binance/futures-connector";
-
-type BinanceUmTickerError = {
-  error: {
-    message: string;
-    details?: unknown;
-  };
-};
+import type { ActionError } from '../../types/action-error';
 
 export default async function binance_um_features_get_ticker (
     args: any, 
@@ -17,17 +11,18 @@ export default async function binance_um_features_get_ticker (
         symbol,
     } = args;
 
+    if (!symbol) {
+        const resultKey = args?.resultKey || 'binance_um_features_get_ticker';
+        sequenceContext.set(resultKey, {
+            error: { message: 'binance_um_features_get_ticker: "symbol" is required' },
+        } satisfies ActionError);
+        return;
+    }
+
     let { resultKey } = args;
 
     if(!resultKey) {
         resultKey = `binance_um_features_get_ticker.${symbol}`;
-    }
-
-    if (!symbol) {
-        sequenceContext.set(resultKey, {
-            error: { message: 'binance_um_features_get_ticker: "symbol" is required' },
-        } satisfies BinanceUmTickerError);
-        return;
     }
 
     try {
@@ -40,6 +35,6 @@ export default async function binance_um_features_get_ticker (
                 message: 'binance_um_features_get_ticker: failed to fetch futures ticker from Binance',
                 details: e instanceof Error ? { name: e.name, message: e.message, stack: e.stack } : e,
             },
-        } satisfies BinanceUmTickerError);
+        } satisfies ActionError);
     }
 };

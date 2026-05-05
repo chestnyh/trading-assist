@@ -1,11 +1,5 @@
 import { UMFutures } from "@binance/futures-connector";
-
-type BinanceUmExchangeInfoError = {
-  error: {
-    message: string;
-    details?: unknown;
-  };
-};
+import type { ActionError } from '../../types/action-error';
 
 export default async function binance_um_features_list_of_coins (
     args: any, 
@@ -30,6 +24,6 @@ export default async function binance_um_features_list_of_coins (
                 message: 'binance_um_features_exchange_info: failed to fetch exchange info from Binance',
                 details: e instanceof Error ? { name: e.name, message: e.message, stack: e.stack } : e,
             },
-        } satisfies BinanceUmExchangeInfoError);
+        } satisfies ActionError);
     }
 };

@@ -67,10 +67,33 @@
                 }
               },
               "then": {
-                "type": "telegram_send_message",
+                "type": "sequence",
                 "arguments": {
-                  "botId": "main_bot",
-                  "message": "[Rule1] BTCUSDT 15m candle body is large. open=${__sequenceContext__.klines.0.open}, close=${__sequenceContext__.klines.0.close}, absDiff=${__sequenceContext__.klines.0.close} - ${__sequenceContext__.klines.0.open}"
+                  "do": [
+                    {
+                      "type": "resolve",
+                      "arguments": {
+                        "expression": {
+                          "__absolute": [
+                            {
+                              "__minus": [
+                                { "__var": "__sequenceContext__.klines.0.close" },
+                                { "__var": "__sequenceContext__.klines.0.open" }
+                              ]
+                            }
+                          ]
+                        },
+                        "saveTo": "absDiff"
+                      }
+                    },
+                    {
+                      "type": "telegram_send_message",
+                      "arguments": {
+                        "botId": "main_bot",
+                        "message": "[Rule1] BTCUSDT 15m candle body is large. open=${__sequenceContext__.klines.0.open}, close=${__sequenceContext__.klines.0.close}, absDiff=${__sequenceContext__.absDiff}"
+                      }
+                    }
+                  ]
                 }
               }
             }

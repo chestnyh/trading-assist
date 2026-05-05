@@ -41,9 +41,7 @@
                 "type": "resolve",
                 "arguments": {
                   "expression": {
-                    "__not": [
-                      { "__var": "__sequenceContext__.exchangeInfo.error.message" }
-                    ]
+                    "__not": { "__var": "__sequenceContext__.exchangeInfo.error.message" }
                   }
                 }
               },
@@ -63,15 +61,54 @@
                       }
                     },
                     {
+                      "type": "resolve",
+                      "arguments": {
+                        "expression": { "__var": "__sequenceContext__.exchangeInfo.symbols" },
+                        "saveTo": "currentSymbols"
+                      }
+                    },
+                    {
                       "type": "if_then",
                       "arguments": {
                         "if": {
                           "type": "resolve",
                           "arguments": {
                             "expression": {
-                              "__not": [
-                                { "__var": "__heap__.exchangeInfo.count" }
-                              ]
+                              "__not": { "__var": "__heap__.exchangeInfo.prevSymbols" }
+                            }
+                          }
+                        },
+                        "then": {
+                          "type": "add_to_heap",
+                          "arguments": {
+                            "items": [
+                              {
+                                "key": "exchangeInfo.prevSymbols",
+                                "value": "__sequenceContext__.currentSymbols"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "array_diff",
+                      "arguments": {
+                        "left": "__heap__.exchangeInfo.prevSymbols",
+                        "right": "__sequenceContext__.currentSymbols",
+                        "compareKey": "symbol",
+                        "returnKeyOnly": true,
+                        "resultKey": "newSymbols"
+                      }
+                    },
+                    {
+                      "type": "if_then",
+                      "arguments": {
+                        "if": {
+                          "type": "resolve",
+                          "arguments": {
+                            "expression": {
+                              "__not": { "__var": "__heap__.exchangeInfo.count" }
                             }
                           }
                         },
@@ -115,7 +152,7 @@
                                 "type": "telegram_send_message",
                                 "arguments": {
                                   "botId": "main_bot",
-                                  "message": "[Rule3] New futures pairs detected! previousCount=${__heap__.exchangeInfo.count}, newCount=${__sequenceContext__.exchangeInfoCount}"
+                                  "message": "[Rule3] New futures pairs detected! previousCount=${__heap__.exchangeInfo.count}, newCount=${__sequenceContext__.exchangeInfoCount}, newPair=${__sequenceContext__.newSymbols.0}, link=https://www.binance.com/en/trade/${__sequenceContext__.newSymbols.0}"
                                 }
                               },
                               {
@@ -125,6 +162,10 @@
                                     {
                                       "key": "exchangeInfo.count",
                                       "value": "__sequenceContext__.exchangeInfoCount"
+                                    },
+                                    {
+                                      "key": "exchangeInfo.prevSymbols",
+                                      "value": "__sequenceContext__.currentSymbols"
                                     }
                                   ]
                                 }
@@ -132,6 +173,17 @@
                             ]
                           }
                         }
+                      }
+                    },
+                    {
+                      "type": "add_to_heap",
+                      "arguments": {
+                        "items": [
+                          {
+                            "key": "exchangeInfo.prevSymbols",
+                            "value": "__sequenceContext__.currentSymbols"
+                          }
+                        ]
                       }
                     }
                   ]

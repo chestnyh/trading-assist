@@ -3,8 +3,7 @@
  */
 
 const logicalOperators = {
-    __not (operands): boolean {
-        const [operand] = operands;
+    __not (operand): boolean {
         return !this.resolve(operand);
     },
 
