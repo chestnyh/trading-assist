@@ -31,14 +31,24 @@ import getValue from '../../../utils/get-value.util';
 export default function add_to_heap(
     args: any,
     {
-        sequenceContext
+        sequenceContext,
+        itemContext,
     },
 ) {
     const { items } = args;
 
     items.forEach(item => {
         const { key, value } = item;
-        const res = getValue(value, { heap: this.heap, sequenceContext });
+        const res = getValue(value, { heap: this.heap, sequenceContext, itemContext });
+
+        if (typeof key === 'string' && key.endsWith('.[]')) {
+            const baseKey = key.slice(0, -3);
+            const prev = this.heap.get(baseKey);
+            const next = Array.isArray(prev) ? [...prev, res] : [res];
+            this.heap.set(baseKey, next);
+            return;
+        }
+
         this.heap.set(key, res);
     });
 } 

@@ -10,6 +10,7 @@ import interval from './interval/interval.action';
 import for_each from './for-each/for-each.action';
 import cron from './cron/cron.action';
 import array_diff from './array-diff/array-diff.action';
+import includes from './includes/includes.action';
 
 export default {
     log: {
@@ -47,5 +48,8 @@ export default {
     },
     array_diff: {
         method: array_diff
+    },
+    includes: {
+        method: includes
     }
 }

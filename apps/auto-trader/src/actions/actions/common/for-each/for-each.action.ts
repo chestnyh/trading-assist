@@ -1,32 +1,40 @@
 import ObjectNavigator from '@trading-bot/object-navigator';
 
+import getValue from '../../../utils/get-value.util';
+
 
 export default async function for_each(
     args: any,
     {
-        sequenceContext
+        sequenceContext,
+        heap,
     }
 ): Promise<void> {
 
-    let array = args.array;
-    const operations = args.do;
+    const arrKey = args?.arr ?? args?.array;
+    const actions = args?.do;
 
-    const arrayOperation = array.type;
-    const operationsType = operations.type;
+    const arr = getValue(String(arrKey), { heap, sequenceContext });
+    if (!Array.isArray(arr)) {
+        return;
+    }
 
-    array = this[arrayOperation](
-        array.arguments,
-        {
-            sequenceContext
+    if (!Array.isArray(actions)) {
+        return;
+    }
+
+    for (const item of arr) {
+        const itemContext = new ObjectNavigator(item);
+        for (const action of actions) {
+            const actionType = action.type;
+            await this[actionType](
+                action.arguments,
+                {
+                    sequenceContext,
+                    heap,
+                    itemContext,
+                }
+            );
         }
-    );
-
-    array.forEach(item => {
-        this[operationsType](
-            operations.arguments,
-            {
-                sequenceContext: new ObjectNavigator(item),
-            }
-        );
-    })
-} 
+    }
+}
