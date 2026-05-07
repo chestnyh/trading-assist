@@ -114,6 +114,7 @@ export class UsersApiService {
         email: true,
         firstName: true,
         lastName: true,
+        role: true,
       }
     });
 

@@ -4,6 +4,13 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ServicesConfigs } from '@trading-bot/configs';
 import { UsersApiService } from '../../users/users.api.service';
 
+type JwtPayload = {
+  sub: number;
+  email: string;
+  nickname: string;
+  role?: string;
+};
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -24,7 +31,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   // TODO:Replace any type with a proper type
-  async validate(payload: any) {
+  async validate(payload: JwtPayload) {
     const user = await this.usersService.findUserById(payload.sub);
     if (!user) {
       throw new UnauthorizedException();

@@ -265,6 +265,7 @@ export default async function main() {
                     password: await cryptoService.hashPassword('Password123!'),
                     firstName: 'Admin',
                     lastName: 'User',
+                    role: 'ADMIN',
                     emailVerificationToken: 'initial-seed-token',
                     emailVerificationCode: '123456',
                     isEmailVerified: true,
@@ -426,10 +427,25 @@ export default async function main() {
                         ]
                     }
                 },
-                update: {
+                update: {}
+            },
+            {
+                where: {
+                    email: 'user@tb.com',
+                },
+                create: {
+                    email: 'user@tb.com',
+                    nickname: 'user',
                     password: await cryptoService.hashPassword('Password123!'),
-                }
-            }
-        ]
+                    firstName: 'Regular',
+                    lastName: 'User',
+                    role: 'USER',
+                    emailVerificationToken: 'initial-seed-token-user',
+                    emailVerificationCode: '123456',
+                    isEmailVerified: true,
+                },
+                update: {}
+            },
+        ],
     };
 }
