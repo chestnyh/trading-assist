@@ -1,5 +1,5 @@
 {
-  "name": "Verify Rule One - Kline Size -> Telegram",
+  "name": "Kline Size Telegram Notification",
   "description": "Runs every 15 minutes. Fetches 1 spot kline from Binance, checks candle body size (abs(close-open)) and sends Telegram notification if above threshold. Also sends Telegram notification if Binance API returns an error.\n\nPrereqs: configure Telegram settings in auto-trader settings with codes 'main_bot' and 'error_bot'.",
   "type": "interval",
   "arguments": {
@@ -18,6 +18,21 @@
             }
           },
           {
+            "type": "add_to_heap",
+            "arguments": {
+              "items": [
+                {
+                  "key": "kline.open",
+                  "value": "__sequenceContext__.klines.0.open"
+                },
+                {
+                  "key": "kline.close",
+                  "value": "__sequenceContext__.klines.0.close"
+                }
+              ]
+            }
+          },
+          {
             "type": "if_then",
             "arguments": {
               "if": {
@@ -32,7 +47,7 @@
                 "type": "telegram_send_message",
                 "arguments": {
                   "botId": "error_bot",
-                  "message": "[Rule1] Binance kline error: ${__sequenceContext__.klines.error.message}"
+                  "message": "Binance kline error: ${__sequenceContext__.klines.error.message}"
                 }
               }
             }
@@ -50,10 +65,10 @@
                           {
                             "__minus": [
                               {
-                                "__var": "__sequenceContext__.klines.0.close"
+                                "__var": "__heap__.kline.close"
                               },
                               {
-                                "__var": "__sequenceContext__.klines.0.open"
+                                "__var": "__heap__.kline.open"
                               }
                             ]
                           }
@@ -77,8 +92,8 @@
                           "__absolute": [
                             {
                               "__minus": [
-                                { "__var": "__sequenceContext__.klines.0.close" },
-                                { "__var": "__sequenceContext__.klines.0.open" }
+                                { "__var": "__heap__.kline.close" },
+                                { "__var": "__heap__.kline.open" }
                               ]
                             }
                           ]
@@ -87,10 +102,21 @@
                       }
                     },
                     {
+                      "type": "add_to_heap",
+                      "arguments": {
+                        "items": [
+                          {
+                            "key": "kline.absDiff",
+                            "value": "__sequenceContext__.absDiff"
+                          }
+                        ]
+                      }
+                    },
+                    {
                       "type": "telegram_send_message",
                       "arguments": {
                         "botId": "main_bot",
-                        "message": "[Rule1] BTCUSDT 15m candle body is large. open=${__sequenceContext__.klines.0.open}, close=${__sequenceContext__.klines.0.close}, absDiff=${__sequenceContext__.absDiff}"
+                        "message": "BTCUSDT 15m candle body is large. open=${__heap__.kline.open}, close=${__heap__.kline.close}, absDiff=${__heap__.kline.absDiff}"
                       }
                     }
                   ]

@@ -1,7 +1,15 @@
 import { UMFutures } from "@binance/futures-connector";
 import type { ActionError } from '../../types/action-error';
 
-export default async function binance_um_features_list_of_coins (
+/**
+ * Fetches Binance UM futures exchange info and stores it in `sequenceContext`.
+ *
+ * @param args - Configuration object
+ * @param args.resultKey - Optional key under which the result will be stored in `sequenceContext`.
+ * Defaults to `binance_um_features_exchange_info`.
+ * @param sequenceContext - Context object for storing and retrieving data between actions
+ */
+export default async function binance_um_features_exchange_info (
     args: any, 
     {
         sequenceContext

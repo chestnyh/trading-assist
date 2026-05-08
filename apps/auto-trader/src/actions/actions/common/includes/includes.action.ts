@@ -1,5 +1,15 @@
 import getValue from '../../../utils/get-value.util';
 
+/**
+ * Checks whether an array includes a value.
+ *
+ * Resolves both `arr` and `check` using `getValue`, then evaluates `arr.includes(check)`.
+ *
+ * @param args - Configuration object
+ * @param args.arr - Key/expression that resolves to an array
+ * @param args.check - Value/key/expression to check for
+ * @param args.saveTo - Optional key to store boolean result in `sequenceContext`
+ */
 export default function includes(
     args: any,
     {
@@ -10,30 +20,12 @@ export default function includes(
         itemContext?: any;
     },
 ): boolean {
-    const { arr, check, compareKey, saveTo } = args;
+    const { arr, check, saveTo } = args;
 
     const resolvedArr = getValue(String(arr), { heap: this.heap, sequenceContext, itemContext });
+    const checkValue = getValue(check, { heap: this.heap, sequenceContext, itemContext });
 
-    let result = false;
-
-    if (!Array.isArray(resolvedArr)) {
-        result = false;
-    } else if (compareKey) {
-        const key = String(compareKey);
-        const checkValue = getValue(check, { heap: this.heap, sequenceContext, itemContext });
-        const checkStr = checkValue === undefined || checkValue === null ? undefined : String(checkValue);
-
-        result = resolvedArr.some((v) => {
-            if (!v || typeof v !== 'object') return false;
-            const k = (v as any)[key];
-            if (k === undefined || k === null) return false;
-            if (checkStr === undefined) return false;
-            return String(k) === checkStr;
-        });
-    } else {
-        const checkValue = getValue(check, { heap: this.heap, sequenceContext, itemContext });
-        result = resolvedArr.includes(checkValue);
-    }
+    const result = Array.isArray(resolvedArr) ? resolvedArr.includes(checkValue) : false;
 
     if (saveTo) {
         sequenceContext.set(String(saveTo), result);

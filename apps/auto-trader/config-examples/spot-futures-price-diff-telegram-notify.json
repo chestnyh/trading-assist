@@ -1,5 +1,5 @@
 {
-  "name": "Verify Rule Two - Spot vs Futures Price Diff",
+  "name": "Spot vs Futures Price Diff",
   "description": "Runs every 1 minute. Fetches spot ticker and UM futures ticker in parallel, computes absolute price difference and sends Telegram notification if above threshold. If any Binance call errors, sends message to a separate Telegram chat for errors.\n\nPrereqs: configure Telegram settings in auto-trader settings with codes 'main_bot' and 'error_bot'.",
   "type": "interval",
   "arguments": {
@@ -47,7 +47,7 @@
                 "type": "telegram_send_message",
                 "arguments": {
                   "botId": "error_bot",
-                  "message": "[Rule2] Binance ticker error. spot=${__sequenceContext__.spotPrice.error.message} futures=${__sequenceContext__.futuresPrice.error.message}"
+                  "message": "Binance ticker error. spot=${__sequenceContext__.spotPrice.error.message} futures=${__sequenceContext__.futuresPrice.error.message}"
                 }
               }
             }
@@ -79,7 +79,7 @@
                 "type": "telegram_send_message",
                 "arguments": {
                   "botId": "main_bot",
-                  "message": "[Rule2] Spot/Futures diff is high for BTCUSDT. spot=${__sequenceContext__.spotPrice}, futures=${__sequenceContext__.futuresPrice}"
+                  "message": "Spot/Futures diff is high for BTCUSDT. spot=${__sequenceContext__.spotPrice}, futures=${__sequenceContext__.futuresPrice}"
                 }
               }
             }

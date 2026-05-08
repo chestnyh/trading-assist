@@ -10,6 +10,8 @@ import type { ActionError } from '../../types/action-error';
  * 
  * @param args - Configuration object containing the trading symbol
  * @param args.symbol - The trading symbol/pair to get ticker data for (e.g., "BTCUSDT", "ETHUSDT")
+ * @param args.resultKey - Optional key under which the result will be stored in `sequenceContext`.
+ * Defaults to `binance_spot_get_ticker.<symbol>`.
  * @param sequenceContext - Context object for storing and retrieving data between actions
  * 
  * @example
