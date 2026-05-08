@@ -27,6 +27,12 @@ export function JsonEditorField({
     const containerRef = useRef<HTMLDivElement | null>(null);
     const editorRef = useRef<JSONEditor | null>(null);
     const [localValue, setLocalValue] = useState<unknown>(value);
+    const [heightPx, setHeightPx] = useState<number>(320);
+    const resizeStateRef = useRef<{
+        startY: number;
+        startHeight: number;
+        isResizing: boolean;
+    } | null>(null);
 
     const options: JSONEditorOptions = useMemo(() => {
         return {
@@ -71,6 +77,12 @@ export function JsonEditorField({
 
     useEffect(() => {
         if (!editorRef.current) return;
+        // jsoneditor recalculates layout on window resize
+        window.dispatchEvent(new Event('resize'));
+    }, [heightPx]);
+
+    useEffect(() => {
+        if (!editorRef.current) return;
         try {
             editorRef.current.set(localValue ?? null);
         } catch (e) {
@@ -103,7 +115,39 @@ export function JsonEditorField({
                         : 'border-accent hover:bg-background focus-within:border-primary'
                 }`}
             >
-                <div ref={containerRef} className="w-full min-h-[260px]" />
+                <div ref={containerRef} className="w-full" style={{ height: heightPx }} />
+                {!disabled && (
+                    <div
+                        role="separator"
+                        aria-label="Resize JSON editor"
+                        className="absolute bottom-0 left-0 w-full h-3 cursor-ns-resize bg-transparent"
+                        onMouseDown={(e) => {
+                            resizeStateRef.current = {
+                                startY: e.clientY,
+                                startHeight: heightPx,
+                                isResizing: true,
+                            };
+
+                            const onMove = (ev: MouseEvent) => {
+                                const state = resizeStateRef.current;
+                                if (!state?.isResizing) return;
+                                const delta = ev.clientY - state.startY;
+                                const next = Math.max(260, state.startHeight + delta);
+                                setHeightPx(next);
+                            };
+
+                            const onUp = () => {
+                                const state = resizeStateRef.current;
+                                if (state) state.isResizing = false;
+                                window.removeEventListener('mousemove', onMove);
+                                window.removeEventListener('mouseup', onUp);
+                            };
+
+                            window.addEventListener('mousemove', onMove);
+                            window.addEventListener('mouseup', onUp);
+                        }}
+                    />
+                )}
             </div>
 
             {error && (
