@@ -42,14 +42,19 @@ export class RulesController {
   @ApiResponse({
     status: 200,
     description: 'Rules retrieved successfully',
-    type: [RuleResponseDto]
+    type: PaginatedRulesDto
   })
   @ApiResponse({
     status: 403,
     description: 'Forbidden'
   })
-  async adminFindAll(): Promise<RuleResponseDto[]> {
-    return this.rulesService.findAll();
+  async adminFindAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number
+  ): Promise<PaginatedRulesDto> {
+    const pageNum = page ? +page : 1;
+    const limitNum = limit ? +limit : 20;
+    return this.rulesService.findAllPaginated(pageNum, limitNum);
   }
 
   @Post()

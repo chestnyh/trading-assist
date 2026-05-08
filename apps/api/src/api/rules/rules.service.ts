@@ -76,6 +76,30 @@ export class RulesService {
     return { rules, total };
   }
 
+  async findAllPaginated(page = 1, limit = 20): Promise<{ rules: RuleResponseDto[]; total: number }> {
+    const safeLimit = Math.min(Math.max(1, Math.floor(limit)), this.MAX_LIMIT);
+    const safePage = Math.max(1, Math.floor(page));
+    const skip = (safePage - 1) * safeLimit;
+
+    const [rules, total] = await Promise.all([
+      this.modelsService.userRules.findMany({
+        skip: skip,
+        take: safeLimit,
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          ruleBody: true,
+          authorId: true,
+        },
+        orderBy: { id: 'desc' },
+      }),
+      this.modelsService.userRules.count(),
+    ]);
+
+    return { rules, total };
+  }
+
   /**
    * Get a specific rule by ID
    */
