@@ -51,11 +51,13 @@ export default function interval(
         interval
     } = args;
 
-    setInterval(() => {
+    const id = setInterval(() => {
         const actionType = action.type;
         this[actionType](action.arguments, {
             sequenceContext,
             heap
         });
     }, interval);
+
+    this.addDisposer(() => clearInterval(id));
 }

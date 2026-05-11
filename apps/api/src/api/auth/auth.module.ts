@@ -5,19 +5,20 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { ServicesConfigsModule, ServicesConfigs } from '@trading-bot/configs';
-import { ModelsModule } from '@trading-bot/models';
+import { CryptoUtilsModule } from '@trading-bot/crypto-utils';
 import { UsersApiModule } from '../users/users.api.module';
 
 @Module({
   imports: [
     UsersApiModule,
     ServicesConfigsModule,
+    CryptoUtilsModule,
     JwtModule.registerAsync({
       imports: [ServicesConfigsModule],
       useFactory: async (configService: ServicesConfigs) => ({
-        secret: configService.get('JWT_SECRET'),
+        secret: configService.get('JWT_SECRET') as string,
         signOptions: {
-          expiresIn: configService.get('JWT_EXPIRES_IN'),
+          expiresIn: configService.get('JWT_EXPIRES_IN') as string,
         },
       }),
       inject: [ServicesConfigs],

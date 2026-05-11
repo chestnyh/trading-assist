@@ -1505,17 +1505,18 @@ describe('TradingDataService', () => {
 
     });
 
-    describe('nesting level 2', () => {
+    // TODO add tests for nesting level 2, 3, 4
+    // describe('nesting level 2', () => {
 
-    });
+    // });
 
-    describe('nesting level 3', () => {
+    // describe('nesting level 3', () => {
 
-    });
+    // });
 
-    describe('nesting level 4', () => {
+    // describe('nesting level 4', () => {
 
-    });
+    // });
   });
 
   describe.skip('edge cases', () => {

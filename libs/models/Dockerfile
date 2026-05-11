@@ -9,13 +9,11 @@ COPY jest.preset.cjs ./jest.preset.cjs
 COPY .eslintrc.json ./.eslintrc.json
 COPY libs/models ./libs/models
 COPY libs/configs ./libs/configs
+COPY libs/crypto-utils ./libs/crypto-utils
 
 # Copy tsconfig files for path resolution
 COPY tsconfig.base.json ./tsconfig.base.json
 COPY libs/models/tsconfig.lib.json ./libs/models/tsconfig.lib.json
-
-# Copy seeds directory
-COPY seeds ./seeds
 
 # Install pnpm for local use only
 RUN npm install -g pnpm

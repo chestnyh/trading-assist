@@ -1,63 +1,99 @@
 #version: '3.8'
 
+name: ${DOCKER_PROJECT_NAME}
+
 services:
   postgres:
-    image: postgres:latest
-    container_name: postgres
+    image: postgres:16
     restart: always
+    container_name: ${DOCKER_PROJECT_NAME}-postgres
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     profiles:
+      - development
+      - api-service
       - external
       - init-external
-      - development
     ports:
       - "${DB_PORT}:5432"
     volumes:
       - ${DOCKER_DB_VOLUME}:/var/lib/postgresql/data
-    networks:
-      - trading_bot_network
-  migrations:
-    build:
-      context: .
-      dockerfile: libs/models/Dockerfile
-    container_name: migrations  
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    container_name: ${DOCKER_PROJECT_NAME}-rabbitmq
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
+      RABBITMQ_DEFAULT_USER: ${RMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD:-guest}
     profiles:
+      - development
+      - api-service
+      - external
       - init-external
-    networks:
-      - trading_bot_network
+    ports:
+      - "${RMQ_PORT:-5672}:5672"
+      - "${RMQ_MANAGEMENT_PORT:-15672}:15672"
+    volumes:
+      - ${DOCKER_RMQ_VOLUME:-./docker/volumes/local_rmq}:/var/lib/rabbitmq
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    restart: always
+    container_name: ${DOCKER_PROJECT_NAME}-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=${ELASTICSEARCH_SECURITY_ENABLED:-false}
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS:--Xms512m -Xmx512m}
+    profiles:
+      - development
+      - api-service
+      - external
+      - init-external
+    ports:
+      - "${ELASTICSEARCH_PORT:-9200}:9200"
+    volumes:
+      - ${DOCKER_ELASTICSEARCH_VOLUME:-elasticsearch_data}:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.4
+    restart: always
+    container_name: ${DOCKER_PROJECT_NAME}-kibana
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    profiles:
+      - development
+      - api-service
+      - external
+      - init-external
+    ports:
+      - "${KIBANA_PORT:-5601}:5601"
+    volumes:
+      - ${DOCKER_KIBANA_VOLUME:-kibana_data}:/usr/share/kibana/data
+
   auto-trader:
     build:
       context: .
-      dockerfile: apps/auto-trader/Dockerfile  
-    container_name: auto-trader
+      dockerfile: apps/auto-trader/Dockerfile
     restart: always
     ports:
       - "3000:3000"
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
     profiles:
       - development
-    networks:
-      - trading_bot_network
-
 
 volumes:
-  postgres_data:
-    driver: local
+  elasticsearch_data:
+  kibana_data:
 
-networks:
-  trading_bot_network:
-    driver: bridge
+

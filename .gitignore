@@ -146,3 +146,6 @@ notes.md
 
 # pem files
 *.pem
+
+# config folder for netlify
+.netlify

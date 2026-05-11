@@ -1,4 +1,4 @@
-import ObjectNavigator from 'libs/object-navigator/src/lib/object-navigator';
+import ObjectNavigator from '@trading-bot/object-navigator';
 
 
 export default async function for_each(
@@ -9,7 +9,7 @@ export default async function for_each(
 ): Promise<void> {
 
     let array = args.array;
-    let operations = args.do;
+    const operations = args.do;
 
     const arrayOperation = array.type;
     const operationsType = operations.type;

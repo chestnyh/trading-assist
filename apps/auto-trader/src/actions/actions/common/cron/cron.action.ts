@@ -10,7 +10,7 @@ export default function cron(
     }
 ): void {
 
-    cronLib.schedule(schedule, () => {
+    const task = cronLib.schedule(schedule, () => {
         this[operation.type](
             operation.arguments,
             {
@@ -19,5 +19,7 @@ export default function cron(
         );
     });
 
+    this.addDisposer(() => task.stop());
+
     return;
-} 
+}

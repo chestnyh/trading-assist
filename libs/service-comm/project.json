@@ -1,0 +1,19 @@
+{
+  "name": "service-comm",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/service-comm/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/service-comm",
+        "main": "libs/service-comm/src/index.ts",
+        "tsConfig": "libs/service-comm/tsconfig.lib.json",
+        "assets": ["libs/service-comm/*.md"]
+      }
+    }
+  }
+}
