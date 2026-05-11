@@ -58,5 +58,6 @@ Principle that we want to follow here is keep documentation close to the code. I
 * [Code Organization](_docs/code-orgdanization.md)
 * [Project Commands](_docs/project-commands.md)
 * [Technolody Stack](_docs/technology-stack.md)
+* [Design: Logging For Rules](_docs/features/5-design-logging-for-rules.md)
 * [Services aka Applications](apps/README.md)
 * [Libraries](libs/README.md)
