@@ -52,6 +52,10 @@ export default async function sequence(
     } = args;
 
     for(let action of actions){
+        if (sequenceContext.get('__stop_sequence__')) {
+            break;
+        }
+
         const actionType = action.type;
         await this[actionType](
             action.arguments, 
@@ -60,5 +64,9 @@ export default async function sequence(
                 heap
             }
         );
+
+        if (sequenceContext.get('__stop_sequence__')) {
+            break;
+        }
     }
 } 
