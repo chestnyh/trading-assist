@@ -41,11 +41,12 @@ import ObjectNavigator from '@trading-bot/object-navigator';
 export default async function sequence(
     args: any,
     {
-        heap
+        heap,
+        sequenceContext: existingSequenceContext,
     },
     settings: any
 ) {
-    const sequenceContext = new ObjectNavigator();
+    const sequenceContext = existingSequenceContext ?? new ObjectNavigator();
     
     const { 
         do: actions,  
