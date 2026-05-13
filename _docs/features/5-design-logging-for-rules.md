@@ -71,7 +71,7 @@ We should support two layers:
 
 Initial suggested storage:
 
-- Hot buffer in **Redis** using a capped list per rule (e.g. last 500–2000 entries). TTL (e.g. 24–72h).
+- Hot buffer in **Redis Streams** — one stream per rule (`rule-logs:<ruleId>`), capped via MAXLENGTH (e.g. last 1000–2000 entries) with a TTL (e.g. 24–72h). Redis Streams provide ordering, ID-based cursors, and consumer group support out of the box.
 
 Phase 2 (optional):
 
@@ -79,45 +79,61 @@ Phase 2 (optional):
 
 ## 2) Real-time delivery technology (UI receives logs)
 
-### Recommendation: WebSockets (NestJS gateway) + Redis buffer
+### Decision: Server-Sent Events (SSE)
 
-Why:
+Communication is strictly server → client (backend pushes log entries, UI only listens). SSE is sufficient for this use-case and avoids the overhead and complexity of WebSockets.
 
-- Near real-time push is a natural fit for WebSockets.
-- UI can maintain a live subscription while the rule detail page is open.
-- Works well with “tail -f” UX.
+### New service: `apps/log-stream`
 
-Alternative considered:
+`api` is not involved in log streaming. Streaming connections are long-lived and could block other more critical request handling in `api`. A dedicated `log-stream` service owns this responsibility:
 
-- Server-Sent Events (SSE) — simpler than WS but less flexible for bidirectional control.
+- Consumes log entries from Redis Stream.
+- Holds SSE connections from UI clients.
+- Pushes entries to the correct connected clients by `ruleId`.
 
-### Transport / flow (proposal)
+### Data flow
 
-1. `auto-trader` emits log entries during execution.
-2. `auto-trader` publishes them via service communication layer (e.g. topic `auto-trader.rule.log`).
-3. `api` subscribes to that topic and:
-   - stores entries into Redis hot buffer
-   - forwards entries to connected WebSocket clients subscribed to that `ruleId`
-4. `user-control-panel` connects to `api` WS endpoint and subscribes to `ruleId` room/channel.
-5. On initial page load, UI requests “last N logs” via REST endpoint to fill initial view, then continues streaming via WS.
+```
+auto-trader → Redis Stream → log-stream → user-control-panel (SSE)
+```
 
-### API surface (proposal)
+Step by step:
 
-- REST:
-  - `GET /api/v1/rules/:id/logs?limit=200&before=<cursor>` — returns buffered logs (Redis) and a cursor.
-- WS:
-  - `subscribe_rule_logs` with `{ ruleId }`
-  - server emits `rule_log_entry` events
+1. `auto-trader` `log` action writes a `RuleLogEntry` to a **Redis Stream** (key: `rule-logs:<ruleId>`).
+2. `log-stream` service runs a consumer group reading from that stream.
+3. When a UI client opens an SSE connection for a `ruleId`, `log-stream` replays recent entries from the stream and then pushes new ones as they arrive.
+4. `user-control-panel` connects to `log-stream` SSE endpoint, receives events, and renders them.
+
+### Redis Streams storage
+
+Redis Streams are used as both the transport and the hot buffer:
+
+- Stream key per rule: `rule-logs:<ruleId>`
+- **MAXLENGTH**: capped (e.g. last 1000–2000 entries) using `XADD ... MAXLEN ~ <n>` to prevent unbounded growth.
+- **TTL**: set a TTL on the stream key (e.g. 24–72h) to auto-expire old logs.
+- **Message size limit**: enforce a max byte length on `message` field (e.g. 2 KB) at write time in the `log` action, to discourage abuse and reduce storage pressure. Oversized messages are truncated or rejected with a warning.
+
+These constraints motivate users to log deliberately rather than flooding with high-volume or large payloads.
+
+### API surface
+
+`log-stream` exposes:
+
+- SSE:
+  - `GET /stream/rules/:ruleId/logs` — opens SSE connection, replays recent entries then streams live.
+- REST (replay only, for initial page load):
+  - `GET /stream/rules/:ruleId/logs/history?limit=200&lastId=<redis-stream-id>` — returns buffered entries and the last stream entry ID as cursor.
 
 Auth:
 
-- Use existing JWT auth. WS handshake should validate token.
+- JWT token validated on SSE connection (via `Authorization` header or `?token=` query param).
+- `log-stream` validates the token and checks that the requesting user owns the `ruleId` (via a call to `api` or shared JWT secret).
 
 ## UI plan (rule detail page)
 
 ### Components / UX
 
-- A new “Logs” panel on rule detail page:
+- A new "Logs" panel on rule detail page:
   - live stream with auto-scroll (toggle to pause)
   - level filter (info/warn/error/debug)
   - structured logs rendered as expandable JSON
@@ -126,10 +142,11 @@ Auth:
 ### Data handling
 
 - On mount:
-  - fetch last N logs via REST (buffer replay)
-  - connect WS and subscribe to the rule
+  - fetch last N logs via REST history endpoint (buffer replay) to fill initial view
+  - open SSE connection to `log-stream` for live entries
 - On reconnect:
-  - refetch last N logs (or from last cursor) to cover missed entries
+  - reopen SSE connection; use last received stream entry ID to request only missed entries
+  - show "Reconnecting…" indicator during gap
 
 ## 3) Error cases / failure modes
 
@@ -137,58 +154,57 @@ Auth:
 
 - Each runner start generates a new `runId`.
 - UI displays `runId` boundaries (optional) or at least continues showing logs.
-- Hot buffer TTL ensures recent logs survive UI refreshes.
+- Redis Stream TTL + MAXLENGTH ensures recent logs survive UI refreshes.
 
-### Network disconnect / WS reconnect
+### Network disconnect / SSE reconnect
 
 - UI should:
-  - show “Disconnected, reconnecting…”
-  - attempt reconnect with backoff
-  - on reconnect, fetch logs since last cursor/time to avoid gaps
+  - show "Disconnected, reconnecting…"
+  - attempt reconnect with exponential backoff
+  - on reconnect, request entries since last received stream ID to avoid gaps
 
 ### Message loss / ordering
 
-- Use monotonically increasing `seq` per `ruleId` or store timestamp + server-side cursor.
-- Client should handle duplicates gracefully.
+- Redis Streams provide ordered, ID-stamped entries — no need for a separate `seq` field.
+- Client uses the stream entry ID as cursor for replay and gap-fill requests.
+- Client should handle duplicate entries gracefully (deduplicate by stream entry ID).
 
 ### Backpressure / huge log volume
 
-- Enforce server-side limits:
-  - max events per second per rule (rate limit)
-  - max buffer size (capped list)
-- UI should virtualize list rendering for performance.
+- Server-side limits enforced at write time:
+  - `MAXLENGTH` cap on Redis Stream per rule
+  - max message byte length (e.g. 2 KB) — oversized entries are truncated with a warning appended
+- UI should virtualize list rendering for performance when many entries are visible.
 
 ### Storage outage (Redis down)
 
-- System should still not crash rule execution.
-- If Redis unavailable:
-  - best-effort WS forward only
-  - UI shows live logs while connected, but replay may be unavailable
+- `log` action must not crash rule execution if Redis is unavailable — write failures are caught and logged to server console only.
+- If Redis is unavailable: `log-stream` cannot replay or push entries; UI shows a "Logs unavailable" state.
 
-### API down
+### `log-stream` service down
 
-- auto-trader continues running rules.
-- Logs won’t reach UI until API recovers.
-- On recovery, streaming resumes; missed logs may be lost unless stored elsewhere.
+- `auto-trader` continues writing to Redis Stream unaffected.
+- UI shows "Disconnected" state.
+- On `log-stream` recovery, SSE connections resume and clients can replay missed entries from the stream.
 
 ## Implementation phases
 
 ### Phase 1 (MVP)
 
-- Extend existing `log` action to emit `RuleLogEntry` events.
-- Publish log events from auto-trader to API via service comm.
-- API WS gateway to broadcast per-rule logs.
-- Redis hot buffer + REST endpoint for last N logs.
-- UI logs panel with live streaming + basic formatting.
+- Extend existing `log` action to write `RuleLogEntry` to Redis Stream with MAXLENGTH + message size limit.
+- Create `apps/log-stream` NestJS service with SSE endpoint and Redis Stream consumer.
+- REST history endpoint on `log-stream` for initial page load replay.
+- UI logs panel with live SSE streaming, basic formatting, auto-scroll, and level filter.
 
 ### Phase 2 (Nice-to-have)
 
-- Persist logs to Postgres with paging and retention.
+- Persist logs to Postgres with paging and retention policy.
 - Search/filter by fields.
 - Export/download.
 
 ## Open questions
 
 - Should users see logs only while a rule is running, or also historical logs by default?
-- Do we need per-user data isolation for logs at the API layer (likely yes: user can only subscribe to their own ruleId)?
-- Retention requirements and storage budget.
+- Do we need per-user data isolation for logs at the `log-stream` layer (likely yes: user can only subscribe to their own `ruleId`)?
+- Retention requirements and storage budget (MAXLENGTH value, TTL duration).
+- Should `log-stream` call `api` to verify ownership, or rely solely on JWT claims?
