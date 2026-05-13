@@ -3,6 +3,7 @@ import JSONEditor, { JSONEditorOptions } from 'jsoneditor';
 
 import { FieldLabel } from './FieldLabel';
 
+
 interface JsonEditorFieldProps {
     label: string;
     id: string;
@@ -40,7 +41,7 @@ export function JsonEditorField({
             mainMenuBar: true,
             navigationBar: true,
             statusBar: true,
-            onChange: () => {
+            onChange: async () => {
                 if (!editorRef.current) return;
                 try {
                     const next = editorRef.current.get();
@@ -62,6 +63,31 @@ export function JsonEditorField({
 
         const editor = new JSONEditor(containerRef.current, options);
         editorRef.current = editor;
+
+        // jsoneditor sets _debouncedValidate = debounce(this._validateAndCatch.bind(this), ...)
+        // inside textmode.create / treemode.create (after extend(this, mixin)).
+        // _validateAndCatch calls this.validate()["catch"](...) but validate() can return
+        // undefined on transient invalid JSON → crash. We replace _debouncedValidate
+        // with a safe wrapper AFTER the instance is fully initialised.
+        const editorAny = editor as any;
+        const safeValidate = () => {
+            try {
+                const result: unknown = typeof editorAny.validate === 'function'
+                    ? editorAny.validate()
+                    : undefined;
+                const promise = (result != null && typeof (result as any).catch === 'function')
+                    ? result as Promise<unknown>
+                    : Promise.resolve([]);
+                promise.catch((err: unknown) => {
+                    console.error('jsoneditor validation error:', err);
+                });
+            } catch {
+                // ignore transient parse errors
+            }
+        };
+        if ('_debouncedValidate' in editorAny) {
+            editorAny._debouncedValidate = safeValidate;
+        }
 
         try {
             editor.set(null);
