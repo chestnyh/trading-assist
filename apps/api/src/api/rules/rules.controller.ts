@@ -54,7 +54,7 @@ export class RulesController {
   ): Promise<PaginatedRulesDto> {
     const pageNum = page ? +page : 1;
     const limitNum = limit ? +limit : 20;
-    return this.rulesService.findAllPaginated(pageNum, limitNum);
+    return this.rulesService.findAllByUser(undefined, pageNum, limitNum);
   }
 
   @Post()

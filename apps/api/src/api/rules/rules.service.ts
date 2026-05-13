@@ -45,19 +45,18 @@ export class RulesService {
   }
 
   /**
-   * Get all rules for a user
+   * Get all rules with pagination. If userId is provided, filters by that user.
    */
-  async findAllByUser(userId: number, page = 1, limit = 20): Promise<{ rules: RuleResponseDto[], total: number }> {
+  async findAllByUser(userId: number | undefined, page = 1, limit = 20): Promise<{ rules: RuleResponseDto[], total: number }> {
     const safeLimit = Math.min(Math.max(1, Math.floor(limit)), this.MAX_LIMIT);
-
     const safePage = Math.max(1, Math.floor(page));
-
     const skip = (safePage - 1) * safeLimit;
+    const where = userId !== undefined ? { authorId: userId } : undefined;
 
     const [rules, total] = await Promise.all([
       this.modelsService.userRules.findMany({
-        where: { authorId: userId },
-        skip: skip,
+        where,
+        skip,
         take: safeLimit,
         select: {
           id: true,
@@ -68,33 +67,7 @@ export class RulesService {
         },
         orderBy: { id: 'desc' },
       }),
-      this.modelsService.userRules.count({
-        where: { authorId: userId },
-        }),
-      ]);
-
-    return { rules, total };
-  }
-
-  async findAllPaginated(page = 1, limit = 20): Promise<{ rules: RuleResponseDto[]; total: number }> {
-    const safeLimit = Math.min(Math.max(1, Math.floor(limit)), this.MAX_LIMIT);
-    const safePage = Math.max(1, Math.floor(page));
-    const skip = (safePage - 1) * safeLimit;
-
-    const [rules, total] = await Promise.all([
-      this.modelsService.userRules.findMany({
-        skip: skip,
-        take: safeLimit,
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          ruleBody: true,
-          authorId: true,
-        },
-        orderBy: { id: 'desc' },
-      }),
-      this.modelsService.userRules.count(),
+      this.modelsService.userRules.count({ where }),
     ]);
 
     return { rules, total };
