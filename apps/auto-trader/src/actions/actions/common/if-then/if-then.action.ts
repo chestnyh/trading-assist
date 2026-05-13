@@ -83,9 +83,17 @@ export default async function if_then(
 
     const thenActions = Array.isArray(then) ? then : [then];
     for (const thenAction of thenActions) {
+        if (sequenceContext?.get('__stop_sequence__')) {
+            break;
+        }
+
         const thenType = thenAction?.type;
         await this[thenType](thenAction?.arguments, {
             sequenceContext,
         });
+
+        if (sequenceContext?.get('__stop_sequence__')) {
+            break;
+        }
     }
 }
