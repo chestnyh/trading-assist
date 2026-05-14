@@ -21,7 +21,7 @@ export function UpdateRulePage() {
           setInitialData({
             name: rule.name,
             description: rule.description,
-            rule: JSON.stringify(rule.ruleBody, null, 2),
+            ruleBody: rule.ruleBody,
           });
         }
       }

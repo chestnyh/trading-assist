@@ -10,6 +10,7 @@ import interval from './interval/interval.action';
 import for_each from './for-each/for-each.action';
 import cron from './cron/cron.action';
 import includes from './includes/includes.action';
+import stop_sequence from './stop-sequence/stop-sequence.action';
 
 export default {
     log: {
@@ -47,5 +48,8 @@ export default {
     },
     includes: {
         method: includes
+    },
+    stop_sequence: {
+        method: stop_sequence
     }
 }
