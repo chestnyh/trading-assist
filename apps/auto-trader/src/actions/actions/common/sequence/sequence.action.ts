@@ -42,11 +42,10 @@ export default async function sequence(
     args: any,
     {
         heap,
-        sequenceContext: existingSequenceContext,
     },
     settings: any
 ) {
-    const sequenceContext = existingSequenceContext ?? new ObjectNavigator();
+    const sequenceContext = new ObjectNavigator();
     
     const { 
         do: actions,  

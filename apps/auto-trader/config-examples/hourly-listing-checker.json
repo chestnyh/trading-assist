@@ -45,197 +45,215 @@
                   }
                 }
               },
-              "then": {
-                "type": "sequence",
-                "arguments": {
-                  "do": [
-                    {
+              "then": [
+                {
+                  "type": "add_to_heap",
+                  "arguments": {
+                    "items": [
+                      {
+                        "key": "exchangeInfo.symbols",
+                        "value": "__sequenceContext__.exchangeInfo.symbols"
+                      },
+                      {
+                        "key": "exchangeInfo.newCount",
+                        "value": {
+                          "__length": { "__var": "__sequenceContext__.exchangeInfo.symbols" }
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "if_then",
+                  "arguments": {
+                    "if": {
                       "type": "resolve",
                       "arguments": {
                         "expression": {
-                          "__length": { "__var": "__sequenceContext__.exchangeInfo.symbols" }
-                        },
-                        "saveTo": "exchangeInfoCount"
-                      }
-                    },
-                    {
-                      "type": "resolve",
-                      "arguments": {
-                        "expression": { "__var": "__sequenceContext__.exchangeInfo.symbols" },
-                        "saveTo": "currentSymbols"
-                      }
-                    },
-                    {
-                      "type": "if_then",
-                      "arguments": {
-                        "if": {
-                          "type": "resolve",
-                          "arguments": {
-                            "expression": {
-                              "__not": { "__var": "__heap__.exchangeInfo.count" }
-                            }
-                          }
-                        },
-                        "then": {
-                          "type": "sequence",
-                          "arguments": {
-                            "do": [
-                              {
-                                "type": "resolve",
-                                "arguments": {
-                                  "expression": { "__const": true },
-                                  "saveTo": "skipProcessing"
-                                }
-                              },
-                              {
-                                "type": "add_to_heap",
-                                "arguments": {
-                                  "items": [
-                                    {
-                                      "key": "exchangeInfo.prevSymbols",
-                                      "value": []
-                                    }
-                                  ]
-                                }
-                              },
-                              {
-                                "type": "for_each",
-                                "arguments": {
-                                  "arr": "__sequenceContext__.currentSymbols",
-                                  "do": [
-                                    {
-                                      "type": "add_to_heap",
-                                      "arguments": {
-                                        "items": [
-                                          {
-                                            "key": "exchangeInfo.prevSymbols.[]",
-                                            "value": "__item__.symbol"
-                                          }
-                                        ]
-                                      }
-                                    }
-                                  ]
-                                }
-                              },
-                              {
-                                "type": "add_to_heap",
-                                "arguments": {
-                                  "items": [
-                                    {
-                                      "key": "exchangeInfo.count",
-                                      "value": "__sequenceContext__.exchangeInfoCount"
-                                    }
-                                  ]
-                                }
-                              }
-                            ]
-                          }
+                          "__not": { "__var": "__heap__.exchangeInfo.count" }
                         }
                       }
                     },
-                    {
-                      "type": "if_then",
+                    "then": {
+                      "type": "sequence",
                       "arguments": {
-                        "if": {
-                          "type": "resolve",
-                          "arguments": {
-                            "expression": {
-                              "__and": [
+                        "do": [
+                          {
+                            "type": "add_to_heap",
+                            "arguments": {
+                              "items": [
                                 {
-                                  "__not": { "__var": "__sequenceContext__.skipProcessing" }
+                                  "key": "exchangeInfo.isFirstRun",
+                                  "value": { "__const": true }
                                 },
-                                { "__var": "__heap__.exchangeInfo.count" }
+                                {
+                                  "key": "exchangeInfo.prevSymbols",
+                                  "value": []
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "for_each",
+                            "arguments": {
+                              "arr": "__heap__.exchangeInfo.symbols",
+                              "do": [
+                                {
+                                  "type": "add_to_heap",
+                                  "arguments": {
+                                    "items": [
+                                      {
+                                        "key": "exchangeInfo.prevSymbols.[]",
+                                        "value": "__item__.symbol"
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "add_to_heap",
+                            "arguments": {
+                              "items": [
+                                {
+                                  "key": "exchangeInfo.count",
+                                  "value": "__heap__.exchangeInfo.newCount"
+                                }
                               ]
                             }
                           }
-                        },
-                        "then": {
-                          "type": "sequence",
-                          "arguments": {
-                            "do": [
-                              {
-                                "type": "add_to_heap",
-                                "arguments": {
-                                  "items": [
-                                    {
-                                      "key": "exchangeInfo.currentSymbols",
-                                      "value": []
-                                    },
-                                    {
-                                      "key": "exchangeInfo.listedPairs",
-                                      "value": []
-                                    }
-                                  ]
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "if_then",
+                  "arguments": {
+                    "if": {
+                      "type": "resolve",
+                      "arguments": {
+                        "expression": {
+                          "__and": [
+                            { "__not": { "__var": "__heap__.exchangeInfo.isFirstRun" } },
+                            { "__var": "__heap__.exchangeInfo.count" }
+                          ]
+                        }
+                      }
+                    },
+                    "then": {
+                      "type": "sequence",
+                      "arguments": {
+                        "do": [
+                          {
+                            "type": "add_to_heap",
+                            "arguments": {
+                              "items": [
+                                {
+                                  "key": "exchangeInfo.currentSymbols",
+                                  "value": []
+                                },
+                                {
+                                  "key": "exchangeInfo.listedPairs",
+                                  "value": []
                                 }
-                              },
-                              {
-                                "type": "for_each",
-                                "arguments": {
-                                  "arr": "__sequenceContext__.currentSymbols",
-                                  "do": [
-                                    {
-                                      "type": "if_then",
-                                      "arguments": {
-                                        "if": {
-                                          "type": "resolve",
-                                          "arguments": {
-                                            "expression": {
-                                              "__not": {
-                                                "__var": "__heap__.exchangeInfo.count"
-                                              }
-                                            }
-                                          }
-                                        },
-                                        "then": {
-                                          "type": "add_to_heap",
-                                          "arguments": {
-                                            "items": [
-                                              {
-                                                "key": "exchangeInfo.count",
-                                                "value": "__sequenceContext__.exchangeInfoCount"
-                                              }
-                                            ]
-                                          }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "for_each",
+                            "arguments": {
+                              "arr": "__heap__.exchangeInfo.symbols",
+                              "do": [
+                                {
+                                  "type": "sequence",
+                                  "arguments": {
+                                    "do": [
+                                      {
+                                        "type": "includes",
+                                        "arguments": {
+                                          "arr": "__heap__.exchangeInfo.prevSymbols",
+                                          "check": "__item__.symbol",
+                                          "saveTo": "symbolExists"
                                         }
-                                      }
-                                    },
-                                    {
-                                      "type": "sequence",
-                                      "arguments": {
-                                        "do": [
-                                          {
-                                            "type": "includes",
+                                      },
+                                      {
+                                        "type": "if_then",
+                                        "arguments": {
+                                          "if": {
+                                            "type": "resolve",
                                             "arguments": {
-                                              "arr": "__heap__.exchangeInfo.prevSymbols",
-                                              "check": "__item__.symbol",
-                                              "saveTo": "symbolExists"
+                                              "expression": {
+                                                "__not": { "__var": "__sequenceContext__.symbolExists" }
+                                              }
                                             }
                                           },
-                                          {
-                                            "type": "if_then",
+                                          "then": {
+                                            "type": "add_to_heap",
                                             "arguments": {
-                                              "if": {
-                                                "type": "resolve",
-                                                "arguments": {
-                                                  "expression": {
-                                                    "__not": { "__var": "__sequenceContext__.symbolExists" }
-                                                  }
+                                              "items": [
+                                                {
+                                                  "key": "exchangeInfo.listedPairs.[]",
+                                                  "value": "__item__.symbol"
                                                 }
-                                              },
-                                              "then": {
-                                                "type": "add_to_heap",
-                                                "arguments": {
-                                                  "items": [
-                                                    {
-                                                      "key": "exchangeInfo.listedPairs.[]",
-                                                      "value": "__item__.symbol"
-                                                    }
-                                                  ]
-                                                }
-                                              }
+                                              ]
                                             }
                                           }
-                                        ]
+                                        }
+                                      },
+                                      {
+                                        "type": "add_to_heap",
+                                        "arguments": {
+                                          "items": [
+                                            {
+                                              "key": "exchangeInfo.currentSymbols.[]",
+                                              "value": "__item__.symbol"
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "add_to_heap",
+                            "arguments": {
+                              "items": [
+                                {
+                                  "key": "exchangeInfo.prevSymbols",
+                                  "value": "__heap__.exchangeInfo.currentSymbols"
+                                },
+                                {
+                                  "key": "exchangeInfo.count",
+                                  "value": "__heap__.exchangeInfo.newCount"
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "type": "if_then",
+                            "arguments": {
+                              "if": {
+                                "type": "resolve",
+                                "arguments": {
+                                  "expression": {
+                                    "__var": "__heap__.exchangeInfo.listedPairs.0"
+                                  }
+                                }
+                              },
+                              "then": {
+                                "type": "sequence",
+                                "arguments": {
+                                  "do": [
+                                    {
+                                      "type": "telegram_send_message",
+                                      "arguments": {
+                                        "botId": "main_bot",
+                                        "message": "New futures pairs detected! previousCount=${__heap__.exchangeInfo.count}, newCount=${__heap__.exchangeInfo.newCount}, newPair=${__heap__.exchangeInfo.listedPairs.0}, link=https://www.binance.com/en/trade/${__heap__.exchangeInfo.listedPairs.0}"
                                       }
                                     },
                                     {
@@ -243,76 +261,34 @@
                                       "arguments": {
                                         "items": [
                                           {
-                                            "key": "exchangeInfo.currentSymbols.[]",
-                                            "value": "__item__.symbol"
+                                            "key": "exchangeInfo.listedPairs",
+                                            "value": []
                                           }
                                         ]
                                       }
                                     }
                                   ]
                                 }
-                              },
-                              {
-                                "type": "add_to_heap",
-                                "arguments": {
-                                  "items": [
-                                    {
-                                      "key": "exchangeInfo.prevSymbols",
-                                      "value": "__heap__.exchangeInfo.currentSymbols"
-                                    },
-                                    {
-                                      "key": "exchangeInfo.count",
-                                      "value": "__sequenceContext__.exchangeInfoCount"
-                                    }
-                                  ]
-                                }
-                              },
-                              {
-                                "type": "if_then",
-                                "arguments": {
-                                  "if": {
-                                    "type": "resolve",
-                                    "arguments": {
-                                      "expression": {
-                                        "__var": "__heap__.exchangeInfo.listedPairs.0"
-                                      }
-                                    }
-                                  },
-                                  "then": {
-                                    "type": "sequence",
-                                    "arguments": {
-                                      "do": [
-                                        {
-                                          "type": "telegram_send_message",
-                                          "arguments": {
-                                            "botId": "main_bot",
-                                            "message": "New futures pairs detected! previousCount=${__heap__.exchangeInfo.count}, newCount=${__sequenceContext__.exchangeInfoCount}, newPair=${__heap__.exchangeInfo.listedPairs.0}, link=https://www.binance.com/en/trade/${__heap__.exchangeInfo.listedPairs.0}"
-                                          }
-                                        },
-                                        {
-                                          "type": "add_to_heap",
-                                          "arguments": {
-                                            "items": [
-                                              {
-                                                "key": "exchangeInfo.listedPairs",
-                                                "value": []
-                                              }
-                                            ]
-                                          }
-                                        }
-                                      ]
-                                    }
-                                  }
-                                }
                               }
-                            ]
+                            }
                           }
-                        }
+                        ]
                       }
                     }
-                  ]
+                  }
+                },
+                {
+                  "type": "add_to_heap",
+                  "arguments": {
+                    "items": [
+                      {
+                        "key": "exchangeInfo.isFirstRun",
+                        "value": { "__const": false }
+                      }
+                    ]
+                  }
                 }
-              }
+              ]
             }
           }
         ]
