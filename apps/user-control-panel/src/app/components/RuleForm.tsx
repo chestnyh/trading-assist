@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Input } from "../../shared/ui/forms/Input";
 import { TextArea } from "../../shared/ui/forms/TextArea";
+import { JsonEditorField } from "../../shared/ui/forms/JsonEditorField";
 import { Button } from "../../shared/ui/buttons/Button";
 import { extractFieldToMessageFromValidationError, isValidationError } from '@trading-bot/api-client';
 
 interface RuleFormProps {
-  initialData?: { name: string; description: string; rule: string };
+  initialData?: { name: string; description: string; ruleBody: unknown };
   onSubmit: (data: { name: string; description: string; ruleBody: unknown }) => Promise<void>;
   onCancel: () => void;
   isLoading: boolean;
@@ -13,34 +14,52 @@ interface RuleFormProps {
   title: string;
 }
 
+type RuleFormData = {
+  name: string;
+  description: string;
+  ruleBody: unknown | null;
+};
+
 export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLabel, title }: RuleFormProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RuleFormData>({
     name: initialData?.name || "",
     description: initialData?.description || "",
-    rule: initialData?.rule || "",
+    ruleBody: initialData?.ruleBody ?? null,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      setFormData({
+        name: initialData.name,
+        description: initialData.description,
+        ruleBody: initialData.ruleBody ?? null,
+      });
     }
   }, [initialData]);
+
+  const initialRuleBodyString = JSON.stringify(initialData?.ruleBody ?? null);
+  const currentRuleBodyString = JSON.stringify(formData.ruleBody ?? null);
 
   const isDirty =
     formData.name !== (initialData?.name || "") ||
     formData.description !== (initialData?.description || "") ||
-    formData.rule !== (initialData?.rule || "");
+    currentRuleBodyString !== initialRuleBodyString;
 
   const handleSubmit = async () => {
     setErrors({});
+
+    if (formData.ruleBody === null || formData.ruleBody === undefined) {
+      setErrors({ rule: 'Rule body is required' });
+      return;
+    }
 
     try {
       await onSubmit({
         name: formData.name,
         description: formData.description,
-        ruleBody: formData.rule,
+        ruleBody: formData.ruleBody,
       });
     } catch (err) {
       const error = err as Error;
@@ -94,19 +113,18 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
         required
       />
 
-      <TextArea
+      <JsonEditorField
         label="Rule (JSON Format)"
-		id="rule"
-		name="rule"
-        placeholder='{ "key": "value" }'
-        value={formData.rule}
-        onChange={(e) => {
-          setFormData({ ...formData, rule: e.target.value });
+        id="rule"
+        required
+        disabled={isLoading}
+        value={formData.ruleBody}
+        onChange={(next) => {
+          setFormData({ ...formData, ruleBody: next });
           if (errors.rule) setErrors({ ...errors, rule: "" });
         }}
         error={errors.rule}
-        rows={10}
-        required
+        mode="tree"
       />
 
       <div className="flex flex-col sm:flex-row justify-start gap-4 mt-8">
