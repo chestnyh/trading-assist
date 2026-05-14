@@ -25,6 +25,8 @@ import { UpdateRuleDto } from './dto/update-rule.dto';
 import { RuleResponseDto } from './dto/rule-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PaginatedRulesDto } from './dto/paginated-rules.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @ApiTags('rules')
 @Controller('rules')
@@ -32,6 +34,28 @@ import { PaginatedRulesDto } from './dto/paginated-rules.dto';
 @ApiBearerAuth()
 export class RulesController {
   constructor(private readonly rulesService: RulesService) {}
+
+  @Get('admin/all')
+  @UseGuards(RolesGuard)
+  @Roles('ADMIN')
+  @ApiOperation({ summary: 'Get all rules across all users (admin only)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Rules retrieved successfully',
+    type: PaginatedRulesDto
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden'
+  })
+  async adminFindAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number
+  ): Promise<PaginatedRulesDto> {
+    const pageNum = page ? +page : 1;
+    const limitNum = limit ? +limit : 20;
+    return this.rulesService.findAllByUser(undefined, pageNum, limitNum);
+  }
 
   @Post()
   @ApiOperation({ summary: 'Create a new trading rule' })

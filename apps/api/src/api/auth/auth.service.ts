@@ -18,7 +18,8 @@ export class AuthService {
     const payload = { 
       email: user.email, 
       sub: user.id,
-      nickname: user.nickname 
+      nickname: user.nickname,
+      role: user.role,
     };
     
     // Set token expiration based on rememberMe option
@@ -34,6 +35,7 @@ export class AuthService {
         nickname: user.nickname,
         email: user.email,
         name: user.name,
+        role: user.role,
       },
     };
   }
