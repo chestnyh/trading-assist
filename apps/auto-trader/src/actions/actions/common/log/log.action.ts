@@ -1,26 +1,40 @@
 import renderMessage from '../../../utils/render-message.util'
 
+interface RuleLogEntry {
+  ruleId: number;
+  userId: number;
+  runId: string;
+  timestamp: string;
+  level: 'info' | 'warn' | 'error' | 'debug';
+  type: 'text' | 'json';
+  message?: string;
+  data?: Record<string, unknown>;
+}
+
 /**
- * Action that logs messages to the terminal for debugging purposes.
- * 
- * This function renders the message using template variables from the heap and sequence context,
- * then outputs it to the console. Useful for debugging sequences, monitoring execution flow,
- * and tracking variable values during development and testing.
- * 
- * Note: These logs are temporary and will be cleared when the terminal is cleared.
- * Method has access to the heap and sequenceContext.
- * 
+ * Action that publishes log entries to Redis Stream for UI visibility.
+ *
+ * This function publishes log entries to a Redis Stream keyed by ruleId,
+ * allowing real-time log streaming to the UI. Log entries include user info,
+ * rule info, message content, and timestamp.
+ *
+ * The action gracefully handles Redis unavailability - rule execution continues
+ * even if log publication fails.
+ *
  * @param args - Object containing the logging configuration
- * @param args.message - The message to log. Can include template variables like {{variable}} or ${__heap__.path}
+ * @param args.message - The message to log. Can include template variables like ${__heap__.path}
+ * @param args.level - Log level: 'info' | 'warn' | 'error' | 'debug' (default: 'info')
+ * @param args.data - Optional structured data object (for type: 'json' logs)
  * @param context - Object containing execution context
  * @param context.sequenceContext - Context object for the current sequence execution
- * 
+ *
  * @example
- * // Basic logging with static message
+ * // Basic text log
  * {
  *     "type": "log",
  *     "arguments": {
- *         "message": "Starting trading sequence"
+ *         "message": "Starting trading sequence",
+ *         "level": "info"
  *     }
  * }
  * @example
@@ -28,27 +42,62 @@ import renderMessage from '../../../utils/render-message.util'
  * {
  *     "type": "log",
  *     "arguments": {
- *         "message": "Log some information from heap: ${__heap__.some.value.from.heap}"
+ *         "message": "Price from heap: ${__heap__.price}",
+ *         "level": "info"
  *     }
  * }
- * 
  * @example
- * // Log data from sequence context
+ * // Structured log with data
  * {
  *     "type": "log",
  *     "arguments": {
- *         "message": "Log some information from the sequence context: ${__sequenceContext__.some.value.from.sequenceContext}"
+ *         "message": "Order executed",
+ *         "level": "info",
+ *         "data": {
+ *             "symbol": "BTCUSDT",
+ *             "side": "buy",
+ *             "quantity": 0.1
+ *         }
  *     }
  * }
  */
-export default function log(
+export default async function log(
+    this: {
+        ruleId: number;
+        userId: number;
+        runId: string;
+        ruleLogsService: { publishLog(entry: RuleLogEntry): Promise<void> } | null;
+        heap: { get(path: string): any };
+    },
     {
-        message = ""
+        message = "",
+        level = 'info',
+        data,
+    }: {
+        message?: string;
+        level?: 'info' | 'warn' | 'error' | 'debug';
+        data?: Record<string, unknown>;
     },
     {
         sequenceContext = {},
+    }: {
+        sequenceContext?: Record<string, any>;
     }
-) {
-    message = renderMessage(message, { heap: this.heap, sequenceContext });
-    console.log(message);
+): Promise<void> {
+    const renderedMessage = renderMessage(message, { heap: this.heap, sequenceContext });
+
+    const entry: RuleLogEntry = {
+        ruleId: this.ruleId,
+        userId: this.userId,
+        runId: this.runId,
+        timestamp: new Date().toISOString(),
+        level,
+        type: data ? 'json' : 'text',
+        message: renderedMessage,
+        data,
+    };
+
+    if (this.ruleLogsService) {
+        await this.ruleLogsService.publishLog(entry);
+    }
 }

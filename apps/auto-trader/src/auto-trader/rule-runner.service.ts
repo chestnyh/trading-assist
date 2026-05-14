@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { ActionsRunner } from '../actions-runner/actions-runner';
+import { RuleLogsService } from './rule-logs.service';
 
 @Injectable()
 export class RuleRunnerService {
     private actionsRunnersByRuleId = new Map<number, ActionsRunner>();
 
-    startRuleRunner(ruleId: number, ruleBody: any, ruleSettings: any): void {
-        const actionsRunner = new ActionsRunner(ruleBody, ruleSettings);
+    startRuleRunner(
+        ruleId: number,
+        userId: number,
+        ruleBody: any,
+        ruleSettings: any,
+        runId: string,
+        ruleLogsService: RuleLogsService,
+    ): void {
+        const actionsRunner = new ActionsRunner(ruleId, userId, ruleBody, ruleSettings, runId, ruleLogsService);
         actionsRunner.run();
         this.actionsRunnersByRuleId.set(ruleId, actionsRunner);
     }
@@ -18,8 +26,15 @@ export class RuleRunnerService {
         this.actionsRunnersByRuleId.delete(ruleId);
     }
 
-    rerunRuleRunner(ruleId: number, ruleBody: any, ruleSettings: any): void {
+    rerunRuleRunner(
+        ruleId: number,
+        userId: number,
+        ruleBody: any,
+        ruleSettings: any,
+        runId: string,
+        ruleLogsService: RuleLogsService,
+    ): void {
         this.stopRuleRunner(ruleId);
-        this.startRuleRunner(ruleId, ruleBody, ruleSettings);
+        this.startRuleRunner(ruleId, userId, ruleBody, ruleSettings, runId, ruleLogsService);
     }
 }
