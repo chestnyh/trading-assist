@@ -76,6 +76,28 @@ services:
     volumes:
       - ${DOCKER_KIBANA_VOLUME:-kibana_data}:/usr/share/kibana/data
 
+  redis:
+    image: redis:7-alpine
+    restart: always
+    container_name: ${DOCKER_PROJECT_NAME}-redis
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    profiles:
+      - development
+      - api-service
+      - external
+      - init-external
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ${DOCKER_REDIS_VOLUME:-redis_data}:/data
+    command: >
+      sh -c 'if [ -n "$$REDIS_PASSWORD" ]; then
+        redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD";
+      else
+        redis-server --appendonly yes;
+      fi'
+
   auto-trader:
     build:
       context: .
@@ -95,5 +117,6 @@ services:
 volumes:
   elasticsearch_data:
   kibana_data:
+  redis_data:
 
 
