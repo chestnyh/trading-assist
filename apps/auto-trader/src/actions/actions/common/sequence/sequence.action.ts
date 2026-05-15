@@ -41,7 +41,7 @@ import ObjectNavigator from '@trading-bot/object-navigator';
 export default async function sequence(
     args: any,
     {
-        heap
+        heap,
     },
     settings: any
 ) {

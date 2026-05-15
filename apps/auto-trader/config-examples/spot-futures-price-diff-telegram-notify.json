@@ -1,0 +1,91 @@
+{
+  "name": "Spot vs Futures Price Diff",
+  "description": "Runs every 1 minute. Fetches spot ticker and UM futures ticker in parallel, computes absolute price difference and sends Telegram notification if above threshold. If any Binance call errors, sends message to a separate Telegram chat for errors.\n\nPrereqs: configure Telegram settings in auto-trader settings with codes 'main_bot' and 'error_bot'.",
+  "type": "interval",
+  "arguments": {
+    "interval": 60000,
+    "do": {
+      "type": "sequence",
+      "arguments": {
+        "do": [
+          {
+            "type": "parallel",
+            "arguments": {
+              "do": [
+                {
+                  "type": "binance_spot_get_ticker",
+                  "arguments": {
+                    "symbol": "BTCUSDT",
+                    "resultKey": "spotPrice"
+                  }
+                },
+                {
+                  "type": "binance_um_futures_get_ticker",
+                  "arguments": {
+                    "symbol": "BTCUSDT",
+                    "resultKey": "futuresPrice"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "if_then",
+            "arguments": {
+              "if": {
+                "type": "resolve",
+                "arguments": {
+                  "expression": {
+                    "__or": [
+                      { "__var": "__sequenceContext__.spotPrice.error.message" },
+                      { "__var": "__sequenceContext__.futuresPrice.error.message" }
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "type": "telegram_send_message",
+                "arguments": {
+                  "botId": "error_bot",
+                  "message": "Binance ticker error. spot=${__sequenceContext__.spotPrice.error.message} futures=${__sequenceContext__.futuresPrice.error.message}"
+                }
+              }
+            }
+          },
+          {
+            "type": "if_then",
+            "arguments": {
+              "if": {
+                "type": "resolve",
+                "arguments": {
+                  "expression": {
+                    "__gt": [
+                      {
+                        "__absolute": [
+                          {
+                            "__minus": [
+                              { "__var": "__sequenceContext__.spotPrice" },
+                              { "__var": "__sequenceContext__.futuresPrice" }
+                            ]
+                          }
+                        ]
+                      },
+                      { "__const": 1 }
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "type": "telegram_send_message",
+                "arguments": {
+                  "botId": "main_bot",
+                  "message": "Spot/Futures diff is high for BTCUSDT. spot=${__sequenceContext__.spotPrice}, futures=${__sequenceContext__.futuresPrice}"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
