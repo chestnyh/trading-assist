@@ -2,16 +2,8 @@ import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { ServicesConfigs } from '@trading-bot/configs';
 import Redis from 'ioredis';
 
-export interface RuleLogEntry {
-  ruleId: number;
-  userId: number;
-  runId: string;
-  timestamp: string;
-  level: 'info' | 'warn' | 'error' | 'debug';
-  type: 'text' | 'json';
-  message?: string;
-  data?: Record<string, unknown>;
-}
+import type { RuleLogEntry } from './rule-log-entry.interface';
+export type { RuleLogEntry } from './rule-log-entry.interface';
 
 @Injectable()
 export class RuleLogsService implements OnModuleDestroy {

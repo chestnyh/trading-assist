@@ -1,15 +1,7 @@
 import renderMessage from '../../../utils/render-message.util'
+import type { RuleLogEntry } from '../../../../auto-trader/rule-log-entry.interface';
 
-interface RuleLogEntry {
-  ruleId: number;
-  userId: number;
-  runId: string;
-  timestamp: string;
-  level: 'info' | 'warn' | 'error' | 'debug';
-  type: 'text' | 'json';
-  message?: string;
-  data?: Record<string, unknown>;
-}
+type LogArgs = Pick<RuleLogEntry, 'level' | 'data'> & { message?: string; };
 
 /**
  * Action that publishes log entries to Redis Stream for UI visibility.
@@ -62,22 +54,11 @@ interface RuleLogEntry {
  * }
  */
 export default async function log(
-    this: {
-        ruleId: number;
-        userId: number;
-        runId: string;
-        ruleLogsService: { publishLog(entry: RuleLogEntry): Promise<void> } | null;
-        heap: { get(path: string): any };
-    },
     {
         message = "",
         level = 'info',
         data,
-    }: {
-        message?: string;
-        level?: 'info' | 'warn' | 'error' | 'debug';
-        data?: Record<string, unknown>;
-    },
+    }: LogArgs,
     {
         sequenceContext = {},
     }: {
