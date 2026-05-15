@@ -76,6 +76,26 @@ services:
     volumes:
       - ${DOCKER_KIBANA_VOLUME:-kibana_data}:/usr/share/kibana/data
 
+  redis:
+    image: redis:7-alpine
+    restart: always
+    container_name: ${DOCKER_PROJECT_NAME}-redis
+    command: >
+      sh -c "if [ -n \"$${REDIS_PASSWORD}\" ]; then
+        redis-server --requirepass $${REDIS_PASSWORD};
+      else
+        redis-server;
+      fi"
+    profiles:
+      - development
+      - api-service
+      - external
+      - init-external
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ${DOCKER_REDIS_VOLUME:-redis_data}:/data
+
   auto-trader:
     build:
       context: .
@@ -89,11 +109,41 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    depends_on:
+      - redis
+    profiles:
+      - development
+
+  log-stream:
+    build:
+      context: .
+      dockerfile: apps/log-stream/Dockerfile
+    restart: always
+    ports:
+      - "${LOG_STREAM_PORT:-3002}:3002"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET}
+      LOG_STREAM_PORT: "3002"
+    depends_on:
+      - redis
+      - postgres
     profiles:
       - development
 
 volumes:
   elasticsearch_data:
   kibana_data:
+  redis_data:
 
 
