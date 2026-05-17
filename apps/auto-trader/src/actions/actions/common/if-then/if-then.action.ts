@@ -53,12 +53,12 @@
  * 
  * @returns {void} Executes the then action if condition in `if` argument returns true
  */
-export default function if_then(
+export default async function if_then(
     args: any,
     {
         sequenceContext
     }
-): void {
+): Promise<void> {
 
     const { 
         if: operations, 
@@ -70,22 +70,30 @@ export default function if_then(
         arguments: operationArguments,
     } = operations;
 
-    const {
-        type: thenType,
-        arguments: thenArguments,
-    } = then;
-
-    if(this[operationType](
-        operationArguments, 
-        { 
-            sequenceContext 
+    const operationResult = await this[operationType](
+        operationArguments,
+        {
+            sequenceContext,
         }
-    )){   
-        this[thenType](
-            thenArguments, 
-            {
-                sequenceContext
-            }
-        );
+    );
+
+    if (!operationResult) {
+        return;
     }
-} 
+
+    const thenActions = Array.isArray(then) ? then : [then];
+    for (const thenAction of thenActions) {
+        if (sequenceContext?.get('__stop_sequence__')) {
+            break;
+        }
+
+        const thenType = thenAction?.type;
+        await this[thenType](thenAction?.arguments, {
+            sequenceContext,
+        });
+
+        if (sequenceContext?.get('__stop_sequence__')) {
+            break;
+        }
+    }
+}
