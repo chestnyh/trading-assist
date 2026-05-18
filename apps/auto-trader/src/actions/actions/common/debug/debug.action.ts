@@ -42,7 +42,6 @@ import renderMessage from '../../../utils/render-message.util'
  * }
  */
 export default function debug(
-    this: { heap: { get(path: string): any } },
     {
         message = ""
     }: {
