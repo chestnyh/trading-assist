@@ -44,10 +44,21 @@
                 }
               },
               "then": {
-                "type": "telegram_send_message",
+                "type": "sequence",
                 "arguments": {
-                  "botId": "error_bot",
-                  "message": "Binance ticker error. spot=${__sequenceContext__.spotPrice.error.message} futures=${__sequenceContext__.futuresPrice.error.message}"
+                  "do": [
+                    {
+                      "type": "telegram_send_message",
+                      "arguments": {
+                        "botId": "error_bot",
+                        "message": "Binance ticker error. spot=${__sequenceContext__.spotPrice.error.message} futures=${__sequenceContext__.futuresPrice.error.message}"
+                      }
+                    },
+                    {
+                      "type": "stop_sequence",
+                      "arguments": {}
+                    }
+                  ]
                 }
               }
             }
