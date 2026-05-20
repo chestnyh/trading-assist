@@ -1,0 +1,40 @@
+{
+  "name": "log-stream",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/log-stream/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "log-stream:build",
+        "runBuildTargetDependencies": false,
+        "inspect": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "log-stream:build:development"
+        },
+        "production": {
+          "buildTarget": "log-stream:build:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "apps/log-stream/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  }
+}
