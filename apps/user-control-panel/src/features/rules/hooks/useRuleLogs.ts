@@ -50,10 +50,8 @@ export function useRuleLogs({ ruleId, token, onError }: UseRuleLogsOptions): Use
 
     isManualCloseRef.current = false;
 
-    const url = `http://localhost:3002/stream/rules/${ruleId}/logs`;
-    const es = new EventSource(url, {
-      withCredentials: true,
-    });
+    const url = `http://localhost:3002/stream/rules/${ruleId}/logs?token=${encodeURIComponent(token)}`;
+    const es = new EventSource(url);
 
     es.onopen = () => {
       setIsConnected(true);
