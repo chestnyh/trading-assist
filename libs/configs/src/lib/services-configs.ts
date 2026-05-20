@@ -45,6 +45,7 @@ export class ServicesConfigs extends Configs {
       REDIS_HOST: process.env['REDIS_HOST'] || 'localhost',
       REDIS_PORT: process.env['REDIS_PORT'] ? parseInt(process.env['REDIS_PORT'], 10).toString() : '6379',
       REDIS_PASSWORD: process.env['REDIS_PASSWORD'] || '',
+      LOG_STREAM_PORT: process.env['LOG_STREAM_PORT'] ? parseInt(process.env['LOG_STREAM_PORT'], 10).toString() : '3002',
     };
   }
 }

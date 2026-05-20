@@ -111,6 +111,35 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    depends_on:
+      - redis
+    profiles:
+      - development
+
+  log-stream:
+    build:
+      context: .
+      dockerfile: apps/log-stream/Dockerfile
+    restart: always
+    ports:
+      - "${LOG_STREAM_PORT:-3002}:3002"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET}
+      LOG_STREAM_PORT: "3002"
+    depends_on:
+      - redis
+      - postgres
     profiles:
       - development
 
