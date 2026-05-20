@@ -7,7 +7,7 @@ describe('timeout', () => {
 
   beforeEach(() => {
     jest.useFakeTimers();
-    actionsHub = new ActionsHub(['interval'], {});
+    actionsHub = new ActionsHub(1, 1, {}, {}, 'test-run', null);
     sequenceContext = new ObjectNavigator();
     actionsHub['mock'] = jest.fn();
   });

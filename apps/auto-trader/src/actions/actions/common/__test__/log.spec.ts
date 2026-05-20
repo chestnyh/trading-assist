@@ -7,7 +7,7 @@ describe('log', () => {
     let originalConsoleLog: typeof console.log;
     
     beforeEach(() => {
-        actionsHub = new ActionsHub(['log'], {});
+        actionsHub = new ActionsHub(1, 1, {}, {}, 'test-run', null);
         sequenceContext = new ObjectNavigator();
         originalConsoleLog = console.log;
         console.log = jest.fn();
