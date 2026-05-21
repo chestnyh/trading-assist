@@ -44,10 +44,21 @@
                 }
               },
               "then": {
-                "type": "telegram_send_message",
+                "type": "sequence",
                 "arguments": {
-                  "botId": "error_bot",
-                  "message": "Binance kline error: ${__sequenceContext__.klines.error.message}"
+                  "do": [
+                    {
+                      "type": "telegram_send_message",
+                      "arguments": {
+                        "botId": "error_bot",
+                        "message": "Binance kline error: ${__sequenceContext__.klines.error.message}"
+                      }
+                    },
+                    {
+                      "type": "stop_sequence",
+                      "arguments": {}
+                    }
+                  ]
                 }
               }
             }
