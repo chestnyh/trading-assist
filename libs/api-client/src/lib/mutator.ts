@@ -127,7 +127,11 @@ export const customInstance = async <T>(
 
   // Handle non-OK responses
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({
+    const errorData = await (
+      typeof (response as any)?.json === 'function'
+        ? (response as any).json()
+        : Promise.resolve(null)
+    ).catch(() => ({
       message: response.statusText,
       statusCode: response.status,
     }));

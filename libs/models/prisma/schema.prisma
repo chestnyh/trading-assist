@@ -41,6 +41,11 @@ enum TradingPlatform {
   Other
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model User {
   id    Int     @default(autoincrement()) @id
   nickname String @unique
@@ -48,6 +53,7 @@ model User {
   password String
   firstName String
   lastName String
+  role Role @default(USER)
   isEmailVerified Boolean @default(false)
   emailVerificationToken String
   emailVerificationCode String

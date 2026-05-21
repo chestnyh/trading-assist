@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { useRules, Rule } from "../../app/contexts/RulesContext";
+import { JsonEditorField } from "../../shared/ui/forms/JsonEditorField";
 import { NotFound } from "../notFound/NotFound";
 
 export function RuleDetailsPage() {
@@ -58,11 +59,13 @@ export function RuleDetailsPage() {
 
 			<section>
 			<h3 className="block text-body-md font-medium text-text-secondary mb-2">Rule Body:</h3>
-			<div className="bg-background border border-border rounded-xl p-4 overflow-auto max-h-[500px]">
-				<pre className="text-sm font-mono text-accent">
-				{JSON.stringify(rule.ruleBody || rule, null, 2)}
-				</pre>
-			</div>
+			<JsonEditorField
+				label=""
+				id="rule-body"
+				disabled
+				value={rule.ruleBody || rule}
+				mode="view"
+			/>
 			</section>
 		</div>
 		</div>

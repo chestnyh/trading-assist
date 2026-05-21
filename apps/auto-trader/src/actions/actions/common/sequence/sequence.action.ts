@@ -41,7 +41,7 @@ import ObjectNavigator from '@trading-bot/object-navigator';
 export default async function sequence(
     args: any,
     {
-        heap
+        heap,
     },
     settings: any
 ) {
@@ -51,7 +51,11 @@ export default async function sequence(
         do: actions,  
     } = args;
 
-    for(const action of actions){
+    for (const action of actions) {
+        if (sequenceContext.get('__stop_sequence__')) {
+            break;
+        }
+
         const actionType = action.type;
         await this[actionType](
             action.arguments, 
@@ -60,5 +64,9 @@ export default async function sequence(
                 heap
             }
         );
+
+        if (sequenceContext.get('__stop_sequence__')) {
+            break;
+        }
     }
 } 

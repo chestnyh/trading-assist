@@ -43,6 +43,10 @@ export class ServicesConfigs extends Configs {
       OUTBOX_CLEANUP_BATCH_SIZE: String(getFiniteNumber(process.env['OUTBOX_CLEANUP_BATCH_SIZE'] ?? '500') ?? 500),
       OUTBOX_CLEANUP_INTERVAL_MS: String(getFiniteNumber(process.env['OUTBOX_CLEANUP_INTERVAL_MS'] ?? '60000') ?? 60_000),
       OUTBOX_RETENTION_HOURS: String(getFiniteNumber(process.env['OUTBOX_RETENTION_HOURS'] ?? '24') ?? 24),
+      REDIS_HOST: process.env['REDIS_HOST'] || 'localhost',
+      REDIS_PORT: process.env['REDIS_PORT'] ? parseInt(process.env['REDIS_PORT'], 10).toString() : '6379',
+      REDIS_PASSWORD: process.env['REDIS_PASSWORD'] || '',
+      LOG_STREAM_PORT: process.env['LOG_STREAM_PORT'] ? parseInt(process.env['LOG_STREAM_PORT'], 10).toString() : '3002',
     };
   }
 }
