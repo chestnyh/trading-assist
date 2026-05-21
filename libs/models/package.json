@@ -5,14 +5,15 @@
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "dependencies": {
-    "tslib": "^2.3.0",
     "@nestjs/common": "^10.4.15",
-    "@prisma/client": "^6.5.0",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "@trading-bot/configs": "workspace:*",
-    "@trading-bot/crypto-utils": "workspace:*"
+    "@trading-bot/crypto-utils": "workspace:*",
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "prisma": "^6.5.0"
+    "prisma": "^7.8.0"
   },
   "scripts": {
     "generate": "npx prisma generate --schema=./prisma/schema.prisma",
