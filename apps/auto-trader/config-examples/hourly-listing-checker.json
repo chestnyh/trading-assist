@@ -25,24 +25,19 @@
                   }
                 }
               },
-              "then": {
-                "type": "sequence",
-                "arguments": {
-                  "do": [
-                    {
-                      "type": "telegram_send_message",
-                      "arguments": {
-                        "botId": "error_bot",
-                        "message": "Exchange info error: ${__sequenceContext__.exchangeInfo.error.message}"
-                      }
-                    },
-                    {
-                      "type": "stop_sequence",
-                      "arguments": {}
-                    }
-                  ]
+              "then": [
+                {
+                  "type": "telegram_send_message",
+                  "arguments": {
+                    "botId": "error_bot",
+                    "message": "Exchange info error: ${__sequenceContext__.exchangeInfo.error.message}"
+                  }
+                },
+                {
+                  "type": "stop_sequence",
+                  "arguments": {}
                 }
-              }
+              ]
             }
           },
           {

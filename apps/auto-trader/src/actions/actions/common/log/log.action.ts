@@ -81,7 +81,4 @@ export default async function log(
     if (this.ruleLogsService) {
         await this.ruleLogsService.publishLog(entry);
     }
-
-    // Always output to console for visibility
-    console.log(`[${level}] ${renderedMessage}`);
 }
