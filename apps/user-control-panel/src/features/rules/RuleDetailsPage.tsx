@@ -2,15 +2,24 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { useRules, Rule } from "../../app/contexts/RulesContext";
+import { useAuth } from "../../app/contexts/AuthContext";
 import { JsonEditorField } from "../../shared/ui/forms/JsonEditorField";
 import { NotFound } from "../notFound/NotFound";
+import { useRuleLogs } from "./hooks/useRuleLogs";
+import { LogsPanel } from "./components/LogsPanel";
 
 export function RuleDetailsPage() {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
 	const { getRuleById } = useRules();
+	const { token } = useAuth();
 	const [rule, setRule] = useState<Rule | null>(null);
 	const [loading, setLoading] = useState(true);
+
+	const { logs, isConnected, isReconnecting, error } = useRuleLogs({
+		ruleId: id ?? '',
+		token,
+	});
 
 	useEffect(() => {
     const loadRule = async () => {
@@ -57,7 +66,7 @@ export function RuleDetailsPage() {
 			</p>
 			</section>
 
-			<section>
+			<section className="mb-8">
 			<h3 className="block text-body-md font-medium text-text-secondary mb-2">Rule Body:</h3>
 			<JsonEditorField
 				label=""
@@ -65,6 +74,16 @@ export function RuleDetailsPage() {
 				disabled
 				value={rule.ruleBody || rule}
 				mode="view"
+			/>
+			</section>
+
+			<section>
+			<h3 className="block text-body-md font-medium text-text-secondary mb-2">Execution Logs:</h3>
+			<LogsPanel
+				logs={logs}
+				isConnected={isConnected}
+				isReconnecting={isReconnecting}
+				error={error}
 			/>
 			</section>
 		</div>
