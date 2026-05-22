@@ -1,5 +1,5 @@
 import React from "react";
-import mapValues from "lodash/mapValues";
+import { mapValues } from "lodash";
 import {shallowEqual} from "./stuff";
 
 const getReactContainerType = (el: any) => {

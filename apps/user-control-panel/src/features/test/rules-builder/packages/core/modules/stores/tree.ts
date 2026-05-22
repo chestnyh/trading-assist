@@ -20,8 +20,7 @@ import {deepEqual, getOpCardinality, applyToJS} from "../utils/stuff";
 import {validateValue, validateRange} from "../utils/validation";
 import {getNewValueForFieldOp} from "../utils/getNewValueForFieldOp";
 import {translateValidation} from "../i18n";
-import omit from "lodash/omit";
-import mapValues from "lodash/mapValues";
+import { omit, mapValues } from "lodash";
 import {setFunc, setArgValue, setArgValueSrc, setArgValueAsyncListValues} from "../utils/funcUtils";
 
 

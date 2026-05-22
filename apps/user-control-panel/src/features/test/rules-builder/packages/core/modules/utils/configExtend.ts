@@ -1,5 +1,5 @@
 import uuid from "./uuid";
-import mergeWith from "lodash/mergeWith";
+import { mergeWith } from "lodash";
 import {settings as defaultSettings} from "../config/default";
 import moment from "moment";
 import {mergeArraysSmart, logger, deepFreeze, mergeCustomizerNoArrays, shallowCopy, omit} from "./stuff";

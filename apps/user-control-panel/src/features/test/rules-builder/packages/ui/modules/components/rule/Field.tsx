@@ -3,8 +3,7 @@ import { Utils } from "../../../../core/modules";
 import PropTypes from "prop-types";
 import {truncateString} from "../../utils/stuff";
 import {useOnPropsChanged} from "../../utils/reactUtils";
-import last from "lodash/last";
-import keys from "lodash/keys";
+import { last, keys } from "lodash";
 const {getFieldPathLabels} = Utils.RuleUtils;
 const {getFieldConfig, getFieldParts, getFieldPathParts} = Utils.ConfigUtils;
 

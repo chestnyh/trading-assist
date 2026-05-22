@@ -1,6 +1,6 @@
 import React from "react";
 import { Utils } from "../../../../../../core/modules";
-import omit from "lodash/omit";
+import { omit } from "lodash";
 const { mapListValues } = Utils.ListUtils;
 
 interface VanillaMultiSelectProps {

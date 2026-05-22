@@ -4,7 +4,7 @@ import {
   isFieldDescendantOfField, _getFromConfigCache, _saveToConfigCache, _getWidgetsAndSrcsForFieldOp, filterValueSourcesForField,
 } from "./configUtils";
 import {isObject} from "./stuff";
-import last from "lodash/last";
+import { last } from "lodash";
 
 
 

@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import { Utils } from "../../../../core/modules";
 import PropTypes from "prop-types";
-import keys from "lodash/keys";
-import pickBy from "lodash/pickBy";
-import mapValues from "lodash/mapValues";
+import { keys, pickBy, mapValues } from "lodash";
 import {useOnPropsChanged, pureShouldComponentUpdate, liteShouldComponentUpdate} from "../../utils/reactUtils";
 const {getFieldConfig, getOperatorConfig} = Utils.ConfigUtils;
 

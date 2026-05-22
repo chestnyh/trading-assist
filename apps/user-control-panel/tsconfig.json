@@ -9,7 +9,8 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "lodash/*": ["../../node_modules/@types/lodash/*"]
+      "lodash/*": ["../../node_modules/lodash/*"],
+      "react-number-format": ["../../node_modules/react-number-format"]
     }
   },
   "files": [],

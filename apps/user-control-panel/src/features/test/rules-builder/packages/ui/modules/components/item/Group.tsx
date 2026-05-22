@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Utils } from "../../../../core/modules";
-import startsWith from "lodash/startsWith";
+import { startsWith } from "lodash";
 import GroupContainer from "../containers/GroupContainer";
 import Draggable from "../containers/Draggable";
 import classNames from "classnames";

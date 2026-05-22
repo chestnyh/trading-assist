@@ -1,4 +1,4 @@
-import pick from "lodash/pick";
+import { pick } from "lodash";
 import {widgetDefKeysToOmit, omit} from "./stuff";
 
 export const _widgetDefKeysToOmit = widgetDefKeysToOmit; // for ui

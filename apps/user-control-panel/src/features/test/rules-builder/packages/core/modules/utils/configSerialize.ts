@@ -1,5 +1,4 @@
-import merge from "lodash/merge";
-import pick from "lodash/pick";
+import { merge, pick } from "lodash";
 import {isJsonLogic, isJSX, isDirtyJSX, cleanJSX, shallowEqual, isObject, hasSafeOwnProperty} from "./stuff";
 import clone from "clone";
 // @ts-ignore

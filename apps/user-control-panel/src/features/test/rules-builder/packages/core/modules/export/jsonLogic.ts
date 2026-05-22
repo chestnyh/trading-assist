@@ -6,7 +6,7 @@ import { extendConfig } from "../utils/configExtend";
 import {formatFieldName, completeValue, getOneChildOrDescendant} from "../utils/ruleUtils";
 import {defaultConjunction} from "../utils/defaultUtils";
 import {List, Map} from "immutable";
-import pick from "lodash/pick";
+import { pick } from "lodash";
 
 // http://jsonlogic.com/
 

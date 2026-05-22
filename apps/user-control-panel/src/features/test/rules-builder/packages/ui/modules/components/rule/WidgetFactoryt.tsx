@@ -1,6 +1,6 @@
 import React, { useMemo, memo } from "react";
 import { Utils } from "../../../../core/modules";
-import omit from "lodash/omit";
+import { omit } from "lodash";
 const { getTitleInListValues } = Utils.ListUtils;
 const { _widgetDefKeysToOmit } = Utils.ConfigUtils;
 const { _fixImmutableValue, isImmutable } = Utils.TreeUtils;

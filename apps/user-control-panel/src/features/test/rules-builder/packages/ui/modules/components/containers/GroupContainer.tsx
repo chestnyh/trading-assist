@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Utils } from "../../../../core/modules";
-import mapValues from "lodash/mapValues";
+import { mapValues } from "lodash";
 import context from "../../stores/context";
 import {pureShouldComponentUpdate, useOnPropsChanged} from "../../utils/reactUtils";
 import classNames from "classnames";

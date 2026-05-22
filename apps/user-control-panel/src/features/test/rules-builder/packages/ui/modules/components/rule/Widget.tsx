@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { Utils } from "../../../../core/modules";
 import PropTypes from "prop-types";
-import range from "lodash/range";
+import { range } from "lodash";
 import {getOpCardinality} from "../../utils/stuff";
 import {useOnPropsChanged} from "../../utils/reactUtils";
-import pick from "lodash/pick";
+import { pick } from "lodash";
 import WidgetFactory from "./WidgetFactoryt";
 import classNames from "classnames";
 import {Col, getWidgetId, getRenderFromConfig} from "../utils";

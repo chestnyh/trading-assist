@@ -1,4 +1,4 @@
-import pick from "lodash/pick";
+import { pick } from "lodash";
 import { configKeys } from "./configUtils";
 
 let memoId = 0;
