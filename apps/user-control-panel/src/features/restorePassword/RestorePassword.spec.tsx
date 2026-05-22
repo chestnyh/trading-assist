@@ -452,7 +452,7 @@ describe('RestorePassword', () => {
             await user.click(submitButton);
 
             await waitFor(() => {
-                expect(screen.getByText(/invalid or expired code/i)).toBeInTheDocument();
+                expect(screen.getAllByText(/invalid or expired code/i).length).toBeGreaterThan(0);
             }, { timeout: 3000 });
         });
 
@@ -509,7 +509,7 @@ describe('RestorePassword', () => {
             await user.click(submitButton);
 
             await waitFor(() => {
-                expect(screen.getByText(/invalid or expired code/i)).toBeInTheDocument();
+                expect(screen.getAllByText(/invalid or expired code/i).length).toBeGreaterThan(0);
             }, { timeout: 3000 });
 
             // Change the value - this should clear the error
@@ -517,7 +517,7 @@ describe('RestorePassword', () => {
             await user.type(codeInput, '123456');
 
             await waitFor(() => {
-                expect(screen.queryByText(/invalid or expired code/i)).toBeNull();
+                expect(screen.queryAllByText(/invalid or expired code/i).length).toBe(0);
             }, { timeout: 3000 });
         });
 

@@ -40,13 +40,19 @@ enum TradingPlatform {
   Other
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model User {
   id    Int     @default(autoincrement()) @id
   nickname String @unique
   email String  @unique
-  password String 
+  password String
   firstName String
   lastName String
+  role Role @default(USER)
   isEmailVerified Boolean @default(false)
   emailVerificationToken String
   emailVerificationCode String
@@ -55,9 +61,55 @@ model User {
   riskTolerance RiskTolerance?
   preferredTradingPlatforms TradingPlatform[] @default([])
   rules UserRules[]
-  telegramSettings UserTelegramSettings[]
-
   passwordResets PasswordReset[]
+  ruleSettings UserRuleSettings[]
+  tags         RuleSettingsTags[]
+}
+
+model ExternalServices {
+  id Int @id @default(autoincrement())
+  name String @unique
+  code String @unique
+  logoUrl String?
+  fieldsSchema Json @default("[]")
+  userRuleSettings UserRuleSettings[]
+}
+
+model UserRuleSettings {
+  id Int @id @default(autoincrement())
+  name String
+  code String @unique
+  description String?
+
+  authorId Int
+  author User @relation(fields: [authorId], references: [id])
+
+  externalServiceId Int
+  externalService ExternalServices @relation(fields: [externalServiceId], references: [id])
+
+  configuration Json @default("{}")
+  tags RuleSettingsToRuleSettingsTags[]
+
+  @@unique([authorId, code])
+}
+
+model RuleSettingsTags {
+  id Int @id @default(autoincrement())
+  name String
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  rules RuleSettingsToRuleSettingsTags[]
+  @@unique([name, userId])
+}
+
+model RuleSettingsToRuleSettingsTags {
+  ruleSettingId Int
+  ruleSetting UserRuleSettings @relation(fields: [ruleSettingId], references: [id], onDelete: Cascade)
+
+  ruleSettingTagId Int
+  ruleSettingTag RuleSettingsTags @relation(fields: [ruleSettingTagId], references: [id], onDelete: Cascade)
+
+  @@id([ruleSettingId, ruleSettingTagId])
 }
 
 model PasswordReset {
@@ -84,11 +136,20 @@ model UserRules {
   ruleBody  Json @default("{}")
 }
 
-model UserTelegramSettings {
-  id    Int     @default(autoincrement()) @id
-  name String
-  description String
-  apiToken String
-  userId Int
-  user User @relation(fields: [userId], references: [id])
+model OutboxMessage {
+  id           Int      @id @default(autoincrement())
+  topic        String
+  producer     String
+  payload      Json
+
+  createdAt    DateTime @default(now())
+  publishedAt  DateTime?
+
+  attempts     Int      @default(0)
+  nextAttemptAt DateTime?
+  lastError    String?
+
+  @@index([publishedAt])
+  @@index([nextAttemptAt])
+  @@index([createdAt])
 }

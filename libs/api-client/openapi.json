@@ -102,6 +102,120 @@
         ]
       }
     },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset code sent (or would be sent if user exists)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForgotPasswordResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid email format"
+          }
+        },
+        "summary": "Request password reset - sends verification code to email",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/verify-password-reset": {
+      "post": {
+        "operationId": "AuthController_verifyPasswordReset",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyPasswordResetDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification code verified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyPasswordResetResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid verification code (with remaining attempts count)"
+          },
+          "401": {
+            "description": "Invalid or expired token"
+          },
+          "429": {
+            "description": "Maximum attempts exceeded - token invalidated"
+          }
+        },
+        "summary": "Verify password reset code",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResetPasswordResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid password or token not verified"
+          },
+          "401": {
+            "description": "Invalid or expired token"
+          }
+        },
+        "summary": "Reset password with verified token",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
     "/api/v1/rules": {
       "post": {
         "operationId": "RulesController_create",
@@ -146,17 +260,31 @@
       },
       "get": {
         "operationId": "RulesController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Rules retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RuleResponseDto"
-                  }
+                  "$ref": "#/components/schemas/PaginatedRulesDto"
                 }
               }
             }
@@ -170,7 +298,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get all rules for the authenticated user",
+        "summary": "Get all rules for the authenticated user with pagination",
         "tags": [
           "rules"
         ]
@@ -306,6 +434,377 @@
           "rules"
         ]
       }
+    },
+    "/api/v1/rules-settings": {
+      "post": {
+        "operationId": "RulesSettingsController_createSetting",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRuleSettingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Setting created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleSettingResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new universal rule setting",
+        "tags": [
+          "rules-settings"
+        ]
+      },
+      "get": {
+        "operationId": "RulesSettingsController_findAllSettings",
+        "parameters": [
+          {
+            "name": "externalServiceId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by External Service ID",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of rule settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RuleSettingResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all universal rule settings for user",
+        "tags": [
+          "rules-settings"
+        ]
+      }
+    },
+    "/api/v1/rules-settings/{id}": {
+      "patch": {
+        "operationId": "RulesSettingsController_updateSetting",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRuleSettingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Setting updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleSettingResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a rule setting",
+        "tags": [
+          "rules-settings"
+        ]
+      },
+      "delete": {
+        "operationId": "RulesSettingsController_removeSetting",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Setting deleted successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a rule setting",
+        "tags": [
+          "rules-settings"
+        ]
+      }
+    },
+    "/api/v1/rules-settings/telegram-chat-id/{id}": {
+      "get": {
+        "operationId": "RulesSettingsController_getTelegramChatId",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Rule setting ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Telegram chat ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramChatIdResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Telegram chat ID for a rule setting",
+        "tags": [
+          "rules-settings"
+        ]
+      }
+    },
+    "/api/v1/telegram-chat-id/{id}": {
+      "get": {
+        "operationId": "TelegramChatIdController_getTelegramChatId",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Rule setting ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Telegram chat ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramChatIdResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Telegram chat ID for a rule setting",
+        "tags": [
+          "rules-settings"
+        ]
+      }
+    },
+    "/api/v1/tags": {
+      "post": {
+        "operationId": "RulesSettingsTagsController_createTag",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTagDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The tag has been successfully created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new tag for rule settings",
+        "tags": [
+          "tags"
+        ]
+      },
+      "get": {
+        "operationId": "RulesSettingsTagsController_findAllTags",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return all tags for the current user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TagResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all user tags",
+        "tags": [
+          "tags"
+        ]
+      }
+    },
+    "/api/v1/tags/{id}": {
+      "delete": {
+        "operationId": "RulesSettingsTagsController_removeTag",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tag has been successfully deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a tag",
+        "tags": [
+          "tags"
+        ]
+      }
+    },
+    "/api/v1/external-services": {
+      "get": {
+        "operationId": "ExternalServicesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of external services",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExternalServiceResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all external services",
+        "tags": [
+          "external-services"
+        ]
+      }
     }
   },
   "info": {
@@ -322,6 +821,14 @@
     {
       "name": "users",
       "description": "User management endpoints"
+    },
+    {
+      "name": "rules-settings",
+      "description": "Endpoints for managing individual user trading rule configurations"
+    },
+    {
+      "name": "tags",
+      "description": "Endpoints for managing tags associated with trading rules"
     }
   ],
   "servers": [],
@@ -538,6 +1045,123 @@
           "success"
         ]
       },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "example": "user@example.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ForgotPasswordResponseDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Password reset token required for subsequent steps",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "message": {
+            "type": "string",
+            "description": "Success message",
+            "example": "If an account with this email exists, a password reset code has been sent to your email."
+          }
+        },
+        "required": [
+          "token",
+          "message"
+        ]
+      },
+      "VerifyPasswordResetDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "6-digit verification code sent to user email",
+            "example": "123456",
+            "minLength": 6,
+            "maxLength": 6
+          },
+          "token": {
+            "type": "string",
+            "description": "Password reset token received from forgot-password endpoint",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          }
+        },
+        "required": [
+          "code",
+          "token"
+        ]
+      },
+      "VerifyPasswordResetResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Success message",
+            "example": "Verification code verified successfully"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if verification was successful",
+            "example": true
+          },
+          "remainingAttempts": {
+            "type": "number",
+            "description": "Remaining attempts before the token is invalidated",
+            "example": 3,
+            "nullable": true
+          }
+        },
+        "required": [
+          "message",
+          "success"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "description": "New password",
+            "example": "NewSecurePassword123!",
+            "minLength": 8
+          },
+          "token": {
+            "type": "string",
+            "description": "Password reset token received from forgot-password endpoint",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          }
+        },
+        "required": [
+          "password",
+          "token"
+        ]
+      },
+      "ResetPasswordResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Success message",
+            "example": "Password has been reset successfully. Please sign in with your new password."
+          },
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if password reset was successful",
+            "example": true
+          }
+        },
+        "required": [
+          "message",
+          "success"
+        ]
+      },
       "CreateRuleDto": {
         "type": "object",
         "properties": {
@@ -610,6 +1234,27 @@
           "authorId"
         ]
       },
+      "PaginatedRulesDto": {
+        "type": "object",
+        "properties": {
+          "rules": {
+            "description": "Array of rules for the requested page",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 120,
+            "description": "Total number of rules available"
+          }
+        },
+        "required": [
+          "rules",
+          "total"
+        ]
+      },
       "UpdateRuleDto": {
         "type": "object",
         "properties": {
@@ -634,6 +1279,237 @@
             }
           }
         }
+      },
+      "CreateUserRuleSettingDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Binance Bot"
+          },
+          "code": {
+            "type": "string",
+            "example": "BINANCE_MAIN_01"
+          },
+          "description": {
+            "type": "string",
+            "example": "Rule for spot trading"
+          },
+          "externalServiceId": {
+            "type": "number",
+            "example": 1
+          },
+          "tags": {
+            "example": [
+              "crypto",
+              "binance"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "configuration": {
+            "type": "object",
+            "example": {
+              "ApiKey": "...",
+              "ApiSecret": "...",
+              "BaseUrl": "..."
+            }
+          }
+        },
+        "required": [
+          "name",
+          "code",
+          "externalServiceId",
+          "configuration"
+        ]
+      },
+      "RuleSettingResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "BTC Price Alert"
+          },
+          "code": {
+            "type": "string",
+            "example": "BTC_ALERT_01"
+          },
+          "description": {
+            "type": "string",
+            "example": "Sends a Telegram alert when BTC price drops below $50,000"
+          },
+          "configuration": {
+            "type": "object",
+            "example": {
+              "type": "log",
+              "arguments": {
+                "message": "This message will be logged"
+              }
+            }
+          },
+          "authorId": {
+            "type": "number",
+            "example": 1
+          },
+          "externalServiceId": {
+            "type": "number",
+            "example": 1
+          },
+          "tags": {
+            "example": [
+              "crypto",
+              "binance"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "code",
+          "description",
+          "configuration",
+          "authorId",
+          "externalServiceId",
+          "tags"
+        ]
+      },
+      "UpdateUserRuleSettingDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "My Binance Bot"
+          },
+          "code": {
+            "type": "string",
+            "example": "BINANCE_MAIN_01"
+          },
+          "description": {
+            "type": "string",
+            "example": "Rule for spot trading"
+          },
+          "externalServiceId": {
+            "type": "number",
+            "example": 1
+          },
+          "tags": {
+            "example": [
+              "crypto",
+              "binance"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "configuration": {
+            "type": "object",
+            "example": {
+              "ApiKey": "...",
+              "ApiSecret": "...",
+              "BaseUrl": "..."
+            }
+          }
+        }
+      },
+      "TelegramChatIdResponseDto": {
+        "type": "object",
+        "properties": {
+          "chatId": {
+            "type": "number",
+            "example": 1234567890
+          }
+        },
+        "required": [
+          "chatId"
+        ]
+      },
+      "CreateTagDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Production"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "TagResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Production"
+          },
+          "userId": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "userId"
+        ]
+      },
+      "ExternalServiceResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Binance"
+          },
+          "code": {
+            "type": "string",
+            "example": "binance"
+          },
+          "logoUrl": {
+            "type": "string",
+            "example": "/logos/binance.svg",
+            "nullable": true
+          },
+          "fieldsSchema": {
+            "example": [
+              {
+                "key": "apiKey",
+                "label": "ApiKey",
+                "required": true,
+                "exactLength": 32,
+                "placeholder": "Insert api key…"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "code",
+          "fieldsSchema"
+        ]
       }
     }
   }

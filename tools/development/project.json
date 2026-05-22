@@ -1,0 +1,39 @@
+{
+  "name": "development",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/development/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "check-env-file": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -r tsconfig-paths/register --project tools/development/tsconfig.app.json tools/development/scripts/check-env-file.ts"
+      }
+    },
+    "create-volume-folder": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -r tsconfig-paths/register --project tools/development/tsconfig.app.json tools/development/scripts/create-volume-folder.ts"
+      }
+    },
+    "external-up": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -r tsconfig-paths/register --project tools/development/tsconfig.app.json tools/development/scripts/external-up.ts"
+      }
+    },
+    "source-config-and-run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -r tsconfig-paths/register --project tools/development/tsconfig.app.json tools/development/scripts/source-config-and-run.ts"
+      }
+    },
+    "sleep": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node -r tsconfig-paths/register --project tools/development/tsconfig.app.json tools/development/scripts/sleep.ts"
+      }
+    }
+  }
+}

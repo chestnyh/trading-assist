@@ -92,6 +92,8 @@ export interface LoginDto {
    * @minLength 6
    */
   password: string;
+  /** Remember me option to stay logged in */
+  rememberMe?: boolean;
 }
 
 /**
@@ -121,6 +123,58 @@ export interface VerifyEmailResponseDto {
   /** Success message */
   message: string;
   /** Indicates if verification was successful */
+  success: boolean;
+}
+
+export interface ForgotPasswordDto {
+  /** User email address */
+  email: string;
+}
+
+export interface ForgotPasswordResponseDto {
+  /** Password reset token required for subsequent steps */
+  token: string;
+  /** Success message */
+  message: string;
+}
+
+export interface VerifyPasswordResetDto {
+  /**
+   * 6-digit verification code sent to user email
+   * @minLength 6
+   * @maxLength 6
+   */
+  code: string;
+  /** Password reset token received from forgot-password endpoint */
+  token: string;
+}
+
+export interface VerifyPasswordResetResponseDto {
+  /** Success message */
+  message: string;
+  /** Indicates if verification was successful */
+  success: boolean;
+  /**
+   * Remaining attempts before the token is invalidated
+   * @nullable
+   */
+  remainingAttempts?: number | null;
+}
+
+export interface ResetPasswordDto {
+  /**
+   * New password
+   * @minLength 8
+   */
+  password: string;
+  /** Password reset token received from forgot-password endpoint */
+  token: string;
+}
+
+export interface ResetPasswordResponseDto {
+  /** Success message */
+  message: string;
+  /** Indicates if password reset was successful */
   success: boolean;
 }
 
@@ -156,6 +210,13 @@ export interface RuleResponseDto {
   authorId: number;
 }
 
+export interface PaginatedRulesDto {
+  /** Array of rules for the requested page */
+  rules: RuleResponseDto[];
+  /** Total number of rules available */
+  total: number;
+}
+
 /**
  * Rule configuration as JSON object
  */
@@ -169,6 +230,88 @@ export interface UpdateRuleDto {
   /** Rule configuration as JSON object */
   ruleBody?: UpdateRuleDtoRuleBody;
 }
+
+export type CreateUserRuleSettingDtoConfiguration = { [key: string]: unknown };
+
+export interface CreateUserRuleSettingDto {
+  name: string;
+  code: string;
+  description?: string;
+  externalServiceId: number;
+  tags?: string[];
+  configuration: CreateUserRuleSettingDtoConfiguration;
+}
+
+export type RuleSettingResponseDtoConfiguration = { [key: string]: unknown };
+
+export interface RuleSettingResponseDto {
+  id: number;
+  name: string;
+  code: string;
+  description: string;
+  configuration: RuleSettingResponseDtoConfiguration;
+  authorId: number;
+  externalServiceId: number;
+  tags: string[];
+}
+
+export type UpdateUserRuleSettingDtoConfiguration = { [key: string]: unknown };
+
+export interface UpdateUserRuleSettingDto {
+  name?: string;
+  code?: string;
+  description?: string;
+  externalServiceId?: number;
+  tags?: string[];
+  configuration?: UpdateUserRuleSettingDtoConfiguration;
+}
+
+export interface TelegramChatIdResponseDto {
+  chatId: number;
+}
+
+export interface CreateTagDto {
+  name: string;
+}
+
+export interface TagResponseDto {
+  id: number;
+  name: string;
+  userId: number;
+}
+
+export type ExternalServiceResponseDtoFieldsSchemaItem = {
+  [key: string]: unknown;
+};
+
+export interface ExternalServiceResponseDto {
+  id: number;
+  name: string;
+  code: string;
+  /** @nullable */
+  logoUrl?: string | null;
+  fieldsSchema: ExternalServiceResponseDtoFieldsSchemaItem[];
+}
+
+export type RulesControllerFindAllParams = {
+  page: number;
+  limit: number;
+};
+
+export type RulesSettingsControllerFindAllSettingsParams = {
+  /**
+   * Filter by External Service ID
+   */
+  externalServiceId?: number;
+  /**
+   * Page number
+   */
+  page?: number;
+  /**
+   * Items per page
+   */
+  limit?: number;
+};
 
 /**
  * @summary Create a user
@@ -212,6 +355,11 @@ export type authControllerLoginResponse200 = {
   status: 200;
 };
 
+export type authControllerLoginResponse400 = {
+  data: void;
+  status: 400;
+};
+
 export type authControllerLoginResponse401 = {
   data: void;
   status: 401;
@@ -221,10 +369,12 @@ export type authControllerLoginResponseSuccess =
   authControllerLoginResponse200 & {
     headers: Headers;
   };
-export type authControllerLoginResponseError =
-  authControllerLoginResponse401 & {
-    headers: Headers;
-  };
+export type authControllerLoginResponseError = (
+  | authControllerLoginResponse400
+  | authControllerLoginResponse401
+) & {
+  headers: Headers;
+};
 
 export type authControllerLoginResponse =
   | authControllerLoginResponseSuccess
@@ -302,6 +452,161 @@ export const authControllerVerifyEmail = async (
 };
 
 /**
+ * @summary Request password reset - sends verification code to email
+ */
+export type authControllerForgotPasswordResponse200 = {
+  data: ForgotPasswordResponseDto;
+  status: 200;
+};
+
+export type authControllerForgotPasswordResponse400 = {
+  data: void;
+  status: 400;
+};
+
+export type authControllerForgotPasswordResponseSuccess =
+  authControllerForgotPasswordResponse200 & {
+    headers: Headers;
+  };
+export type authControllerForgotPasswordResponseError =
+  authControllerForgotPasswordResponse400 & {
+    headers: Headers;
+  };
+
+export type authControllerForgotPasswordResponse =
+  | authControllerForgotPasswordResponseSuccess
+  | authControllerForgotPasswordResponseError;
+
+export const getAuthControllerForgotPasswordUrl = () => {
+  return `/api/v1/auth/forgot-password`;
+};
+
+export const authControllerForgotPassword = async (
+  forgotPasswordDto: ForgotPasswordDto,
+  options?: RequestInit
+): Promise<authControllerForgotPasswordResponse> => {
+  return customInstance<authControllerForgotPasswordResponse>(
+    getAuthControllerForgotPasswordUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(forgotPasswordDto),
+    }
+  );
+};
+
+/**
+ * @summary Verify password reset code
+ */
+export type authControllerVerifyPasswordResetResponse200 = {
+  data: VerifyPasswordResetResponseDto;
+  status: 200;
+};
+
+export type authControllerVerifyPasswordResetResponse400 = {
+  data: void;
+  status: 400;
+};
+
+export type authControllerVerifyPasswordResetResponse401 = {
+  data: void;
+  status: 401;
+};
+
+export type authControllerVerifyPasswordResetResponse429 = {
+  data: void;
+  status: 429;
+};
+
+export type authControllerVerifyPasswordResetResponseSuccess =
+  authControllerVerifyPasswordResetResponse200 & {
+    headers: Headers;
+  };
+export type authControllerVerifyPasswordResetResponseError = (
+  | authControllerVerifyPasswordResetResponse400
+  | authControllerVerifyPasswordResetResponse401
+  | authControllerVerifyPasswordResetResponse429
+) & {
+  headers: Headers;
+};
+
+export type authControllerVerifyPasswordResetResponse =
+  | authControllerVerifyPasswordResetResponseSuccess
+  | authControllerVerifyPasswordResetResponseError;
+
+export const getAuthControllerVerifyPasswordResetUrl = () => {
+  return `/api/v1/auth/verify-password-reset`;
+};
+
+export const authControllerVerifyPasswordReset = async (
+  verifyPasswordResetDto: VerifyPasswordResetDto,
+  options?: RequestInit
+): Promise<authControllerVerifyPasswordResetResponse> => {
+  return customInstance<authControllerVerifyPasswordResetResponse>(
+    getAuthControllerVerifyPasswordResetUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(verifyPasswordResetDto),
+    }
+  );
+};
+
+/**
+ * @summary Reset password with verified token
+ */
+export type authControllerResetPasswordResponse200 = {
+  data: ResetPasswordResponseDto;
+  status: 200;
+};
+
+export type authControllerResetPasswordResponse400 = {
+  data: void;
+  status: 400;
+};
+
+export type authControllerResetPasswordResponse401 = {
+  data: void;
+  status: 401;
+};
+
+export type authControllerResetPasswordResponseSuccess =
+  authControllerResetPasswordResponse200 & {
+    headers: Headers;
+  };
+export type authControllerResetPasswordResponseError = (
+  | authControllerResetPasswordResponse400
+  | authControllerResetPasswordResponse401
+) & {
+  headers: Headers;
+};
+
+export type authControllerResetPasswordResponse =
+  | authControllerResetPasswordResponseSuccess
+  | authControllerResetPasswordResponseError;
+
+export const getAuthControllerResetPasswordUrl = () => {
+  return `/api/v1/auth/reset-password`;
+};
+
+export const authControllerResetPassword = async (
+  resetPasswordDto: ResetPasswordDto,
+  options?: RequestInit
+): Promise<authControllerResetPasswordResponse> => {
+  return customInstance<authControllerResetPasswordResponse>(
+    getAuthControllerResetPasswordUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(resetPasswordDto),
+    }
+  );
+};
+
+/**
  * @summary Create a new trading rule
  */
 export type rulesControllerCreateResponse201 = {
@@ -354,10 +659,10 @@ export const rulesControllerCreate = async (
 };
 
 /**
- * @summary Get all rules for the authenticated user
+ * @summary Get all rules for the authenticated user with pagination
  */
 export type rulesControllerFindAllResponse200 = {
-  data: RuleResponseDto[];
+  data: PaginatedRulesDto;
   status: 200;
 };
 
@@ -379,15 +684,30 @@ export type rulesControllerFindAllResponse =
   | rulesControllerFindAllResponseSuccess
   | rulesControllerFindAllResponseError;
 
-export const getRulesControllerFindAllUrl = () => {
-  return `/api/v1/rules`;
+export const getRulesControllerFindAllUrl = (
+  params: RulesControllerFindAllParams
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/rules?${stringifiedParams}`
+    : `/api/v1/rules`;
 };
 
 export const rulesControllerFindAll = async (
+  params: RulesControllerFindAllParams,
   options?: RequestInit
 ): Promise<rulesControllerFindAllResponse> => {
   return customInstance<rulesControllerFindAllResponse>(
-    getRulesControllerFindAllUrl(),
+    getRulesControllerFindAllUrl(params),
     {
       ...options,
       method: 'GET',
@@ -550,6 +870,365 @@ export const rulesControllerRemove = async (
     {
       ...options,
       method: 'DELETE',
+    }
+  );
+};
+
+/**
+ * @summary Create a new universal rule setting
+ */
+export type rulesSettingsControllerCreateSettingResponse201 = {
+  data: RuleSettingResponseDto;
+  status: 201;
+};
+
+export type rulesSettingsControllerCreateSettingResponseSuccess =
+  rulesSettingsControllerCreateSettingResponse201 & {
+    headers: Headers;
+  };
+export type rulesSettingsControllerCreateSettingResponse =
+  rulesSettingsControllerCreateSettingResponseSuccess;
+
+export const getRulesSettingsControllerCreateSettingUrl = () => {
+  return `/api/v1/rules-settings`;
+};
+
+export const rulesSettingsControllerCreateSetting = async (
+  createUserRuleSettingDto: CreateUserRuleSettingDto,
+  options?: RequestInit
+): Promise<rulesSettingsControllerCreateSettingResponse> => {
+  return customInstance<rulesSettingsControllerCreateSettingResponse>(
+    getRulesSettingsControllerCreateSettingUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(createUserRuleSettingDto),
+    }
+  );
+};
+
+/**
+ * @summary Get all universal rule settings for user
+ */
+export type rulesSettingsControllerFindAllSettingsResponse200 = {
+  data: RuleSettingResponseDto[];
+  status: 200;
+};
+
+export type rulesSettingsControllerFindAllSettingsResponseSuccess =
+  rulesSettingsControllerFindAllSettingsResponse200 & {
+    headers: Headers;
+  };
+export type rulesSettingsControllerFindAllSettingsResponse =
+  rulesSettingsControllerFindAllSettingsResponseSuccess;
+
+export const getRulesSettingsControllerFindAllSettingsUrl = (
+  params?: RulesSettingsControllerFindAllSettingsParams
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/rules-settings?${stringifiedParams}`
+    : `/api/v1/rules-settings`;
+};
+
+export const rulesSettingsControllerFindAllSettings = async (
+  params?: RulesSettingsControllerFindAllSettingsParams,
+  options?: RequestInit
+): Promise<rulesSettingsControllerFindAllSettingsResponse> => {
+  return customInstance<rulesSettingsControllerFindAllSettingsResponse>(
+    getRulesSettingsControllerFindAllSettingsUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    }
+  );
+};
+
+/**
+ * @summary Update a rule setting
+ */
+export type rulesSettingsControllerUpdateSettingResponse200 = {
+  data: RuleSettingResponseDto;
+  status: 200;
+};
+
+export type rulesSettingsControllerUpdateSettingResponseSuccess =
+  rulesSettingsControllerUpdateSettingResponse200 & {
+    headers: Headers;
+  };
+export type rulesSettingsControllerUpdateSettingResponse =
+  rulesSettingsControllerUpdateSettingResponseSuccess;
+
+export const getRulesSettingsControllerUpdateSettingUrl = (id: number) => {
+  return `/api/v1/rules-settings/${id}`;
+};
+
+export const rulesSettingsControllerUpdateSetting = async (
+  id: number,
+  updateUserRuleSettingDto: UpdateUserRuleSettingDto,
+  options?: RequestInit
+): Promise<rulesSettingsControllerUpdateSettingResponse> => {
+  return customInstance<rulesSettingsControllerUpdateSettingResponse>(
+    getRulesSettingsControllerUpdateSettingUrl(id),
+    {
+      ...options,
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(updateUserRuleSettingDto),
+    }
+  );
+};
+
+/**
+ * @summary Delete a rule setting
+ */
+export type rulesSettingsControllerRemoveSettingResponse200 = {
+  data: void;
+  status: 200;
+};
+
+export type rulesSettingsControllerRemoveSettingResponseSuccess =
+  rulesSettingsControllerRemoveSettingResponse200 & {
+    headers: Headers;
+  };
+export type rulesSettingsControllerRemoveSettingResponse =
+  rulesSettingsControllerRemoveSettingResponseSuccess;
+
+export const getRulesSettingsControllerRemoveSettingUrl = (id: number) => {
+  return `/api/v1/rules-settings/${id}`;
+};
+
+export const rulesSettingsControllerRemoveSetting = async (
+  id: number,
+  options?: RequestInit
+): Promise<rulesSettingsControllerRemoveSettingResponse> => {
+  return customInstance<rulesSettingsControllerRemoveSettingResponse>(
+    getRulesSettingsControllerRemoveSettingUrl(id),
+    {
+      ...options,
+      method: 'DELETE',
+    }
+  );
+};
+
+/**
+ * @summary Get Telegram chat ID for a rule setting
+ */
+export type rulesSettingsControllerGetTelegramChatIdResponse200 = {
+  data: TelegramChatIdResponseDto;
+  status: 200;
+};
+
+export type rulesSettingsControllerGetTelegramChatIdResponseSuccess =
+  rulesSettingsControllerGetTelegramChatIdResponse200 & {
+    headers: Headers;
+  };
+export type rulesSettingsControllerGetTelegramChatIdResponse =
+  rulesSettingsControllerGetTelegramChatIdResponseSuccess;
+
+export const getRulesSettingsControllerGetTelegramChatIdUrl = (id: number) => {
+  return `/api/v1/rules-settings/telegram-chat-id/${id}`;
+};
+
+export const rulesSettingsControllerGetTelegramChatId = async (
+  id: number,
+  options?: RequestInit
+): Promise<rulesSettingsControllerGetTelegramChatIdResponse> => {
+  return customInstance<rulesSettingsControllerGetTelegramChatIdResponse>(
+    getRulesSettingsControllerGetTelegramChatIdUrl(id),
+    {
+      ...options,
+      method: 'GET',
+    }
+  );
+};
+
+/**
+ * @summary Get Telegram chat ID for a rule setting
+ */
+export type telegramChatIdControllerGetTelegramChatIdResponse200 = {
+  data: TelegramChatIdResponseDto;
+  status: 200;
+};
+
+export type telegramChatIdControllerGetTelegramChatIdResponseSuccess =
+  telegramChatIdControllerGetTelegramChatIdResponse200 & {
+    headers: Headers;
+  };
+export type telegramChatIdControllerGetTelegramChatIdResponse =
+  telegramChatIdControllerGetTelegramChatIdResponseSuccess;
+
+export const getTelegramChatIdControllerGetTelegramChatIdUrl = (id: number) => {
+  return `/api/v1/telegram-chat-id/${id}`;
+};
+
+export const telegramChatIdControllerGetTelegramChatId = async (
+  id: number,
+  options?: RequestInit
+): Promise<telegramChatIdControllerGetTelegramChatIdResponse> => {
+  return customInstance<telegramChatIdControllerGetTelegramChatIdResponse>(
+    getTelegramChatIdControllerGetTelegramChatIdUrl(id),
+    {
+      ...options,
+      method: 'GET',
+    }
+  );
+};
+
+/**
+ * @summary Create a new tag for rule settings
+ */
+export type rulesSettingsTagsControllerCreateTagResponse201 = {
+  data: TagResponseDto;
+  status: 201;
+};
+
+export type rulesSettingsTagsControllerCreateTagResponseSuccess =
+  rulesSettingsTagsControllerCreateTagResponse201 & {
+    headers: Headers;
+  };
+export type rulesSettingsTagsControllerCreateTagResponse =
+  rulesSettingsTagsControllerCreateTagResponseSuccess;
+
+export const getRulesSettingsTagsControllerCreateTagUrl = () => {
+  return `/api/v1/tags`;
+};
+
+export const rulesSettingsTagsControllerCreateTag = async (
+  createTagDto: CreateTagDto,
+  options?: RequestInit
+): Promise<rulesSettingsTagsControllerCreateTagResponse> => {
+  return customInstance<rulesSettingsTagsControllerCreateTagResponse>(
+    getRulesSettingsTagsControllerCreateTagUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+      body: JSON.stringify(createTagDto),
+    }
+  );
+};
+
+/**
+ * @summary Get all user tags
+ */
+export type rulesSettingsTagsControllerFindAllTagsResponse200 = {
+  data: TagResponseDto[];
+  status: 200;
+};
+
+export type rulesSettingsTagsControllerFindAllTagsResponseSuccess =
+  rulesSettingsTagsControllerFindAllTagsResponse200 & {
+    headers: Headers;
+  };
+export type rulesSettingsTagsControllerFindAllTagsResponse =
+  rulesSettingsTagsControllerFindAllTagsResponseSuccess;
+
+export type RulesSettingsTagsControllerFindAllTagsParams = {
+  search?: string;
+  limit?: number;
+};
+
+export const getRulesSettingsTagsControllerFindAllTagsUrl = (
+  params?: RulesSettingsTagsControllerFindAllTagsParams
+) => {
+  const base = `/api/v1/tags`;
+  if (!params) return base;
+
+  const qs = new URLSearchParams();
+  if (typeof params.search === 'string' && params.search.trim()) {
+    qs.set('search', params.search.trim());
+  }
+  if (typeof params.limit === 'number' && Number.isFinite(params.limit)) {
+    qs.set('limit', String(params.limit));
+  }
+
+  const s = qs.toString();
+  return s ? `${base}?${s}` : base;
+};
+
+export const rulesSettingsTagsControllerFindAllTags = async (
+  params?: RulesSettingsTagsControllerFindAllTagsParams,
+  options?: RequestInit
+): Promise<rulesSettingsTagsControllerFindAllTagsResponse> => {
+  return customInstance<rulesSettingsTagsControllerFindAllTagsResponse>(
+    getRulesSettingsTagsControllerFindAllTagsUrl(params),
+    {
+      ...options,
+      method: 'GET',
+    }
+  );
+};
+
+/**
+ * @summary Delete a tag
+ */
+export type rulesSettingsTagsControllerRemoveTagResponse200 = {
+  data: TagResponseDto;
+  status: 200;
+};
+
+export type rulesSettingsTagsControllerRemoveTagResponseSuccess =
+  rulesSettingsTagsControllerRemoveTagResponse200 & {
+    headers: Headers;
+  };
+export type rulesSettingsTagsControllerRemoveTagResponse =
+  rulesSettingsTagsControllerRemoveTagResponseSuccess;
+
+export const getRulesSettingsTagsControllerRemoveTagUrl = (id: number) => {
+  return `/api/v1/tags/${id}`;
+};
+
+export const rulesSettingsTagsControllerRemoveTag = async (
+  id: number,
+  options?: RequestInit
+): Promise<rulesSettingsTagsControllerRemoveTagResponse> => {
+  return customInstance<rulesSettingsTagsControllerRemoveTagResponse>(
+    getRulesSettingsTagsControllerRemoveTagUrl(id),
+    {
+      ...options,
+      method: 'DELETE',
+    }
+  );
+};
+
+/**
+ * @summary Get all external services
+ */
+export type externalServicesControllerFindAllResponse200 = {
+  data: ExternalServiceResponseDto[];
+  status: 200;
+};
+
+export type externalServicesControllerFindAllResponseSuccess =
+  externalServicesControllerFindAllResponse200 & {
+    headers: Headers;
+  };
+export type externalServicesControllerFindAllResponse =
+  externalServicesControllerFindAllResponseSuccess;
+
+export const getExternalServicesControllerFindAllUrl = () => {
+  return `/api/v1/external-services`;
+};
+
+export const externalServicesControllerFindAll = async (
+  options?: RequestInit
+): Promise<externalServicesControllerFindAllResponse> => {
+  return customInstance<externalServicesControllerFindAllResponse>(
+    getExternalServicesControllerFindAllUrl(),
+    {
+      ...options,
+      method: 'GET',
     }
   );
 };

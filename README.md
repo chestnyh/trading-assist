@@ -22,13 +22,20 @@ Key features of the platform include:
 In summary, the platform is designed to be a powerful, and extensible solution for automated trading(or treading helper), adaptable to a wide range of strategies and requirements.
 
 ## Team collaboration services
- - Git repository (Github) - https://github.com/chestnyh/trading-bot
- - Task tracker (Click up) - https://app.clickup.com/90151705756/v/o/s/90157055260
- - Massanger (Slack) - https://app.slack.com/
- - Video conferencing (Google meet) - https://meet.google.com/
+- Git repository (Github) - https://github.com/chestnyh/trading-assist
+- Task tracker (Click up) - https://app.clickup.com/90151705756/v/o/s/90157055260
+- Massanger (Slack) - https://app.slack.com/
+- Video conferencing (Google meet) - https://meet.google.com/
 
 ## Technical stack
- - gitnub
+- gitnub
+- nodejs
+- typescript
+- nx as monorepo
+- nestjs for backend services
+- react for frontend services
+- postgresql as main database
+- microservice architecture 
  - nodejs
  - typescript
  - nx as monorepo
@@ -39,7 +46,7 @@ In summary, the platform is designed to be a powerful, and extensible solution f
 
 ## First time set up for development
 Complete setup guide for getting the trading bot platform running locally. Includes environment configuration, database setup, and service initialization.
-📖 **[View Setup Documentation →](./docs/first-time-set-up-for-development.md)**
+📖 **[View Setup Documentation →](_docs/first-time-set-up-for-development.md)**
 
 ## Documentation
 
@@ -51,5 +58,6 @@ Principle that we want to follow here is keep documentation close to the code. I
 * [Code Organization](_docs/code-orgdanization.md)
 * [Project Commands](_docs/project-commands.md)
 * [Technolody Stack](_docs/technology-stack.md)
+* [Design: Logging For Rules](_docs/features/5-design-logging-for-rules.md)
 * [Services aka Applications](apps/README.md)
 * [Libraries](libs/README.md)

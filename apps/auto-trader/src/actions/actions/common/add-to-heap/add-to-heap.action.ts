@@ -31,14 +31,16 @@ import getValue from '../../../utils/get-value.util';
 export default function add_to_heap(
     args: any,
     {
-        sequenceContext
+        sequenceContext,
+        itemContext,
     },
 ) {
     const { items } = args;
 
     items.forEach(item => {
         const { key, value } = item;
-        const res = getValue(value, { heap: this.heap, sequenceContext });
+        const res = getValue(value, { heap: this.heap, sequenceContext, itemContext });
+
         this.heap.set(key, res);
     });
 } 

@@ -11,6 +11,12 @@ export function TypewriterText({ text, speed = 50, className = "" }: TypewriterT
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
+        if (process.env.NODE_ENV === 'test') {
+            setDisplayedText(text);
+            setCurrentIndex(text.length);
+            return;
+        }
+
         if (currentIndex < text.length) {
             const timeout = setTimeout(() => {
                 setDisplayedText((prev) => prev + text[currentIndex]);

@@ -1,5 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { useAuth } from "./AuthContext";
+import {
+  customInstance,
+  rulesControllerCreate,
+  rulesControllerRemove,
+  rulesControllerUpdate,
+} from "@trading-bot/api-client";
 
 export type Rule = {
   id: string;
@@ -11,9 +17,13 @@ export type Rule = {
 type RulesContextType = {
   rules: Rule[];
   isLoading: boolean;
+  error: string | null;
+  totalCount: number;
+  currentPage: number;
   selectedRule: Rule | null;
   setSelectedRule: (rule: Rule | null) => void;
-  fetchRules: () => Promise<void>;
+  fetchRules: (page?: number) => Promise<void>;
+  getRuleById: (id: string) => Promise<Rule | null>;
   addRule: (rule: Omit<Rule, "id">) => Promise<boolean>;
   updateRule: (id: string, updatedRule: Partial<Rule>) => Promise<boolean>;
   deleteRule: (id: string) => Promise<boolean>;
@@ -23,32 +33,60 @@ const RulesContext = createContext<RulesContextType | undefined>(undefined);
 
 export const RulesProvider = ({ children }: { children: ReactNode }) => {
   const [rules, setRules] = useState<Rule[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedRule, setSelectedRule] = useState<Rule | null>(null);
   const { token } = useAuth();
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [currentPage] = useState<number>(1);
+  const LIMIT = 20;
 
-  const fetchRules = async () => {
+  const fetchRules = useCallback(async (page = 1) => {
+    setError(null);
     if (!token) {
       setIsLoading(false);
       return;
     }
-    
+
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/api/v1/rules", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await customInstance<{ status: number; data: any }>(
+        `/api/v1/rules?page=${page}&limit=${LIMIT}`,
+        {
+          method: 'GET',
+        }
+      );
 
-      if (response.ok) {
-        const data = await response.json();
-        setRules(data);
+      if (response.status !== 200) {
+        throw new Error(`Server responded with status ${response.status}`);
       }
+
+      const data = response.data;
+      setRules(data.rules);
+      setTotalCount(data.total);
+
     } catch (error) {
-      // Optionally handle error
+      console.error("Fetch rules failed", error);
+      setRules([]);
+      setError("Failed to load rules. Please try again later.");
     } finally {
       setIsLoading(false);
+    }
+  }, [token]);
+
+  const getRuleById = async (id: string): Promise<Rule | null> => {
+    try {
+      const response = await customInstance<{ status: number; data: any }>(
+        `/api/v1/rules/${id}`,
+        {
+          method: 'GET',
+        }
+      );
+      if (response.status !== 200) return null;
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch rule details", error);
+      return null;
     }
   };
 
@@ -56,24 +94,12 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     if (!token) {
       return false;
     }
-    
+
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/api/v1/rules", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(rule),
-      });
-      if (response.ok) {
-        await fetchRules();
-        return true;
-      }
-      return false;
-    } catch (error) {
-      return false;
+      await rulesControllerCreate(rule as any);
+      await fetchRules(currentPage);
+      return true;
     } finally {
       setIsLoading(false);
     }
@@ -83,24 +109,18 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     if (!token) {
       return false;
     }
-    
+
+    const ruleId = Number(id);
+    if (!Number.isFinite(ruleId)) {
+      return false;
+    }
+
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/v1/rules/${id}`, {
-        method: "PUT",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedRule),
-      });
-      if (response.ok) {
-        await fetchRules();
-        return true;
-      }
-      return false;
-    } catch (error) {
-      return false;
+      await rulesControllerUpdate(ruleId, updatedRule as any);
+
+      await fetchRules(currentPage);
+      return true;
     } finally {
       setIsLoading(false);
     }
@@ -110,39 +130,36 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     if (!token) {
       return false;
     }
-    
+
+    const ruleId = Number(id);
+    if (!Number.isFinite(ruleId)) {
+      return false;
+    }
+
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/v1/rules/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-        await fetchRules();
-        return true;
-      }
-      return false;
-    } catch (error) {
-      return false;
+      await rulesControllerRemove(ruleId);
+      await fetchRules(currentPage);
+      return true;
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    if (token) {
-      fetchRules();
-    }
-  }, [token]);
+    fetchRules(currentPage);
+  }, [currentPage, fetchRules]);
 
   const value: RulesContextType = {
     rules,
+    totalCount,
+    currentPage,
     selectedRule,
     setSelectedRule,
     isLoading,
+    error,
     fetchRules,
+    getRuleById,
     addRule,
     updateRule,
     deleteRule,

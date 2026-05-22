@@ -1,15 +1,15 @@
 import { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { LoginDtoSchema } from "@trading-bot/api-client";
+import { AuthLayout } from "../layout/AuthLayout";
 import { Input } from "../../shared/ui/forms/Input";
 import { Button } from "../../shared/ui/buttons/Button";
 import { Checkbox } from "../../shared/ui/forms/Checkbox";
 import { ErrorAlert } from "../../shared/ui/feedback/ErrorAlert";
-import { AuthLayout } from "../layout/AuthLayout";
 import { AuthSocialButton } from "./components/AuthSocialButton";
 import { Google } from "./components/icons/Google";
 import { Facebook } from "./components/icons/Facebook";
 import { useAuth } from "../../app/contexts/AuthContext";
+import { LoginDtoSchema } from "@trading-bot/api-validator";
 
 export function SignIn() {
     const navigate = useNavigate();
@@ -43,8 +43,11 @@ export function SignIn() {
         const value = e.target.value;
         setEmail(value);
         setServerError(null);
+
         if (hasAttemptedValidation) {
             setEmailError(validateEmail(value));
+        } else if (emailError) {
+            setEmailError(undefined);
         }
     };
 
@@ -52,8 +55,11 @@ export function SignIn() {
         const value = e.target.value;
         setPassword(value);
         setServerError(null);
+
         if (hasAttemptedValidation) {
             setPasswordError(validatePassword(value));
+        } else if (passwordError) {
+            setPasswordError(undefined);
         }
     };
 
@@ -63,6 +69,7 @@ export function SignIn() {
 
     const handleSignInClick = async () => {
         setHasAttemptedValidation(true);
+
         const emailValidationError = validateEmail(email);
         const passwordValidationError = validatePassword(password);
 
@@ -81,13 +88,15 @@ export function SignIn() {
         if (result.success) {
             navigate("/dashboard");
         } else {
+            setEmailError(result.fieldErrors?.email);
+            setPasswordError(result.fieldErrors?.password);
             setServerError(result.error || "Login failed. Please try again.");
         }
 
         setIsSubmitting(false);
     };
 
-    const isSignInDisabled = (hasAttemptedValidation && (Boolean(emailError) || Boolean(passwordError))) || isSubmitting;
+    const isSignInDisabled = isSubmitting || (hasAttemptedValidation && (Boolean(emailError) || Boolean(passwordError)));
 
     return (
         <AuthLayout

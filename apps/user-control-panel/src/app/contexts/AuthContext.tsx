@@ -1,5 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authControllerLogin } from '@trading-bot/api-client';
+import {
+  authControllerLogin,
+  extractFieldToMessageFromValidationError,
+  isValidationError,
+} from '@trading-bot/api-client';
 
 interface User {
   id: number;
@@ -11,6 +15,10 @@ interface User {
 interface LoginResult {
   success: boolean;
   error?: string;
+  fieldErrors?: {
+    email?: string;
+    password?: string;
+  };
 }
 
 interface AuthContextType {
@@ -45,10 +53,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(false);
   }, []);
 
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== 'auth_token' && e.key !== 'user_data') return;
+
+      const nextToken = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+      const nextUser = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
+
+      setToken(nextToken);
+      setUser(nextUser ? (JSON.parse(nextUser) as User) : null);
+    };
+
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
   const login = async (email: string, password: string, rememberMe?: boolean): Promise<LoginResult> => {
     try {
-      setIsLoading(true);
-
       const loginData = {
         email,
         password,
@@ -60,7 +81,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       let access_token: string | undefined;
       let userData: User | undefined;
 
-      if ('status' in response && response.status === 200 && 'data' in response && response.data) {
+      if ('status' in response && (response.status === 200 || (response.status as number) === 201) && 'data' in response && response.data) {
         access_token = response.data.access_token;
         userData = response.data.user as unknown as User;
       } else if ('access_token' in response && 'user' in response && typeof response === 'object' && response !== null) {
@@ -68,10 +89,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         access_token = directResponse.access_token;
         userData = directResponse.user;
       } else if ('status' in response && response.status === 401) {
-        setIsLoading(false);
         return { success: false, error: "Invalid credentials" };
       } else {
-        setIsLoading(false);
         return { success: false, error: "Unexpected response format from server" };
       }
 
@@ -79,41 +98,63 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setToken(access_token);
         setUser(userData);
 
+        localStorage.setItem('auth_token', access_token);
+        localStorage.setItem('user_data', JSON.stringify(userData));
+
         if (rememberMe) {
-          localStorage.setItem('auth_token', access_token);
-          localStorage.setItem('user_data', JSON.stringify(userData));
           sessionStorage.removeItem('auth_token');
           sessionStorage.removeItem('user_data');
         } else {
           sessionStorage.setItem('auth_token', access_token);
           sessionStorage.setItem('user_data', JSON.stringify(userData));
-          // Clear localStorage in case it was used previously
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('user_data');
         }
 
-        setIsLoading(false);
         return { success: true };
       } else {
-        setIsLoading(false);
         return { success: false, error: "Invalid response from server" };
       }
-    } catch (error: unknown) {
-      setIsLoading(false);
-
+    } catch (caughtError: unknown) {
       let errorMessage = "Login failed. Please try again.";
 
-      if (error && typeof error === "object") {
-        if ("message" in error) {
-          const message = String(error.message);
+      // api-client request validation errors (Zod issues)
+      const validationErrors = isValidationError(caughtError)
+        ? extractFieldToMessageFromValidationError(caughtError)
+        : {};
+      if (Object.keys(validationErrors).length > 0) {
+        const fieldErrors: LoginResult['fieldErrors'] = {};
+
+        if (validationErrors.email && !fieldErrors.email) fieldErrors.email = validationErrors.email;
+        if (validationErrors.password && !fieldErrors.password) fieldErrors.password = validationErrors.password;
+
+        return {
+          success: false,
+          error: errorMessage,
+          fieldErrors,
+        };
+      }
+
+      if (caughtError && typeof caughtError === "object") {
+        if ("isNetworkError" in caughtError && (caughtError as { isNetworkError?: boolean }).isNetworkError) {
+          errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
+          return { success: false, error: errorMessage };
+        }
+
+        const message =
+          "message" in caughtError && typeof (caughtError as any).message === 'string'
+            ? String((caughtError as any).message)
+            : undefined;
+        if (message) {
 
           if (message === "Failed to fetch" || message.includes("fetch")) {
             errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
           } else {
             errorMessage = message;
           }
-        } else if ("status" in error) {
-          const status = (error as { status: number }).status;
+        } else if ("status" in caughtError) {
+          const status = (caughtError as { status: number }).status;
+          if (status === 0) {
+            errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
+          } else 
           if (status === 400) {
             errorMessage = "Please verify your email address before logging in. Check your email for the verification code.";
           } else if (status === 401) {
@@ -122,7 +163,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             errorMessage = "Server error. Please try again later.";
           }
         }
-      } else if (error instanceof TypeError && error.message === "Failed to fetch") {
+      } else if (caughtError instanceof TypeError && caughtError.message === "Failed to fetch") {
         errorMessage = "Unable to connect to the server. Please check your internet connection and ensure the server is running.";
       }
 
