@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule Builder Test (86c9wc65k)</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lodash@4/lodash.min.js"></script>
+    <script src="https://unpkg.com/immutable@4/dist/immutable.min.js"></script>
+    <script src="https://unpkg.com/moment@2/moment.js"></script>
+    <script src="https://unpkg.com/json-logic-js@2/logic.js"></script>
+    <script src="https://unpkg.com/react-awesome-query-builder@6.6.4/dist/react-awesome-query-builder.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #333; }
+        .box { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .json-box { background: #f8f9fa; padding: 15px; border-radius: 4px; overflow-x: auto; }
+        pre { margin: 0; font-size: 12px; }
+        .query-builder-container { border: 1px solid #ddd; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { Query, Builder, Utils } = window.ReactAwesomeQueryBuilder;
+        const BasicConfig = window.ReactAwesomeQueryBuilder.BasicConfig;
+
+        // Target rule from task
+        const targetJsonRule = {
+            name: 'Test simple config',
+            description: 'TODO add description',
+            type: 'interval',
+            arguments: {
+                do: {
+                    type: 'log',
+                    arguments: {
+                        message: 'Some message',
+                    },
+                },
+                interval: 1000,
+            },
+        };
+
+        // Config for UI builder
+        const config = {
+            ...BasicConfig,
+            fields: {
+                ruleType: {
+                    label: 'Rule Type',
+                    type: 'select',
+                    valueSources: ['value'],
+                    fieldSettings: {
+                        listValues: [
+                            { value: 'interval', title: 'Interval' },
+                            { value: 'cron', title: 'Cron' },
+                            { value: 'webhook', title: 'Webhook' },
+                        ],
+                    },
+                },
+                actionType: {
+                    label: 'Action Type',
+                    type: 'select',
+                    valueSources: ['value'],
+                    fieldSettings: {
+                        listValues: [
+                            { value: 'log', title: 'Log' },
+                            { value: 'debug', title: 'Debug' },
+                            { value: 'telegram_send_message', title: 'Telegram Send' },
+                        ],
+                    },
+                },
+                interval: {
+                    label: 'Interval (ms)',
+                    type: 'number',
+                    fieldSettings: {
+                        min: 100,
+                        step: 100,
+                    },
+                    valueSources: ['value'],
+                },
+                message: {
+                    label: 'Message',
+                    type: 'text',
+                    valueSources: ['value'],
+                },
+            },
+        };
+
+        const initialQuery = {
+            id: Utils.uuid(),
+            type: 'group',
+            children1: [
+                {
+                    id: Utils.uuid(),
+                    type: 'rule',
+                    properties: {
+                        field: 'ruleType',
+                        operator: 'equal',
+                        value: ['interval'],
+                        valueSrc: ['value'],
+                    },
+                },
+                {
+                    id: Utils.uuid(),
+                    type: 'rule',
+                    properties: {
+                        field: 'interval',
+                        operator: 'equal',
+                        value: [1000],
+                        valueSrc: ['value'],
+                    },
+                },
+                {
+                    id: Utils.uuid(),
+                    type: 'rule',
+                    properties: {
+                        field: 'actionType',
+                        operator: 'equal',
+                        value: ['log'],
+                        valueSrc: ['value'],
+                    },
+                },
+            ],
+        };
+
+        function App() {
+            const [tree, setTree] = React.useState(() =>
+                Utils.checkTree(Utils.loadTree(initialQuery), config)
+            );
+            const [output, setOutput] = React.useState(null);
+
+            const onChange = React.useCallback((immutableTree, currentConfig) => {
+                setTree(immutableTree);
+                const jsonTree = Utils.getTree(immutableTree);
+                const jsonLogic = Utils.jsonLogicFormat(immutableTree, currentConfig);
+                const sql = Utils.sqlFormat(immutableTree, currentConfig);
+                
+                setOutput({
+                    uiTree: jsonTree,
+                    jsonLogic,
+                    sql,
+                });
+            }, []);
+
+            const renderBuilder = React.useCallback((props) => (
+                <div className="query-builder-container">
+                    <Builder {...props} />
+                </div>
+            ), []);
+
+            return (
+                <div className="container">
+                    <h1>Rule Builder Test (Task 86c9wc65k)</h1>
+                    
+                    <div className="box">
+                        <h2>Target Rule (JSON - Hardcoded)</h2>
+                        <div className="json-box">
+                            <pre>{JSON.stringify(targetJsonRule, null, 2)}</pre>
+                        </div>
+                    </div>
+
+                    <div className="box">
+                        <h2>Rule Builder (UI)</h2>
+                        <Query
+                            {...config}
+                            value={tree}
+                            onChange={onChange}
+                            renderBuilder={renderBuilder}
+                        />
+                    </div>
+
+                    {output && (
+                        <>
+                            <div className="box">
+                                <h2>JSON Logic</h2>
+                                <div className="json-box">
+                                    <pre>{JSON.stringify(output.jsonLogic, null, 2)}</pre>
+                                </div>
+                            </div>
+
+                            <div className="box">
+                                <h2>SQL Format</h2>
+                                <div className="json-box">
+                                    <pre>{output.sql || 'N/A'}</pre>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

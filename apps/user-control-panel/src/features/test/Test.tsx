@@ -140,8 +140,6 @@ export function Test() {
     // Convert tree to various formats
     const jsonTree = Utils.getTree(immutableTree);
     const jsonLogic = Utils.jsonLogicFormat(immutableTree, currentConfig);
-    const sql = Utils.sqlFormat(immutableTree, currentConfig);
-    const spel = Utils.spelFormat(immutableTree, currentConfig);
 
     // Build our custom rule format
     const ruleFromBuilder = buildRuleFromTree(jsonTree);
@@ -149,8 +147,6 @@ export function Test() {
     setGeneratedJson({
       uiTree: jsonTree,
       jsonLogic,
-      sql,
-      spel,
       ruleFromBuilder,
     });
   }, []);
@@ -216,19 +212,11 @@ export function Test() {
             </pre>
           </div>
 
-          {/* SQL */}
+          {/* UI Tree */}
           <div className="p-4 bg-purple-50 rounded-lg border">
-            <h3 className="font-semibold mb-2 text-purple-800">SQL Format</h3>
+            <h3 className="font-semibold mb-2 text-purple-800">UI Tree (Internal)</h3>
             <pre className="text-xs bg-white p-3 rounded border overflow-auto max-h-60">
-              {generatedJson.sql || 'N/A'}
-            </pre>
-          </div>
-
-          {/* SpEL */}
-          <div className="p-4 bg-orange-50 rounded-lg border">
-            <h3 className="font-semibold mb-2 text-orange-800">SpEL Format</h3>
-            <pre className="text-xs bg-white p-3 rounded border overflow-auto max-h-60">
-              {generatedJson.spel || 'N/A'}
+              {JSON.stringify(generatedJson.uiTree, null, 2)}
             </pre>
           </div>
         </div>
