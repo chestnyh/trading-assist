@@ -5,7 +5,11 @@ const { NxReactWebpackPlugin } = require('@nx/react/webpack-plugin');
 const webpack = require('webpack');
 const { ServicesConfigs } = require('@trading-bot/configs');
 
-const configs = new ServicesConfigs();
+console.log('process.env.NODE_ENV', process.env.NODE_ENV);
+
+const configs = new ServicesConfigs(join(__dirname, '../..'));
+
+console.log('configs========================', configs.get('API_BASE_URL'));
 
 module.exports = {
   output: {
@@ -29,8 +33,6 @@ module.exports = {
       assets: ['./src/favicon.ico', './src/assets'],
       // styles: ['./src/styles.scss'],
       styles: ['./src/index.css'],
-      outputHashing: process.env['NODE_ENV'] === 'production' ? 'all' : 'none',
-      optimization: process.env['NODE_ENV'] === 'production',
     }),
     new NxReactWebpackPlugin({
       // Uncomment this line if you don't want to use SVGR

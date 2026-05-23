@@ -65,6 +65,9 @@ export const customInstance = async <T>(
   // Base URL configuration
   const baseURL = process.env['API_BASE_URL'];
   const fullUrl = url.startsWith('http') ? url : `${baseURL}${url}`;
+  
+  console.log('fullUrl', fullUrl);
+  console.log('baseURL', baseURL);
 
   // When schema matching, use the URL pathname so absolute URLs are supported.
   const urlPath = url.startsWith('http') ? new URL(url).pathname : url;

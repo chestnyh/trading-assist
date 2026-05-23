@@ -17,7 +17,7 @@
         "tsConfig": "apps/log-stream/tsconfig.app.json",
         "assets": [],
         "webpackConfig": "apps/log-stream/webpack.config.js",
-        "generatePackageJson": true
+        "generatePackageJson": false
       },
       "configurations": {
         "development": {

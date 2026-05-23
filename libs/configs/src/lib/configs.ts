@@ -1,15 +1,21 @@
 import * as dotenv from 'dotenv';
+import * as path from 'path';
+
 export abstract class Configs {
   protected configs: Record<string, string | boolean | undefined> = {};
 
-  constructor(){
+  constructor(envBasePath?: string){
+
+    console.log('process.env.NODE_ENV', process.env.NODE_ENV);
+
+    const base = envBasePath ?? '.';
 
     let envFile;
     if (process?.env?.['NODE_ENV'] === 'api-int-tests') {
-      envFile = './.env.api-int-tests';
+      envFile = path.join(base, '.env.api-int-tests');
     }
     else if (process?.env?.['NODE_ENV'] !== 'production') {
-      envFile = './.env.dev';
+      envFile = path.join(base, '.env.dev');
     }
 
     this.configs['ENV_FILE'] = envFile;
