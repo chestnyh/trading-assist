@@ -12,7 +12,7 @@
         "cwd": "libs/configs"
       }
     },
-    "build": {
+    "compile": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "development",
@@ -21,6 +21,22 @@
         "main": "libs/configs/src/index.ts",
         "tsConfig": "libs/configs/tsconfig.lib.json",
         "assets": []
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/libs/configs/dist"],
+      "options": {
+        "commands": [
+          "nx run configs:compile",
+          "node patch-dist-package-json.js"
+        ],
+        "parallel": false,
+        "cwd": "libs/configs"
       },
       "configurations": {
         "development": {},

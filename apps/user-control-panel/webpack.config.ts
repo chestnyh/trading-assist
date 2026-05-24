@@ -3,10 +3,9 @@ const { join } = require('path');
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { NxReactWebpackPlugin } = require('@nx/react/webpack-plugin');
 const webpack = require('webpack');
-const { ServicesConfigs } = require('@trading-bot/configs');
+const { ServicesConfigs } = require('../../libs/configs/dist/src');
 
 console.log('process.env.NODE_ENV', process.env.NODE_ENV);
-
 const configs = new ServicesConfigs(join(__dirname, '../..'));
 
 console.log('configs========================', configs.get('API_BASE_URL'));

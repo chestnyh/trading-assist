@@ -1,4 +1,4 @@
-import { PrismaClient } from '.prisma/client';
+import { PrismaClient } from '@prisma/client';
 import './_set-configs'
 
 const filePath: string = process.argv[2];

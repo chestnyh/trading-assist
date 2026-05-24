@@ -13,14 +13,26 @@
         "cwd": "libs/api-validator"
       }
     },
-    "build": {
+    "compile": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/api-validator",
+        "outputPath": "libs/api-validator/dist",
         "main": "libs/api-validator/src/index.ts",
         "tsConfig": "libs/api-validator/tsconfig.lib.json",
-        "assets": ["libs/api-validator/*.md"]
+        "assets": ["libs/api-validator/*.md", "libs/api-validator/nest.js"]
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/libs/api-validator/dist"],
+      "options": {
+        "commands": [
+          "nx run api-validator:compile",
+          "node patch-dist-package-json.js"
+        ],
+        "parallel": false,
+        "cwd": "libs/api-validator"
       }
     }
   }

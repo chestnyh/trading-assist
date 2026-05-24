@@ -6,26 +6,18 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/webpack:webpack",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
+      "defaultConfiguration": "development",
       "options": {
-        "target": "node",
-        "compiler": "tsc",
         "outputPath": "dist/apps/log-stream",
         "main": "apps/log-stream/src/main.ts",
         "tsConfig": "apps/log-stream/tsconfig.app.json",
-        "assets": [],
-        "webpackConfig": "apps/log-stream/webpack.config.js",
-        "generatePackageJson": false
+        "assets": []
       },
       "configurations": {
-        "development": {
-          "mode": "development"
-        },
-        "production": {
-          "mode": "production"
-        }
+        "development": {},
+        "production": {}
       }
     },
     "serve": {
