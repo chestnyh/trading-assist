@@ -1,284 +1,343 @@
 import React, { useState, useCallback } from 'react';
-import { Query, Builder, BasicConfig, Utils as QbUtils } from './rules-builder';
-import './rules-builder/packages/ui/styles/styles.scss';
-
-const Utils: any = QbUtils;
-const InitialConfig = BasicConfig;
 
 /**
- * Simple test rule from task 86c9wc65k:
+ * Hierarchical Rule Builder
+ * 
+ * User builds a tree structure of actions:
+ * - interval: has ms field + can have nested actions (via "Add Action")
+ * - timeout: has ms field + can have nested actions (via "Add Action")  
+ * - debug: has message field, NO nested actions
+ * 
+ * Target JSON format:
  * {
  *   "name": "Test simple config",
- *   "description": "TODO add description",
  *   "type": "interval",
  *   "arguments": {
- *     "do": {
- *       "type": "log",
- *       "arguments": {
- *         "message": "Some message"
- *       }
- *     },
+ *     "do": { "type": "debug", "arguments": { "message": "..." } },
  *     "interval": 1000
  *   }
  * }
  */
 
-// Simple rule config for UI builder - representing the structure above
-const config = {
-  ...InitialConfig,
-  fields: {
-    ruleType: {
-      label: 'Rule Type',
-      type: 'select',
-      valueSources: ['value'],
-      fieldSettings: {
-        listValues: [
-          { value: 'interval', title: 'Interval' },
-          { value: 'cron', title: 'Cron' },
-          { value: 'webhook', title: 'Webhook' },
-        ],
-      },
-    },
-    actionType: {
-      label: 'Action Type',
-      type: 'select',
-      valueSources: ['value'],
-      fieldSettings: {
-        listValues: [
-          { value: 'log', title: 'Log' },
-          { value: 'debug', title: 'Debug' },
-          { value: 'telegram_send_message', title: 'Telegram Send' },
-        ],
-      },
-    },
-    interval: {
-      label: 'Interval (ms)',
-      type: 'number',
-      fieldSettings: {
-        min: 100,
-        step: 100,
-      },
-      valueSources: ['value'],
-    },
-    message: {
-      label: 'Message',
-      type: 'text',
-      valueSources: ['value'],
-    },
-    isActive: {
-      label: 'Active?',
-      type: 'boolean',
-      operators: ['equal'],
-      valueSources: ['value'],
-    },
-  },
-};
+type ActionType = 'interval' | 'timeout' | 'debug';
 
-// Initial query representing: interval = 1000 AND action = log
-const initialQuery = {
-  id: Utils.uuid(),
-  type: 'group',
-  children1: [
-    {
-      id: Utils.uuid(),
-      type: 'rule',
-      properties: {
-        field: 'ruleType',
-        operator: 'equal',
-        value: ['interval'],
-        valueSrc: ['value'],
-      },
-    },
-    {
-      id: Utils.uuid(),
-      type: 'rule',
-      properties: {
-        field: 'interval',
-        operator: 'equal',
-        value: [1000],
-        valueSrc: ['value'],
-      },
-    },
-    {
-      id: Utils.uuid(),
-      type: 'rule',
-      properties: {
-        field: 'actionType',
-        operator: 'equal',
-        value: ['log'],
-        valueSrc: ['value'],
-      },
-    },
-  ],
-};
-
-// Hardcoded target rule in JSON format
-const targetJsonRule = {
-  name: 'Test simple config',
-  description: 'TODO add description',
-  type: 'interval',
+interface Action {
+  id: string;
+  type: ActionType;
   arguments: {
-    do: {
-      type: 'log',
-      arguments: {
-        message: 'Some message',
-      },
-    },
-    interval: 1000,
-  },
-};
+    interval?: number;
+    timeout?: number;
+    message?: string;
+    do?: Action | Action[];
+  };
+}
 
-export function Test() {
-  const [tree, setTree] = useState(() =>
-    Utils.checkTree(Utils.loadTree(initialQuery), config)
-  );
-  const [generatedJson, setGeneratedJson] = useState<any>(null);
+const ACTION_TYPES: { value: ActionType; label: string; canHaveChildren: boolean }[] = [
+  { value: 'interval', label: 'Interval', canHaveChildren: true },
+  { value: 'timeout', label: 'Timeout', canHaveChildren: true },
+  { value: 'debug', label: 'Debug', canHaveChildren: false },
+];
 
-  const onChange = useCallback((immutableTree: any, currentConfig: any) => {
-    setTree(immutableTree);
+function generateId(): string {
+  return Math.random().toString(36).substr(2, 9);
+}
 
-    // Convert tree to various formats
-    const jsonTree = Utils.getTree(immutableTree);
-    const jsonLogic = Utils.jsonLogicFormat(immutableTree, currentConfig);
+// Action Editor Component
+interface ActionEditorProps {
+  action: Action;
+  onChange: (action: Action) => void;
+  onDelete?: () => void;
+  depth?: number;
+}
 
-    // Build our custom rule format
-    const ruleFromBuilder = buildRuleFromTree(jsonTree);
+const ActionEditor: React.FC<ActionEditorProps> = ({ action, onChange, onDelete, depth = 0 }) => {
+  const handleTypeChange = (type: ActionType) => {
+    const typeConfig = ACTION_TYPES.find(t => t.value === type);
+    const newAction: Action = {
+      ...action,
+      type,
+      arguments: {},
+    };
+    onChange(newAction);
+  };
 
-    setGeneratedJson({
-      uiTree: jsonTree,
-      jsonLogic,
-      ruleFromBuilder,
-    });
-  }, []);
+  const handleAddChild = () => {
+    const newChild: Action = {
+      id: generateId(),
+      type: 'debug',
+      arguments: { message: '' },
+    };
+    const currentDo = action.arguments.do;
+    const newDo = currentDo ? (Array.isArray(currentDo) ? [...currentDo, newChild] : [currentDo, newChild]) : newChild;
+    onChange({ ...action, arguments: { ...action.arguments, do: newDo } });
+  };
 
-  const renderBuilder = useCallback(
-    (props: any) => (
-      <div className="query-builder-container" style={{ padding: '10px' }}>
-        <div className="query-builder qb-lite">
-          <Builder {...props} />
-        </div>
-      </div>
-    ),
-    []
-  );
+  const handleChildChange = (index: number, child: Action) => {
+    const currentDo = action.arguments.do;
+    if (Array.isArray(currentDo)) {
+      const newDo = [...currentDo];
+      newDo[index] = child;
+      onChange({ ...action, arguments: { ...action.arguments, do: newDo } });
+    } else {
+      onChange({ ...action, arguments: { ...action.arguments, do: child } });
+    }
+  };
+
+  const handleDeleteChild = (index: number) => {
+    const currentDo = action.arguments.do;
+    if (Array.isArray(currentDo)) {
+      const newDo = currentDo.filter((_, i) => i !== index);
+      onChange({ ...action, arguments: { ...action.arguments, do: newDo.length === 1 ? newDo[0] : newDo } });
+    } else {
+      onChange({ ...action, arguments: { ...action.arguments, do: undefined } });
+    }
+  };
+
+  const typeConfig = ACTION_TYPES.find(t => t.value === action.type);
+  const children = action.arguments.do ? (Array.isArray(action.arguments.do) ? action.arguments.do : [action.arguments.do]) : [];
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">
-        Rule Builder Test (Task 86c9wc65k)
-      </h1>
-
-      {/* Target Rule - JSON Format */}
-      <div className="mb-8 p-4 bg-gray-50 rounded-lg border">
-        <h2 className="text-lg font-semibold mb-2">
-          Target Rule (JSON Format - Hardcoded)
-        </h2>
-        <pre className="text-sm bg-white p-3 rounded border overflow-auto">
-          {JSON.stringify(targetJsonRule, null, 2)}
-        </pre>
+    <div className={`action-editor depth-${depth}`} style={{ 
+      border: '2px solid #667eea', 
+      borderRadius: '8px', 
+      padding: '15px', 
+      margin: '10px 0',
+      background: '#f8f9fa'
+    }}>
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
+        <span style={{ fontWeight: 600, minWidth: '80px' }}>Type:</span>
+        <select 
+          value={action.type} 
+          onChange={(e) => handleTypeChange(e.target.value as ActionType)}
+          style={{ padding: '8px 12px', borderRadius: '4px', border: '1px solid #ddd', flex: 1 }}
+        >
+          <option value="">Select Type</option>
+          {ACTION_TYPES.map(t => (
+            <option key={t.value} value={t.value}>{t.label}</option>
+          ))}
+        </select>
+        {onDelete && (
+          <button 
+            onClick={onDelete}
+            style={{ 
+              padding: '8px 16px', 
+              background: '#dc3545', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Delete
+          </button>
+        )}
       </div>
 
-      {/* Rule Builder UI */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold mb-4">
-          Rule Builder (UI Format)
-        </h2>
-        <Query
-          {...config}
-          value={tree}
-          onChange={onChange}
-          renderBuilder={renderBuilder}
-        />
-      </div>
-
-      {/* Generated Output */}
-      {generatedJson && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Generated Rule JSON */}
-          <div className="p-4 bg-blue-50 rounded-lg border">
-            <h3 className="font-semibold mb-2 text-blue-800">
-              Generated Rule (Our Format)
-            </h3>
-            <pre className="text-xs bg-white p-3 rounded border overflow-auto max-h-60">
-              {JSON.stringify(generatedJson.ruleFromBuilder, null, 2)}
-            </pre>
-          </div>
-
-          {/* JSON Logic */}
-          <div className="p-4 bg-green-50 rounded-lg border">
-            <h3 className="font-semibold mb-2 text-green-800">JSON Logic</h3>
-            <pre className="text-xs bg-white p-3 rounded border overflow-auto max-h-60">
-              {JSON.stringify(generatedJson.jsonLogic, null, 2)}
-            </pre>
-          </div>
-
-          {/* UI Tree */}
-          <div className="p-4 bg-purple-50 rounded-lg border">
-            <h3 className="font-semibold mb-2 text-purple-800">UI Tree (Internal)</h3>
-            <pre className="text-xs bg-white p-3 rounded border overflow-auto max-h-60">
-              {JSON.stringify(generatedJson.uiTree, null, 2)}
-            </pre>
-          </div>
+      {action.type === 'interval' && (
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
+          <span style={{ fontWeight: 600, minWidth: '80px' }}>Interval:</span>
+          <input
+            type="number"
+            value={action.arguments.interval || ''}
+            onChange={(e) => onChange({ ...action, arguments: { ...action.arguments, interval: parseInt(e.target.value) || 0 } })}
+            placeholder="ms"
+            style={{ padding: '8px 12px', borderRadius: '4px', border: '1px solid #ddd', flex: 1 }}
+          />
+          <span>ms</span>
         </div>
       )}
 
-      {/* Comparison */}
-      <div className="mt-8 p-4 bg-yellow-50 rounded-lg border">
-        <h2 className="text-lg font-semibold mb-2">Comparison</h2>
-        <p className="text-sm text-gray-700">
-          This test page demonstrates the conversion between UI builder format
-          and our JSON rule format. The goal is to prove that
-          react-awesome-query-builder can be used as the foundation for our rule
-          builder.
-        </p>
-      </div>
+      {action.type === 'timeout' && (
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
+          <span style={{ fontWeight: 600, minWidth: '80px' }}>Timeout:</span>
+          <input
+            type="number"
+            value={action.arguments.timeout || ''}
+            onChange={(e) => onChange({ ...action, arguments: { ...action.arguments, timeout: parseInt(e.target.value) || 0 } })}
+            placeholder="ms"
+            style={{ padding: '8px 12px', borderRadius: '4px', border: '1px solid #ddd', flex: 1 }}
+          />
+          <span>ms</span>
+        </div>
+      )}
+
+      {action.type === 'debug' && (
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
+          <span style={{ fontWeight: 600, minWidth: '80px' }}>Message:</span>
+          <input
+            type="text"
+            value={action.arguments.message || ''}
+            onChange={(e) => onChange({ ...action, arguments: { ...action.arguments, message: e.target.value } })}
+            placeholder="Enter message..."
+            style={{ padding: '8px 12px', borderRadius: '4px', border: '1px solid #ddd', flex: 1 }}
+          />
+        </div>
+      )}
+
+      {typeConfig?.canHaveChildren && (
+        <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid #dee2e6' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <span style={{ fontWeight: 600 }}>Nested Actions:</span>
+            <button 
+              onClick={handleAddChild}
+              style={{ 
+                padding: '8px 16px', 
+                background: '#28a745', 
+                color: 'white', 
+                border: 'none', 
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              + Add Action
+            </button>
+          </div>
+          
+          {children.length > 0 && (
+            <div style={{ marginLeft: '20px' }}>
+              {children.map((child, index) => (
+                <ActionEditor
+                  key={child.id}
+                  action={child}
+                  onChange={(newChild) => handleChildChange(index, newChild)}
+                  onDelete={() => handleDeleteChild(index)}
+                  depth={depth + 1}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
-}
+};
 
-// Helper function to convert UI tree to our rule format
-function buildRuleFromTree(tree: any): any {
-  if (!tree || !tree.children1) {
-    return null;
+// Convert Action tree to target JSON format
+function convertToJsonFormat(action: Action): any {
+  const result: any = {
+    type: action.type,
+  };
+
+  if (action.type === 'interval') {
+    result.arguments = { interval: action.arguments.interval || 1000 };
+  } else if (action.type === 'timeout') {
+    result.arguments = { timeout: action.arguments.timeout || 1000 };
+  } else if (action.type === 'debug') {
+    result.arguments = { message: action.arguments.message || '' };
   }
 
-  const rule: any = {
-    name: 'Generated from UI',
-    description: 'Auto-generated rule',
+  // Handle nested actions
+  if (action.arguments.do) {
+    if (Array.isArray(action.arguments.do)) {
+      if (action.arguments.do.length === 1) {
+        result.arguments.do = convertToJsonFormat(action.arguments.do[0]);
+      } else {
+        result.arguments.do = {
+          type: 'sequence',
+          arguments: {
+            actions: action.arguments.do.map(convertToJsonFormat)
+          }
+        };
+      }
+    } else {
+      result.arguments.do = convertToJsonFormat(action.arguments.do);
+    }
+  }
+
+  return result;
+}
+
+// Main Component
+export function Test() {
+  const [rootAction, setRootAction] = useState<Action>({
+    id: 'root',
+    type: 'interval',
+    arguments: {
+      interval: 1000,
+      do: {
+        id: generateId(),
+        type: 'debug',
+        arguments: { message: 'Some message' }
+      }
+    }
+  });
+
+  const handleRootChange = (newAction: Action) => {
+    setRootAction(newAction);
+  };
+
+  const generatedRule = convertToJsonFormat(rootAction);
+
+  // Hardcoded target rule in JSON format
+  const targetJsonRule = {
+    name: 'Test simple config',
+    description: 'TODO add description',
     type: 'interval',
     arguments: {
       do: {
-        type: 'log',
+        type: 'debug',
         arguments: {
-          message: 'Default message',
+          message: 'Some message',
         },
       },
       interval: 1000,
     },
   };
 
-  // Extract values from tree
-  tree.children1.forEach((child: any) => {
-    if (child.properties) {
-      const field = child.properties.field;
-      const value = child.properties.value?.[0];
+  return (
+    <div style={{ padding: '40px', maxWidth: '1000px', margin: '0 auto', background: '#f5f5f5', minHeight: '100vh' }}>
+      <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '10px' }}>
+        Rule Builder Test (Task 86c9wc65k)
+      </h1>
+      <p style={{ color: '#666', marginBottom: '30px' }}>
+        Build hierarchical action structures. Interval/Timeout can have nested actions, Debug cannot.
+      </p>
 
-      switch (field) {
-        case 'ruleType':
-          rule.type = value;
-          break;
-        case 'interval':
-          rule.arguments.interval = value;
-          break;
-        case 'actionType':
-          rule.arguments.do.type = value;
-          break;
-        case 'message':
-          rule.arguments.do.arguments.message = value;
-          break;
-      }
-    }
-  });
+      {/* Target Rule - JSON Format */}
+      <div style={{ marginBottom: '30px', padding: '20px', background: 'white', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '15px', color: '#333' }}>
+          Target Rule (Required Format)
+        </h2>
+        <pre style={{ 
+          fontSize: '13px', 
+          background: '#f8f9fa', 
+          padding: '15px', 
+          borderRadius: '8px', 
+          overflow: 'auto',
+          border: '1px solid #e9ecef'
+        }}>
+          {JSON.stringify(targetJsonRule, null, 2)}
+        </pre>
+      </div>
 
-  return rule;
+      {/* Rule Builder UI */}
+      <div style={{ marginBottom: '30px', padding: '20px', background: 'white', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '15px', color: '#333' }}>
+          UI Builder
+        </h2>
+        <ActionEditor 
+          action={rootAction} 
+          onChange={handleRootChange}
+          depth={0}
+        />
+      </div>
+
+      {/* Generated Output */}
+      <div style={{ padding: '20px', background: 'white', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '15px', color: '#333' }}>
+          Generated Rule (JSON)
+        </h2>
+        <pre style={{ 
+          fontSize: '13px', 
+          background: '#e3f2fd', 
+          padding: '15px', 
+          borderRadius: '8px', 
+          overflow: 'auto',
+          border: '1px solid #90caf9'
+        }}>
+          {JSON.stringify(generatedRule, null, 2)}
+        </pre>
+      </div>
+    </div>
+  );
 }
