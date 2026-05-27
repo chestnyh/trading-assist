@@ -249,24 +249,26 @@ function convertToJsonFormat(action: Action): any {
 
 // Main Component
 export function Test() {
+  // Start with empty action - user must select type first
   const [rootAction, setRootAction] = useState<Action>({
     id: 'root',
-    type: 'interval',
-    arguments: {
-      interval: 1000,
-      do: {
-        id: generateId(),
-        type: 'debug',
-        arguments: { message: 'Some message' }
-      }
-    }
+    type: '' as ActionType, // Empty initially
+    arguments: {}
   });
 
   const handleRootChange = (newAction: Action) => {
     setRootAction(newAction);
   };
 
-  const generatedRule = convertToJsonFormat(rootAction);
+  const handleReset = () => {
+    setRootAction({
+      id: 'root',
+      type: '' as ActionType,
+      arguments: {}
+    });
+  };
+
+  const generatedRule = rootAction.type ? convertToJsonFormat(rootAction) : null;
 
   // Hardcoded target rule in JSON format
   const targetJsonRule = {
@@ -318,6 +320,7 @@ export function Test() {
         <ActionEditor 
           action={rootAction} 
           onChange={handleRootChange}
+          onDelete={handleReset}
           depth={0}
         />
       </div>
@@ -329,13 +332,13 @@ export function Test() {
         </h2>
         <pre style={{ 
           fontSize: '13px', 
-          background: '#e3f2fd', 
+          background: generatedRule ? '#e3f2fd' : '#f5f5f5', 
           padding: '15px', 
           borderRadius: '8px', 
           overflow: 'auto',
-          border: '1px solid #90caf9'
+          border: '1px solid ' + (generatedRule ? '#90caf9' : '#ddd')
         }}>
-          {JSON.stringify(generatedRule, null, 2)}
+          {generatedRule ? JSON.stringify(generatedRule, null, 2) : 'Select action type to see generated JSON...'}
         </pre>
       </div>
     </div>
