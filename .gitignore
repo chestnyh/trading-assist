@@ -152,3 +152,7 @@ notes.md
 
 # temporary files
 tmp/
+
+# Prisma generated clients
+libs/models/src/generated/
+libs/models/.prisma/
