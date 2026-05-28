@@ -7,6 +7,7 @@ import { JsonEditorField } from "../../shared/ui/forms/JsonEditorField";
 import { NotFound } from "../notFound/NotFound";
 import { useRuleLogs } from "./hooks/useRuleLogs";
 import { LogsPanel } from "./components/LogsPanel";
+import { ActionEditor, parseRuleBodyToActionTree } from "./components/action-editor";
 
 export function RuleDetailsPage() {
 	const { id } = useParams<{ id: string }>();
@@ -43,6 +44,8 @@ export function RuleDetailsPage() {
 		<NotFound />
 	)
 
+	const actionTree = parseRuleBodyToActionTree(rule.ruleBody);
+
 	return (
 		<div className="px-4 md:px-8 lg:px-12 py-6 max-w-5xl mx-auto">
 		<button
@@ -68,6 +71,13 @@ export function RuleDetailsPage() {
 
 			<section className="mb-8">
 			<h3 className="block text-body-md font-medium text-text-secondary mb-2">Rule Body:</h3>
+			{actionTree && (
+				<div className="mb-6">
+					<h4 className="block text-body-md font-medium text-text-secondary mb-2">Structured View:</h4>
+					<ActionEditor action={actionTree} readOnly />
+				</div>
+			)}
+			<h4 className="block text-body-md font-medium text-text-secondary mb-2">JSON View:</h4>
 			<JsonEditorField
 				label=""
 				id="rule-body"
