@@ -2,10 +2,18 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "allowJs": false,
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@trading-bot/api-client": ["../../libs/api-client/src/index.ts"],
+      "@trading-bot/api-validator": ["../../libs/api-validator/src/index.ts"],
+      "lodash/*": ["../../node_modules/lodash/*"],
+      "react-number-format": ["../../node_modules/react-number-format"]
+    }
   },
   "files": [],
   "include": [],

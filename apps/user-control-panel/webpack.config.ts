@@ -9,7 +9,10 @@ module.exports = {
   },
   devServer: {
     port: 4200,
-    historyApiFallback: true
+    historyApiFallback: {
+      index: '/index.html',
+      disableDotRule: true,
+    }
   },
   ignoreWarnings: [
     /Failed to parse source map/,
