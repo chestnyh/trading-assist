@@ -1,5 +1,6 @@
-import { ACTION_TYPES, canActionHaveChildren, createActionNode, getDefaultArguments } from './actionTree';
-import { ActionNode, ActionType } from './types';
+import { ACTION_TYPES } from './actionDefinitions';
+import { createActionNode, getActionConfig, getDefaultArguments } from './actionTree';
+import { ActionChildSlotConfig, ActionFieldConfig, ActionNode, ActionType } from './types';
 
 type ActionEditorProps = {
   action: ActionNode;
@@ -9,7 +10,11 @@ type ActionEditorProps = {
   readOnly?: boolean;
 };
 
+const categories = ['Common', 'Binance', 'Telegram'] as const;
+
 export function ActionEditor({ action, onChange, onDelete, depth = 0, readOnly = false }: ActionEditorProps) {
+  const config = getActionConfig(action.type);
+
   const handleTypeChange = (type: ActionType) => {
     onChange?.({
       ...action,
@@ -18,63 +23,57 @@ export function ActionEditor({ action, onChange, onDelete, depth = 0, readOnly =
     });
   };
 
-  const handleAddChild = () => {
-    const newChild = createActionNode();
-    const currentDo = action.arguments.do;
-    const nextDo = currentDo
-      ? Array.isArray(currentDo)
-        ? [...currentDo, newChild]
-        : [currentDo, newChild]
-      : newChild;
-
+  const handleArgumentChange = (key: string, value: unknown) => {
     onChange?.({
       ...action,
       arguments: {
         ...action.arguments,
-        do: nextDo,
+        [key]: value,
       },
     });
   };
 
-  const handleChildChange = (index: number, child: ActionNode) => {
-    const currentDo = action.arguments.do;
-    if (Array.isArray(currentDo)) {
-      const nextDo = [...currentDo];
-      nextDo[index] = child;
-      onChange?.({ ...action, arguments: { ...action.arguments, do: nextDo } });
+  const handleAddChild = (slot: ActionChildSlotConfig) => {
+    const newChild = createActionNode();
+    const currentValue = action.arguments[slot.key];
+    const nextValue = slot.multiple
+      ? Array.isArray(currentValue)
+        ? [...currentValue, newChild]
+        : currentValue
+          ? [currentValue, newChild]
+          : [newChild]
+      : newChild;
+
+    handleArgumentChange(slot.key, nextValue);
+  };
+
+  const handleChildChange = (slot: ActionChildSlotConfig, index: number, child: ActionNode) => {
+    const currentValue = action.arguments[slot.key];
+    if (!slot.multiple) {
+      handleArgumentChange(slot.key, child);
       return;
     }
 
-    onChange?.({ ...action, arguments: { ...action.arguments, do: child } });
+    const children = Array.isArray(currentValue) ? [...currentValue] : [];
+    children[index] = child;
+    handleArgumentChange(slot.key, children);
   };
 
-  const handleDeleteChild = (index: number) => {
-    const currentDo = action.arguments.do;
-    if (Array.isArray(currentDo)) {
-      const nextDo = currentDo.filter((_, childIndex) => childIndex !== index);
-      onChange?.({
-        ...action,
-        arguments: {
-          ...action.arguments,
-          do: nextDo.length === 1 ? nextDo[0] : nextDo,
-        },
-      });
+  const handleDeleteChild = (slot: ActionChildSlotConfig, index: number) => {
+    const currentValue = action.arguments[slot.key];
+    if (!slot.multiple) {
+      handleArgumentChange(slot.key, undefined);
       return;
     }
 
-    onChange?.({ ...action, arguments: { ...action.arguments, do: undefined } });
+    const children = Array.isArray(currentValue) ? currentValue.filter((_, childIndex) => childIndex !== index) : [];
+    handleArgumentChange(slot.key, children);
   };
-
-  const children = action.arguments.do
-    ? Array.isArray(action.arguments.do)
-      ? action.arguments.do
-      : [action.arguments.do]
-    : [];
 
   return (
     <div className="rounded-xl border-2 border-border bg-bg-secondary/30 p-4 my-3" style={{ marginLeft: depth ? 16 : 0 }}>
       <div className="flex flex-col md:flex-row gap-3 md:items-center mb-3">
-        <label className="font-medium text-primary md:w-28" htmlFor={`action-type-${action.id}`}>Select Type</label>
+        <label className="font-medium text-primary md:w-32" htmlFor={`action-type-${action.id}`}>Action Type</label>
         <select
           id={`action-type-${action.id}`}
           value={action.type}
@@ -83,8 +82,12 @@ export function ActionEditor({ action, onChange, onDelete, depth = 0, readOnly =
           className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
         >
           <option value="">Select Type</option>
-          {ACTION_TYPES.map((type) => (
-            <option key={type.value} value={type.value}>{type.label}</option>
+          {categories.map(category => (
+            <optgroup key={category} label={category}>
+              {ACTION_TYPES.filter(type => type.category === category).map(type => (
+                <option key={type.value} value={type.value}>{type.label}</option>
+              ))}
+            </optgroup>
           ))}
         </select>
         {!readOnly && onDelete && (
@@ -98,84 +101,144 @@ export function ActionEditor({ action, onChange, onDelete, depth = 0, readOnly =
         )}
       </div>
 
-      {action.type === 'interval' && (
-        <div className="flex flex-col md:flex-row gap-3 md:items-center mb-3">
-          <label className="font-medium text-primary md:w-28" htmlFor={`action-interval-${action.id}`}>Milliseconds</label>
-          <input
-            id={`action-interval-${action.id}`}
-            type="number"
-            value={action.arguments.interval ?? ''}
-            disabled={readOnly}
-            onChange={(event) => onChange?.({
-              ...action,
-              arguments: { ...action.arguments, interval: Number(event.target.value) || 0 },
-            })}
-            className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
-          />
-        </div>
-      )}
+      {config?.fields?.map(field => (
+        <ActionField
+          key={field.key}
+          field={field}
+          actionId={action.id}
+          value={action.arguments[field.key]}
+          readOnly={readOnly}
+          onChange={(value) => handleArgumentChange(field.key, value)}
+        />
+      ))}
 
-      {action.type === 'timeout' && (
-        <div className="flex flex-col md:flex-row gap-3 md:items-center mb-3">
-          <label className="font-medium text-primary md:w-28" htmlFor={`action-timeout-${action.id}`}>Milliseconds</label>
-          <input
-            id={`action-timeout-${action.id}`}
-            type="number"
-            value={action.arguments.timeout ?? ''}
-            disabled={readOnly}
-            onChange={(event) => onChange?.({
-              ...action,
-              arguments: { ...action.arguments, timeout: Number(event.target.value) || 0 },
-            })}
-            className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
-          />
-        </div>
-      )}
+      {config?.childSlots?.map(slot => (
+        <ActionChildSlot
+          key={slot.key}
+          slot={slot}
+          value={action.arguments[slot.key]}
+          readOnly={readOnly}
+          depth={depth}
+          onAdd={() => handleAddChild(slot)}
+          onChange={(index, child) => handleChildChange(slot, index, child)}
+          onDelete={(index) => handleDeleteChild(slot, index)}
+        />
+      ))}
+    </div>
+  );
+}
 
-      {action.type === 'debug' && (
-        <div className="flex flex-col md:flex-row gap-3 md:items-center mb-3">
-          <label className="font-medium text-primary md:w-28" htmlFor={`action-message-${action.id}`}>Message</label>
-          <input
-            id={`action-message-${action.id}`}
-            type="text"
-            value={action.arguments.message ?? ''}
-            disabled={readOnly}
-            onChange={(event) => onChange?.({
-              ...action,
-              arguments: { ...action.arguments, message: event.target.value },
-            })}
-            className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
-          />
-        </div>
-      )}
+function ActionField({ field, actionId, value, readOnly, onChange }: {
+  field: ActionFieldConfig;
+  actionId: string;
+  value: unknown;
+  readOnly: boolean;
+  onChange: (value: unknown) => void;
+}) {
+  const inputId = `action-${field.key}-${actionId}`;
 
-      {canActionHaveChildren(action.type) && (
-        <div className="mt-4 border-t border-border pt-4">
-          <div className="flex items-center justify-between gap-3 mb-3">
-            <span className="font-medium text-primary">Nested Actions</span>
-            {!readOnly && (
-              <button
-                type="button"
-                onClick={handleAddChild}
-                className="rounded-md bg-primary px-4 py-2 text-background hover:opacity-90"
-              >
-                Add Action
-              </button>
-            )}
-          </div>
+  if (field.type === 'json') {
+    return (
+      <div className="flex flex-col gap-2 mb-3">
+        <label className="font-medium text-primary" htmlFor={inputId}>{field.label}</label>
+        <textarea
+          id={inputId}
+          value={formatJsonValue(value ?? field.defaultValue)}
+          disabled={readOnly}
+          onChange={(event) => onChange(parseJsonValue(event.target.value, value ?? field.defaultValue))}
+          className="min-h-28 rounded-md border-2 border-border bg-background px-3 py-2 font-mono text-sm text-primary disabled:opacity-70"
+        />
+      </div>
+    );
+  }
 
-          {children.map((child, index) => (
-            <ActionEditor
-              key={child.id}
-              action={child}
-              onChange={(nextChild) => handleChildChange(index, nextChild)}
-              onDelete={() => handleDeleteChild(index)}
-              depth={depth + 1}
-              readOnly={readOnly}
-            />
+  return (
+    <div className="flex flex-col md:flex-row gap-3 md:items-center mb-3">
+      <label className="font-medium text-primary md:w-32" htmlFor={inputId}>{field.label}</label>
+      {field.type === 'select' ? (
+        <select
+          id={inputId}
+          value={String(value ?? field.defaultValue ?? '')}
+          disabled={readOnly}
+          onChange={(event) => onChange(event.target.value)}
+          className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
+        >
+          {(field.options ?? []).map(option => (
+            <option key={option} value={option}>{option}</option>
           ))}
-        </div>
+        </select>
+      ) : (
+        <input
+          id={inputId}
+          type={field.type === 'number' ? 'number' : 'text'}
+          value={String(value ?? field.defaultValue ?? '')}
+          disabled={readOnly}
+          onChange={(event) => onChange(field.type === 'number' ? Number(event.target.value) || 0 : event.target.value)}
+          className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
+        />
       )}
     </div>
   );
+}
+
+function ActionChildSlot({ slot, value, readOnly, depth, onAdd, onChange, onDelete }: {
+  slot: ActionChildSlotConfig;
+  value: unknown;
+  readOnly: boolean;
+  depth: number;
+  onAdd: () => void;
+  onChange: (index: number, child: ActionNode) => void;
+  onDelete: (index: number) => void;
+}) {
+  const children = slot.multiple
+    ? Array.isArray(value) ? value.filter(isActionNode) : []
+    : isActionNode(value) ? [value] : [];
+
+  return (
+    <div className="mt-4 border-t border-border pt-4">
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <span className="font-medium text-primary">{slot.label}</span>
+        {!readOnly && (slot.multiple || children.length === 0) && (
+          <button
+            type="button"
+            onClick={onAdd}
+            className="rounded-md bg-primary px-4 py-2 text-background hover:opacity-90"
+          >
+            Add Action
+          </button>
+        )}
+      </div>
+
+      {children.map((child, index) => (
+        <ActionEditor
+          key={child.id}
+          action={child}
+          onChange={(nextChild) => onChange(index, nextChild)}
+          onDelete={() => onDelete(index)}
+          depth={depth + 1}
+          readOnly={readOnly}
+        />
+      ))}
+    </div>
+  );
+}
+
+function formatJsonValue(value: unknown): string {
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return '';
+  }
+}
+
+function parseJsonValue(raw: string, fallback: unknown): unknown {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+function isActionNode(value: unknown): value is ActionNode {
+  return typeof value === 'object' && value !== null && 'id' in value && 'type' in value && 'arguments' in value;
 }

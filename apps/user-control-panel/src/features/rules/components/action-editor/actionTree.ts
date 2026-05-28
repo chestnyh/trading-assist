@@ -1,12 +1,9 @@
-import { ActionNode, ActionTypeConfig } from './types';
+import { ACTION_TYPES } from './actionDefinitions';
+import { ActionNode, ActionType, ActionTypeConfig } from './types';
 
-export const ACTION_TYPES: ActionTypeConfig[] = [
-  { value: 'interval', label: 'Interval', canHaveChildren: true },
-  { value: 'timeout', label: 'Timeout', canHaveChildren: true },
-  { value: 'debug', label: 'Debug', canHaveChildren: false },
-];
+export { ACTION_TYPES } from './actionDefinitions';
 
-export function createActionNode(type: ActionNode['type'] = ''): ActionNode {
+export function createActionNode(type: ActionType = ''): ActionNode {
   return {
     id: Math.random().toString(36).substr(2, 9),
     type,
@@ -14,24 +11,28 @@ export function createActionNode(type: ActionNode['type'] = ''): ActionNode {
   };
 }
 
-export function getDefaultArguments(type: ActionNode['type']): ActionNode['arguments'] {
-  if (type === 'interval') {
-    return { interval: 1000 };
-  }
-
-  if (type === 'timeout') {
-    return { timeout: 90000 };
-  }
-
-  if (type === 'debug') {
-    return { message: '' };
-  }
-
-  return {};
+export function getActionConfig(type: ActionType): ActionTypeConfig | undefined {
+  return ACTION_TYPES.find(actionType => actionType.value === type);
 }
 
-export function canActionHaveChildren(type: ActionNode['type']): boolean {
-  return ACTION_TYPES.some(actionType => actionType.value === type && actionType.canHaveChildren);
+export function getDefaultArguments(type: ActionType): Record<string, unknown> {
+  const config = getActionConfig(type);
+  if (!config) {
+    return {};
+  }
+
+  const result: Record<string, unknown> = {};
+  for (const field of config.fields ?? []) {
+    if (!field.optional || field.defaultValue !== '') {
+      result[field.key] = cloneValue(field.defaultValue);
+    }
+  }
+
+  return result;
+}
+
+export function canActionHaveChildren(type: ActionType): boolean {
+  return Boolean(getActionConfig(type)?.childSlots?.length);
 }
 
 export function actionTreeToRuleBody(action: ActionNode): unknown {
@@ -39,30 +40,44 @@ export function actionTreeToRuleBody(action: ActionNode): unknown {
     return null;
   }
 
-  const result: { type: string; arguments: Record<string, unknown> } = {
+  const config = getActionConfig(action.type);
+  if (!config) {
+    return null;
+  }
+
+  const args: Record<string, unknown> = {};
+
+  for (const field of config.fields ?? []) {
+    const value = action.arguments[field.key];
+    if (field.optional && (value === '' || value === undefined || value === null)) {
+      continue;
+    }
+    args[field.key] = value ?? cloneValue(field.defaultValue);
+  }
+
+  for (const slot of config.childSlots ?? []) {
+    const value = action.arguments[slot.key];
+    if (!value) {
+      args[slot.key] = slot.multiple ? [] : createActionBodyPlaceholder();
+      continue;
+    }
+
+    if (slot.multiple) {
+      const children = Array.isArray(value) ? value : [value];
+      args[slot.key] = children
+        .filter(isActionNode)
+        .map(actionTreeToRuleBody)
+        .filter(Boolean);
+      continue;
+    }
+
+    args[slot.key] = isActionNode(value) ? actionTreeToRuleBody(value) : createActionBodyPlaceholder();
+  }
+
+  return {
     type: action.type,
-    arguments: {},
+    arguments: args,
   };
-
-  if (action.type === 'interval') {
-    result.arguments.interval = action.arguments.interval ?? 1000;
-  }
-
-  if (action.type === 'timeout') {
-    result.arguments.timeout = action.arguments.timeout ?? 90000;
-  }
-
-  if (action.type === 'debug') {
-    result.arguments.message = action.arguments.message ?? '';
-  }
-
-  if (canActionHaveChildren(action.type) && action.arguments.do) {
-    result.arguments.do = Array.isArray(action.arguments.do)
-      ? action.arguments.do.map(actionTreeToRuleBody)
-      : actionTreeToRuleBody(action.arguments.do);
-  }
-
-  return result;
 }
 
 export function parseRuleBodyToActionTree(ruleBody: unknown): ActionNode | null {
@@ -71,62 +86,102 @@ export function parseRuleBodyToActionTree(ruleBody: unknown): ActionNode | null 
   }
 
   const type = ruleBody.type;
-  if (type !== 'interval' && type !== 'timeout' && type !== 'debug') {
+  if (!isActionType(type)) {
     return null;
   }
 
-  const args = isRecord(ruleBody.arguments) ? ruleBody.arguments : {};
-  const action: ActionNode = {
-    id: createActionNode(type).id,
-    type,
-    arguments: {},
-  };
-
-  if (type === 'interval') {
-    if (args.interval !== undefined && typeof args.interval !== 'number') {
-      return null;
-    }
-    action.arguments.interval = args.interval ?? 1000;
+  const config = getActionConfig(type);
+  if (!config) {
+    return null;
   }
 
-  if (type === 'timeout') {
-    if (args.timeout !== undefined && typeof args.timeout !== 'number') {
+  const sourceArgs = isRecord(ruleBody.arguments) ? ruleBody.arguments : {};
+  const args: Record<string, unknown> = {};
+
+  for (const field of config.fields ?? []) {
+    const value = sourceArgs[field.key];
+    if (value === undefined) {
+      if (!field.optional) {
+        args[field.key] = cloneValue(field.defaultValue);
+      }
+      continue;
+    }
+
+    if (!isValidFieldValue(field.type, value)) {
       return null;
     }
-    action.arguments.timeout = args.timeout ?? 90000;
+
+    args[field.key] = value;
   }
 
-  if (type === 'debug') {
-    if (args.message !== undefined && typeof args.message !== 'string') {
-      return null;
+  for (const slot of config.childSlots ?? []) {
+    const value = sourceArgs[slot.key];
+    if (value === undefined || value === null) {
+      continue;
     }
-    action.arguments.message = args.message ?? '';
-    return action;
-  }
 
-  if (args.do !== undefined) {
-    if (Array.isArray(args.do)) {
-      const children = args.do.map(parseRuleBodyToActionTree);
+    if (slot.multiple) {
+      if (!Array.isArray(value)) {
+        return null;
+      }
+      const children = value.map(parseRuleBodyToActionTree);
       if (children.some(child => child === null)) {
         return null;
       }
-      action.arguments.do = children as ActionNode[];
-    } else {
-      const child = parseRuleBodyToActionTree(args.do);
-      if (!child) {
-        return null;
-      }
-      action.arguments.do = child;
+      args[slot.key] = children as ActionNode[];
+      continue;
     }
+
+    const child = parseRuleBodyToActionTree(value);
+    if (!child) {
+      return null;
+    }
+    args[slot.key] = child;
   }
 
-  return action;
+  return {
+    id: createActionNode(type).id,
+    type,
+    arguments: args,
+  };
 }
 
 export function isParseableRuleBody(ruleBody: unknown): boolean {
   return parseRuleBodyToActionTree(ruleBody) !== null;
 }
 
+function isActionType(value: unknown): value is Exclude<ActionType, ''> {
+  return typeof value === 'string' && ACTION_TYPES.some(actionType => actionType.value === value);
+}
+
+function isActionNode(value: unknown): value is ActionNode {
+  return isRecord(value) && 'type' in value && 'arguments' in value;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isValidFieldValue(type: string, value: unknown): boolean {
+  if (type === 'text' || type === 'select') {
+    return typeof value === 'string';
+  }
+
+  if (type === 'number') {
+    return typeof value === 'number' && Number.isFinite(value);
+  }
+
+  return true;
+}
+
+function cloneValue<T>(value: T): T {
+  if (value === undefined || value === null) {
+    return value;
+  }
+
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
+function createActionBodyPlaceholder(): unknown {
+  return actionTreeToRuleBody(createActionNode());
 }
