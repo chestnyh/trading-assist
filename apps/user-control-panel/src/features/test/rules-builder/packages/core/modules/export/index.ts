@@ -1,1 +1,0 @@
-export { jsonLogicFormat } from "./jsonLogic";
