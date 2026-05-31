@@ -3,12 +3,11 @@ const { join } = require('path');
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { NxReactWebpackPlugin } = require('@nx/react/webpack-plugin');
 const webpack = require('webpack');
-const { ServicesConfigs } = require('../../libs/configs/dist/src');
+const { ServicesConfigs } = require('@trading-bot/configs');
 
-console.log('process.env.NODE_ENV', process.env.NODE_ENV);
-const configs = new ServicesConfigs(join(__dirname, '../..'));
-
-console.log('configs========================', configs.get('API_BASE_URL'));
+const getConfigs = () => {
+  return new ServicesConfigs(join(__dirname, '../..'));
+};
 
 module.exports = {
   output: {
@@ -39,7 +38,7 @@ module.exports = {
       // svgr: false
     }),
     new webpack.DefinePlugin({
-      'process.env.API_BASE_URL': JSON.stringify(configs.get('API_BASE_URL') ?? ''),
+      'process.env.API_BASE_URL': JSON.stringify(getConfigs().get('API_BASE_URL') ?? ''),
     }),
   ],
 };
