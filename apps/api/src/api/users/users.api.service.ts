@@ -3,7 +3,6 @@ import { ModelsService } from '@trading-bot/models';
 import { CryptoUtilsService } from '@trading-bot/crypto-utils';
 import { CreateUserDto } from './dto/create-user.dto';
 import { randomUUID, randomInt } from 'crypto';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class UsersApiService {
@@ -55,21 +54,20 @@ export class UsersApiService {
 
       return newUser;
     } catch (error) {
-      // Handle Prisma unique constraint violations
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          // Extract the field name from the error meta
-          const target = error.meta?.target as string[] | undefined;
-          const field = target?.[0] || 'field';
-          
-          // Create user-friendly error message
-          const fieldName = field === 'nickname' ? 'nickname' : field === 'email' ? 'email' : field;
-          throw new BadRequestException(
-            `User with this ${fieldName} already exists. Please choose a different ${fieldName}.`
-          );
-        }
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error &&
+        (error as { code: string }).code === 'P2002'
+      ) {
+        const target = (error as { meta?: { target?: string[] } }).meta?.target;
+        const field = target?.[0] ?? 'field';
+        const fieldName =
+          field === 'nickname' ? 'nickname' : field === 'email' ? 'email' : field;
+        throw new BadRequestException(
+          `User with this ${fieldName} already exists. Please choose a different ${fieldName}.`,
+        );
       }
-      // Re-throw other errors
       throw error;
     }
   }

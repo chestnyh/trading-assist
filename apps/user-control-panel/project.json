@@ -5,5 +5,31 @@
   "projectType": "application",
   "tags": [],
   "// targets": "to see all targets run: nx show project user-control-panel --web",
-  "targets": {}
+  "targets": {
+    "build": {
+      "dependsOn": ["configs:build", "^build"],
+      "defaultConfiguration": "development",
+      "configurations": {
+        "development": {
+          "args": ["--node-env=development", "--mode=development"]
+        },
+        "production": {
+          "args": ["--node-env=production", "--mode=production"]
+        }
+      }
+    },
+    "serve": {
+      "dependsOn": ["configs:build"]
+    },
+    "preview": {
+      "dependsOn": ["configs:build"]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint src",
+        "cwd": "apps/user-control-panel"
+      }
+    }
+  }
 }

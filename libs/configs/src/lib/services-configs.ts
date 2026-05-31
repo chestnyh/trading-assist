@@ -5,10 +5,12 @@ import { getFiniteNumber } from "./utils";
  * TODO add description
  */
 export class ServicesConfigs extends Configs {
-  constructor() {
-    super();
+  constructor(envBasePath?: string) {
+    super(envBasePath);
+    console.log('process.env[API_BASE_URL]', process.env['API_BASE_URL']);
     this.configs = {
       ...this.configs,
+      API_BASE_URL: process.env['API_BASE_URL'],
       API_HOST: process.env['API_HOST'] || 'http://localhost',
       API_PORT: process.env['API_PORT'] ? parseInt(process.env['API_PORT'], 10).toString() : '3001',
       DB_USER: process.env['DB_USER'],

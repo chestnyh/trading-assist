@@ -149,3 +149,10 @@ notes.md
 
 # config folder for netlify
 .netlify
+
+# temporary files
+tmp/
+
+# Prisma generated clients
+libs/models/src/generated/
+libs/models/.prisma/

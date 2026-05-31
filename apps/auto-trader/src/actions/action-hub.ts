@@ -74,6 +74,7 @@ export class ActionsHub {
             try {
                 d();
             } catch {
+                /* disposal is best-effort */
             }
         }
         this.disposers = [];

@@ -4,16 +4,16 @@ import { ECRClient, GetAuthorizationTokenCommand } from "@aws-sdk/client-ecr";
 export default async function getECRCredentials(configProvider: DevopsConfigs) {
 
     const ecrClient = new ECRClient({
-        region: configProvider.get('AWS_ECR_REGION'),
+        region: configProvider.get('AWS_ECR_REGION') as string,
         credentials: {
-            accessKeyId: configProvider.get('AWS_ECR_ACCESS_KEY_ID'),
-            secretAccessKey: configProvider.get('AWS_ECR_SECRET_ACCESS_KEY'),
+            accessKeyId: configProvider.get('AWS_ECR_ACCESS_KEY_ID') as string,
+            secretAccessKey: configProvider.get('AWS_ECR_SECRET_ACCESS_KEY') as string,
         }
     });
 
     console.log('Authenticating Docker to AWS ECR using @aws-sdk/client-ecr...');
     const authCommand = new GetAuthorizationTokenCommand({
-        registryIds: [configProvider.get('AWS_ECR_ACCOUNT_ID')],
+        registryIds: [configProvider.get('AWS_ECR_ACCOUNT_ID') as string],
     });
 
     console.log('Sending auth command to AWS ECR...');

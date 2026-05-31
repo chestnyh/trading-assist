@@ -2,8 +2,8 @@
 FROM node:18-alpine AS base
 WORKDIR /app
 
-# Copy nx configuration files
-COPY package.json pnpm-lock.yaml* ./
+# Copy workspace structure and nx configuration files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY nx.json ./nx.json
 COPY jest.preset.cjs ./jest.preset.cjs
 COPY .eslintrc.json ./.eslintrc.json

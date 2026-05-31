@@ -63,8 +63,11 @@ export const customInstance = async <T>(
   schema?: z.ZodSchema<T>
 ): Promise<T> => {
   // Base URL configuration
-  const baseURL = process.env['API_BASE_URL'] || 'http://localhost:3001';
+  const baseURL = process.env['API_BASE_URL'];
   const fullUrl = url.startsWith('http') ? url : `${baseURL}${url}`;
+  
+  console.log('fullUrl', fullUrl);
+  console.log('baseURL', baseURL);
 
   // When schema matching, use the URL pathname so absolute URLs are supported.
   const urlPath = url.startsWith('http') ? new URL(url).pathname : url;
@@ -117,7 +120,7 @@ export const customInstance = async <T>(
     // Handle network errors (connection refused, timeout, etc.)
     throw {
       message: networkError.message?.includes('Failed to fetch') || networkError.message?.includes('ERR_CONNECTION_REFUSED')
-        ? 'Failed to connect to the server. Make sure the backend is running on port 3001.'
+        ? `Failed to connect to the server. Make sure the backend is running on ${baseURL}.`
         : `Network Error: ${networkError.message || 'Unknown connection error'}`,
       status: 0,
       isNetworkError: true,
@@ -135,7 +138,7 @@ export const customInstance = async <T>(
       message: response.statusText,
       statusCode: response.status,
     }));
-    
+
     // NestJS error format: { statusCode, message, error }
     // Extract message from NestJS error format or use statusText
     const error = {
@@ -143,7 +146,7 @@ export const customInstance = async <T>(
       status: errorData.statusCode || response.status,
       ...errorData,
     };
-    
+
     throw error;
   }
 

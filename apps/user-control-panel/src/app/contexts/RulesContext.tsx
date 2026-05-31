@@ -118,7 +118,6 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     try {
       await rulesControllerUpdate(ruleId, updatedRule as any);
-
       await fetchRules(currentPage);
       return true;
     } finally {

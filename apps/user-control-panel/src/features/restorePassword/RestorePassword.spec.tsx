@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { RestorePassword } from './RestorePassword';
@@ -50,6 +50,7 @@ describe('RestorePassword', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         localStorageMock.clear();
+        mockCustomInstance.mockReset();
     });
 
     const setup = async () => {
@@ -66,6 +67,23 @@ describe('RestorePassword', () => {
             </MemoryRouter>
         );
         return { user };
+    };
+
+    const navigateToStep2 = async (user: ReturnType<typeof userEvent.setup>) => {
+        mockCustomInstance.mockResolvedValueOnce({
+            token: 'test-token-123',
+            message: 'Password reset code sent to your email',
+        });
+
+        const emailInput = screen.getByLabelText(/email/i);
+        await user.type(emailInput, 'test@example.com');
+
+        const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
+        await user.click(submitButton);
+
+        await waitFor(() => {
+            expect(screen.getByText(/insert code/i)).toBeInTheDocument();
+        });
     };
 
     describe('Step 1: Email Input', () => {
@@ -270,23 +288,6 @@ describe('RestorePassword', () => {
     });
 
     describe('Step 2: Code Verification', () => {
-        const navigateToStep2 = async (user: ReturnType<typeof userEvent.setup>) => {
-            mockCustomInstance.mockResolvedValueOnce({
-                token: 'test-token-123',
-                message: 'Password reset code sent to your email',
-            });
-
-            const emailInput = screen.getByLabelText(/email/i);
-            await user.type(emailInput, 'test@example.com');
-
-            const submitButton = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
-            await user.click(submitButton);
-
-            await waitFor(() => {
-                expect(screen.getByText(/insert code/i)).toBeInTheDocument();
-            });
-        };
-
         it('renders code input field on step 2', async () => {
             const { user } = await setup();
             await navigateToStep2(user);
@@ -959,6 +960,11 @@ describe('RestorePassword', () => {
             await waitFor(() => {
                 expect(submitButton3).toHaveProperty('disabled', true);
             });
+
+            // Let the delayed mock resolve so async handlers (e.g. localStorage) do not leak into the next test
+            await act(async () => {
+                await new Promise((resolve) => setTimeout(resolve, 150));
+            });
         });
     });
 
@@ -966,27 +972,9 @@ describe('RestorePassword', () => {
         it('displays correct step title for each step', async () => {
             const { user } = await setup();
 
-            // Step 1
             expect(screen.getByText(/insert your email/i)).toBeInTheDocument();
+            await navigateToStep2(user);
 
-            // Navigate to Step 2
-            mockCustomInstance.mockResolvedValue({
-                token: 'test-token-123',
-                message: 'Password reset code sent to your email',
-            });
-
-            const emailInput = screen.getByLabelText(/email/i);
-            await user.type(emailInput, 'test@example.com');
-
-            const submitButton1 = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
-            await user.click(submitButton1);
-
-            await waitFor(() => {
-                expect(screen.getByText(/insert code/i)).toBeInTheDocument();
-            });
-
-            // Navigate to Step 3
-            localStorageMock.setItem('password_reset_token', 'test-token-123');
             mockCustomInstance.mockResolvedValue({
                 message: 'Code verified successfully',
             });
