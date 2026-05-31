@@ -1,28 +1,34 @@
 import * as dotenv from 'dotenv';
+import * as dotenvExpand from 'dotenv-expand';
 import * as path from 'path';
+
+export function loadEnvFile(envFilePath: string): void {
+  const result = dotenv.config({ path: envFilePath, override: true });
+  dotenvExpand.expand(result);
+}
 
 export abstract class Configs {
   protected configs: Record<string, string | boolean | undefined> = {};
 
   constructor(envBasePath?: string){
 
-    console.log('process.env.NODE_ENV', process.env.NODE_ENV);
-
     const base = envBasePath ?? '.';
 
-    let envFile;
-    if (process?.env?.['NODE_ENV'] === 'api-int-tests') {
+    const nodeEnv = process.env['NODE_ENV'];
+    let envFile: string | undefined;
+    if (nodeEnv === 'api-int-tests') {
       envFile = path.join(base, '.env.api-int-tests');
-    }
-    else if (process?.env?.['NODE_ENV'] !== 'production') {
+    } else if (nodeEnv === 'devops') {
+      envFile = path.join(base, '.env.devops');
+    } else if (nodeEnv !== 'production') {
       envFile = path.join(base, '.env.dev');
     }
 
     this.configs['ENV_FILE'] = envFile;
-    this.configs['NODE_ENV'] = process?.env?.['NODE_ENV'];
+    this.configs['NODE_ENV'] = nodeEnv;
 
     if (envFile) {
-      dotenv.config({ path: envFile, override: true });
+      loadEnvFile(envFile);
     }
 
   }
