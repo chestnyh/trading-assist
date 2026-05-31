@@ -171,6 +171,10 @@ function isValidFieldValue(type: string, value: unknown): boolean {
     return typeof value === 'number' && Number.isFinite(value);
   }
 
+  if (type === 'keyValueList' || type === 'stringList') {
+    return Array.isArray(value);
+  }
+
   return true;
 }
 

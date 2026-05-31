@@ -26,7 +26,7 @@ export type ActionNode = {
   arguments: Record<string, unknown>;
 };
 
-export type ActionFieldType = 'text' | 'number' | 'select' | 'json';
+export type ActionFieldType = 'text' | 'number' | 'select' | 'json' | 'keyValueList' | 'stringList';
 
 export type ActionFieldConfig = {
   key: string;
@@ -41,6 +41,7 @@ export type ActionChildSlotConfig = {
   key: string;
   label: string;
   multiple: boolean;
+  allowedActionTypes?: ActionType[];
 };
 
 export type ActionTypeConfig = {

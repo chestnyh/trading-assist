@@ -8,11 +8,12 @@ type ActionEditorProps = {
   onDelete?: () => void;
   depth?: number;
   readOnly?: boolean;
+  allowedActionTypes?: ActionType[];
 };
 
 const categories = ['Common', 'Binance', 'Telegram'] as const;
 
-export function ActionEditor({ action, onChange, onDelete, depth = 0, readOnly = false }: ActionEditorProps) {
+export function ActionEditor({ action, onChange, onDelete, depth = 0, readOnly = false, allowedActionTypes }: ActionEditorProps) {
   const config = getActionConfig(action.type);
 
   const handleTypeChange = (type: ActionType) => {
@@ -84,9 +85,12 @@ export function ActionEditor({ action, onChange, onDelete, depth = 0, readOnly =
           <option value="">Select Type</option>
           {categories.map(category => (
             <optgroup key={category} label={category}>
-              {ACTION_TYPES.filter(type => type.category === category).map(type => (
-                <option key={type.value} value={type.value}>{type.label}</option>
-              ))}
+              {ACTION_TYPES
+                .filter(type => type.category === category)
+                .filter(type => !allowedActionTypes || allowedActionTypes.includes(type.value))
+                .map(type => (
+                  <option key={type.value} value={type.value}>{type.label}</option>
+                ))}
             </optgroup>
           ))}
         </select>
@@ -148,6 +152,109 @@ function ActionField({ field, actionId, value, readOnly, onChange }: {
           onChange={(event) => onChange(parseJsonValue(event.target.value, value ?? field.defaultValue))}
           className="min-h-28 rounded-md border-2 border-border bg-background px-3 py-2 font-mono text-sm text-primary disabled:opacity-70"
         />
+      </div>
+    );
+  }
+
+  if (field.type === 'keyValueList') {
+    const items = Array.isArray(value) ? value : (field.defaultValue as Array<{ key: string; value: string }> | undefined) ?? [];
+    return (
+      <div className="flex flex-col gap-2 mb-3">
+        <label className="font-medium text-primary">{field.label}</label>
+        {items.map((item, index) => (
+          <div key={index} className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Key"
+              value={typeof item === 'object' && item !== null ? (item as { key?: string }).key ?? '' : ''}
+              disabled={readOnly}
+              onChange={(event) => {
+                const nextItems = [...items];
+                nextItems[index] = { ...nextItems[index], key: event.target.value };
+                onChange(nextItems);
+              }}
+              className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
+            />
+            <input
+              type="text"
+              placeholder="Value"
+              value={typeof item === 'object' && item !== null ? (item as { value?: string }).value ?? '' : ''}
+              disabled={readOnly}
+              onChange={(event) => {
+                const nextItems = [...items];
+                nextItems[index] = { ...nextItems[index], value: event.target.value };
+                onChange(nextItems);
+              }}
+              className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
+            />
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={() => {
+                  const nextItems = items.filter((_, i) => i !== index);
+                  onChange(nextItems);
+                }}
+                className="rounded-md border border-error px-3 py-2 text-error hover:bg-error/10"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={() => onChange([...items, { key: '', value: '' }])}
+            className="rounded-md bg-primary px-4 py-2 text-background hover:opacity-90"
+          >
+            Add Item
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  if (field.type === 'stringList') {
+    const items = Array.isArray(value) ? value : (field.defaultValue as string[] | undefined) ?? [];
+    return (
+      <div className="flex flex-col gap-2 mb-3">
+        <label className="font-medium text-primary">{field.label}</label>
+        {items.map((item, index) => (
+          <div key={index} className="flex gap-2">
+            <input
+              type="text"
+              value={String(item)}
+              disabled={readOnly}
+              onChange={(event) => {
+                const nextItems = [...items];
+                nextItems[index] = event.target.value;
+                onChange(nextItems);
+              }}
+              className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
+            />
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={() => {
+                  const nextItems = items.filter((_, i) => i !== index);
+                  onChange(nextItems);
+                }}
+                className="rounded-md border border-error px-3 py-2 text-error hover:bg-error/10"
+              >
+                Remove
+              </button>
+            )}
+          </div>
+        ))}
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={() => onChange([...items, ''])}
+            className="rounded-md bg-primary px-4 py-2 text-background hover:opacity-90"
+          >
+            Add Item
+          </button>
+        )}
       </div>
     );
   }
@@ -217,6 +324,7 @@ function ActionChildSlot({ slot, value, readOnly, depth, onAdd, onChange, onDele
           onDelete={() => onDelete(index)}
           depth={depth + 1}
           readOnly={readOnly}
+          allowedActionTypes={slot.allowedActionTypes}
         />
       ))}
     </div>
@@ -224,6 +332,9 @@ function ActionChildSlot({ slot, value, readOnly, depth, onAdd, onChange, onDele
 }
 
 function formatJsonValue(value: unknown): string {
+  if (value === null || value === undefined) {
+    return '';
+  }
   try {
     return JSON.stringify(value, null, 2);
   } catch {
@@ -232,6 +343,9 @@ function formatJsonValue(value: unknown): string {
 }
 
 function parseJsonValue(raw: string, fallback: unknown): unknown {
+  if (raw.trim() === '') {
+    return null;
+  }
   try {
     return JSON.parse(raw);
   } catch {

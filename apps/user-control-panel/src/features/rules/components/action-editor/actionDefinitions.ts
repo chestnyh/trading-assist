@@ -21,20 +21,20 @@ export const ACTION_TYPES: ActionTypeConfig[] = [
     value: 'add_to_heap',
     label: 'Add to Heap',
     category: 'Common',
-    fields: [{ key: 'items', label: 'Items', type: 'json', defaultValue: [{ key: 'key.to.add', value: '__sequenceContext__.value.to.add' }] }],
+    fields: [{ key: 'items', label: 'Items', type: 'keyValueList', defaultValue: [{ key: 'key.to.add', value: '__sequenceContext__.value.to.add' }] }],
   },
   {
     value: 'delete_from_heap',
     label: 'Delete from Heap',
     category: 'Common',
-    fields: [{ key: 'keys', label: 'Keys', type: 'json', defaultValue: ['some.value.key.to.delete'] }],
+    fields: [{ key: 'keys', label: 'Keys', type: 'stringList', defaultValue: ['some.value.key.to.delete'] }],
   },
   {
     value: 'if_then',
     label: 'If Then',
     category: 'Common',
     childSlots: [
-      { key: 'if', label: 'If', multiple: false },
+      { key: 'if', label: 'If', multiple: false, allowedActionTypes: ['resolve', 'includes'] },
       { key: 'then', label: 'Then', multiple: true },
     ],
   },
@@ -55,7 +55,7 @@ export const ACTION_TYPES: ActionTypeConfig[] = [
     label: 'Resolve',
     category: 'Common',
     fields: [
-      { key: 'expression', label: 'Expression', type: 'json', defaultValue: {} },
+      { key: 'expression', label: 'Expression', type: 'text', defaultValue: '' },
       { key: 'saveTo', label: 'Save To', type: 'text', defaultValue: '', optional: true },
     ],
   },
