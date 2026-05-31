@@ -98,6 +98,9 @@ export function parseRuleBodyToActionTree(ruleBody: unknown): ActionNode | null 
   const sourceArgs = isRecord(ruleBody.arguments) ? ruleBody.arguments : {};
   const args: Record<string, unknown> = {};
 
+  // Ignore legacy fields like 'name' and 'description' that might be in the rule body
+  const ignoredFields = ['name', 'description'];
+
   for (const field of config.fields ?? []) {
     const value = sourceArgs[field.key];
     if (value === undefined) {
@@ -107,8 +110,13 @@ export function parseRuleBodyToActionTree(ruleBody: unknown): ActionNode | null 
       continue;
     }
 
+    // Skip validation for unknown fields to be more lenient with old configs
     if (!isValidFieldValue(field.type, value)) {
-      return null;
+      // If the field doesn't match expected type, use default value instead of failing
+      if (!field.optional) {
+        args[field.key] = cloneValue(field.defaultValue);
+      }
+      continue;
     }
 
     args[field.key] = value;

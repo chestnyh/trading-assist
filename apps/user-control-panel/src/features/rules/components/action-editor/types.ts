@@ -14,6 +14,7 @@ export type ActionType =
   | 'cron'
   | 'includes'
   | 'stop_sequence'
+  | 'binance_get_ticker'
   | 'binance_spot_get_ticker'
   | 'binance_spot_get_klines'
   | 'binance_um_futures_get_ticker'

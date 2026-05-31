@@ -104,6 +104,15 @@ export const ACTION_TYPES: ActionTypeConfig[] = [
     fields: [],
   },
   {
+    value: 'binance_get_ticker',
+    label: 'Get Ticker (Legacy)',
+    category: 'Binance',
+    fields: [
+      { key: 'symbol', label: 'Symbol', type: 'text', defaultValue: 'BTCUSDT' },
+      { key: 'resultKey', label: 'Result Key', type: 'text', defaultValue: '', optional: true },
+    ],
+  },
+  {
     value: 'binance_spot_get_ticker',
     label: 'Spot Get Ticker',
     category: 'Binance',
