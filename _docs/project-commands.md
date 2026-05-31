@@ -70,8 +70,8 @@ Configs library. More info [here](../libs/configs/README.md)
  * **all:start** - Start all services
  * **all:test** - Run tests for all services and libraries
  * **all:lint** - Run linting for all services and libraries
- * **all:check-envs:before-commit** - Automated check used by Husky `pre-commit` hook. Ensures no local keys are missing from `.example` files.
- * **all:check-envs:after-pull** - Automated check used by Husky `post-merge` hook. Interactively prompts to add new keys from `.example` to local `.env` files.
+ * **development:check-envs:examples-check** - Ensures no local keys are missing from `.example` files. Used by Husky `pre-commit` hook.
+ * **development:check-envs:local-checks** - Interactively prompts to add new keys from `.example` to local `.env` files. Used by Husky `post-merge` hook.
 ### docker
 `docker` domain to work with external services
  * **docker:external:up** - Start external services (PostgreSQL)

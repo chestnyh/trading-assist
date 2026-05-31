@@ -8,9 +8,9 @@ let DOCKER_PROFILE: string;
 let DOCKER_PROJECT_NAME: string;
 
 try {
-  ENV_FILE = scriptConfigs.getRequired('ENV_FILE');
-  DOCKER_PROFILE = scriptConfigs.getRequired('DOCKER_PROFILE');
-  DOCKER_PROJECT_NAME = scriptConfigs.getRequired('DOCKER_PROJECT_NAME');
+  ENV_FILE = scriptConfigs.getRequired('ENV_FILE') as string;
+  DOCKER_PROFILE = scriptConfigs.getRequired('DOCKER_PROFILE') as string;
+  DOCKER_PROJECT_NAME = scriptConfigs.getRequired('DOCKER_PROJECT_NAME') as string;
 } catch (error) {
   console.error(`error: ${(error as Error).message}`);
   process.exit(1);

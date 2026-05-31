@@ -10,7 +10,7 @@ if (!envFile) {
   process.exit(1);
 }
 
-if (!fs.existsSync(envFile)) {
+if (!fs.existsSync(envFile as string)) {
   console.error(`ENV_FILE does not exist: ${envFile}`);
   process.exit(1);
 }
