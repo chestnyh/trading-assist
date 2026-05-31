@@ -83,16 +83,19 @@ export function ActionEditor({ action, onChange, onDelete, depth = 0, readOnly =
           className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
         >
           <option value="">Select Type</option>
-          {categories.map(category => (
-            <optgroup key={category} label={category}>
-              {ACTION_TYPES
-                .filter(type => type.category === category)
-                .filter(type => !allowedActionTypes || allowedActionTypes.includes(type.value))
-                .map(type => (
+          {categories.map(category => {
+            const typesInCategory = ACTION_TYPES
+              .filter(type => type.category === category)
+              .filter(type => !allowedActionTypes || allowedActionTypes.includes(type.value));
+            if (typesInCategory.length === 0) return null;
+            return (
+              <optgroup key={category} label={category}>
+                {typesInCategory.map(type => (
                   <option key={type.value} value={type.value}>{type.label}</option>
                 ))}
-            </optgroup>
-          ))}
+              </optgroup>
+            );
+          })}
         </select>
         {!readOnly && onDelete && (
           <button
@@ -158,6 +161,12 @@ function ActionField({ field, actionId, value, readOnly, onChange }: {
 
   if (field.type === 'keyValueList') {
     const items = Array.isArray(value) ? value : (field.defaultValue as Array<{ key: string; value: string }> | undefined) ?? [];
+    const hasEmptyItem = items.some(item => {
+      if (typeof item !== 'object' || item === null) return true;
+      const keyValue = (item as { key?: string }).key ?? '';
+      const valueValue = (item as { value?: string }).value ?? '';
+      return keyValue.trim() === '' || valueValue.trim() === '';
+    });
     return (
       <div className="flex flex-col gap-2 mb-3">
         <label className="font-medium text-primary">{field.label}</label>
@@ -205,7 +214,8 @@ function ActionField({ field, actionId, value, readOnly, onChange }: {
           <button
             type="button"
             onClick={() => onChange([...items, { key: '', value: '' }])}
-            className="rounded-md bg-primary px-4 py-2 text-background hover:opacity-90"
+            disabled={hasEmptyItem}
+            className="rounded-md bg-primary px-4 py-2 text-background hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Add Item
           </button>
@@ -216,6 +226,7 @@ function ActionField({ field, actionId, value, readOnly, onChange }: {
 
   if (field.type === 'stringList') {
     const items = Array.isArray(value) ? value : (field.defaultValue as string[] | undefined) ?? [];
+    const hasEmptyItem = items.some(item => String(item).trim() === '');
     return (
       <div className="flex flex-col gap-2 mb-3">
         <label className="font-medium text-primary">{field.label}</label>
@@ -250,7 +261,8 @@ function ActionField({ field, actionId, value, readOnly, onChange }: {
           <button
             type="button"
             onClick={() => onChange([...items, ''])}
-            className="rounded-md bg-primary px-4 py-2 text-background hover:opacity-90"
+            disabled={hasEmptyItem}
+            className="rounded-md bg-primary px-4 py-2 text-background hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Add Item
           </button>

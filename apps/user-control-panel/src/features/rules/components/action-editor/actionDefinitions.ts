@@ -8,7 +8,7 @@ export const ACTION_TYPES: ActionTypeConfig[] = [
     fields: [
       { key: 'message', label: 'Message', type: 'text', defaultValue: '' },
       { key: 'level', label: 'Level', type: 'select', defaultValue: 'info', options: ['info', 'warn', 'error', 'debug'] },
-      { key: 'data', label: 'Data', type: 'json', defaultValue: null, optional: true },
+      { key: 'data', label: 'Data', type: 'text', defaultValue: '', optional: true },
     ],
   },
   {
