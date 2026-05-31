@@ -16,6 +16,7 @@ import { RulesPage } from '../features/rules/RulesPage';
 import { AddRulePage } from '../features/rules/AddRulePage';
 import { RuleDetailsPage } from '../features/rules/RuleDetailsPage';
 import { UpdateRulePage } from '../features/rules/UpdateRulePage';
+import { Test } from '../features/test/Test';
 
 function AppRoutes() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -52,6 +53,7 @@ function AppRoutes() {
             }
           />
           <Route path="/main" element={<Main />} />
+          <Route path="/test" element={<Test />} />
           <Route
             element={
               <ProtectedRoute>
@@ -66,8 +68,7 @@ function AppRoutes() {
               <Route path=":id" element={<RuleDetailsPage />} />
               <Route path=":id/update" element={<UpdateRulePage />} />
             </Route>
-            <Route path="/settings" element={ <Settings />}
-            />
+            <Route path="/settings" element={<Settings />} />
           </Route>
           <Route
             path="*"

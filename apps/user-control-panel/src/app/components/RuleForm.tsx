@@ -4,6 +4,13 @@ import { TextArea } from "../../shared/ui/forms/TextArea";
 import { JsonEditorField } from "../../shared/ui/forms/JsonEditorField";
 import { Button } from "../../shared/ui/buttons/Button";
 import { extractFieldToMessageFromValidationError, isValidationError } from '@trading-bot/api-client';
+import {
+  ActionEditor,
+  ActionNode,
+  actionTreeToRuleBody,
+  createActionNode,
+  parseRuleBodyToActionTree,
+} from "../../features/rules/components/action-editor";
 
 interface RuleFormProps {
   initialData?: { name: string; description: string; ruleBody: unknown };
@@ -20,23 +27,46 @@ type RuleFormData = {
   ruleBody: unknown | null;
 };
 
+type RuleBodyMode = 'ui' | 'json';
+
 export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLabel, title }: RuleFormProps) {
+  const parsedInitialActionTree = initialData ? parseRuleBodyToActionTree(initialData.ruleBody) : null;
+  const initialActionTree = parsedInitialActionTree ?? createActionNode();
+  const initialMode: RuleBodyMode = initialData && !parsedInitialActionTree ? 'json' : 'ui';
   const [formData, setFormData] = useState<RuleFormData>({
     name: initialData?.name || "",
     description: initialData?.description || "",
-    ruleBody: initialData?.ruleBody ?? null,
+    ruleBody: initialData?.ruleBody ?? actionTreeToRuleBody(initialActionTree),
   });
+  const [mode, setMode] = useState<RuleBodyMode>(initialMode);
+  const [actionTree, setActionTree] = useState<ActionNode>(initialActionTree);
+  const [uiModeError, setUiModeError] = useState<string | null>(initialData && !parsedInitialActionTree ? 'Current rule body cannot be represented in UI mode. JSON mode is still available.' : null);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (initialData) {
+      const parsedActionTree = parseRuleBodyToActionTree(initialData.ruleBody);
       setFormData({
         name: initialData.name,
         description: initialData.description,
         ruleBody: initialData.ruleBody ?? null,
       });
+      setActionTree(parsedActionTree ?? createActionNode());
+      setMode(parsedActionTree ? 'ui' : 'json');
+      setUiModeError(parsedActionTree ? null : 'Current rule body cannot be represented in UI mode. JSON mode is still available.');
+      return;
     }
+
+    const emptyActionTree = createActionNode();
+    setFormData({
+      name: "",
+      description: "",
+      ruleBody: actionTreeToRuleBody(emptyActionTree),
+    });
+    setActionTree(emptyActionTree);
+    setMode('ui');
+    setUiModeError(null);
   }, [initialData]);
 
   const initialRuleBodyString = JSON.stringify(initialData?.ruleBody ?? null);
@@ -76,6 +106,41 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
     }
   };
 
+  const handleModeChange = (nextMode: RuleBodyMode) => {
+    if (nextMode === 'ui') {
+      const parsedActionTree = parseRuleBodyToActionTree(formData.ruleBody);
+
+      if (!parsedActionTree) {
+        setUiModeError('Current rule body cannot be represented in UI mode. JSON mode is still available.');
+        return;
+      }
+
+      setActionTree(parsedActionTree);
+      setUiModeError(null);
+    }
+
+    setMode(nextMode);
+  };
+
+  const handleActionTreeChange = (nextActionTree: ActionNode) => {
+    const nextRuleBody = actionTreeToRuleBody(nextActionTree);
+    setActionTree(nextActionTree);
+    setFormData({ ...formData, ruleBody: nextRuleBody });
+    if (errors.rule) setErrors({ ...errors, rule: "" });
+  };
+
+  const handleJsonChange = (nextRuleBody: unknown) => {
+    setFormData({ ...formData, ruleBody: nextRuleBody });
+    const parsedActionTree = parseRuleBodyToActionTree(nextRuleBody);
+    if (parsedActionTree) {
+      setActionTree(parsedActionTree);
+      setUiModeError(null);
+    } else {
+      setUiModeError('Current rule body cannot be represented in UI mode. JSON mode is still available.');
+    }
+    if (errors.rule) setErrors({ ...errors, rule: "" });
+  };
+
   return (
     <div className="px-4 md:px-8 lg:px-12 py-6 max-w-5xl mx-auto">
       <h1 className="text-h4 text-primary mb-6">{title}</h1>
@@ -113,19 +178,61 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
         required
       />
 
-      <JsonEditorField
-        label="Rule (JSON Format)"
-        id="rule"
-        required
-        disabled={isLoading}
-        value={formData.ruleBody}
-        onChange={(next) => {
-          setFormData({ ...formData, ruleBody: next });
-          if (errors.rule) setErrors({ ...errors, rule: "" });
-        }}
-        error={errors.rule}
-        mode="tree"
-      />
+      <div className="pt-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+          <label className="block text-body-md font-medium text-text-secondary">
+            Rule Body <span className="text-error">*</span>
+          </label>
+          <div className="flex rounded-md border-2 border-border overflow-hidden w-fit">
+            <button
+              type="button"
+              onClick={() => handleModeChange('ui')}
+              disabled={isLoading || !!uiModeError}
+              className={`px-4 py-2 text-sm ${mode === 'ui' ? 'bg-primary text-background' : 'bg-background text-primary'} disabled:opacity-50`}
+            >
+              UI
+            </button>
+            <button
+              type="button"
+              onClick={() => handleModeChange('json')}
+              disabled={isLoading}
+              className={`px-4 py-2 text-sm ${mode === 'json' ? 'bg-primary text-background' : 'bg-background text-primary'}`}
+            >
+              JSON
+            </button>
+          </div>
+        </div>
+
+        {uiModeError && (
+          <div className="mb-3 p-3 rounded-md border border-warning bg-warning/10 text-warning">
+            {uiModeError}
+          </div>
+        )}
+
+        {mode === 'ui' ? (
+          <ActionEditor
+            action={actionTree}
+            onChange={handleActionTreeChange}
+            onDelete={() => handleActionTreeChange(createActionNode())}
+            readOnly={isLoading}
+          />
+        ) : (
+          <JsonEditorField
+            label=""
+            id="rule"
+            required
+            disabled={isLoading}
+            value={formData.ruleBody}
+            onChange={handleJsonChange}
+            error={errors.rule}
+            mode="tree"
+          />
+        )}
+
+        {mode === 'ui' && errors.rule && (
+          <p className="mt-2 text-body-sm text-error dark:text-error">{errors.rule}</p>
+        )}
+      </div>
 
       <div className="flex flex-col sm:flex-row justify-start gap-4 mt-8">
         <Button

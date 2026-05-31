@@ -4,26 +4,26 @@ import ObjectNavigator from '@trading-bot/object-navigator';
 describe('log', () => {
     let sequenceContext;
     let actionsHub: ActionsHub;
-    let originalConsoleLog: typeof console.log;
+    let mockRuleLogsService: { publishLog: jest.Mock };
     
     beforeEach(() => {
-        actionsHub = new ActionsHub(['log'], {});
+        mockRuleLogsService = {
+            publishLog: jest.fn().mockResolvedValue(undefined)
+        };
+        actionsHub = new ActionsHub(1, 1, {}, {}, 'test-run', mockRuleLogsService as any);
         sequenceContext = new ObjectNavigator();
-        originalConsoleLog = console.log;
-        console.log = jest.fn();
     });
 
-    afterEach(() => {
-        console.log = originalConsoleLog;
-    });
-
-    it('should log a message', () => {
+    it('should log a message', async () => {
         const message = 'This message should be logged';
-        actionsHub['log']({message}, { sequenceContext });
-        expect(console.log).toHaveBeenCalledWith(message);
+        await actionsHub['log']({message}, { sequenceContext });
+        expect(mockRuleLogsService.publishLog).toHaveBeenCalled();
+        const callArg = mockRuleLogsService.publishLog.mock.calls[0][0];
+        expect(callArg.message).toBe(message);
+        expect(callArg.level).toBe('info');
     });
 
-    it('should log a message with data from heap', () => {
+    it('should log a message with data from heap', async () => {
         actionsHub['heap'] = new ObjectNavigator({
             user: {
                 name: 'John',
@@ -31,11 +31,13 @@ describe('log', () => {
             }
         });
         const message = 'User Information = ${__heap__.user.name} ${__heap__.user.address}';
-        actionsHub['log']({message}, { sequenceContext });
-        expect(console.log).toHaveBeenCalledWith(`User Information = John 123 Main St, Anytown, USA`);
+        await actionsHub['log']({message}, { sequenceContext });
+        expect(mockRuleLogsService.publishLog).toHaveBeenCalled();
+        const callArg = mockRuleLogsService.publishLog.mock.calls[0][0];
+        expect(callArg.message).toBe('User Information = John 123 Main St, Anytown, USA');
     });
 
-    it('should log a message with a data from sequence context', () => {
+    it('should log a message with a data from sequence context', async () => {
         sequenceContext = new ObjectNavigator({
             deposit: {
                 amount: 1000,
@@ -43,11 +45,13 @@ describe('log', () => {
             }
         });
         const message = 'Deposit Information = amount:${__sequenceContext__.deposit.amount}, date: ${__sequenceContext__.deposit.date}';
-        actionsHub['log']({message}, { sequenceContext });
-        expect(console.log).toHaveBeenCalledWith(`Deposit Information = amount:1000, date: 2021-01-01`);
+        await actionsHub['log']({message}, { sequenceContext });
+        expect(mockRuleLogsService.publishLog).toHaveBeenCalled();
+        const callArg = mockRuleLogsService.publishLog.mock.calls[0][0];
+        expect(callArg.message).toBe('Deposit Information = amount:1000, date: 2021-01-01');
     });
 
-    it('should log a message with a data from heap and sequence context', () => {
+    it('should log a message with a data from heap and sequence context', async () => {
         sequenceContext = new ObjectNavigator({
             deposit: {
                 amount: 8000,
@@ -62,21 +66,27 @@ describe('log', () => {
             }
         });
         const message = 'User (id: ${__heap__.user.id}, name: ${__heap__.user.firstName} ${__heap__.user.lastName}) opened deposit (amount:${__sequenceContext__.deposit.amount}, date: ${__sequenceContext__.deposit.date})';
-        actionsHub['log']({message}, { sequenceContext });
-        expect(console.log).toHaveBeenCalledWith('User (id: 876, name: Eva Smith) opened deposit (amount:8000, date: 2023-01-01)');
+        await actionsHub['log']({message}, { sequenceContext });
+        expect(mockRuleLogsService.publishLog).toHaveBeenCalled();
+        const callArg = mockRuleLogsService.publishLog.mock.calls[0][0];
+        expect(callArg.message).toBe('User (id: 876, name: Eva Smith) opened deposit (amount:8000, date: 2023-01-01)');
     });
 
-    it('should log an empty message if no message is provided', () => {
-        actionsHub['log']({}, { sequenceContext });
-        expect(console.log).toHaveBeenCalledWith('');
+    it('should log an empty message if no message is provided', async () => {
+        await actionsHub['log']({}, { sequenceContext });
+        expect(mockRuleLogsService.publishLog).toHaveBeenCalled();
+        const callArg = mockRuleLogsService.publishLog.mock.calls[0][0];
+        expect(callArg.message).toBe('');
     });
 
-    it('should log a undefined if no information in heap and sequence context', () => {
+    it('should log a undefined if no information in heap and sequence context', async () => {
         sequenceContext = new ObjectNavigator({});
         actionsHub['heap'] = new ObjectNavigator({});
         const message = 'User (id: ${__heap__.user.id}, name: ${__heap__.user.firstName} ${__heap__.user.lastName}) opened deposit (amount:${__sequenceContext__.deposit.amount}, date: ${__sequenceContext__.deposit.date})';
-        actionsHub['log']({message}, { sequenceContext });
-        expect(console.log).toHaveBeenCalledWith('User (id: undefined, name: undefined undefined) opened deposit (amount:undefined, date: undefined)');
+        await actionsHub['log']({message}, { sequenceContext });
+        expect(mockRuleLogsService.publishLog).toHaveBeenCalled();
+        const callArg = mockRuleLogsService.publishLog.mock.calls[0][0];
+        expect(callArg.message).toBe('User (id: undefined, name: undefined undefined) opened deposit (amount:undefined, date: undefined)');
     });
     
 });
