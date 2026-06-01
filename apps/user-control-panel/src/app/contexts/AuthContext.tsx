@@ -183,7 +183,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signUp = async (email: string, password: string, name: string, nickname: string): Promise<boolean> => {
     try {
       // Call your API sign up endpoint
-      const response = await fetch('http://localhost:3001/api/v1/users', {
+      const response = await fetch(`${process.env.API_BASE_URL}/api/v1/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

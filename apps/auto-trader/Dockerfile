@@ -7,8 +7,14 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-COPY package.json pnpm-lock.yaml* ./
+# Copy workspace structure for pnpm install
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/auto-trader/package.json ./apps/auto-trader/
+COPY libs/configs/package.json ./libs/configs/
+COPY libs/models/package.json ./libs/models/
+COPY libs/service-comm/package.json ./libs/service-comm/
+COPY libs/object-navigator/package.json ./libs/object-navigator/
+COPY libs/crypto-utils/package.json ./libs/crypto-utils/
 RUN npm install -g pnpm && pnpm install --frozen-lockfile
 
 # Rebuild the source code only when needed

@@ -1,4 +1,3 @@
-import * as dotenv from 'dotenv';
 import { Configs } from "./configs";
 
 /**
@@ -7,7 +6,6 @@ import { Configs } from "./configs";
 export class DevopsConfigs extends Configs {
   constructor() {
     super();
-    dotenv.config({ path: './.env.devops' });
     this.configs = {
       ...this.configs,
       AWS_ECR_REGION: process.env['AWS_ECR_REGION'],

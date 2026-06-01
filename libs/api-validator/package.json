@@ -3,9 +3,13 @@
   "version": "0.0.1",
   "private": true,
   "type": "commonjs",
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
+  "main": "./dist/src/index.js",
+  "types": "./src/index.ts",
+  "sideEffects": false,
   "dependencies": {
-    "tslib": "^2.3.0"
+    "@nestjs/common": "^10.4.15",
+    "reflect-metadata": "^0.1.14",
+    "tslib": "^2.3.0",
+    "zod": "^4.1.13"
   }
 }

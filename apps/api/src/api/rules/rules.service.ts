@@ -13,7 +13,7 @@ export class RulesService {
    * Create a new rule for a user
    */
   async create(userId: number, createRuleDto: CreateRuleDto): Promise<RuleResponseDto> {
-    const rule = await this.modelsService.$transaction(async (tx) => {
+    const rule = await this.modelsService.runInTransaction(async (tx) => {
       const createdRule = await tx.userRules.create({
         data: {
           name: createRuleDto.name,
@@ -114,7 +114,7 @@ export class RulesService {
       throw new NotFoundException('Rule not found');
     }
 
-    const updatedRule = await this.modelsService.$transaction(async (tx) => {
+    const updatedRule = await this.modelsService.runInTransaction(async (tx) => {
       const rule = await tx.userRules.update({
         where: { id: ruleId },
         data: {

@@ -1,7 +1,13 @@
 /* eslint-disable */
+const { join } = require('path');
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { NxReactWebpackPlugin } = require('@nx/react/webpack-plugin');
-const { join } = require('path');
+const webpack = require('webpack');
+const { ServicesConfigs } = require('@trading-bot/configs');
+
+const getConfigs = () => {
+  return new ServicesConfigs(join(__dirname, '../..'));
+};
 
 module.exports = {
   output: {
@@ -28,13 +34,14 @@ module.exports = {
       assets: ['./src/favicon.ico', './src/assets'],
       // styles: ['./src/styles.scss'],
       styles: ['./src/index.css'],
-      outputHashing: process.env['NODE_ENV'] === 'production' ? 'all' : 'none',
-      optimization: process.env['NODE_ENV'] === 'production',
     }),
     new NxReactWebpackPlugin({
       // Uncomment this line if you don't want to use SVGR
-      // See: https://react-svgr.com/
+      // See: https://react.svgr.com/
       // svgr: false
+    }),
+    new webpack.DefinePlugin({
+      'process.env.API_BASE_URL': JSON.stringify(getConfigs().get('API_BASE_URL') ?? ''),
     }),
   ],
 };

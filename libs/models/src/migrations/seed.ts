@@ -1,9 +1,11 @@
-import { PrismaClient } from '@prisma/client';
-import './_set-configs'
+import { PrismaClient } from '../generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import './_set-configs';
 
 const filePath: string = process.argv[2];
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DB_URL! });
+const prisma = new PrismaClient({ adapter });
 async function main() {
     const {default: seedDataGetter} = await import(filePath);
     const seedData = await seedDataGetter();
