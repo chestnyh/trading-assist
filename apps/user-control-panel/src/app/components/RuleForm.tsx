@@ -111,12 +111,16 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
       const parsedActionTree = parseRuleBodyToActionTree(formData.ruleBody);
 
       if (!parsedActionTree) {
-        setUiModeError('Current rule body cannot be represented in UI mode. JSON mode is still available.');
-        return;
+        // If rule body is null/empty or not parseable, create a fresh empty action tree
+        // instead of blocking the mode switch
+        const emptyActionTree = createActionNode();
+        setActionTree(emptyActionTree);
+        setFormData({ ...formData, ruleBody: actionTreeToRuleBody(emptyActionTree) });
+        setUiModeError(null);
+      } else {
+        setActionTree(parsedActionTree);
+        setUiModeError(null);
       }
-
-      setActionTree(parsedActionTree);
-      setUiModeError(null);
     }
 
     setMode(nextMode);

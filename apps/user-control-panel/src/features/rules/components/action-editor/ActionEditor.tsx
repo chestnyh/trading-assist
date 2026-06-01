@@ -1,3 +1,4 @@
+import React from 'react';
 import { ACTION_TYPES } from './actionDefinitions';
 import { createActionNode, getActionConfig, getDefaultArguments } from './actionTree';
 import { ActionChildSlotConfig, ActionFieldConfig, ActionNode, ActionType } from './types';
@@ -13,7 +14,7 @@ type ActionEditorProps = {
 
 const categories = ['Common', 'Binance', 'Telegram'] as const;
 
-export function ActionEditor({ action, onChange, onDelete, depth = 0, readOnly = false, allowedActionTypes }: ActionEditorProps) {
+const ActionEditorComponent = React.memo(function ActionEditor({ action, onChange, onDelete, depth = 0, readOnly = false, allowedActionTypes }: ActionEditorProps) {
   const config = getActionConfig(action.type);
 
   const handleTypeChange = (type: ActionType) => {
@@ -133,9 +134,23 @@ export function ActionEditor({ action, onChange, onDelete, depth = 0, readOnly =
       ))}
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison: only re-render if action data actually changed
+  const prevArgs = JSON.stringify(prevProps.action.arguments);
+  const nextArgs = JSON.stringify(nextProps.action.arguments);
+  return (
+    prevProps.action.id === nextProps.action.id &&
+    prevProps.action.type === nextProps.action.type &&
+    prevArgs === nextArgs &&
+    prevProps.depth === nextProps.depth &&
+    prevProps.readOnly === nextProps.readOnly &&
+    prevProps.allowedActionTypes?.join(',') === nextProps.allowedActionTypes?.join(',')
+  );
+});
 
-function ActionField({ field, actionId, value, readOnly, onChange }: {
+export { ActionEditorComponent as ActionEditor };
+
+const ActionField = React.memo(function ActionFieldComponent({ field, actionId, value, readOnly, onChange }: {
   field: ActionFieldConfig;
   actionId: string;
   value: unknown;
@@ -298,7 +313,15 @@ function ActionField({ field, actionId, value, readOnly, onChange }: {
       )}
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // Compare by serialized value to prevent re-renders from parent reference changes
+  return (
+    prevProps.actionId === nextProps.actionId &&
+    prevProps.field.key === nextProps.field.key &&
+    prevProps.readOnly === nextProps.readOnly &&
+    JSON.stringify(prevProps.value) === JSON.stringify(nextProps.value)
+  );
+});
 
 function ActionChildSlot({ slot, value, readOnly, depth, onAdd, onChange, onDelete }: {
   slot: ActionChildSlotConfig;
