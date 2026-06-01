@@ -1,32 +1,7 @@
 import { z } from 'zod';
 import { createSchemaValidator } from '../core';
-
-const RuleBodySchema = z.union([
-  z.record(z.string(), z.unknown()),
-  z.string().transform((val, ctx) => {
-    try {
-      const parsed: unknown = JSON.parse(val);
-      const recordResult = z.record(z.string(), z.unknown()).safeParse(parsed);
-      if (!recordResult.success) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Invalid ruleBody JSON',
-          path: ['ruleBody'],
-        });
-        return z.NEVER;
-      }
-
-      return recordResult.data;
-    } catch {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Invalid ruleBody JSON',
-        path: ['ruleBody'],
-      });
-      return z.NEVER;
-    }
-  }),
-]);
+import { RuleBodySchema } from './rule-body';
+export { RuleBodySchema } from './rule-body';
 
 export const CreateRuleDtoSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters long'),
