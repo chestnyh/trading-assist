@@ -175,8 +175,16 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
   }
 
   if (field.type === 'keyValueList') {
-    const items = Array.isArray(value) ? value : (field.defaultValue as Array<{ key: string; value: string }> | undefined) ?? [];
-    const hasEmptyItem = items.some(item => {
+    const allItems = Array.isArray(value) ? value : (field.defaultValue as Array<{ key: string; value: string }> | undefined) ?? [];
+    // Filter out items with both empty key and value to avoid showing empty rows
+    const items = allItems.filter(item => {
+      if (typeof item !== 'object' || item === null) return false;
+      const keyValue = (item as { key?: string }).key ?? '';
+      const valueValue = (item as { value?: string }).value ?? '';
+      return keyValue.trim() !== '' || valueValue.trim() !== '';
+    });
+    // Check if there are any empty items in the original array (for validation)
+    const hasEmptyItem = allItems.some(item => {
       if (typeof item !== 'object' || item === null) return true;
       const keyValue = (item as { key?: string }).key ?? '';
       const valueValue = (item as { value?: string }).value ?? '';
@@ -240,8 +248,11 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
   }
 
   if (field.type === 'stringList') {
-    const items = Array.isArray(value) ? value : (field.defaultValue as string[] | undefined) ?? [];
-    const hasEmptyItem = items.some(item => String(item).trim() === '');
+    const allItems = Array.isArray(value) ? value : (field.defaultValue as string[] | undefined) ?? [];
+    // Filter out empty strings to avoid showing empty rows
+    const items = allItems.filter(item => String(item).trim() !== '');
+    // Check if there are any empty items in the original array (for validation)
+    const hasEmptyItem = allItems.some(item => String(item).trim() === '');
     return (
       <div className="flex flex-col gap-2 mb-3">
         <label className="font-medium text-primary">{field.label}</label>
@@ -352,10 +363,10 @@ function ActionChildSlot({ slot, value, readOnly, depth, onAdd, onChange, onDele
       </div>
 
       {children.map((child, index) => (
-        <ActionEditor
+        <ActionEditorComponent
           key={child.id}
           action={child}
-          onChange={(nextChild) => onChange(index, nextChild)}
+          onChange={(nextChild: ActionNode) => onChange(index, nextChild)}
           onDelete={() => onDelete(index)}
           depth={depth + 1}
           readOnly={readOnly}
