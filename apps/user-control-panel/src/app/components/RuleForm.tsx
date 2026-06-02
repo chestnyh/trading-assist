@@ -29,8 +29,17 @@ type RuleFormData = {
 
 type RuleBodyMode = 'ui' | 'json';
 
+// Strip name/description from rule body for parsing (they're stored separately in form fields)
+const stripMetadata = (ruleBody: unknown): unknown => {
+  if (typeof ruleBody === 'object' && ruleBody !== null && !Array.isArray(ruleBody)) {
+    const { name, description, ...rest } = ruleBody as Record<string, unknown>;
+    return rest;
+  }
+  return ruleBody;
+};
+
 export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLabel, title }: RuleFormProps) {
-  const parsedInitialActionTree = initialData ? parseRuleBodyToActionTree(initialData.ruleBody) : null;
+  const parsedInitialActionTree = initialData ? parseRuleBodyToActionTree(stripMetadata(initialData.ruleBody)) : null;
   const initialActionTree = parsedInitialActionTree ?? createActionNode();
   const initialMode: RuleBodyMode = initialData && !parsedInitialActionTree ? 'json' : 'ui';
   const [formData, setFormData] = useState<RuleFormData>({
@@ -46,7 +55,9 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
 
   useEffect(() => {
     if (initialData) {
-      const parsedActionTree = parseRuleBodyToActionTree(initialData.ruleBody);
+      // Strip metadata before parsing for UI mode
+      const cleanRuleBody = stripMetadata(initialData.ruleBody);
+      const parsedActionTree = parseRuleBodyToActionTree(cleanRuleBody);
       setFormData({
         name: initialData.name,
         description: initialData.description,
@@ -108,7 +119,9 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
 
   const handleModeChange = (nextMode: RuleBodyMode) => {
     if (nextMode === 'ui') {
-      const parsedActionTree = parseRuleBodyToActionTree(formData.ruleBody);
+      // Strip metadata before parsing for UI mode
+      const cleanRuleBody = stripMetadata(formData.ruleBody);
+      const parsedActionTree = parseRuleBodyToActionTree(cleanRuleBody);
 
       if (!parsedActionTree) {
         // If rule body is null/empty or not parseable, create a fresh empty action tree
@@ -134,8 +147,11 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
   };
 
   const handleJsonChange = (nextRuleBody: unknown) => {
+    // Store the full rule body including name/description
     setFormData({ ...formData, ruleBody: nextRuleBody });
-    const parsedActionTree = parseRuleBodyToActionTree(nextRuleBody);
+    // But parse only the action part (without name/description)
+    const cleanRuleBody = stripMetadata(nextRuleBody);
+    const parsedActionTree = parseRuleBodyToActionTree(cleanRuleBody);
     if (parsedActionTree) {
       setActionTree(parsedActionTree);
       setUiModeError(null);
