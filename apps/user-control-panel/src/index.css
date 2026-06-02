@@ -1,9 +1,20 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@layer base {
-  :root {
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Global body background */
+body {
+  background-color: var(--color-background);
+  transition: background-color 0.3s ease;
+  margin: 0;
+  padding: 0;
+}
+
+html.dark body {
+  background-color: var(--color-background-dark);
+}
+
+@theme {
     /* Colors - Light Theme */
     --color-primary: #1e6aff;
     --color-primary-hover: #4c8dff;
@@ -58,7 +69,6 @@
     --color-error: var(--color-error-dark);
     --color-success: var(--color-success-dark);
   }
-}
 
 /* Global body background */
 body {
