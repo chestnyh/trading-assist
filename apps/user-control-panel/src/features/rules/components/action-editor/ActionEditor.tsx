@@ -175,16 +175,9 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
   }
 
   if (field.type === 'keyValueList') {
-    const allItems = Array.isArray(value) ? value : (field.defaultValue as Array<{ key: string; value: string }> | undefined) ?? [];
-    // Filter out items with both empty key and value to avoid showing empty rows
-    const items = allItems.filter(item => {
-      if (typeof item !== 'object' || item === null) return false;
-      const keyValue = (item as { key?: string }).key ?? '';
-      const valueValue = (item as { value?: string }).value ?? '';
-      return keyValue.trim() !== '' || valueValue.trim() !== '';
-    });
-    // Check if there are any empty items in the original array (for validation)
-    const hasEmptyItem = allItems.some(item => {
+    const items = Array.isArray(value) ? value : (field.defaultValue as Array<{ key: string; value: string }> | undefined) ?? [];
+    // Check if there are any empty items (for disabling Add Item button)
+    const hasEmptyItem = items.some(item => {
       if (typeof item !== 'object' || item === null) return true;
       const keyValue = (item as { key?: string }).key ?? '';
       const valueValue = (item as { value?: string }).value ?? '';
@@ -248,11 +241,9 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
   }
 
   if (field.type === 'stringList') {
-    const allItems = Array.isArray(value) ? value : (field.defaultValue as string[] | undefined) ?? [];
-    // Filter out empty strings to avoid showing empty rows
-    const items = allItems.filter(item => String(item).trim() !== '');
-    // Check if there are any empty items in the original array (for validation)
-    const hasEmptyItem = allItems.some(item => String(item).trim() === '');
+    const items = Array.isArray(value) ? value : (field.defaultValue as string[] | undefined) ?? [];
+    // Check if there are any empty items (for disabling Add Item button)
+    const hasEmptyItem = items.some(item => String(item).trim() === '');
     return (
       <div className="flex flex-col gap-2 mb-3">
         <label className="font-medium text-primary">{field.label}</label>

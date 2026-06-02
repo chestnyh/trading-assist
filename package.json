@@ -158,14 +158,18 @@
   "pnpm": {
     "overrides": {
       "marked": "4.3.0",
-      "undici": "6.21.3"
+      "undici": "6.21.3",
+      "prisma": "6.13.0",
+      "@prisma/client": "6.13.0"
     },
     "ignoredBuiltDependencies": [
       "@nestjs/core",
       "@parcel/watcher",
       "@prisma/client",
       "@prisma/engines",
+      "@scarf/scarf",
       "@swc/core",
+      "bcrypt",
       "core-js-pure",
       "cpu-features",
       "cypress",
