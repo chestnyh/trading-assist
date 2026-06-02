@@ -82,16 +82,19 @@ export function actionTreeToRuleBody(action: ActionNode): unknown {
 
 export function parseRuleBodyToActionTree(ruleBody: unknown): ActionNode | null {
   if (!isRecord(ruleBody)) {
+    console.log('[parseRuleBodyToActionTree] Failed: not a record', ruleBody);
     return null;
   }
 
   const type = ruleBody.type;
   if (!isActionType(type)) {
+    console.log('[parseRuleBodyToActionTree] Failed: unknown action type', type, 'Available types:', ACTION_TYPES.map(t => t.value));
     return null;
   }
 
   const config = getActionConfig(type);
   if (!config) {
+    console.log('[parseRuleBodyToActionTree] Failed: no config for type', type);
     return null;
   }
 
@@ -129,10 +132,9 @@ export function parseRuleBodyToActionTree(ruleBody: unknown): ActionNode | null 
     }
 
     if (slot.multiple) {
-      if (!Array.isArray(value)) {
-        return null;
-      }
-      const children = value.map(parseRuleBodyToActionTree);
+      // Accept both single object and array for backward compatibility
+      const items = Array.isArray(value) ? value : [value];
+      const children = items.map(parseRuleBodyToActionTree);
       if (children.some(child => child === null)) {
         return null;
       }
