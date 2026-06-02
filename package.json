@@ -168,6 +168,7 @@
       "@prisma/client",
       "@prisma/engines",
       "@swc/core",
+      "@tailwindcss/postcss",
       "core-js-pure",
       "cpu-features",
       "cypress",
