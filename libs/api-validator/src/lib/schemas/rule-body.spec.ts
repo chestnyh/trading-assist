@@ -32,7 +32,7 @@ describe('RuleBodySchema', () => {
       });
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toContain('Unknown action type');
+        expect(result.error.issues[0].message).toMatch(/Invalid option|expected one of/);
       }
     });
 

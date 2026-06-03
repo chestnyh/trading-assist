@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-// Known valid action types (including legacy binance_get_ticker for backward compatibility)
-const VALID_ACTION_TYPES = [
+// Action type enum
+const ActionType = z.enum([
   'log',
   'debug',
   'add_to_heap',
@@ -16,16 +16,13 @@ const VALID_ACTION_TYPES = [
   'cron',
   'includes',
   'stop_sequence',
-  'binance_get_ticker', // Legacy but accepted for backward compatibility
+  'binance_get_ticker',
   'binance_spot_get_ticker',
   'binance_spot_get_klines',
   'binance_um_futures_get_ticker',
   'binance_um_features_exchange_info',
   'telegram_send_message',
-] as const;
-
-// No legacy types are strictly rejected - all valid types are accepted
-const LEGACY_ACTION_TYPES: string[] = [];
+]);
 
 // Action types with required child slots configuration
 const ACTION_CHILD_SLOTS: Record<string, { key: string; multiple: boolean }[]> = {
@@ -41,26 +38,63 @@ const ACTION_CHILD_SLOTS: Record<string, { key: string; multiple: boolean }[]> =
   cron: [{ key: 'do', multiple: false }],
 };
 
+// Helper to validate child actions
+const validateChildActions = (
+  childValue: unknown,
+  multiple: boolean,
+  actionType: string,
+  slotKey: string,
+  ctx: z.RefinementCtx,
+  path: (string | number)[]
+) => {
+  if (childValue === undefined || childValue === null) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: `Required child slot "${slotKey}" is missing for action type "${actionType}"`,
+      path,
+    });
+    return;
+  }
+
+  if (multiple) {
+    const items = Array.isArray(childValue) ? childValue : [childValue];
+
+    if (items.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `Child slot "${slotKey}" must have at least one action for action type "${actionType}"`,
+        path,
+      });
+    } else {
+      items.forEach((child, index) => {
+        const childResult = ActionNodeSchema.safeParse(child);
+        if (!childResult.success) {
+          childResult.error.issues.forEach((issue) => {
+            ctx.addIssue({
+              ...issue,
+              path: [...path, index.toString(), ...issue.path],
+            });
+          });
+        }
+      });
+    }
+  } else {
+    const childResult = ActionNodeSchema.safeParse(childValue);
+    if (!childResult.success) {
+      childResult.error.issues.forEach((issue) => {
+        ctx.addIssue({
+          ...issue,
+          path: [...path, ...issue.path],
+        });
+      });
+    }
+  }
+};
+
 // Recursive action schema
 export const ActionNodeSchema: z.ZodType<any> = z.lazy(() =>
   z.object({
-    type: z.string().superRefine((val, ctx) => {
-      // Check if it's a legacy type
-      if (LEGACY_ACTION_TYPES.includes(val as any)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Action type "${val}" is legacy and not supported. Use "binance_spot_get_ticker" instead.`,
-        });
-        return;
-      }
-      // Check if it's a known valid type
-      if (!VALID_ACTION_TYPES.includes(val as any)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Unknown action type "${val}". Valid types are: ${VALID_ACTION_TYPES.join(', ')}`,
-        });
-      }
-    }),
+    type: ActionType,
     arguments: z.record(z.string(), z.unknown()).refine(
       (val) => Object.keys(val).length > 0 || true, // arguments can be empty object for actions like stop_sequence
       { message: 'Arguments must be an object' }
