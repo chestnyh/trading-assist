@@ -8,4 +8,5 @@ const DB_NAME = configs.get('DB_NAME');
 const DB_HOST = configs.get('DB_HOST');
 const DB_PORT = configs.get('DB_PORT');
 
-process.env.DB_URL = `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}` 
+// Use socket connection to avoid DNS resolution issues
+process.env.DB_URL = `postgresql://${DB_USER}:${DB_PASSWORD}@127.0.0.1:${DB_PORT}/${DB_NAME}?host=127.0.0.1` 

@@ -10,8 +10,9 @@ export class ModelsService extends PrismaClient implements OnModuleInit {
         const { host, port, user, password, database } = params;
 
         // For Prisma 7, use adapter pattern
+        // Use 127.0.0.1 instead of localhost to avoid DNS resolution issues
         const pool = new Pool({
-            host,
+            host: host === 'localhost' ? '127.0.0.1' : host,
             port,
             user,
             password,
