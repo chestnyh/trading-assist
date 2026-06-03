@@ -6,14 +6,13 @@
   "types": "./src/index.d.ts",
   "dependencies": {
     "@nestjs/common": "^10.4.15",
-    "@prisma/client": "^7.6.0",
-    "@prisma/adapter-pg": "^7.6.0",
+    "@prisma/client": "7.3.0",
     "@trading-bot/configs": "workspace:*",
     "@trading-bot/crypto-utils": "workspace:*",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "prisma": "^7.6.0"
+    "prisma": "7.3.0"
   },
   "scripts": {
     "generate": "npx prisma generate --schema=./prisma/schema.prisma",
