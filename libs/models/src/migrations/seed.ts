@@ -3,7 +3,7 @@ import './_set-configs';
 
 const filePath: string = process.argv[2];
 
-// For Prisma 7, connection string is already set via environment variable in _set-configs
+// Prisma Client will use prisma.config.ts for configuration
 const prisma = new PrismaClient();
 async function main() {
     const {default: seedDataGetter} = await import(filePath);
