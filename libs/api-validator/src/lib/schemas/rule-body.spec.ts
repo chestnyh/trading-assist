@@ -1,11 +1,11 @@
-import { RuleBodySchema, ActionNodeSchema } from './rule-body';
+import { RuleBodySchema, ActionSchema } from './rule-body';
 import * as fs from 'fs';
 import * as path from 'path';
 
 describe('RuleBodySchema', () => {
-  describe('ActionNodeSchema', () => {
+  describe('ActionSchema', () => {
     it('should validate a simple log action', () => {
-      const result = ActionNodeSchema.safeParse({
+      const result = ActionSchema.safeParse({
         type: 'log',
         arguments: {
           message: 'Test message',
@@ -16,7 +16,7 @@ describe('RuleBodySchema', () => {
     });
 
     it('should accept legacy binance_get_ticker for backward compatibility', () => {
-      const result = ActionNodeSchema.safeParse({
+      const result = ActionSchema.safeParse({
         type: 'binance_get_ticker',
         arguments: {
           symbol: 'BTCUSDT',
@@ -26,18 +26,18 @@ describe('RuleBodySchema', () => {
     });
 
     it('should reject unknown action type', () => {
-      const result = ActionNodeSchema.safeParse({
+      const result = ActionSchema.safeParse({
         type: 'unknown_action',
         arguments: {},
       });
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.issues[0].message).toMatch(/Invalid option|expected one of/);
+        expect(result.error.issues[0].message).toMatch(/Invalid discriminator value|Invalid option|expected one of/);
       }
     });
 
     it('should validate sequence with child actions', () => {
-      const result = ActionNodeSchema.safeParse({
+      const result = ActionSchema.safeParse({
         type: 'sequence',
         arguments: {
           do: [
@@ -56,7 +56,7 @@ describe('RuleBodySchema', () => {
     });
 
     it('should reject sequence without do array', () => {
-      const result = ActionNodeSchema.safeParse({
+      const result = ActionSchema.safeParse({
         type: 'sequence',
         arguments: {},
       });
@@ -64,7 +64,7 @@ describe('RuleBodySchema', () => {
     });
 
     it('should reject sequence with empty do array', () => {
-      const result = ActionNodeSchema.safeParse({
+      const result = ActionSchema.safeParse({
         type: 'sequence',
         arguments: {
           do: [],
@@ -77,7 +77,7 @@ describe('RuleBodySchema', () => {
     });
 
     it('should validate if_then with both slots', () => {
-      const result = ActionNodeSchema.safeParse({
+      const result = ActionSchema.safeParse({
         type: 'if_then',
         arguments: {
           if: {
@@ -96,7 +96,7 @@ describe('RuleBodySchema', () => {
     });
 
     it('should reject if_then without then slot', () => {
-      const result = ActionNodeSchema.safeParse({
+      const result = ActionSchema.safeParse({
         type: 'if_then',
         arguments: {
           if: {
@@ -109,7 +109,7 @@ describe('RuleBodySchema', () => {
     });
 
     it('should validate timeout with single child', () => {
-      const result = ActionNodeSchema.safeParse({
+      const result = ActionSchema.safeParse({
         type: 'timeout',
         arguments: {
           timeout: 1000,

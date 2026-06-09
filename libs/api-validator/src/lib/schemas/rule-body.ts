@@ -1,180 +1,211 @@
 import { z } from 'zod';
 
-// Action type enum
-const ActionType = z.enum([
-  'log',
-  'debug',
-  'add_to_heap',
-  'delete_from_heap',
-  'if_then',
-  'parallel',
-  'sequence',
-  'resolve',
-  'timeout',
-  'interval',
-  'for_each',
-  'cron',
-  'includes',
-  'stop_sequence',
-  'binance_get_ticker',
-  'binance_spot_get_ticker',
-  'binance_spot_get_klines',
-  'binance_um_futures_get_ticker',
-  'binance_um_features_exchange_info',
-  'telegram_send_message',
-]);
+// Base action schema with common fields
+const BaseActionSchema = z.object({
+  name: z.string().optional(),
+  description: z.string().optional(),
+});
 
-// Action types with required child slots configuration
-const ACTION_CHILD_SLOTS: Record<string, { key: string; multiple: boolean }[]> = {
-  if_then: [
-    { key: 'if', multiple: false },
-    { key: 'then', multiple: true },
-  ],
-  parallel: [{ key: 'do', multiple: true }],
-  sequence: [{ key: 'do', multiple: true }],
-  for_each: [{ key: 'do', multiple: true }],
-  timeout: [{ key: 'do', multiple: false }],
-  interval: [{ key: 'do', multiple: false }],
-  cron: [{ key: 'do', multiple: false }],
-};
+// Simple action schemas (no child actions)
+const LogAction = BaseActionSchema.extend({
+  type: z.literal('log'),
+  arguments: z.object({
+    message: z.string(),
+  }),
+});
 
-// Helper to validate child actions
-const validateChildActions = (
-  childValue: unknown,
-  multiple: boolean,
-  actionType: string,
-  slotKey: string,
-  ctx: z.RefinementCtx,
-  path: (string | number)[]
-) => {
-  if (childValue === undefined || childValue === null) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: `Required child slot "${slotKey}" is missing for action type "${actionType}"`,
-      path,
-    });
-    return;
-  }
+const DebugAction = BaseActionSchema.extend({
+  type: z.literal('debug'),
+  arguments: z.object({
+    message: z.string(),
+  }),
+});
 
-  if (multiple) {
-    const items = Array.isArray(childValue) ? childValue : [childValue];
+const AddToHeapAction = BaseActionSchema.extend({
+  type: z.literal('add_to_heap'),
+  arguments: z.union([
+    z.object({
+      key: z.string(),
+      value: z.unknown(),
+    }),
+    z.object({
+      items: z.array(z.object({
+        key: z.string(),
+        value: z.unknown(),
+      })),
+    }),
+  ]),
+});
 
-    if (items.length === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: `Child slot "${slotKey}" must have at least one action for action type "${actionType}"`,
-        path,
-      });
-    } else {
-      items.forEach((child, index) => {
-        const childResult = ActionNodeSchema.safeParse(child);
-        if (!childResult.success) {
-          childResult.error.issues.forEach((issue) => {
-            ctx.addIssue({
-              ...issue,
-              path: [...path, index.toString(), ...issue.path],
-            });
-          });
-        }
-      });
-    }
-  } else {
-    const childResult = ActionNodeSchema.safeParse(childValue);
-    if (!childResult.success) {
-      childResult.error.issues.forEach((issue) => {
-        ctx.addIssue({
-          ...issue,
-          path: [...path, ...issue.path],
-        });
-      });
-    }
-  }
-};
+const DeleteFromHeapAction = BaseActionSchema.extend({
+  type: z.literal('delete_from_heap'),
+  arguments: z.object({
+    key: z.string(),
+  }),
+});
 
-// Recursive action schema
-export const ActionNodeSchema: z.ZodType<any> = z.lazy(() =>
-  z.object({
-    type: ActionType,
-    arguments: z.record(z.string(), z.unknown()).refine(
-      (val) => Object.keys(val).length > 0 || true, // arguments can be empty object for actions like stop_sequence
-      { message: 'Arguments must be an object' }
-    ),
-    name: z.string().optional(),
-    description: z.string().optional(),
-  }).superRefine((val, ctx) => {
-    const actionType = val.type;
-    const childSlots = ACTION_CHILD_SLOTS[actionType];
+const StopSequenceAction = BaseActionSchema.extend({
+  type: z.literal('stop_sequence'),
+  arguments: z.object({}),
+});
 
-    if (!childSlots) {
-      // Actions without child slots should not have them in arguments
-      return;
-    }
+const ResolveAction = BaseActionSchema.extend({
+  type: z.literal('resolve'),
+  arguments: z.union([
+    z.object({
+      expression: z.string(),
+    }),
+    z.object({
+      expression: z.record(z.string(), z.unknown()),
+    }),
+    z.object({
+      value: z.unknown(),
+    }),
+  ]),
+});
 
-    // Validate required child slots
-    for (const slot of childSlots) {
-      const slotValue = val.arguments[slot.key];
-      const path = ['arguments', slot.key];
+const IncludesAction = BaseActionSchema.extend({
+  type: z.literal('includes'),
+  arguments: z.union([
+    z.object({
+      array: z.array(z.unknown()),
+      item: z.unknown(),
+    }),
+    z.object({
+      arr: z.union([z.array(z.unknown()), z.string()]),
+      check: z.unknown(),
+      saveTo: z.string(),
+    }),
+  ]),
+});
 
-      if (slotValue === undefined || slotValue === null) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Required child slot "${slot.key}" is missing for action type "${actionType}"`,
-          path,
-        });
-        continue;
-      }
+// Binance action schemas
+const BinanceGetTickerAction = BaseActionSchema.extend({
+  type: z.literal('binance_get_ticker'),
+  arguments: z.object({
+    symbol: z.string(),
+  }),
+});
 
-      if (slot.multiple) {
-        // Multiple slot should be an array, but we also accept single object for compatibility
-        // Normalize to array for validation
-        const items = Array.isArray(slotValue) ? slotValue : [slotValue];
+const BinanceSpotGetTickerAction = BaseActionSchema.extend({
+  type: z.literal('binance_spot_get_ticker'),
+  arguments: z.object({
+    symbol: z.string(),
+  }),
+});
 
-        if (items.length === 0) {
-          // Empty arrays are not allowed for multiple slots
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `Child slot "${slot.key}" must have at least one action for action type "${actionType}"`,
-            path,
-          });
-        } else {
-          // Validate each child action in the array
-          items.forEach((child, index) => {
-            const childResult = ActionNodeSchema.safeParse(child);
-            if (!childResult.success) {
-              childResult.error.issues.forEach((issue) => {
-                ctx.addIssue({
-                  ...issue,
-                  path: [...path, index.toString(), ...issue.path],
-                });
-              });
-            }
-          });
-        }
-      } else {
-        // Single slot must be an object (action)
-        const childResult = ActionNodeSchema.safeParse(slotValue);
-        if (!childResult.success) {
-          childResult.error.issues.forEach((issue) => {
-            ctx.addIssue({
-              ...issue,
-              path: [...path, ...issue.path],
-            });
-          });
-        }
-      }
-    }
-  })
+const BinanceSpotGetKlinesAction = BaseActionSchema.extend({
+  type: z.literal('binance_spot_get_klines'),
+  arguments: z.object({
+    symbol: z.string(),
+    interval: z.string(),
+    limit: z.number().optional(),
+  }),
+});
+
+const BinanceUmFuturesGetTickerAction = BaseActionSchema.extend({
+  type: z.literal('binance_um_futures_get_ticker'),
+  arguments: z.object({
+    symbol: z.string(),
+  }),
+});
+
+const BinanceUmFeaturesExchangeInfoAction = BaseActionSchema.extend({
+  type: z.literal('binance_um_features_exchange_info'),
+  arguments: z.object({}),
+});
+
+// Telegram action schemas
+const TelegramSendMessageAction = BaseActionSchema.extend({
+  type: z.literal('telegram_send_message'),
+  arguments: z.union([
+    z.object({
+      chatId: z.union([z.string(), z.number()]),
+      text: z.string(),
+    }),
+    z.object({
+      botId: z.string(),
+      message: z.string(),
+    }),
+  ]),
+});
+
+// Recursive action schema for self-referencing actions
+const ActionSchema: z.ZodType<any> = z.lazy(() =>
+  z.discriminatedUnion('type', [
+    LogAction,
+    DebugAction,
+    AddToHeapAction,
+    DeleteFromHeapAction,
+    StopSequenceAction,
+    ResolveAction,
+    IncludesAction,
+    BinanceGetTickerAction,
+    BinanceSpotGetTickerAction,
+    BinanceSpotGetKlinesAction,
+    BinanceUmFuturesGetTickerAction,
+    BinanceUmFeaturesExchangeInfoAction,
+    TelegramSendMessageAction,
+    // Complex actions with child actions
+    BaseActionSchema.extend({
+      type: z.literal('if_then'),
+      arguments: z.object({
+        if: ActionSchema,
+        then: z.union([ActionSchema, z.array(ActionSchema)]),
+      }),
+    }),
+    BaseActionSchema.extend({
+      type: z.literal('parallel'),
+      arguments: z.object({
+        do: z.array(ActionSchema).min(1, 'Parallel actions must have at least one action'),
+      }),
+    }),
+    BaseActionSchema.extend({
+      type: z.literal('sequence'),
+      arguments: z.object({
+        do: z.array(ActionSchema).min(1, 'Sequence actions must have at least one action'),
+      }),
+    }),
+    BaseActionSchema.extend({
+      type: z.literal('for_each'),
+      arguments: z.object({
+        arr: z.union([z.array(z.unknown()), z.string()]),
+        do: z.union([ActionSchema, z.array(ActionSchema)]),
+      }),
+    }),
+    BaseActionSchema.extend({
+      type: z.literal('timeout'),
+      arguments: z.object({
+        timeout: z.number(),
+        do: ActionSchema,
+      }),
+    }),
+    BaseActionSchema.extend({
+      type: z.literal('interval'),
+      arguments: z.object({
+        interval: z.number(),
+        do: ActionSchema,
+      }),
+    }),
+    BaseActionSchema.extend({
+      type: z.literal('cron'),
+      arguments: z.object({
+        schedule: z.string(),
+        do: ActionSchema,
+      }),
+    }),
+  ])
 );
 
 // Main rule body schema
 export const RuleBodySchema = z.union([
   // Direct object format
-  ActionNodeSchema,
+  ActionSchema,
   // String format that parses to JSON
   z.string().transform((val, ctx) => {
     try {
       const parsed = JSON.parse(val);
-      const result = ActionNodeSchema.safeParse(parsed);
+      const result = ActionSchema.safeParse(parsed);
       if (!result.success) {
         result.error.issues.forEach((issue) => {
           ctx.addIssue({
@@ -198,3 +229,6 @@ export const RuleBodySchema = z.union([
 
 // Export the type
 export type RuleBody = z.infer<typeof RuleBodySchema>;
+
+// Export the action schema for external use
+export { ActionSchema };
