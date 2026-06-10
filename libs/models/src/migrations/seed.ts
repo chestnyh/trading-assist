@@ -1,22 +1,9 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
 import './_set-configs';
 
 const filePath: string = process.argv[2];
 
-// Create connection pool for Prisma 7.x
-const pool = new Pool({
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432'),
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-});
-const adapter = new PrismaPg(pool);
-
-// Prisma Client with adapter for Prisma 7.x
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClient();
 
 async function main() {
     const {default: seedDataGetter} = await import(filePath);
@@ -33,11 +20,9 @@ async function main() {
 main()
     .then(async () => {
         await prisma.$disconnect()
-        await pool.end()
     })
     .catch(async (e) => {
         console.error(e)
         await prisma.$disconnect()
-        await pool.end()
         process.exit(1)
     })

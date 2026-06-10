@@ -10,7 +10,7 @@
     "auto-trader:test:watch": "nx test auto-trader --watch",
     "auto-trader:start": "nx run auto-trader:serve",
     "//api-service": "API service is a microservice that is responsible for the API of the trading bot.",
-    "api:start": "node fix-prisma.js && pnpm run models:copy-generated && nx run api:serve",
+    "api:start": "nx run api:serve",
     "api:build": "nx run api:build",
     "api:test": "nx run api:test",
     "//log-stream": "Log stream is a microservice that streams rule execution logs via SSE.",
@@ -70,8 +70,7 @@
     "development:create-volume-folder": "nx run development:create-volume-folder",
     "development:external-up": "nx run development:external-up",
     "development:sleep": "nx run development:sleep",
-    "prepare": "husky && node fix-prisma.js",
-    "postinstall": "node fix-prisma.js"
+    "prepare": "husky"
   },
   "author": "",
   "license": "ISC",
@@ -96,7 +95,6 @@
     "@nx/web": "20.4.6",
     "@nx/webpack": "20.4.6",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
-    "@prisma/client": "6.13.0",
     "@svgr/webpack": "^8.1.0",
     "@swc-node/register": "~1.9.2",
     "@swc/cli": "~0.3.14",
@@ -139,7 +137,6 @@
     "mocha": "^10.8.2",
     "nx": "20.4.6",
     "orval": "^7.17.0",
-    "@prisma/dev": "0.24.9",
     "pm2": "^6.0.14",
     "postcss": "^8.5.6",
     "prettier": "^2.8.8",
@@ -163,8 +160,8 @@
     "overrides": {
       "marked": "4.3.0",
       "undici": "6.21.3",
-      "prisma": "7.3.0",
-      "@prisma/client": "7.3.0"
+      "prisma": "^7.8.0",
+      "@prisma/client": "^7.8.0"
     },
     "ignoredBuiltDependencies": [
       "@nestjs/core",

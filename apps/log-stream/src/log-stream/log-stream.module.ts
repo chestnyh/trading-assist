@@ -41,13 +41,7 @@ const config = new ServicesConfigs();
             : undefined,
       }),
     }),
-    ModelsModule.forRoot({
-      host: config.get('DB_HOST') as string,
-      port: config.get('DB_PORT') as string,
-      user: config.get('DB_USER') as string,
-      password: config.get('DB_PASSWORD') as string,
-      database: config.get('DB_NAME') as string,
-    }),
+    ModelsModule.forRoot(),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ServicesConfigsModule],
