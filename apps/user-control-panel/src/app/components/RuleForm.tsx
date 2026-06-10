@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Input } from "../../shared/ui/forms/Input";
 import { TextArea } from "../../shared/ui/forms/TextArea";
 import { JsonEditorField } from "../../shared/ui/forms/JsonEditorField";
@@ -88,11 +88,61 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
     formData.description !== (initialData?.description || "") ||
     currentRuleBodyString !== initialRuleBodyString;
 
+  // Check if rule body has validation errors (e.g., empty items in Add to Heap)
+  const hasValidationError = validateRuleBody(formData.ruleBody) !== null;
+
+  // Validate rule body for empty items in Add to Heap
+  const validateRuleBody = (ruleBody: unknown): string | null => {
+    if (typeof ruleBody !== 'object' || ruleBody === null) return null;
+    
+    const body = ruleBody as Record<string, unknown>;
+    
+    // Check if it's an add_to_heap action with empty items
+    if (body.type === 'add_to_heap' && body.arguments) {
+      const args = body.arguments as Record<string, unknown>;
+      const items = args.items as Array<{ key?: string; value?: string }> | undefined;
+      if (items && items.length > 0) {
+        const hasEmptyItem = items.some(item => 
+          !item || String(item.key ?? '').trim() === '' || String(item.value ?? '').trim() === ''
+        );
+        if (hasEmptyItem) {
+          return 'Add to Heap has empty items. Please fill in all key-value pairs or remove empty items.';
+        }
+      }
+    }
+    
+    // Recursively check nested actions (sequence, parallel, if_then, etc.)
+    if (body.arguments && typeof body.arguments === 'object') {
+      const args = body.arguments as Record<string, unknown>;
+      for (const key of Object.keys(args)) {
+        const argValue = args[key];
+        if (Array.isArray(argValue)) {
+          for (const item of argValue) {
+            const error = validateRuleBody(item);
+            if (error) return error;
+          }
+        } else if (typeof argValue === 'object' && argValue !== null) {
+          const error = validateRuleBody(argValue);
+          if (error) return error;
+        }
+      }
+    }
+    
+    return null;
+  };
+
   const handleSubmit = async () => {
     setErrors({});
 
     if (formData.ruleBody === null || formData.ruleBody === undefined) {
       setErrors({ rule: 'Rule body is required' });
+      return;
+    }
+
+    // Validate for empty items in Add to Heap
+    const validationError = validateRuleBody(formData.ruleBody);
+    if (validationError) {
+      setErrors({ rule: validationError });
       return;
     }
 
@@ -146,9 +196,9 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
     if (errors.rule) setErrors({ ...errors, rule: "" });
   };
 
-  const handleJsonChange = (nextRuleBody: unknown) => {
+  const handleJsonChange = useCallback((nextRuleBody: unknown) => {
     // Store the full rule body including name/description
-    setFormData({ ...formData, ruleBody: nextRuleBody });
+    setFormData((prev) => ({ ...prev, ruleBody: nextRuleBody }));
     // But parse only the action part (without name/description)
     const cleanRuleBody = stripMetadata(nextRuleBody);
     const parsedActionTree = parseRuleBodyToActionTree(cleanRuleBody);
@@ -158,8 +208,8 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
     } else {
       setUiModeError('Current rule body cannot be represented in UI mode. JSON mode is still available.');
     }
-    if (errors.rule) setErrors({ ...errors, rule: "" });
-  };
+    setErrors((prev) => ({ ...prev, rule: "" }));
+  }, []);
 
   return (
     <div className="px-4 md:px-8 lg:px-12 py-6 max-w-5xl mx-auto">
@@ -265,7 +315,7 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
           text={isLoading ? "Processing..." : submitLabel}
           variant="primary"
           onClick={handleSubmit}
-          disabled={isLoading || !isDirty}
+          disabled={isLoading || !isDirty || hasValidationError}
         />
       </div>
     </div>

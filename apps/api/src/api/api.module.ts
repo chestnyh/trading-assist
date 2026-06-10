@@ -59,17 +59,13 @@ import { ExternalServicesModule } from './external-services/external-services.mo
     }),
     // Global module
     ModelsModule.forRootAsync({
-      useFactory: async (configService: ServicesConfigs) => {
-        const host = configService.get('DB_HOST') as string;
-        // Use 127.0.0.1 instead of localhost to avoid DNS resolution issues
-        return {
-          host: host === 'localhost' ? '127.0.0.1' : host,
-          port: configService.get('DB_PORT') as string,
-          user: configService.get('DB_USER') as string,
-          password: configService.get('DB_PASSWORD') as string,
-          database: configService.get('DB_NAME') as string,
-        };
-      },
+      useFactory: async (configService: ServicesConfigs) => ({
+        host: configService.get('DB_HOST') as string,
+        port: configService.get('DB_PORT') as string,
+        user: configService.get('DB_USER') as string,
+        password: configService.get('DB_PASSWORD') as string,
+        database: configService.get('DB_NAME') as string,
+      }),
       inject: [ServicesConfigs],
     }),
     UsersApiModule,
