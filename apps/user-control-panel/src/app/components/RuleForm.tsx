@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Input } from "../../shared/ui/forms/Input";
 import { TextArea } from "../../shared/ui/forms/TextArea";
 import { JsonEditorField } from "../../shared/ui/forms/JsonEditorField";
@@ -88,11 +88,8 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
     formData.description !== (initialData?.description || "") ||
     currentRuleBodyString !== initialRuleBodyString;
 
-  // Check if rule body has validation errors (e.g., empty items in Add to Heap)
-  const hasValidationError = validateRuleBody(formData.ruleBody) !== null;
-
   // Validate rule body for empty items in Add to Heap
-  const validateRuleBody = (ruleBody: unknown): string | null => {
+  const validateRuleBody = useCallback((ruleBody: unknown): string | null => {
     if (typeof ruleBody !== 'object' || ruleBody === null) return null;
     
     const body = ruleBody as Record<string, unknown>;
@@ -129,7 +126,10 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
     }
     
     return null;
-  };
+  }, []);
+
+  // Check if rule body has validation errors (e.g., empty items in Add to Heap)
+  const hasValidationError = useMemo(() => validateRuleBody(formData.ruleBody) !== null, [formData.ruleBody, validateRuleBody]);
 
   const handleSubmit = async () => {
     setErrors({});
