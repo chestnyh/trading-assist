@@ -12,7 +12,7 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "prisma": "^7.8.0"
+    "prisma": "^6.13.0"
   },
   "scripts": {
     "generate": "npx prisma generate --schema=./prisma/schema.prisma",
