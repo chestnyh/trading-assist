@@ -50,6 +50,7 @@
     "models:migrations:seed": "nx run models:migrations:seed",
     "models:migrations:reset": "nx run models:migrations:reset",
     "models:migrations:generate": "nx run models:migrations:generate",
+    "models:copy-generated": "nx run models:copy-generated",
     "models:migrations:migrate-and-seed": "nx run models:migrations:run; nx run models:migrations:seed seed/initial.js",
     "//configs": "Configs is a library that is responsible for the configs of the trading assist.",
     "configs:build": "nx run configs:build",
@@ -99,7 +100,7 @@
     "@swc/cli": "~0.3.14",
     "@swc/core": "~1.5.29",
     "@swc/helpers": "~0.5.15",
-    "@tailwindcss/postcss": "^4.1.17",
+    "@tailwindcss/postcss": "^4.3.0",
     "@testing-library/react": "16.3.0",
     "@types/jest": "^29.5.14",
     "@types/jsoneditor": "^9.9.6",
@@ -139,7 +140,7 @@
     "pm2": "^6.0.14",
     "postcss": "^8.5.6",
     "prettier": "^2.8.8",
-    "prisma": "^7.8.0",
+"prisma": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "react-refresh": "^0.10.0",
     "sass-loader": "^17.0.0",
@@ -158,8 +159,25 @@
   "pnpm": {
     "overrides": {
       "marked": "4.3.0",
-      "undici": "6.21.3"
-    }
+      "undici": "6.21.3",
+      "prisma": "^7.8.0",
+      "@prisma/client": "^7.8.0"
+    },
+    "ignoredBuiltDependencies": [
+      "@nestjs/core",
+      "@parcel/watcher",
+      "@prisma/client",
+      "@prisma/engines",
+      "@swc/core",
+      "@tailwindcss/postcss",
+      "core-js-pure",
+      "cpu-features",
+      "cypress",
+      "esbuild",
+      "nx",
+      "prisma",
+      "ssh2"
+    ]
   },
   "nx": {},
   "workspaces": [

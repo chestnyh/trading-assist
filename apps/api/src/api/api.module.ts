@@ -58,16 +58,7 @@ import { ExternalServicesModule } from './external-services/external-services.mo
       }),
     }),
     // Global module
-    ModelsModule.forRootAsync({
-      useFactory: async (configService: ServicesConfigs) => ({
-        host: configService.get('DB_HOST') as string,
-        port: configService.get('DB_PORT') as string,
-        user: configService.get('DB_USER') as string,
-        password: configService.get('DB_PASSWORD') as string,
-        database: configService.get('DB_NAME') as string,
-      }),
-      inject: [ServicesConfigs],
-    }),
+    ModelsModule.forRoot(),
     UsersApiModule,
     AuthModule,
     RulesModule,

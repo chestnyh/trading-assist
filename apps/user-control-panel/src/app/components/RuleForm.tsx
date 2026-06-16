@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Input } from "../../shared/ui/forms/Input";
 import { TextArea } from "../../shared/ui/forms/TextArea";
 import { JsonEditorField } from "../../shared/ui/forms/JsonEditorField";
@@ -29,8 +29,17 @@ type RuleFormData = {
 
 type RuleBodyMode = 'ui' | 'json';
 
+// Strip name/description from rule body for parsing (they're stored separately in form fields)
+const stripMetadata = (ruleBody: unknown): unknown => {
+  if (typeof ruleBody === 'object' && ruleBody !== null && !Array.isArray(ruleBody)) {
+    const { name, description, ...rest } = ruleBody as Record<string, unknown>;
+    return rest;
+  }
+  return ruleBody;
+};
+
 export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLabel, title }: RuleFormProps) {
-  const parsedInitialActionTree = initialData ? parseRuleBodyToActionTree(initialData.ruleBody) : null;
+  const parsedInitialActionTree = initialData ? parseRuleBodyToActionTree(stripMetadata(initialData.ruleBody)) : null;
   const initialActionTree = parsedInitialActionTree ?? createActionNode();
   const initialMode: RuleBodyMode = initialData && !parsedInitialActionTree ? 'json' : 'ui';
   const [formData, setFormData] = useState<RuleFormData>({
@@ -46,7 +55,9 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
 
   useEffect(() => {
     if (initialData) {
-      const parsedActionTree = parseRuleBodyToActionTree(initialData.ruleBody);
+      // Strip metadata before parsing for UI mode
+      const cleanRuleBody = stripMetadata(initialData.ruleBody);
+      const parsedActionTree = parseRuleBodyToActionTree(cleanRuleBody);
       setFormData({
         name: initialData.name,
         description: initialData.description,
@@ -77,11 +88,61 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
     formData.description !== (initialData?.description || "") ||
     currentRuleBodyString !== initialRuleBodyString;
 
+  // Validate rule body for empty items in Add to Heap
+  const validateRuleBody = useCallback((ruleBody: unknown): string | null => {
+    if (typeof ruleBody !== 'object' || ruleBody === null) return null;
+    
+    const body = ruleBody as Record<string, unknown>;
+    
+    // Check if it's an add_to_heap action with empty items
+    if (body.type === 'add_to_heap' && body.arguments) {
+      const args = body.arguments as Record<string, unknown>;
+      const items = args.items as Array<{ key?: string; value?: string }> | undefined;
+      if (items && items.length > 0) {
+        const hasEmptyItem = items.some(item => 
+          !item || String(item.key ?? '').trim() === '' || String(item.value ?? '').trim() === ''
+        );
+        if (hasEmptyItem) {
+          return 'Add to Heap has empty items. Please fill in all key-value pairs or remove empty items.';
+        }
+      }
+    }
+    
+    // Recursively check nested actions (sequence, parallel, if_then, etc.)
+    if (body.arguments && typeof body.arguments === 'object') {
+      const args = body.arguments as Record<string, unknown>;
+      for (const key of Object.keys(args)) {
+        const argValue = args[key];
+        if (Array.isArray(argValue)) {
+          for (const item of argValue) {
+            const error = validateRuleBody(item);
+            if (error) return error;
+          }
+        } else if (typeof argValue === 'object' && argValue !== null) {
+          const error = validateRuleBody(argValue);
+          if (error) return error;
+        }
+      }
+    }
+    
+    return null;
+  }, []);
+
+  // Check if rule body has validation errors (e.g., empty items in Add to Heap)
+  const hasValidationError = useMemo(() => validateRuleBody(formData.ruleBody) !== null, [formData.ruleBody, validateRuleBody]);
+
   const handleSubmit = async () => {
     setErrors({});
 
     if (formData.ruleBody === null || formData.ruleBody === undefined) {
       setErrors({ rule: 'Rule body is required' });
+      return;
+    }
+
+    // Validate for empty items in Add to Heap
+    const validationError = validateRuleBody(formData.ruleBody);
+    if (validationError) {
+      setErrors({ rule: validationError });
       return;
     }
 
@@ -108,15 +169,21 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
 
   const handleModeChange = (nextMode: RuleBodyMode) => {
     if (nextMode === 'ui') {
-      const parsedActionTree = parseRuleBodyToActionTree(formData.ruleBody);
+      // Strip metadata before parsing for UI mode
+      const cleanRuleBody = stripMetadata(formData.ruleBody);
+      const parsedActionTree = parseRuleBodyToActionTree(cleanRuleBody);
 
       if (!parsedActionTree) {
-        setUiModeError('Current rule body cannot be represented in UI mode. JSON mode is still available.');
-        return;
+        // If rule body is null/empty or not parseable, create a fresh empty action tree
+        // instead of blocking the mode switch
+        const emptyActionTree = createActionNode();
+        setActionTree(emptyActionTree);
+        setFormData({ ...formData, ruleBody: actionTreeToRuleBody(emptyActionTree) });
+        setUiModeError(null);
+      } else {
+        setActionTree(parsedActionTree);
+        setUiModeError(null);
       }
-
-      setActionTree(parsedActionTree);
-      setUiModeError(null);
     }
 
     setMode(nextMode);
@@ -129,17 +196,20 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
     if (errors.rule) setErrors({ ...errors, rule: "" });
   };
 
-  const handleJsonChange = (nextRuleBody: unknown) => {
-    setFormData({ ...formData, ruleBody: nextRuleBody });
-    const parsedActionTree = parseRuleBodyToActionTree(nextRuleBody);
+  const handleJsonChange = useCallback((nextRuleBody: unknown) => {
+    // Store the full rule body including name/description
+    setFormData((prev) => ({ ...prev, ruleBody: nextRuleBody }));
+    // But parse only the action part (without name/description)
+    const cleanRuleBody = stripMetadata(nextRuleBody);
+    const parsedActionTree = parseRuleBodyToActionTree(cleanRuleBody);
     if (parsedActionTree) {
       setActionTree(parsedActionTree);
       setUiModeError(null);
     } else {
       setUiModeError('Current rule body cannot be represented in UI mode. JSON mode is still available.');
     }
-    if (errors.rule) setErrors({ ...errors, rule: "" });
-  };
+    setErrors((prev) => ({ ...prev, rule: "" }));
+  }, []);
 
   return (
     <div className="px-4 md:px-8 lg:px-12 py-6 max-w-5xl mx-auto">
@@ -245,7 +315,7 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
           text={isLoading ? "Processing..." : submitLabel}
           variant="primary"
           onClick={handleSubmit}
-          disabled={isLoading || !isDirty}
+          disabled={isLoading || !isDirty || hasValidationError}
         />
       </div>
     </div>
