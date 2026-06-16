@@ -94,6 +94,7 @@ export function parseRuleBodyToActionTree(ruleBody: unknown): ActionNode | null 
 
   const config = getActionConfig(type);
   if (!config) {
+    console.log('[parseRuleBodyToActionTree] Failed: no config for type', type);
     return null;
   }
 

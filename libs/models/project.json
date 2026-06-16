@@ -27,6 +27,12 @@
         "assets": []
       }
     },
+    "copy-generated": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mkdir -p dist/libs/models/src/generated/prisma && cp -r libs/models/src/generated/prisma/* dist/libs/models/src/generated/prisma/ 2>/dev/null || true"
+      }
+    },
     "migrations:run": {
       "executor": "nx:run-commands",
       "options": {

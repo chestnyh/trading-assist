@@ -50,6 +50,7 @@
     "models:migrations:seed": "nx run models:migrations:seed",
     "models:migrations:reset": "nx run models:migrations:reset",
     "models:migrations:generate": "nx run models:migrations:generate",
+    "models:copy-generated": "nx run models:copy-generated",
     "models:migrations:migrate-and-seed": "nx run models:migrations:run; nx run models:migrations:seed seed/initial.js",
     "//configs": "Configs is a library that is responsible for the configs of the trading assist.",
     "configs:build": "nx run configs:build",
@@ -94,13 +95,12 @@
     "@nx/web": "20.4.6",
     "@nx/webpack": "20.4.6",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
-    "@prisma/client": "6.13.0",
     "@svgr/webpack": "^8.1.0",
     "@swc-node/register": "~1.9.2",
     "@swc/cli": "~0.3.14",
     "@swc/core": "~1.5.29",
     "@swc/helpers": "~0.5.15",
-    "@tailwindcss/postcss": "^4.1.17",
+    "@tailwindcss/postcss": "^4.3.0",
     "@testing-library/react": "16.3.0",
     "@types/jest": "^29.5.14",
     "@types/jsoneditor": "^9.9.6",
@@ -160,8 +160,8 @@
     "overrides": {
       "marked": "4.3.0",
       "undici": "6.21.3",
-      "prisma": "6.13.0",
-      "@prisma/client": "6.13.0"
+      "prisma": "^7.8.0",
+      "@prisma/client": "^7.8.0"
     },
     "ignoredBuiltDependencies": [
       "@nestjs/core",
@@ -171,6 +171,7 @@
       "@scarf/scarf",
       "@swc/core",
       "bcrypt",
+      "@tailwindcss/postcss",
       "core-js-pure",
       "cpu-features",
       "cypress",

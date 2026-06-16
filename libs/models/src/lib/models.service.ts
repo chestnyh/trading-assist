@@ -1,21 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { PrismaClient } from '../generated/prisma/client';
-import type { ConnectionParams } from '../types';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class ModelsService extends PrismaClient implements OnModuleInit {
-    constructor(params: ConnectionParams) {
-        const { host, port, user, password, database } = params;
-        const connectionString = `postgresql://${user}:${password}@${host}:${port}/${database}`;
-        super({
-            datasources: {
-                db: {
-                    url: connectionString,
-                },
-            },
-        });
-    }
-    
     async onModuleInit() {
         await this.$connect();
     }

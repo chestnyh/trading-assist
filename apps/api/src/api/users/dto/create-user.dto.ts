@@ -39,7 +39,7 @@ export class CreateUserDto {
     enumName: 'TradingExperienceLevel',
     required: false
   })
-  tradingExperienceLevel?: TradingExperienceLevel;
+  tradingExperienceLevel?: typeof TradingExperienceLevel[keyof typeof TradingExperienceLevel];
 
   @ApiProperty({
     description: 'Primary trading strategy',
@@ -48,7 +48,7 @@ export class CreateUserDto {
     enumName: 'PrimaryTradingStrategy',
     required: false
   })
-  primaryTradingStrategy?: PrimaryTradingStrategy;
+  primaryTradingStrategy?: typeof PrimaryTradingStrategy[keyof typeof PrimaryTradingStrategy];
 
   @ApiProperty({
     description: 'Risk tolerance level',
@@ -57,7 +57,7 @@ export class CreateUserDto {
     enumName: 'RiskTolerance',
     required: false
   })
-  riskTolerance?: RiskTolerance;
+  riskTolerance?: typeof RiskTolerance[keyof typeof RiskTolerance];
 
   @ApiProperty({
     description: 'Preferred trading platforms (multiple selection allowed)',
@@ -67,5 +67,5 @@ export class CreateUserDto {
     isArray: true,
     required: false
   })
-  preferredTradingPlatforms?: TradingPlatform[];
+  preferredTradingPlatforms?: (typeof TradingPlatform[keyof typeof TradingPlatform])[];
 }
