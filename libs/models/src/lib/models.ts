@@ -1,11 +1,20 @@
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 
-export default class Models extends PrismaClient {
-    async connect() {
-        await this.$connect();
-    }
+import { buildDatabaseUrl, type ModelsModuleOptions } from './models.options';
 
-    async disconnect() {
-        await this.$disconnect();
-    }
+export default class Models extends PrismaClient {
+  constructor(options: ModelsModuleOptions) {
+    super({
+      adapter: new PrismaPg({ connectionString: buildDatabaseUrl(options) }),
+    });
+  }
+
+  async connect() {
+    await this.$connect();
+  }
+
+  async disconnect() {
+    await this.$disconnect();
+  }
 }

@@ -1,6 +1,7 @@
 export * from "./lib/models.service";
 export * from "./lib/models.module";
 export * from "./lib/models";
+export * from "./lib/models.options";
 export * from "./types";
 
 // Re-export PrismaClient and $Enums from @prisma/client

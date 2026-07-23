@@ -3,6 +3,10 @@
 import { defineConfig } from 'prisma/config';
 
 export default defineConfig({
+  schema: 'libs/models/prisma/schema.prisma',
+  migrations: {
+    path: 'libs/models/prisma/migrations',
+  },
   datasource: {
     url: process.env.DB_URL,
   },
