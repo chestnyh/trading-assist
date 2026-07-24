@@ -49,6 +49,9 @@
     },
     "migrations:seed": {
       "executor": "nx:run-commands",
+      "dependsOn": [
+        "migrations:generate"
+      ],
       "options": {
         "command": "ts-node -r tsconfig-paths/register --project libs/models/tsconfig.lib.json libs/models/src/migrations/seed.ts libs/models/seeds/initial.ts",
         "cwd": "."
