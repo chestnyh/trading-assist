@@ -10,19 +10,18 @@ It consists of a list of commands with short descriptions that should be execute
 git clone git@github.com:chestnyh/trading-assist.git
 cd trading-assist
 ```
+### 2. Verify Development Tools
+Run the automated tool checker to ensure all required tools are installed:
+```bash
+./tools/development/scripts/dev-tools-checking.sh
+```
+If any tools are missing, install them before proceeding.
 
-### 2. Install Dependencies
+### 3. Install Dependencies
 Install project dependencies:
 ```bash
 pnpm install --frozen-lockfile
 ```
-
-### 3. Verify Development Tools
-Run the automated tool checker to ensure all required tools are installed:
-```bash
-pnpm development:dev-tools-checking
-```
-If any tools are missing, install them before proceeding.
 
 ### 4. Environment Configuration
 Copy the environment template file to create your local environment variables file:

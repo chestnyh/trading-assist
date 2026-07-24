@@ -60,8 +60,8 @@ else
     echo ""
     echo "  Git:    https://git-scm.com/downloads"
     echo "  Docker: https://docs.docker.com/get-docker/"
-    echo "  Node.js: https://nodejs.org/ (recommend using nvm)"
-    echo "  pnpm:   npm install -g pnpm"
+    echo "  Node.js: https://nodejs.org/"
+    echo "  pnpm:   https://pnpm.io/installation"
     echo ""
     exit 1
 fi
