@@ -27,7 +27,8 @@
       "options": {
         "buildTarget": "log-stream:build",
         "runBuildTargetDependencies": false,
-        "inspect": true
+        "inspect": true,
+        "port": 9231
       },
       "configurations": {
         "development": {

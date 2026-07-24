@@ -59,7 +59,7 @@
     "check:md-links:staged": "ts-node -P scripts/tsconfig.scripts.json scripts/check-markdown-links.ts",
     "//all": "All is a tool that is responsible for the command that can be run for all services of the trading assist.",
     "all:build": "nx run-many --target=build --all",
-    "all:start": "nx run-many --target=serve --all",
+    "all:start": "nx run-many --target=serve --all --parallel=5",
     "all:test": "nx run-many --target=test --all",
     "all:lint": "nx run-many --target=lint --all",
     "//development": "Docker is a tool that is responsible for the docker of the trading assist.",

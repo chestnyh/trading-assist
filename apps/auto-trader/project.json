@@ -40,7 +40,8 @@
       "options": {
         "buildTarget": "auto-trader:build",
         "runBuildTargetDependencies": false,
-        "inspect": true
+        "inspect": true,
+        "port": 9230
       },
       "configurations": {
         "development": {

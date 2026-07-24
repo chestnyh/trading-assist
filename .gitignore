@@ -137,8 +137,6 @@ dist
 .nx/cache
 .nx/workspace-data
 
-.vscode/
-
 # docker volumes
 docker/
 
