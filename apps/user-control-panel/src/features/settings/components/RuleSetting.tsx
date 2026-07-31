@@ -15,7 +15,7 @@ export type DetailField = {
   minLength?: number;
   maxLength?: number;
   exactLength?: number;
-  pattern?: RegExp;
+  pattern?: string;
   type?: "string" | "array";
 };
 
