@@ -10,7 +10,7 @@ export type DetailField = {
   minLength?: number;
   maxLength?: number;
   exactLength?: number;
-  pattern?: RegExp;
+  pattern?: string;
   type?: "string" | "array";
 };
 
@@ -80,7 +80,7 @@ export default function RuleSettingForm({
               e[f.key] = `Max length ${f.maxLength} (current ${val.length})`;
             }
           }
-          if (f.pattern && !f.pattern.test(val)) {
+          if (f.pattern && !new RegExp(f.pattern).test(val)) {
             e[f.key] = "Invalid format";
           }
         }
