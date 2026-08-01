@@ -79,8 +79,8 @@ export default function ExternalServiceSettingsGroup({
     try {
       setError(null);
       setLoading(true);
-      const options = { headers: { Authorization: `Bearer ${token}` } };
-      const res = await rulesSettingsControllerFindAllSettings({ externalServiceId, page: nextPage, limit }, options);
+      
+      const res = await rulesSettingsControllerFindAllSettings({ externalServiceId, page: nextPage, limit });
       if (res.status === 200) {
         const mapped = mapRulesToSettings(res.data);
         if (mapped.length === 0) {
@@ -90,8 +90,7 @@ export default function ExternalServiceSettingsGroup({
 
         if (res.data.length === limit) {
           const probe = await rulesSettingsControllerFindAllSettings(
-            { externalServiceId, page: nextPage + 1, limit },
-            options
+            { externalServiceId, page: nextPage + 1, limit }
           );
           setHasMore(probe.status === 200 && probe.data.length > 0);
         } else {
@@ -142,9 +141,7 @@ export default function ExternalServiceSettingsGroup({
       tags: data.tags,
     };
 
-    const res = await rulesSettingsControllerCreateSetting(dto, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await rulesSettingsControllerCreateSetting(dto);
 
     if (res.status === 201) {
       setSettings((prev) => {
@@ -177,9 +174,7 @@ export default function ExternalServiceSettingsGroup({
       tags: data.tags,
     };
 
-    const res = await rulesSettingsControllerUpdateSetting(s.id, dto, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await rulesSettingsControllerUpdateSetting(s.id, dto);
 
     if (res.status === 200) {
       setSettings((prev) => {
@@ -287,7 +282,6 @@ export default function ExternalServiceSettingsGroup({
                       <TelegramRuleSetting
                         setting={s}
                         fieldsSchema={fieldsSchema}
-                        token={token}
                         setLoading={setLoading}
                         setError={setError}
                         onSave={(data) => handleSave(s, i, data)}
@@ -358,9 +352,7 @@ export default function ExternalServiceSettingsGroup({
             setIsDeleting(true);
             setError(null);
             
-            await rulesSettingsControllerRemoveSetting(s.id, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
+            await rulesSettingsControllerRemoveSetting(s.id);
             
             setSettings((prev) => prev.filter((_, idx) => idx !== deletingIndex));
             setDeletingIndex(null);

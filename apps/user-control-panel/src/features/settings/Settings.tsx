@@ -18,8 +18,7 @@ export default function Settings() {
     const fetchData = async () => {
       try {
         setError(null);
-        const options = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
-        const servicesRes = await externalServicesControllerFindAll(options);
+        const servicesRes = await externalServicesControllerFindAll();
 
         if (servicesRes.status === 200) {
           setServices(servicesRes.data);
