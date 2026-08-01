@@ -8,6 +8,7 @@ import { NotFound } from "../notFound/NotFound";
 import { useRuleLogs } from "./hooks/useRuleLogs";
 import { LogsPanel } from "./components/LogsPanel";
 import { ActionEditor, parseRuleBodyToActionTree } from "./components/action-editor";
+import { Spinner } from "../../shared/ui/spiner/Spinner";
 
 export function RuleDetailsPage() {
 	const { id } = useParams<{ id: string }>();
@@ -35,11 +36,7 @@ export function RuleDetailsPage() {
 	}, [id, getRuleById]);
 
 	if (loading)
-		return (
-			<div className="flex justify-center items-center min-h-[400px]">
-				<div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
-			</div>
-			);
+		return <Spinner/>
 	if (!rule) return (
 		<NotFound />
 	)

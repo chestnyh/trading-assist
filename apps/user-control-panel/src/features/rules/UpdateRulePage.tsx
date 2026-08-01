@@ -4,6 +4,7 @@ import { useRules } from "../../app/contexts/RulesContext";
 import { RuleForm } from "../../app/components/RuleForm";
 import { NotFound } from "../notFound/NotFound";
 import { ErrorAlert } from "../../shared/ui/feedback/ErrorAlert";
+import { Spinner } from "../../shared/ui/spiner/Spinner";
 
 export function UpdateRulePage() {
   const { id } = useParams<{ id: string }>();
@@ -46,7 +47,7 @@ export function UpdateRulePage() {
     }
   };
 
-  if (isFetching) return <div className="p-10 text-center">Loading rule data...</div>;
+  if (isFetching) return <Spinner/> 
   if (!initialData) return <NotFound />;
 
   return (
