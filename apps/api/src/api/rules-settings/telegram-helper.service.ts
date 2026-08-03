@@ -1,8 +1,9 @@
-import { Injectable, RequestTimeoutException } from '@nestjs/common';
+import { Injectable, RequestTimeoutException, Logger } from '@nestjs/common';
 import TelegramBot from 'node-telegram-bot-api';
 
 @Injectable()
 export class TelegramHelperService {
+  private readonly logger = new Logger(TelegramHelperService.name);
   async getChatIdViaPolling(botToken: string): Promise<number> {
     return new Promise((resolve, reject) => {
       const bot = new TelegramBot(botToken, { polling: true });
@@ -21,7 +22,7 @@ export class TelegramHelperService {
         try {
           await bot.sendMessage(chatId, `Your Chat ID : ${chatId}. Go back to the trading assistant.`);
         } catch (e) {
-          console.error('Error sending confirmation to Telegram:', e);
+          this.logger.error('Error sending confirmation to Telegram:', e);
         }
 
         resolve(chatId);

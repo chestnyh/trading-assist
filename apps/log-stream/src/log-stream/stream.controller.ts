@@ -63,7 +63,7 @@ export class StreamController {
     };
 
     const replayed = await this.logStreamService.replayLast(ruleId);
-    let lastId = '0-0';
+    const lastId = '0-0';
 
     for (const entry of replayed) {
       sendEvent(entry);

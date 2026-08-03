@@ -66,7 +66,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
       setTotalCount(data.total);
 
     } catch (error) {
-      console.error("Fetch rules failed", error);
+      
       setRules([]);
       setError("Failed to load rules. Please try again later.");
     } finally {
@@ -85,7 +85,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
       if (response.status !== 200) return null;
       return response.data;
     } catch (error) {
-      console.error("Failed to fetch rule details", error);
+      
       return null;
     }
   };

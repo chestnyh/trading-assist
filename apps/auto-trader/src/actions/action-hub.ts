@@ -57,7 +57,7 @@ export class ActionsHub {
             arguments: args
         } = this.ruleBody;
 
-        console.log(type);
+        
         
         this[type](
             args, 

@@ -1,5 +1,5 @@
 import renderMessage from '../../../utils/render-message.util'
-
+import { Logger } from '@nestjs/common';
 /**
  * Action that logs messages to the terminal for debugging purposes.
  *
@@ -41,6 +41,8 @@ import renderMessage from '../../../utils/render-message.util'
  *     }
  * }
  */
+
+const logger = new Logger('DebugAction');
 export default function debug(
     {
         message = ""
@@ -54,5 +56,5 @@ export default function debug(
     }
 ): void {
     const renderedMessage = renderMessage(message, { heap: this.heap, sequenceContext });
-    console.log(`[debug] ${renderedMessage}`);
+    logger.log(`[debug] ${renderedMessage}`);
 }
