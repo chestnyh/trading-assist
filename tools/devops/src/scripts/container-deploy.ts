@@ -49,7 +49,7 @@ if(!args?.values?.project_name) {
 const projectName = args?.values?.project_name;
 
 // Dynamically import the project class
-const { default: Project } = require(`../projects/${projectName}/project`);
+const { default: Project } = await require(`../projects/${projectName}/project`);
 const project = new Project();
 
 async function main() {
