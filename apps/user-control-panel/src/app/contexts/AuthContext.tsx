@@ -98,12 +98,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setToken(access_token);
         setUser(userData);
 
-        localStorage.setItem('auth_token', access_token);
-        localStorage.setItem('user_data', JSON.stringify(userData));
-
         if (rememberMe) {
-          sessionStorage.removeItem('auth_token');
-          sessionStorage.removeItem('user_data');
+          localStorage.setItem('auth_token', access_token);
+          localStorage.setItem('user_data', JSON.stringify(userData));
         } else {
           sessionStorage.setItem('auth_token', access_token);
           sessionStorage.setItem('user_data', JSON.stringify(userData));
