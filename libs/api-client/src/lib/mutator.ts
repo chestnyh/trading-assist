@@ -84,7 +84,7 @@ export const customInstance = async <T>(
       ? localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
       : null;
 
-  if (token) {
+  if (token && !headers['Authorization']) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
