@@ -1,5 +1,5 @@
 import renderMessage from '../../../utils/render-message.util'
-import { Logger } from '@nestjs/common';
+import { LoggerService } from '@trading-bot/logger'; 
 /**
  * Action that logs messages to the terminal for debugging purposes.
  *
@@ -42,7 +42,7 @@ import { Logger } from '@nestjs/common';
  * }
  */
 
-const logger = new Logger('DebugAction');
+
 export default function debug(
     {
         message = ""
@@ -53,7 +53,8 @@ export default function debug(
         sequenceContext = {},
     }: {
         sequenceContext?: Record<string, any>;
-    }
+    },
+    logger: LoggerService,
 ): void {
     const renderedMessage = renderMessage(message, { heap: this.heap, sequenceContext });
     logger.log(`[debug] ${renderedMessage}`);

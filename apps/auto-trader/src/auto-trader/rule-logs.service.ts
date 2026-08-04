@@ -1,5 +1,6 @@
-import { Injectable, OnModuleDestroy,Logger } from '@nestjs/common';
+import { Injectable, OnModuleDestroy} from '@nestjs/common';
 import { ServicesConfigs } from '@trading-bot/configs';
+import { LoggerService } from '@trading-bot/logger'; 
 import Redis from 'ioredis';
 
 import type { RuleLogEntry } from './rule-log-entry.interface';
@@ -7,11 +8,12 @@ export type { RuleLogEntry } from './rule-log-entry.interface';
 
 @Injectable()
 export class RuleLogsService implements OnModuleDestroy {
-  private readonly logger = new Logger(RuleLogsService.name);
+  private readonly logger: LoggerService;
   private redis: Redis | null = null;
   private readonly MAX_STREAM_LENGTH = 2000;
 
-  constructor(private configs: ServicesConfigs) {
+  constructor(private configs: ServicesConfigs, logger: LoggerService,) {
+    this.logger = logger;
     this.initRedis();
   }
 

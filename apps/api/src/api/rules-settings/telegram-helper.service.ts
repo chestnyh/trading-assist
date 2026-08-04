@@ -1,9 +1,13 @@
-import { Injectable, RequestTimeoutException, Logger } from '@nestjs/common';
+import { Injectable, RequestTimeoutException } from '@nestjs/common';
+import { LoggerService } from '@trading-bot/logger'; 
 import TelegramBot from 'node-telegram-bot-api';
 
 @Injectable()
 export class TelegramHelperService {
-  private readonly logger = new Logger(TelegramHelperService.name);
+  private readonly logger: LoggerService;
+  constructor(logger: LoggerService) {
+    this.logger = logger;
+  }
   async getChatIdViaPolling(botToken: string): Promise<number> {
     return new Promise((resolve, reject) => {
       const bot = new TelegramBot(botToken, { polling: true });
