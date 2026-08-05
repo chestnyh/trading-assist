@@ -7,6 +7,7 @@ import {
 } from "@trading-bot/api-client";
 import { useAuth } from "../../app/contexts/AuthContext";
 import { ErrorAlert } from "../../shared/ui/feedback/ErrorAlert";
+import { Spinner } from "../../shared/ui/spiner/Spinner";
 
 export default function Settings() {
   const [services, setServices] = useState<ExternalServiceResponseDto[]>([]);
@@ -18,8 +19,7 @@ export default function Settings() {
     const fetchData = async () => {
       try {
         setError(null);
-        const options = token ? { headers: { Authorization: `Bearer ${token}` } } : undefined;
-        const servicesRes = await externalServicesControllerFindAll(options);
+        const servicesRes = await externalServicesControllerFindAll();
 
         if (servicesRes.status === 200) {
           setServices(servicesRes.data);
@@ -51,7 +51,7 @@ export default function Settings() {
   }, [token, logout]);
 
   if (loading) {
-     return <div className="p-12 text-center text-secondary">Loading settings...</div>;
+     return <Spinner/>
   }
 
   return (

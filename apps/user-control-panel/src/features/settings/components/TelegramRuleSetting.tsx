@@ -23,7 +23,6 @@ const getValueByFieldKey = (
 export default function TelegramRuleSetting(props: {
   setting: SettingItem;
   fieldsSchema?: DetailField[];
-  token: string | null;
   setLoading: (v: boolean) => void;
   setError: (v: string | null) => void;
   onSave: (data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }) => Promise<void>;
@@ -35,7 +34,6 @@ export default function TelegramRuleSetting(props: {
   const {
     setting,
     fieldsSchema,
-    token,
     setLoading,
     setError,
     onSave,
@@ -122,14 +120,12 @@ export default function TelegramRuleSetting(props: {
               type="button"
               className="px-3 py-1.5 w-fit rounded border border-border bg-black/20 hover:bg-black/30 text-gray-100 text-sm"
               onClick={async () => {
-                if (!token) return;
+                
                 setStage("waiting");
                 setFlowError(null);
 
                 try {
-                  const res = await rulesSettingsControllerGetTelegramChatId(setting.id!, {
-                    headers: { Authorization: `Bearer ${token}` },
-                  });
+                  const res = await rulesSettingsControllerGetTelegramChatId(setting.id!);
 
                   if (res.status === 200) {
                     const receivedChatId = String(res.data.chatId);
@@ -174,7 +170,7 @@ export default function TelegramRuleSetting(props: {
                 type="button"
                 className="px-4 py-2 w-40 rounded-md border-2 border-border bg-accent-hover/50 hover:bg-accent-hover text-primary transition"
                 onClick={async () => {
-                  if (!token) return;
+                  
 
                   const chatIdValue = (chatIdDraft || "").trim();
                   const botTokenValue = getValueByFieldKey(fieldsSchema, setting.details, "botToken");
@@ -192,9 +188,7 @@ export default function TelegramRuleSetting(props: {
                   setFlowError(null);
 
                   try {
-                    const res = await rulesSettingsControllerUpdateSetting(setting.id!, dto, {
-                      headers: { Authorization: `Bearer ${token}` },
-                    });
+                    const res = await rulesSettingsControllerUpdateSetting(setting.id!, dto);
 
                     if (res.status === 200) {
                       if (chatIdLabel) {
@@ -236,7 +230,7 @@ export default function TelegramRuleSetting(props: {
         )}
       </div>
     );
-  }, [chatIdDraft, chatIdLabel, flowError, fieldsSchema, onDetailsChange, setError, setLoading, setting.clientId, setting.details, setting.id, setting.isEditing, setting.isNew, stage, token]);
+  }, [chatIdDraft, chatIdLabel, flowError, fieldsSchema, onDetailsChange, setError, setLoading, setting.clientId, setting.details, setting.id, setting.isEditing, setting.isNew, stage]);
 
   return (
     <RuleSetting
