@@ -79,14 +79,15 @@ export const customInstance = async <T>(
   };
 
   // Add authentication token if available
-  const token =
-    typeof window !== 'undefined'
-      ? localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
-      : null;
-
-  if (token && !headers['Authorization']) {
-    headers['Authorization'] = `Bearer ${token}`;
+  if(!headers['Authorization']){
+    const token =
+      typeof window !== 'undefined'
+        ? localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
+        : null;
+  
+      headers['Authorization'] = `Bearer ${token}`;
   }
+  
 
   // Validate request body using URL-based schema mapping
   const requestSchema = getRequestSchemaForUrl(urlPath);
