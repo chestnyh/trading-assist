@@ -25,7 +25,7 @@ export default function Settings() {
           setServices(servicesRes.data);
         }
       } catch (e: unknown) {
-        console.error("Failed to fetch settings", e);
+        
         if (e && typeof e === 'object' && 'status' in e && (e as any).status === 401) {
           logout();
         } else {

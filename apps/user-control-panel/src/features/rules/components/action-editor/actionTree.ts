@@ -82,19 +82,19 @@ export function actionTreeToRuleBody(action: ActionNode): unknown {
 
 export function parseRuleBodyToActionTree(ruleBody: unknown): ActionNode | null {
   if (!isRecord(ruleBody)) {
-    console.log('[parseRuleBodyToActionTree] Failed: not a record', ruleBody);
+    
     return null;
   }
 
   const type = ruleBody.type;
   if (!isActionType(type)) {
-    console.log('[parseRuleBodyToActionTree] Failed: unknown action type', type, 'Available types:', ACTION_TYPES.map(t => t.value));
+    
     return null;
   }
 
   const config = getActionConfig(type);
   if (!config) {
-    console.log('[parseRuleBodyToActionTree] Failed: no config for type', type);
+    
     return null;
   }
 

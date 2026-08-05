@@ -1,5 +1,5 @@
 import renderMessage from '../../../utils/render-message.util'
-
+import { LoggerService } from '@trading-bot/logger'; 
 /**
  * Action that logs messages to the terminal for debugging purposes.
  *
@@ -41,6 +41,8 @@ import renderMessage from '../../../utils/render-message.util'
  *     }
  * }
  */
+
+
 export default function debug(
     {
         message = ""
@@ -51,8 +53,9 @@ export default function debug(
         sequenceContext = {},
     }: {
         sequenceContext?: Record<string, any>;
-    }
+    },
+    logger: LoggerService,
 ): void {
     const renderedMessage = renderMessage(message, { heap: this.heap, sequenceContext });
-    console.log(`[debug] ${renderedMessage}`);
+    logger.log(`[debug] ${renderedMessage}`);
 }

@@ -1,3 +1,4 @@
 exec < /dev/tty
 pnpm development:check-envs:examples-check
 pnpm development:check-markdown-links:staged
+pnpm all:lint

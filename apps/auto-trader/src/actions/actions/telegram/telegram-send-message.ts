@@ -54,6 +54,6 @@ export default async function telegram_send_message (
         await bot.sendMessage(chatId, messageToSend);
 
     } catch (error) {
-        console.error(error);
+        //
     }
 }

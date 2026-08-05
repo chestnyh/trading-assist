@@ -1,6 +1,6 @@
 {
   "root": true,
-  "ignorePatterns": ["**/*"],
+  "ignorePatterns": ["!**/*", "**/node_modules/**"],
   "plugins": ["@nx"],
   "overrides": [
     {
@@ -18,9 +18,11 @@
               }
             ]
           }
-        ]
+        ],
+        "no-console": "error"
       }
     },
+    
     {
       "files": ["*.ts", "*.tsx"],
       "extends": ["plugin:@nx/typescript"],
@@ -36,7 +38,20 @@
       "env": {
         "jest": true
       },
-      "rules": {}
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": [
+        "**/tools/**/*.ts",
+        "**/scripts/**/*.ts",
+        "**/*.script.ts",
+        "**/migrations/**/*.ts"
+      ],
+      "rules": {
+        "no-console": "off"
+      }
     }
   ]
 }
