@@ -1,4 +1,4 @@
-import { DevopsConfigs } from "libs/configs/src/lib/devops-configs";
+import { DevopsConfigs } from "@trading-bot/configs";
 
 export default class DevopsProject {
 

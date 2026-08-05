@@ -1,5 +1,6 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleDestroy} from '@nestjs/common';
 import { ServicesConfigs } from '@trading-bot/configs';
+import { LoggerService } from '@trading-bot/logger'; 
 import Redis from 'ioredis';
 
 import type { RuleLogEntry } from './rule-log-entry.interface';
@@ -7,10 +8,12 @@ export type { RuleLogEntry } from './rule-log-entry.interface';
 
 @Injectable()
 export class RuleLogsService implements OnModuleDestroy {
+  private readonly logger: LoggerService;
   private redis: Redis | null = null;
   private readonly MAX_STREAM_LENGTH = 2000;
 
-  constructor(private configs: ServicesConfigs) {
+  constructor(private configs: ServicesConfigs, logger: LoggerService,) {
+    this.logger = logger;
     this.initRedis();
   }
 
@@ -20,7 +23,7 @@ export class RuleLogsService implements OnModuleDestroy {
     const password = this.configs.get('REDIS_PASSWORD');
 
     if (!host || !port) {
-      console.warn('[RuleLogsService] Redis not configured, logs will not be published');
+      this.logger.warn('[RuleLogsService] Redis not configured, logs will not be published');
       return;
     }
 
@@ -31,7 +34,7 @@ export class RuleLogsService implements OnModuleDestroy {
         password: (password as string) || undefined,
         retryStrategy: (times) => {
           if (times > 3) {
-            console.warn('[RuleLogsService] Redis connection failed after 3 retries, disabling');
+            this.logger.warn('[RuleLogsService] Redis connection failed after 3 retries, disabling');
             return null;
           }
           return Math.min(times * 100, 3000);
@@ -40,14 +43,14 @@ export class RuleLogsService implements OnModuleDestroy {
       });
 
       this.redis.on('error', (err) => {
-        console.error('[RuleLogsService] Redis error:', err.message);
+        this.logger.error('[RuleLogsService] Redis error:', err.message);
       });
 
       this.redis.on('connect', () => {
-        console.log('[RuleLogsService] Connected to Redis');
+        this.logger.log('[RuleLogsService] Connected to Redis');
       });
     } catch (err) {
-      console.error('[RuleLogsService] Failed to initialize Redis:', err);
+      this.logger.error('[RuleLogsService] Failed to initialize Redis:', err);
       this.redis = null;
     }
   }
@@ -70,7 +73,7 @@ export class RuleLogsService implements OnModuleDestroy {
         JSON.stringify(entry)
       );
     } catch (err) {
-      console.error('[RuleLogsService] Failed to publish log:', err);
+      this.logger.error('[RuleLogsService] Failed to publish log:', err);
     }
   }
 

@@ -1,4 +1,4 @@
-import { Inject, Injectable, LoggerService as NestLoggerService } from '@nestjs/common';
+import { Inject, Injectable, LoggerService as NestLoggerService, Logger } from '@nestjs/common';
 import { LOGGER_OPTIONS } from './logger.constants';
 import type { LogEntry, LogError, LogLevel, LoggerModuleOptions } from '../types';
 
@@ -10,6 +10,7 @@ import type { LogEntry, LogError, LogLevel, LoggerModuleOptions } from '../types
  * - Elasticsearch transport is enabled only when explicitly configured.
  */
 export class LoggerService implements NestLoggerService {
+  private readonly logger = new Logger(LoggerService.name);
   private readonly serviceName: string;
   private readonly environment: string;
   private readonly enableConsole: boolean;
@@ -145,19 +146,19 @@ export class LoggerService implements NestLoggerService {
     const line = `${ts} [${svc}] ${lvl} ${msg}`;
 
     if (entry.level === 'error') {
-      console.error(line);
+      this.logger.error(line);
       if (entry.error?.stack) {
-        console.error(entry.error.stack);
+        this.logger.error(entry.error.stack);
       }
       return;
     }
 
     if (entry.level === 'warn') {
-      console.warn(line);
+      this.logger.warn(line);
       return;
     }
 
-    console.log(line);
+    this.logger.log(line);
   }
 
   private shouldSendToElasticsearch(): boolean {
@@ -187,12 +188,12 @@ export class LoggerService implements NestLoggerService {
 
       const ok = res.ok;
       if (!ok) {
-        console.warn(
+        this.logger.warn(
           `Failed to send log to Elasticsearch: ${res.status} ${res.statusText}`
         );
       }
     } catch (e) {
-      console.warn(`Failed to send log to Elasticsearch: ${(e as Error).message}`);
+      this.logger.warn(`Failed to send log to Elasticsearch: ${(e as Error).message}`);
     }
   }
 

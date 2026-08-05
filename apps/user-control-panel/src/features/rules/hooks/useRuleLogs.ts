@@ -65,7 +65,7 @@ export function useRuleLogs({ ruleId, token, onError }: UseRuleLogsOptions): Use
         const entry: RuleLogEntry = JSON.parse(event.data);
         setLogs((prev) => [...prev, entry]);
       } catch (err) {
-        console.error('Failed to parse log entry:', err);
+        // 
       }
     };
 

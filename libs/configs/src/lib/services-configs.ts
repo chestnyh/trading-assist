@@ -7,7 +7,7 @@ import { getFiniteNumber } from "./utils";
 export class ServicesConfigs extends Configs {
   constructor(envBasePath?: string) {
     super(envBasePath);
-    console.log('process.env[API_BASE_URL]', process.env['API_BASE_URL']);
+    // console.log('process.env[API_BASE_URL]', process.env['API_BASE_URL']);
     this.configs = {
       ...this.configs,
       API_BASE_URL: process.env['API_BASE_URL'],

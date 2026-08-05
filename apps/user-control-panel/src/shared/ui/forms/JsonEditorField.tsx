@@ -78,8 +78,8 @@ export function JsonEditorField({
                 const promise = (result != null && typeof (result as any).catch === 'function')
                     ? result as Promise<unknown>
                     : Promise.resolve([]);
-                promise.catch((err: unknown) => {
-                    console.error('jsoneditor validation error:', err);
+                promise.catch(() => {
+                // ignore  
                 });
             } catch {
                 // ignore transient parse errors

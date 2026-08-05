@@ -9,7 +9,7 @@ const comparisonOperators = {
     },
     __neq (operands): boolean {
         const [left, right] = operands;
-        console.log(left, right);
+        
         return this.resolve(left) !== this.resolve(right);
     },
     __gt (operands): boolean {

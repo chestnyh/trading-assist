@@ -9,6 +9,7 @@ import { Pagination } from "../../app/components/Pagination";
 import { ErrorAlert } from "../../shared/ui/feedback/ErrorAlert";
 import { NotFound } from "../notFound/NotFound";
 import { ConfirmationModal } from "../../shared/ui/modals/ConfirmationModal";
+import {Spinner} from '../../shared/ui/spiner/Spinner';
 
 export function RulesPage() {
   const { rules, isLoading, fetchRules, totalCount, error, deleteRule } = useRules();
@@ -47,11 +48,7 @@ export function RulesPage() {
   };
 
   if (isLoading && rules.length === 0) {
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <Spinner/>
   }
 
   if (error && rules.length === 0) {
