@@ -50,7 +50,7 @@ export function useRuleLogs({ ruleId, token, onError }: UseRuleLogsOptions): Use
 
     isManualCloseRef.current = false;
 
-    const url = `http://localhost:3002/stream/rules/${ruleId}/logs?token=${encodeURIComponent(token)}`;
+    const url = `${process.env.LOG_STREAM_BASE_URL}/stream/rules/${ruleId}/logs?token=${encodeURIComponent(token)}`;
     const es = new EventSource(url);
 
     es.onopen = () => {
