@@ -50,17 +50,7 @@ platform.
 **Rationale**: Independent services isolate failure domains and let
 trading, API, and UI concerns evolve at different rates.
 
-### IV. Tested Code (NON-NEGOTIABLE)
-Behavior that matters MUST be covered by automated tests before or with
-the change that introduces it. Unit tests MUST cover domain logic;
-integration and contract tests MUST cover service boundaries, shared
-schemas, and inter-service messaging. Untested critical paths MUST NOT
-merge. Tests MUST be deterministic and runnable in CI.
-
-**Rationale**: Incorrect automation can move real money; tests are the
-primary safety net for regressions.
-
-### V. Shared Libraries as Separate Projects
+### IV. Shared Libraries as Separate Projects
 Reusable code MUST live in dedicated library projects (Nx libs), not
 copied across apps or inlined into a single service. Each library MUST
 have a clear purpose, its own public API, and independent testability.
@@ -72,6 +62,16 @@ it; until then they remain first-class Nx projects in the monorepo.
 
 **Rationale**: Separate library projects enforce reuse, ownership, and
 consistent contracts without duplicating domain logic.
+
+### V. Tested Code (NON-NEGOTIABLE)
+Behavior that matters MUST be covered by automated tests before or with
+the change that introduces it. Unit tests MUST cover domain logic;
+integration and contract tests MUST cover service boundaries, shared
+schemas, and inter-service messaging. Untested critical paths MUST NOT
+merge. Tests MUST be deterministic and runnable in CI.
+
+**Rationale**: Incorrect automation can move real money; tests are the
+primary safety net for regressions.
 
 ## Technology Stack
 
