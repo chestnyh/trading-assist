@@ -1,0 +1,11 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2021",
+    "esModuleInterop": true,
+    "outDir": "../../../dist/out-tsc",
+    "types": ["node"]
+  },
+  "include": ["**/*.ts", "../../../apps/api/src/**/*.ts"]
+}

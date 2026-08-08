@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ServiceCode } from '@trading-bot/models';
 
 export class RuleSettingResponseDto {
   @ApiProperty({ example: 1 })
@@ -24,8 +25,8 @@ export class RuleSettingResponseDto {
   @ApiProperty({ example: 1 })
   authorId: number;
 
-  @ApiProperty({ example: 1 })
-  externalServiceId: number;
+  @ApiProperty({ enum: ServiceCode, example: ServiceCode.TELEGRAM })
+  serviceCode: ServiceCode;
 
   @ApiProperty({ example: ['crypto', 'binance'] })
   tags?: string[];

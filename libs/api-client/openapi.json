@@ -216,6 +216,53 @@
         ]
       }
     },
+    "/api/v1/rules/admin/all": {
+      "get": {
+        "operationId": "RulesController_adminFindAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rules retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedRulesDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all rules across all users (admin only)",
+        "tags": [
+          "rules"
+        ]
+      }
+    },
     "/api/v1/rules": {
       "post": {
         "operationId": "RulesController_create",
@@ -475,15 +522,6 @@
         "operationId": "RulesSettingsController_findAllSettings",
         "parameters": [
           {
-            "name": "externalServiceId",
-            "required": false,
-            "in": "query",
-            "description": "Filter by External Service ID",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
             "name": "page",
             "required": false,
             "in": "query",
@@ -499,6 +537,28 @@
             "description": "Items per page",
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "serviceCode",
+            "required": false,
+            "in": "query",
+            "description": "Filter by service code",
+            "schema": {
+              "enum": [
+                "BINANCE",
+                "BYBIT",
+                "KRAKEN",
+                "TELEGRAM",
+                "EMAIL",
+                "DISCORD_WEBHOOKS",
+                "SLACK_WEBHOOKS",
+                "SMS_TWILIO",
+                "PUSH_NOTIFICATIONS_ONESIGNAL",
+                "WHATSAPP_BUSINESS",
+                "WEBHOOKS"
+              ],
+              "type": "string"
             }
           }
         ],
@@ -638,43 +698,6 @@
         ]
       }
     },
-    "/api/v1/telegram-chat-id/{id}": {
-      "get": {
-        "operationId": "TelegramChatIdController_getTelegramChatId",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "description": "Rule setting ID",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Telegram chat ID",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TelegramChatIdResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get Telegram chat ID for a rule setting",
-        "tags": [
-          "rules-settings"
-        ]
-      }
-    },
     "/api/v1/tags": {
       "post": {
         "operationId": "RulesSettingsTagsController_createTag",
@@ -713,7 +736,24 @@
       },
       "get": {
         "operationId": "RulesSettingsTagsController_findAllTags",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "search",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Return all tags for the current user.",
@@ -775,36 +815,6 @@
           "tags"
         ]
       }
-    },
-    "/api/v1/external-services": {
-      "get": {
-        "operationId": "ExternalServicesController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "List of external services",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ExternalServiceResponseDto"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get all external services",
-        "tags": [
-          "external-services"
-        ]
-      }
     }
   },
   "info": {
@@ -847,8 +857,7 @@
           "Beginner",
           "Intermediate",
           "Advanced"
-        ],
-        "description": "Trading experience level"
+        ]
       },
       "PrimaryTradingStrategy": {
         "type": "string",
@@ -858,8 +867,7 @@
           "SwingTrading",
           "PositionTrading",
           "Automated"
-        ],
-        "description": "Primary trading strategy"
+        ]
       },
       "RiskTolerance": {
         "type": "string",
@@ -867,8 +875,7 @@
           "Conservative",
           "Moderate",
           "Aggressive"
-        ],
-        "description": "Risk tolerance level"
+        ]
       },
       "TradingPlatform": {
         "type": "string",
@@ -877,8 +884,7 @@
           "Bybit",
           "Kraken",
           "Other"
-        ],
-        "description": "Preferred trading platforms (multiple selection allowed)"
+        ]
       },
       "CreateUserDto": {
         "type": "object",
@@ -1162,36 +1168,6 @@
           "success"
         ]
       },
-      "CreateRuleDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Name of the trading rule",
-            "example": "BTC Price Alert"
-          },
-          "description": {
-            "type": "string",
-            "description": "Description of what this rule does",
-            "example": "Sends a Telegram alert when BTC price drops below $50,000"
-          },
-          "ruleBody": {
-            "type": "object",
-            "description": "Rule configuration as JSON object",
-            "example": {
-              "type": "log",
-              "arguments": {
-                "message": "This message will be logged"
-              }
-            }
-          }
-        },
-        "required": [
-          "name",
-          "description",
-          "ruleBody"
-        ]
-      },
       "RuleResponseDto": {
         "type": "object",
         "properties": {
@@ -1255,6 +1231,36 @@
           "total"
         ]
       },
+      "CreateRuleDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the trading rule",
+            "example": "BTC Price Alert"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of what this rule does",
+            "example": "Sends a Telegram alert when BTC price drops below $50,000"
+          },
+          "ruleBody": {
+            "type": "object",
+            "description": "Rule configuration as JSON object",
+            "example": {
+              "type": "log",
+              "arguments": {
+                "message": "This message will be logged"
+              }
+            }
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "ruleBody"
+        ]
+      },
       "UpdateRuleDto": {
         "type": "object",
         "properties": {
@@ -1295,9 +1301,22 @@
             "type": "string",
             "example": "Rule for spot trading"
           },
-          "externalServiceId": {
-            "type": "number",
-            "example": 1
+          "serviceCode": {
+            "type": "string",
+            "enum": [
+              "BINANCE",
+              "BYBIT",
+              "KRAKEN",
+              "TELEGRAM",
+              "EMAIL",
+              "DISCORD_WEBHOOKS",
+              "SLACK_WEBHOOKS",
+              "SMS_TWILIO",
+              "PUSH_NOTIFICATIONS_ONESIGNAL",
+              "WHATSAPP_BUSINESS",
+              "WEBHOOKS"
+            ],
+            "example": "TELEGRAM"
           },
           "tags": {
             "example": [
@@ -1321,7 +1340,7 @@
         "required": [
           "name",
           "code",
-          "externalServiceId",
+          "serviceCode",
           "configuration"
         ]
       },
@@ -1357,9 +1376,22 @@
             "type": "number",
             "example": 1
           },
-          "externalServiceId": {
-            "type": "number",
-            "example": 1
+          "serviceCode": {
+            "type": "string",
+            "enum": [
+              "BINANCE",
+              "BYBIT",
+              "KRAKEN",
+              "TELEGRAM",
+              "EMAIL",
+              "DISCORD_WEBHOOKS",
+              "SLACK_WEBHOOKS",
+              "SMS_TWILIO",
+              "PUSH_NOTIFICATIONS_ONESIGNAL",
+              "WHATSAPP_BUSINESS",
+              "WEBHOOKS"
+            ],
+            "example": "TELEGRAM"
           },
           "tags": {
             "example": [
@@ -1379,7 +1411,7 @@
           "description",
           "configuration",
           "authorId",
-          "externalServiceId",
+          "serviceCode",
           "tags"
         ]
       },
@@ -1398,9 +1430,22 @@
             "type": "string",
             "example": "Rule for spot trading"
           },
-          "externalServiceId": {
-            "type": "number",
-            "example": 1
+          "serviceCode": {
+            "type": "string",
+            "enum": [
+              "BINANCE",
+              "BYBIT",
+              "KRAKEN",
+              "TELEGRAM",
+              "EMAIL",
+              "DISCORD_WEBHOOKS",
+              "SLACK_WEBHOOKS",
+              "SMS_TWILIO",
+              "PUSH_NOTIFICATIONS_ONESIGNAL",
+              "WHATSAPP_BUSINESS",
+              "WEBHOOKS"
+            ],
+            "example": "TELEGRAM"
           },
           "tags": {
             "example": [
@@ -1466,49 +1511,6 @@
           "id",
           "name",
           "userId"
-        ]
-      },
-      "ExternalServiceResponseDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number",
-            "example": 1
-          },
-          "name": {
-            "type": "string",
-            "example": "Binance"
-          },
-          "code": {
-            "type": "string",
-            "example": "binance"
-          },
-          "logoUrl": {
-            "type": "string",
-            "example": "/logos/binance.svg",
-            "nullable": true
-          },
-          "fieldsSchema": {
-            "example": [
-              {
-                "key": "apiKey",
-                "label": "ApiKey",
-                "required": true,
-                "exactLength": 32,
-                "placeholder": "Insert api key…"
-              }
-            ],
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "code",
-          "fieldsSchema"
         ]
       }
     }

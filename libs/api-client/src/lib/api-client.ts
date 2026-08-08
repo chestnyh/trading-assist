@@ -231,18 +231,52 @@ export interface UpdateRuleDto {
   ruleBody?: UpdateRuleDtoRuleBody;
 }
 
+export type CreateUserRuleSettingDtoServiceCode =
+  (typeof CreateUserRuleSettingDtoServiceCode)[keyof typeof CreateUserRuleSettingDtoServiceCode];
+
+export const CreateUserRuleSettingDtoServiceCode = {
+  BINANCE: 'BINANCE',
+  BYBIT: 'BYBIT',
+  KRAKEN: 'KRAKEN',
+  TELEGRAM: 'TELEGRAM',
+  EMAIL: 'EMAIL',
+  DISCORD_WEBHOOKS: 'DISCORD_WEBHOOKS',
+  SLACK_WEBHOOKS: 'SLACK_WEBHOOKS',
+  SMS_TWILIO: 'SMS_TWILIO',
+  PUSH_NOTIFICATIONS_ONESIGNAL: 'PUSH_NOTIFICATIONS_ONESIGNAL',
+  WHATSAPP_BUSINESS: 'WHATSAPP_BUSINESS',
+  WEBHOOKS: 'WEBHOOKS',
+} as const;
+
 export type CreateUserRuleSettingDtoConfiguration = { [key: string]: unknown };
 
 export interface CreateUserRuleSettingDto {
   name: string;
   code: string;
   description?: string;
-  externalServiceId: number;
+  serviceCode: CreateUserRuleSettingDtoServiceCode;
   tags?: string[];
   configuration: CreateUserRuleSettingDtoConfiguration;
 }
 
 export type RuleSettingResponseDtoConfiguration = { [key: string]: unknown };
+
+export type RuleSettingResponseDtoServiceCode =
+  (typeof RuleSettingResponseDtoServiceCode)[keyof typeof RuleSettingResponseDtoServiceCode];
+
+export const RuleSettingResponseDtoServiceCode = {
+  BINANCE: 'BINANCE',
+  BYBIT: 'BYBIT',
+  KRAKEN: 'KRAKEN',
+  TELEGRAM: 'TELEGRAM',
+  EMAIL: 'EMAIL',
+  DISCORD_WEBHOOKS: 'DISCORD_WEBHOOKS',
+  SLACK_WEBHOOKS: 'SLACK_WEBHOOKS',
+  SMS_TWILIO: 'SMS_TWILIO',
+  PUSH_NOTIFICATIONS_ONESIGNAL: 'PUSH_NOTIFICATIONS_ONESIGNAL',
+  WHATSAPP_BUSINESS: 'WHATSAPP_BUSINESS',
+  WEBHOOKS: 'WEBHOOKS',
+} as const;
 
 export interface RuleSettingResponseDto {
   id: number;
@@ -251,9 +285,26 @@ export interface RuleSettingResponseDto {
   description: string;
   configuration: RuleSettingResponseDtoConfiguration;
   authorId: number;
-  externalServiceId: number;
+  serviceCode: RuleSettingResponseDtoServiceCode;
   tags: string[];
 }
+
+export type UpdateUserRuleSettingDtoServiceCode =
+  (typeof UpdateUserRuleSettingDtoServiceCode)[keyof typeof UpdateUserRuleSettingDtoServiceCode];
+
+export const UpdateUserRuleSettingDtoServiceCode = {
+  BINANCE: 'BINANCE',
+  BYBIT: 'BYBIT',
+  KRAKEN: 'KRAKEN',
+  TELEGRAM: 'TELEGRAM',
+  EMAIL: 'EMAIL',
+  DISCORD_WEBHOOKS: 'DISCORD_WEBHOOKS',
+  SLACK_WEBHOOKS: 'SLACK_WEBHOOKS',
+  SMS_TWILIO: 'SMS_TWILIO',
+  PUSH_NOTIFICATIONS_ONESIGNAL: 'PUSH_NOTIFICATIONS_ONESIGNAL',
+  WHATSAPP_BUSINESS: 'WHATSAPP_BUSINESS',
+  WEBHOOKS: 'WEBHOOKS',
+} as const;
 
 export type UpdateUserRuleSettingDtoConfiguration = { [key: string]: unknown };
 
@@ -261,7 +312,7 @@ export interface UpdateUserRuleSettingDto {
   name?: string;
   code?: string;
   description?: string;
-  externalServiceId?: number;
+  serviceCode?: UpdateUserRuleSettingDtoServiceCode;
   tags?: string[];
   configuration?: UpdateUserRuleSettingDtoConfiguration;
 }
@@ -280,18 +331,10 @@ export interface TagResponseDto {
   userId: number;
 }
 
-export type ExternalServiceResponseDtoFieldsSchemaItem = {
-  [key: string]: unknown;
+export type RulesControllerAdminFindAllParams = {
+  page: number;
+  limit: number;
 };
-
-export interface ExternalServiceResponseDto {
-  id: number;
-  name: string;
-  code: string;
-  /** @nullable */
-  logoUrl?: string | null;
-  fieldsSchema: ExternalServiceResponseDtoFieldsSchemaItem[];
-}
 
 export type RulesControllerFindAllParams = {
   page: number;
@@ -300,10 +343,6 @@ export type RulesControllerFindAllParams = {
 
 export type RulesSettingsControllerFindAllSettingsParams = {
   /**
-   * Filter by External Service ID
-   */
-  externalServiceId?: number;
-  /**
    * Page number
    */
   page?: number;
@@ -311,6 +350,30 @@ export type RulesSettingsControllerFindAllSettingsParams = {
    * Items per page
    */
   limit?: number;
+
+  serviceCode?: RulesSettingsControllerFindAllSettingsServiceCode;
+};
+
+export type RulesSettingsControllerFindAllSettingsServiceCode =
+  (typeof RulesSettingsControllerFindAllSettingsServiceCode)[keyof typeof RulesSettingsControllerFindAllSettingsServiceCode];
+
+export const RulesSettingsControllerFindAllSettingsServiceCode = {
+  BINANCE: 'BINANCE',
+  BYBIT: 'BYBIT',
+  KRAKEN: 'KRAKEN',
+  TELEGRAM: 'TELEGRAM',
+  EMAIL: 'EMAIL',
+  DISCORD_WEBHOOKS: 'DISCORD_WEBHOOKS',
+  SLACK_WEBHOOKS: 'SLACK_WEBHOOKS',
+  SMS_TWILIO: 'SMS_TWILIO',
+  PUSH_NOTIFICATIONS_ONESIGNAL: 'PUSH_NOTIFICATIONS_ONESIGNAL',
+  WHATSAPP_BUSINESS: 'WHATSAPP_BUSINESS',
+  WEBHOOKS: 'WEBHOOKS',
+} as const;
+
+export type RulesSettingsTagsControllerFindAllTagsParams = {
+  search: string;
+  limit: number;
 };
 
 /**
@@ -602,6 +665,63 @@ export const authControllerResetPassword = async (
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...options?.headers },
       body: JSON.stringify(resetPasswordDto),
+    }
+  );
+};
+
+/**
+ * @summary Get all rules across all users (admin only)
+ */
+export type rulesControllerAdminFindAllResponse200 = {
+  data: PaginatedRulesDto;
+  status: 200;
+};
+
+export type rulesControllerAdminFindAllResponse403 = {
+  data: void;
+  status: 403;
+};
+
+export type rulesControllerAdminFindAllResponseSuccess =
+  rulesControllerAdminFindAllResponse200 & {
+    headers: Headers;
+  };
+export type rulesControllerAdminFindAllResponseError =
+  rulesControllerAdminFindAllResponse403 & {
+    headers: Headers;
+  };
+
+export type rulesControllerAdminFindAllResponse =
+  | rulesControllerAdminFindAllResponseSuccess
+  | rulesControllerAdminFindAllResponseError;
+
+export const getRulesControllerAdminFindAllUrl = (
+  params: RulesControllerAdminFindAllParams
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/rules/admin/all?${stringifiedParams}`
+    : `/api/v1/rules/admin/all`;
+};
+
+export const rulesControllerAdminFindAll = async (
+  params: RulesControllerAdminFindAllParams,
+  options?: RequestInit
+): Promise<rulesControllerAdminFindAllResponse> => {
+  return customInstance<rulesControllerAdminFindAllResponse>(
+    getRulesControllerAdminFindAllUrl(params),
+    {
+      ...options,
+      method: 'GET',
     }
   );
 };
@@ -1054,38 +1174,6 @@ export const rulesSettingsControllerGetTelegramChatId = async (
 };
 
 /**
- * @summary Get Telegram chat ID for a rule setting
- */
-export type telegramChatIdControllerGetTelegramChatIdResponse200 = {
-  data: TelegramChatIdResponseDto;
-  status: 200;
-};
-
-export type telegramChatIdControllerGetTelegramChatIdResponseSuccess =
-  telegramChatIdControllerGetTelegramChatIdResponse200 & {
-    headers: Headers;
-  };
-export type telegramChatIdControllerGetTelegramChatIdResponse =
-  telegramChatIdControllerGetTelegramChatIdResponseSuccess;
-
-export const getTelegramChatIdControllerGetTelegramChatIdUrl = (id: number) => {
-  return `/api/v1/telegram-chat-id/${id}`;
-};
-
-export const telegramChatIdControllerGetTelegramChatId = async (
-  id: number,
-  options?: RequestInit
-): Promise<telegramChatIdControllerGetTelegramChatIdResponse> => {
-  return customInstance<telegramChatIdControllerGetTelegramChatIdResponse>(
-    getTelegramChatIdControllerGetTelegramChatIdUrl(id),
-    {
-      ...options,
-      method: 'GET',
-    }
-  );
-};
-
-/**
  * @summary Create a new tag for rule settings
  */
 export type rulesSettingsTagsControllerCreateTagResponse201 = {
@@ -1134,31 +1222,26 @@ export type rulesSettingsTagsControllerFindAllTagsResponseSuccess =
 export type rulesSettingsTagsControllerFindAllTagsResponse =
   rulesSettingsTagsControllerFindAllTagsResponseSuccess;
 
-export type RulesSettingsTagsControllerFindAllTagsParams = {
-  search?: string;
-  limit?: number;
-};
-
 export const getRulesSettingsTagsControllerFindAllTagsUrl = (
-  params?: RulesSettingsTagsControllerFindAllTagsParams
+  params: RulesSettingsTagsControllerFindAllTagsParams
 ) => {
-  const base = `/api/v1/tags`;
-  if (!params) return base;
+  const normalizedParams = new URLSearchParams();
 
-  const qs = new URLSearchParams();
-  if (typeof params.search === 'string' && params.search.trim()) {
-    qs.set('search', params.search.trim());
-  }
-  if (typeof params.limit === 'number' && Number.isFinite(params.limit)) {
-    qs.set('limit', String(params.limit));
-  }
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString());
+    }
+  });
 
-  const s = qs.toString();
-  return s ? `${base}?${s}` : base;
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/tags?${stringifiedParams}`
+    : `/api/v1/tags`;
 };
 
 export const rulesSettingsTagsControllerFindAllTags = async (
-  params?: RulesSettingsTagsControllerFindAllTagsParams,
+  params: RulesSettingsTagsControllerFindAllTagsParams,
   options?: RequestInit
 ): Promise<rulesSettingsTagsControllerFindAllTagsResponse> => {
   return customInstance<rulesSettingsTagsControllerFindAllTagsResponse>(
@@ -1198,37 +1281,6 @@ export const rulesSettingsTagsControllerRemoveTag = async (
     {
       ...options,
       method: 'DELETE',
-    }
-  );
-};
-
-/**
- * @summary Get all external services
- */
-export type externalServicesControllerFindAllResponse200 = {
-  data: ExternalServiceResponseDto[];
-  status: 200;
-};
-
-export type externalServicesControllerFindAllResponseSuccess =
-  externalServicesControllerFindAllResponse200 & {
-    headers: Headers;
-  };
-export type externalServicesControllerFindAllResponse =
-  externalServicesControllerFindAllResponseSuccess;
-
-export const getExternalServicesControllerFindAllUrl = () => {
-  return `/api/v1/external-services`;
-};
-
-export const externalServicesControllerFindAll = async (
-  options?: RequestInit
-): Promise<externalServicesControllerFindAllResponse> => {
-  return customInstance<externalServicesControllerFindAllResponse>(
-    getExternalServicesControllerFindAllUrl(),
-    {
-      ...options,
-      method: 'GET',
     }
   );
 };

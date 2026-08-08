@@ -10,7 +10,6 @@ import { AuthModule } from "./auth/auth.module";
 import { RulesModule } from "./rules/rules.module";
 import { RulesSettingsModule } from './rules-settings/rules-settings.module';
 import { RulesSettingsTagsModule } from './tags/tags.module';
-import { ExternalServicesModule } from './external-services/external-services.module';
 
 @Module({
   imports: [
@@ -73,7 +72,6 @@ import { ExternalServicesModule } from './external-services/external-services.mo
     RulesModule,
     RulesSettingsModule,
     RulesSettingsTagsModule,
-    ExternalServicesModule,
     OutboxModule,
   ],
   controllers: [],
