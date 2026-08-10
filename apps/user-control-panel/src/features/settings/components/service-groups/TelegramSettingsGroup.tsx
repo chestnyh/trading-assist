@@ -73,8 +73,8 @@ export default function TelegramSettingsGroup() {
                 <TelegramRuleSetting
                   setting={s}
                   fieldsSchema={TELEGRAM_FIELDS_SCHEMA}
-                  setLoading={() => {}}
-                  setError={() => {}}
+                  setLoading={() => {/* */}}
+                  setError={() => {/* */}}
                   onSave={(data) => saveSetting(s, i, data)}
                   onEdit={() => editSetting(i)}
                   onCancel={() => cancelSetting(s, i)}
