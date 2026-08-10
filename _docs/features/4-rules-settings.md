@@ -172,15 +172,9 @@ The Rules Settings feature uses the `UserRuleSettings` table to store rule's set
 | `code` | String | Required, Unique per user | Unique code identifier for the rule (unique within a user's rules) |
 | `description` | String | Not Required, Min Length: 10 | Detailed description of what the rule does |
 | `authorId` | Integer | Required, Foreign Key → `User.id` | ID of the user who created the rule |
-| `externalServiceId` | Integer | Required, Foreign Key → `ExternalServices.id` | ID of the external service this rule configuration is for |
+| `serviceCode` | Enum (`ServiceCode`) | Required | Discriminator identifying which integration this configuration is for (e.g.`TELEGRAM`,`BINANCE``EMAIL`) |
 | `configuration` | JSON | Required, Default: `{}` | JSON configuration containing service-specific parameters |
 
-**Table: `ExternalServices`**
-
-| Field | Type | Constraints | Description |
-|-------|------|-------------|-------------|
-| `id` | Integer | Primary Key, Auto-increment | Unique identifier for each external service |
-| `name` | String | Required, Unique | Name of the external service (e.g., "Telegram", "Binance", "Email", "Push Notifications") |
 
 **Table: `RuleSettingsTags`**
 
@@ -206,11 +200,11 @@ The Rules Settings feature uses the `UserRuleSettings` table to store rule's set
 - Foreign key constraint: `UserRuleSettings.authorId` references `User.id`
 - Deletion behavior: Restricted (rule's setting cannot be deleted if user is deleted)
 
-**ExternalServices ↔ UserRuleSettings (One-to-Many)**
-- Each `ExternalServices` record can be used by multiple `UserRuleSettings`
-- Each `UserRuleSettings` record belongs to exactly one `ExternalServices` (via `externalServiceId`)
-- Foreign key constraint: `UserRuleSettings.externalServiceId` references `ExternalServices.id`
-- Deletion behavior: Restricted (rule's settings cannot be deleted if external service is deleted)
+**ServiceCode (Enum)**
+- `UserRuleSettings.serviceCode` is a fixed enum, not a database table.
+ Adding a new integration requires a schema migration to extend the enum,
+ plus a dedicated Settings UI component (and backend logic where needed).
+- There is no generic schema-driven form — each integration renders its own Settings component.
 
 **User ↔ Tags (One-to-Many)**
 - Each `User` can have multiple `Tags`

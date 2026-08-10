@@ -3,3 +3,8 @@ CREATE TYPE "ServiceCode" AS ENUM ('binance', 'bybit', 'kraken', 'telegram', 'em
 
 -- AlterTable
 ALTER TABLE "UserRuleSettings" ADD COLUMN     "serviceCode" "ServiceCode";
+
+UPDATE "UserRuleSettings" urs
+SET "serviceCode" = es.code::"ServiceCode"
+FROM "ExternalServices" es
+WHERE urs."externalServiceId" = es.id;
