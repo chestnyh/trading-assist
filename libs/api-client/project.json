@@ -26,7 +26,7 @@
     "generate-openapi": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node --transpile-only -r tsconfig-paths/register --project scripts/tsconfig.scripts.json libs/api-client/scripts/generate-openapi.ts",
+       "command": "ts-node --transpile-only -r tsconfig-paths/register --project libs/api-client/scripts/tsconfig.scripts.json libs/api-client/scripts/generate-openapi.ts",
         "cwd": "."
       }
     },

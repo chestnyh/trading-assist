@@ -26,6 +26,7 @@ import { CreateUserRuleSettingDto } from './dto/create-user-rule-setting.dto';
 import { UpdateUserRuleSettingDto } from './dto/update-user-rule-setting.dto';
 import { RuleSettingResponseDto } from './dto/rule-setting-response.dto';
 import { TelegramChatIdResponseDto } from './dto/telegram-chat-id-response.dto';
+import { ServiceCode } from '@trading-bot/models';
 
 @ApiTags('rules-settings')
 @Controller('rules-settings')
@@ -46,7 +47,7 @@ export class RulesSettingsController {
 
   @Get('')
   @ApiOperation({ summary: 'Get all universal rule settings for user' })
-  @ApiQuery({ name: 'externalServiceId', required: false, type: Number, description: 'Filter by External Service ID' })
+  @ApiQuery({ name: 'serviceCode',enumName: 'ServiceCode', required: false, enum: ServiceCode, description: 'Filter by service code' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
   @ApiOkResponse({
@@ -55,14 +56,13 @@ export class RulesSettingsController {
   })
   async findAllSettings(
     @Request() req,
-    @Query('externalServiceId') externalServiceId?: number,
+    @Query('serviceCode') serviceCode: ServiceCode,
     @Query('page') page?: number,
     @Query('limit') limit?: number
   ) {
-    const serviceId = externalServiceId ? +externalServiceId : undefined;
     const pageNum = page ? +page : undefined;
     const limitNum = limit ? +limit : undefined;
-    return this.rulesSettingsService.findAllSettingsByUser(req.user.id, serviceId, pageNum, limitNum);
+    return this.rulesSettingsService.findAllSettingsByUser(req.user.id,serviceCode, pageNum, limitNum);
   }
 
   @Patch(':id')

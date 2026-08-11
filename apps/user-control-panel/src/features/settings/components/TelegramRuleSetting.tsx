@@ -6,7 +6,7 @@ import {
 } from "@trading-bot/api-client";
 import type { DetailField } from "./RuleSetting";
 import RuleSetting from "./RuleSetting";
-import type { SettingItem } from "./DefaultRuleSetting";
+import type { SettingItem } from "./useServiceRuleSettings";
 
 type TelegramStage = "create" | "receive" | "waiting" | "confirm" | "success";
 

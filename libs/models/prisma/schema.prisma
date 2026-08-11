@@ -66,13 +66,18 @@ model User {
   tags         RuleSettingsTags[]
 }
 
-model ExternalServices {
-  id Int @id @default(autoincrement())
-  name String @unique
-  code String @unique
-  logoUrl String?
-  fieldsSchema Json @default("[]")
-  userRuleSettings UserRuleSettings[]
+enum ServiceCode {
+  BINANCE                       @map("binance")
+  BYBIT                         @map("bybit")
+  KRAKEN                        @map("kraken")
+  TELEGRAM                      @map("telegram")
+  EMAIL                         @map("email")
+  DISCORD_WEBHOOKS              @map("discord-webhooks")
+  SLACK_WEBHOOKS                @map("slack-webhooks")
+  SMS_TWILIO                    @map("sms-twilio")
+  PUSH_NOTIFICATIONS_ONESIGNAL  @map("push-notifications-onesignal")
+  WHATSAPP_BUSINESS             @map("whatsapp-business")
+  WEBHOOKS                      @map("webhooks")
 }
 
 model UserRuleSettings {
@@ -84,8 +89,7 @@ model UserRuleSettings {
   authorId Int
   author User @relation(fields: [authorId], references: [id])
 
-  externalServiceId Int
-  externalService ExternalServices @relation(fields: [externalServiceId], references: [id])
+  serviceCode ServiceCode
 
   configuration Json @default("{}")
   tags RuleSettingsToRuleSettingsTags[]

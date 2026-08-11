@@ -1,11 +1,14 @@
 import { z } from 'zod';
 import { createSchemaValidator } from '../core';
+import { ServiceCode } from '@prisma/client';
+
+const ServiceCodeSchema = z.nativeEnum(ServiceCode);
 
 export const CreateUserRuleSettingDtoSchema = z.object({
   name: z.string().min(3),
   code: z.string().min(1),
   description: z.string().min(10).optional(),
-  externalServiceId: z.number().int(),
+  serviceCode: ServiceCodeSchema,
   tags: z.array(z.string()).optional(),
   configuration: z.record(z.string(), z.unknown()),
 });
@@ -19,7 +22,7 @@ export const RuleSettingResponseDtoSchema = z.object({
   description: z.string(),
   configuration: z.unknown(),
   authorId: z.number().int(),
-  externalServiceId: z.number().int(),
+  serviceCode: ServiceCodeSchema.optional(),
   tags: z.array(z.string()).optional(),
 });
 

@@ -13,3 +13,5 @@ export const TradingExperienceLevel = $Enums.TradingExperienceLevel;
 export const PrimaryTradingStrategy = $Enums.PrimaryTradingStrategy;
 export const RiskTolerance = $Enums.RiskTolerance;
 export const TradingPlatform = $Enums.TradingPlatform;
+export  const ServiceCode = $Enums.ServiceCode;
+export  type ServiceCode = $Enums.ServiceCode;

@@ -168,7 +168,7 @@ describe('Schema validation', () => {
       expect400StatusAndDataTopStructure(res);
       expect(res.data).toMatchObject({
         errors: expect.arrayContaining([
-          expect.objectContaining({ path: ['externalServiceId'] }),
+          expect.objectContaining({ path: ['serviceCode'] }),
           expect.objectContaining({ path: ['configuration'] }),
         ]),
       });

@@ -44,7 +44,7 @@ export default function TagPicker(props: {
       const load = async () => {
         setLoading(true);
         try {
-          const res = await rulesSettingsTagsControllerFindAllTags({ search, limit: 50 });
+          const res = await rulesSettingsTagsControllerFindAllTags({ search: search || '', limit: 50 });
           if (!canceled && res.status === 200) {
             cacheRef.current.set(cacheKey, res.data);
             setAllTags(res.data);
