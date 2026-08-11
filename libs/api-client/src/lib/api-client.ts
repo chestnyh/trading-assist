@@ -70,6 +70,8 @@ export interface CreateUserDto {
   riskTolerance?: RiskTolerance;
   /** Preferred trading platforms (multiple selection allowed) */
   preferredTradingPlatforms?: TradingPlatform[];
+  /** User country */
+  country: string;
 }
 
 export interface LoginDto {

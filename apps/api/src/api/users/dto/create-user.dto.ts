@@ -68,4 +68,11 @@ export class CreateUserDto {
     required: false
   })
   preferredTradingPlatforms?: (typeof TradingPlatform[keyof typeof TradingPlatform])[];
+
+  @ApiProperty({
+  description: 'User country',
+  example: 'UA',
+  required: true,
+})
+country: string;
 }

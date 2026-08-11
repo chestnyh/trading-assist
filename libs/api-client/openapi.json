@@ -939,6 +939,11 @@
             "items": {
               "$ref": "#/components/schemas/TradingPlatform"
             }
+          },
+          "country": {
+            "type": "string",
+            "description": "User country",
+            "example": "UA"
           }
         },
         "required": [
@@ -946,7 +951,8 @@
           "email",
           "password",
           "firstName",
-          "lastName"
+          "lastName",
+          "country"
         ]
       },
       "LoginDto": {
@@ -989,7 +995,8 @@
               "id": 1,
               "nickname": "johndoe123",
               "email": "user@example.com",
-              "name": "John Doe"
+              "name": "John Doe",
+              "country": "UA"
             }
           }
         },

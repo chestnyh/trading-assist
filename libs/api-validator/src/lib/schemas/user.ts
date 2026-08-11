@@ -59,10 +59,16 @@ const LastNameSchema = z
     'Last name can only contain letters, spaces, hyphens, and apostrophes'
   );
 
+const CountrySchema = z
+  .string()
+  .length(2, 'Country must be a valid 2-letter country code')
+  .toUpperCase();
+
 export const CreateUserDtoSchema = z.object({
   nickname: z.string().min(3, 'Nickname must be at least 3 characters long'),
   email: EmailSchema,
   password: StrongPasswordSchema,
+  country: CountrySchema,
   firstName: FirstNameSchema,
   lastName: LastNameSchema,
   tradingExperienceLevel: TradingExperienceLevelSchema.optional(),
