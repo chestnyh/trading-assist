@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ModelsService } from '@trading-bot/models';
+import { ModelsService, ServiceCode } from '@trading-bot/models';
 import { CreateUserRuleSettingDto } from './dto/create-user-rule-setting.dto';
 import { UpdateUserRuleSettingDto } from './dto/update-user-rule-setting.dto';
 import { TelegramHelperService } from './telegram-helper.service';
@@ -15,14 +15,14 @@ export class RulesSettingsService {
    * Creating a universal rule setting (Binance, Telegram, etc.)
    */
   async createSetting(userId: number, dto: CreateUserRuleSettingDto) {
-    const created = await this.modelsService.userRuleSettings.create({
+  const created = await this.modelsService.userRuleSettings.create({
       data: {
         name: dto.name,
         code: dto.code,
         description: dto.description,
         configuration: dto.configuration,
         authorId: userId,
-        externalServiceId: dto.externalServiceId,
+        serviceCode: dto.serviceCode,
         tags: {
           create: dto.tags?.map((tagName) => ({
             ruleSettingTag: {
@@ -35,7 +35,6 @@ export class RulesSettingsService {
         },
       },
       include: {
-        externalService: true,
         tags: { include: { ruleSettingTag: true } },
       },
     });
@@ -46,16 +45,15 @@ export class RulesSettingsService {
   /**
    * Getting all universal user settings with optional filtering and pagination
    */
-  async findAllSettingsByUser(userId: number, externalServiceId?: number, page?: number, limit?: number) {
+  async findAllSettingsByUser(userId: number,serviceCode?: ServiceCode, page?: number, limit?: number) {
     const where: any = { authorId: userId };
-    if (externalServiceId) {
-      where.externalServiceId = externalServiceId;
+    if (serviceCode){
+      where.serviceCode = serviceCode;
     }
 
     const query: any = {
       where,
       include: {
-        externalService: true,
         tags: { include: { ruleSettingTag: true } },
       },
       orderBy: { id: 'desc' },
@@ -108,7 +106,6 @@ export class RulesSettingsService {
       where: { id },
       data,
       include: {
-        externalService: true,
         tags: { include: { ruleSettingTag: true } },
       },
     });
