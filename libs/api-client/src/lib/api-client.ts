@@ -6,9 +6,6 @@
  * OpenAPI spec version: 1.0
  */
 import { customInstance } from './mutator';
-/**
- * Trading experience level
- */
 export type TradingExperienceLevel =
   (typeof TradingExperienceLevel)[keyof typeof TradingExperienceLevel];
 
@@ -19,9 +16,6 @@ export const TradingExperienceLevel = {
   Advanced: 'Advanced',
 } as const;
 
-/**
- * Primary trading strategy
- */
 export type PrimaryTradingStrategy =
   (typeof PrimaryTradingStrategy)[keyof typeof PrimaryTradingStrategy];
 
@@ -34,9 +28,6 @@ export const PrimaryTradingStrategy = {
   Automated: 'Automated',
 } as const;
 
-/**
- * Risk tolerance level
- */
 export type RiskTolerance = (typeof RiskTolerance)[keyof typeof RiskTolerance];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
@@ -46,9 +37,6 @@ export const RiskTolerance = {
   Aggressive: 'Aggressive',
 } as const;
 
-/**
- * Preferred trading platforms (multiple selection allowed)
- */
 export type TradingPlatform =
   (typeof TradingPlatform)[keyof typeof TradingPlatform];
 
@@ -181,20 +169,6 @@ export interface ResetPasswordResponseDto {
 /**
  * Rule configuration as JSON object
  */
-export type CreateRuleDtoRuleBody = { [key: string]: unknown };
-
-export interface CreateRuleDto {
-  /** Name of the trading rule */
-  name: string;
-  /** Description of what this rule does */
-  description: string;
-  /** Rule configuration as JSON object */
-  ruleBody: CreateRuleDtoRuleBody;
-}
-
-/**
- * Rule configuration as JSON object
- */
 export type RuleResponseDtoRuleBody = { [key: string]: unknown };
 
 export interface RuleResponseDto {
@@ -220,6 +194,20 @@ export interface PaginatedRulesDto {
 /**
  * Rule configuration as JSON object
  */
+export type CreateRuleDtoRuleBody = { [key: string]: unknown };
+
+export interface CreateRuleDto {
+  /** Name of the trading rule */
+  name: string;
+  /** Description of what this rule does */
+  description: string;
+  /** Rule configuration as JSON object */
+  ruleBody: CreateRuleDtoRuleBody;
+}
+
+/**
+ * Rule configuration as JSON object
+ */
 export type UpdateRuleDtoRuleBody = { [key: string]: unknown };
 
 export interface UpdateRuleDto {
@@ -231,10 +219,10 @@ export interface UpdateRuleDto {
   ruleBody?: UpdateRuleDtoRuleBody;
 }
 
-export type CreateUserRuleSettingDtoServiceCode =
-  (typeof CreateUserRuleSettingDtoServiceCode)[keyof typeof CreateUserRuleSettingDtoServiceCode];
+export type ServiceCode = (typeof ServiceCode)[keyof typeof ServiceCode];
 
-export const CreateUserRuleSettingDtoServiceCode = {
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const ServiceCode = {
   BINANCE: 'BINANCE',
   BYBIT: 'BYBIT',
   KRAKEN: 'KRAKEN',
@@ -254,29 +242,12 @@ export interface CreateUserRuleSettingDto {
   name: string;
   code: string;
   description?: string;
-  serviceCode: CreateUserRuleSettingDtoServiceCode;
+  serviceCode: ServiceCode;
   tags?: string[];
   configuration: CreateUserRuleSettingDtoConfiguration;
 }
 
 export type RuleSettingResponseDtoConfiguration = { [key: string]: unknown };
-
-export type RuleSettingResponseDtoServiceCode =
-  (typeof RuleSettingResponseDtoServiceCode)[keyof typeof RuleSettingResponseDtoServiceCode];
-
-export const RuleSettingResponseDtoServiceCode = {
-  BINANCE: 'BINANCE',
-  BYBIT: 'BYBIT',
-  KRAKEN: 'KRAKEN',
-  TELEGRAM: 'TELEGRAM',
-  EMAIL: 'EMAIL',
-  DISCORD_WEBHOOKS: 'DISCORD_WEBHOOKS',
-  SLACK_WEBHOOKS: 'SLACK_WEBHOOKS',
-  SMS_TWILIO: 'SMS_TWILIO',
-  PUSH_NOTIFICATIONS_ONESIGNAL: 'PUSH_NOTIFICATIONS_ONESIGNAL',
-  WHATSAPP_BUSINESS: 'WHATSAPP_BUSINESS',
-  WEBHOOKS: 'WEBHOOKS',
-} as const;
 
 export interface RuleSettingResponseDto {
   id: number;
@@ -285,26 +256,9 @@ export interface RuleSettingResponseDto {
   description: string;
   configuration: RuleSettingResponseDtoConfiguration;
   authorId: number;
-  serviceCode: RuleSettingResponseDtoServiceCode;
+  serviceCode: ServiceCode;
   tags: string[];
 }
-
-export type UpdateUserRuleSettingDtoServiceCode =
-  (typeof UpdateUserRuleSettingDtoServiceCode)[keyof typeof UpdateUserRuleSettingDtoServiceCode];
-
-export const UpdateUserRuleSettingDtoServiceCode = {
-  BINANCE: 'BINANCE',
-  BYBIT: 'BYBIT',
-  KRAKEN: 'KRAKEN',
-  TELEGRAM: 'TELEGRAM',
-  EMAIL: 'EMAIL',
-  DISCORD_WEBHOOKS: 'DISCORD_WEBHOOKS',
-  SLACK_WEBHOOKS: 'SLACK_WEBHOOKS',
-  SMS_TWILIO: 'SMS_TWILIO',
-  PUSH_NOTIFICATIONS_ONESIGNAL: 'PUSH_NOTIFICATIONS_ONESIGNAL',
-  WHATSAPP_BUSINESS: 'WHATSAPP_BUSINESS',
-  WEBHOOKS: 'WEBHOOKS',
-} as const;
 
 export type UpdateUserRuleSettingDtoConfiguration = { [key: string]: unknown };
 
@@ -312,7 +266,7 @@ export interface UpdateUserRuleSettingDto {
   name?: string;
   code?: string;
   description?: string;
-  serviceCode?: UpdateUserRuleSettingDtoServiceCode;
+  serviceCode?: ServiceCode;
   tags?: string[];
   configuration?: UpdateUserRuleSettingDtoConfiguration;
 }
@@ -350,26 +304,11 @@ export type RulesSettingsControllerFindAllSettingsParams = {
    * Items per page
    */
   limit?: number;
-
-  serviceCode?: RulesSettingsControllerFindAllSettingsServiceCode;
+  /**
+   * Filter by service code
+   */
+  serviceCode?: ServiceCode;
 };
-
-export type RulesSettingsControllerFindAllSettingsServiceCode =
-  (typeof RulesSettingsControllerFindAllSettingsServiceCode)[keyof typeof RulesSettingsControllerFindAllSettingsServiceCode];
-
-export const RulesSettingsControllerFindAllSettingsServiceCode = {
-  BINANCE: 'BINANCE',
-  BYBIT: 'BYBIT',
-  KRAKEN: 'KRAKEN',
-  TELEGRAM: 'TELEGRAM',
-  EMAIL: 'EMAIL',
-  DISCORD_WEBHOOKS: 'DISCORD_WEBHOOKS',
-  SLACK_WEBHOOKS: 'SLACK_WEBHOOKS',
-  SMS_TWILIO: 'SMS_TWILIO',
-  PUSH_NOTIFICATIONS_ONESIGNAL: 'PUSH_NOTIFICATIONS_ONESIGNAL',
-  WHATSAPP_BUSINESS: 'WHATSAPP_BUSINESS',
-  WEBHOOKS: 'WEBHOOKS',
-} as const;
 
 export type RulesSettingsTagsControllerFindAllTagsParams = {
   search: string;

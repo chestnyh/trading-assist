@@ -47,7 +47,7 @@ export class RulesSettingsController {
 
   @Get('')
   @ApiOperation({ summary: 'Get all universal rule settings for user' })
-  @ApiQuery({ name: 'serviceCode', required: false, enum: ServiceCode, description: 'Filter by service code' })
+  @ApiQuery({ name: 'serviceCode',enumName: 'ServiceCode', required: false, enum: ServiceCode, description: 'Filter by service code' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
   @ApiOkResponse({

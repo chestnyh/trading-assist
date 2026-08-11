@@ -545,20 +545,7 @@
             "in": "query",
             "description": "Filter by service code",
             "schema": {
-              "enum": [
-                "BINANCE",
-                "BYBIT",
-                "KRAKEN",
-                "TELEGRAM",
-                "EMAIL",
-                "DISCORD_WEBHOOKS",
-                "SLACK_WEBHOOKS",
-                "SMS_TWILIO",
-                "PUSH_NOTIFICATIONS_ONESIGNAL",
-                "WHATSAPP_BUSINESS",
-                "WEBHOOKS"
-              ],
-              "type": "string"
+              "$ref": "#/components/schemas/ServiceCode"
             }
           }
         ],
@@ -1286,6 +1273,22 @@
           }
         }
       },
+      "ServiceCode": {
+        "type": "string",
+        "enum": [
+          "BINANCE",
+          "BYBIT",
+          "KRAKEN",
+          "TELEGRAM",
+          "EMAIL",
+          "DISCORD_WEBHOOKS",
+          "SLACK_WEBHOOKS",
+          "SMS_TWILIO",
+          "PUSH_NOTIFICATIONS_ONESIGNAL",
+          "WHATSAPP_BUSINESS",
+          "WEBHOOKS"
+        ]
+      },
       "CreateUserRuleSettingDto": {
         "type": "object",
         "properties": {
@@ -1302,21 +1305,12 @@
             "example": "Rule for spot trading"
           },
           "serviceCode": {
-            "type": "string",
-            "enum": [
-              "BINANCE",
-              "BYBIT",
-              "KRAKEN",
-              "TELEGRAM",
-              "EMAIL",
-              "DISCORD_WEBHOOKS",
-              "SLACK_WEBHOOKS",
-              "SMS_TWILIO",
-              "PUSH_NOTIFICATIONS_ONESIGNAL",
-              "WHATSAPP_BUSINESS",
-              "WEBHOOKS"
-            ],
-            "example": "TELEGRAM"
+            "example": "TELEGRAM",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ServiceCode"
+              }
+            ]
           },
           "tags": {
             "example": [
@@ -1377,21 +1371,12 @@
             "example": 1
           },
           "serviceCode": {
-            "type": "string",
-            "enum": [
-              "BINANCE",
-              "BYBIT",
-              "KRAKEN",
-              "TELEGRAM",
-              "EMAIL",
-              "DISCORD_WEBHOOKS",
-              "SLACK_WEBHOOKS",
-              "SMS_TWILIO",
-              "PUSH_NOTIFICATIONS_ONESIGNAL",
-              "WHATSAPP_BUSINESS",
-              "WEBHOOKS"
-            ],
-            "example": "TELEGRAM"
+            "example": "TELEGRAM",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ServiceCode"
+              }
+            ]
           },
           "tags": {
             "example": [
@@ -1431,21 +1416,12 @@
             "example": "Rule for spot trading"
           },
           "serviceCode": {
-            "type": "string",
-            "enum": [
-              "BINANCE",
-              "BYBIT",
-              "KRAKEN",
-              "TELEGRAM",
-              "EMAIL",
-              "DISCORD_WEBHOOKS",
-              "SLACK_WEBHOOKS",
-              "SMS_TWILIO",
-              "PUSH_NOTIFICATIONS_ONESIGNAL",
-              "WHATSAPP_BUSINESS",
-              "WEBHOOKS"
-            ],
-            "example": "TELEGRAM"
+            "example": "TELEGRAM",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ServiceCode"
+              }
+            ]
           },
           "tags": {
             "example": [

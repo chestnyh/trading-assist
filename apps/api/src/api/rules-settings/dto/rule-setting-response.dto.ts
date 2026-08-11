@@ -25,7 +25,7 @@ export class RuleSettingResponseDto {
   @ApiProperty({ example: 1 })
   authorId: number;
 
-  @ApiProperty({ enum: ServiceCode, example: ServiceCode.TELEGRAM })
+  @ApiProperty({enum: ServiceCode,enumName: 'ServiceCode',example: ServiceCode.TELEGRAM,})
   serviceCode: ServiceCode;
 
   @ApiProperty({ example: ['crypto', 'binance'] })

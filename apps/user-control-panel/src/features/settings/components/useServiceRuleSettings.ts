@@ -7,12 +7,12 @@ import {
   RuleSettingResponseDto,
   CreateUserRuleSettingDto,
   UpdateUserRuleSettingDto,
-  RulesSettingsControllerFindAllSettingsServiceCode,
+  ServiceCode,
 } from "@trading-bot/api-client";
 import { useAuth } from "../../../app/contexts/AuthContext";
 import type { DetailField } from "../components/RuleSetting";
 
-export type ServiceCodeValue =(typeof RulesSettingsControllerFindAllSettingsServiceCode)[keyof typeof RulesSettingsControllerFindAllSettingsServiceCode];
+export type ServiceCodeValue =ServiceCode;
 
 export type SettingItem = {
   clientId: string;
