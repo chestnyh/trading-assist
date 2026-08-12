@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { createSchemaValidator } from '../core';
+import { ISO_COUNTRY_CODES } from './country-codes';
 
 export const TradingExperienceLevelSchema = z.enum([
   'Beginner',
@@ -59,10 +60,9 @@ const LastNameSchema = z
     'Last name can only contain letters, spaces, hyphens, and apostrophes'
   );
 
-const CountrySchema = z
-  .string()
-  .length(2, 'Country must be a valid 2-letter country code')
-  .toUpperCase();
+export const CountrySchema = z.enum(ISO_COUNTRY_CODES, {
+  error: 'Please select a valid country',
+});
 
 export const CreateUserDtoSchema = z.object({
   nickname: z.string().min(3, 'Nickname must be at least 3 characters long'),
@@ -111,6 +111,8 @@ export const ResetPasswordDtoSchema = z.object({
   password: StrongPasswordSchema,
   token: z.string().uuid('Token must be a valid UUID'),
 });
+
+
 
 export const CreateUserDtoSchemaValidator = createSchemaValidator(CreateUserDtoSchema);
 export const LoginDtoSchemaValidator = createSchemaValidator(LoginDtoSchema);

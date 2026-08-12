@@ -1,4 +1,5 @@
 export * from './schemas/user';
+export * from './schemas/country-codes';
 
 export * from './schemas/rules';
 export * from './schemas/rules-settings';

@@ -873,6 +873,33 @@
           "Other"
         ]
       },
+      "CountryCode": {
+        "type": "string",
+        "enum": [
+          "GB",
+          "US",
+          "CA",
+          "AU",
+          "DE",
+          "FR",
+          "IT",
+          "ES",
+          "NL",
+          "BE",
+          "CH",
+          "AT",
+          "SE",
+          "NO",
+          "DK",
+          "FI",
+          "PL",
+          "CZ",
+          "IE",
+          "PT",
+          "GR",
+          "UA"
+        ]
+      },
       "CreateUserDto": {
         "type": "object",
         "properties": {
@@ -941,9 +968,13 @@
             }
           },
           "country": {
-            "type": "string",
             "description": "User country",
-            "example": "UA"
+            "example": "UA",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CountryCode"
+              }
+            ]
           }
         },
         "required": [

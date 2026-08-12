@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TradingExperienceLevel, PrimaryTradingStrategy, RiskTolerance, TradingPlatform } from '@trading-bot/models';
-import { CreateUserDtoSchemaValidator } from '@trading-bot/api-validator';
+import { TradingExperienceLevel, PrimaryTradingStrategy, RiskTolerance, TradingPlatform} from '@trading-bot/models';
+import { CreateUserDtoSchemaValidator,ISO_COUNTRY_CODES } from '@trading-bot/api-validator';
 import { Validate } from '@trading-bot/api-validator/nest';
 
 export { TradingExperienceLevel, PrimaryTradingStrategy, RiskTolerance, TradingPlatform };
@@ -72,7 +72,8 @@ export class CreateUserDto {
   @ApiProperty({
   description: 'User country',
   example: 'UA',
-  required: true,
-})
-country: string;
+  enum: ISO_COUNTRY_CODES,
+  enumName: 'CountryCode',
+  })
+  country: typeof ISO_COUNTRY_CODES[number];
 }
