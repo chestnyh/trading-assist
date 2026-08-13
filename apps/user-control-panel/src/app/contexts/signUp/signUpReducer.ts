@@ -8,6 +8,7 @@ import type {
   SignUpFormData,
   FieldErrors,
 } from './signUpTypes';
+import { isCountryCode } from '@trading-bot/api-validator';
 
 // ---------- LocalStorage Keys ----------
 
@@ -100,11 +101,9 @@ export function initState(): SignUpState {
         ) as string;
       }
       if (step1Parsed.country !== undefined) {
-        restored.country = (
-          step1Parsed.country === null || step1Parsed.country === undefined
-            ? ''
-            : step1Parsed.country
-        ) as string;
+        restored.country = isCountryCode(step1Parsed.country)
+          ? step1Parsed.country
+          : '';
       }
     }
   } catch {

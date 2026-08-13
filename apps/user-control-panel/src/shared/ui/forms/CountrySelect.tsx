@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { FieldLabel } from "./FieldLabel";
 import * as FlagIcons from "country-flag-icons/react/3x2";
 import { CountryOption } from "../../data/countries";
+import type { CountryCode } from "@trading-bot/api-validator";
 import { ChevronDown } from "lucide-react";
 
 interface CountrySelectProps {
@@ -11,7 +12,7 @@ interface CountrySelectProps {
     name: string;
     options: CountryOption[];
     placeholder?: string;
-    value?: string;
+    value?: CountryCode | "";
     onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
     error?: string;
     required?: boolean;
@@ -139,7 +140,7 @@ export function CountrySelect({
                         flex items-center justify-between
                         ${error
                             ? "border-2 border-error text-text bg-background focus:border-error focus:ring-2 focus:ring-error"
-                            : !value || value === ""
+                            : !value
                                 ? "border-2 border-accent text-text-secondary bg-background hover:bg-background hover:text-text focus:border-primary focus:bg-background focus:text-text focus:ring-2 focus:ring-primary"
                                 : "border-2 border-accent text-accent bg-background hover:bg-background hover:text-text focus:border-primary focus:bg-background focus:text-text focus:ring-2 focus:ring-primary"
                         }

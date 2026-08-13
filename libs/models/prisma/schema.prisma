@@ -49,6 +49,7 @@ model User {
   nickname String @unique
   email String  @unique
   password String
+  country String?
   firstName String
   lastName String
   role Role @default(USER)

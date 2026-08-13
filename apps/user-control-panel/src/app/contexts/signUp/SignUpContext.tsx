@@ -220,6 +220,7 @@ export function SignUpProvider({ children }: { children: React.ReactNode }) {
                     firstName: state.firstName,
                     lastName: state.lastName,
                     email: state.email,
+                    country: state.country as CreateUserDto["country"],
                     nickname: state.nickname,
                     password: state.password,
                     tradingExperienceLevel: state.tradingExperienceLevel,

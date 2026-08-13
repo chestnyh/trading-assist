@@ -20,6 +20,7 @@ export class AuthService {
       sub: user.id,
       nickname: user.nickname,
       role: user.role,
+      country: user.country
     };
     
     // Set token expiration based on rememberMe option
@@ -36,6 +37,7 @@ export class AuthService {
         email: user.email,
         name: user.name,
         role: user.role,
+        country: user.country
       },
     };
   }

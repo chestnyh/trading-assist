@@ -48,6 +48,34 @@ export const TradingPlatform = {
   Other: 'Other',
 } as const;
 
+export type CountryCode = (typeof CountryCode)[keyof typeof CountryCode];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CountryCode = {
+  GB: 'GB',
+  US: 'US',
+  CA: 'CA',
+  AU: 'AU',
+  DE: 'DE',
+  FR: 'FR',
+  IT: 'IT',
+  ES: 'ES',
+  NL: 'NL',
+  BE: 'BE',
+  CH: 'CH',
+  AT: 'AT',
+  SE: 'SE',
+  NO: 'NO',
+  DK: 'DK',
+  FI: 'FI',
+  PL: 'PL',
+  CZ: 'CZ',
+  IE: 'IE',
+  PT: 'PT',
+  GR: 'GR',
+  UA: 'UA',
+} as const;
+
 export interface CreateUserDto {
   /** Unique nickname for the user */
   nickname: string;
@@ -70,6 +98,8 @@ export interface CreateUserDto {
   riskTolerance?: RiskTolerance;
   /** Preferred trading platforms (multiple selection allowed) */
   preferredTradingPlatforms?: TradingPlatform[];
+  /** User country */
+  country: CountryCode;
 }
 
 export interface LoginDto {

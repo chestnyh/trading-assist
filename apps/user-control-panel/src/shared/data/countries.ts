@@ -1,12 +1,14 @@
+import type { CountryCode } from '@trading-bot/api-validator';
+
 export interface CountryOption {
-  value: string;
+  value: CountryCode;
   label: string;
-  countryCode: string;
+  countryCode: CountryCode;
 }
 
 export const countries: CountryOption[] = [
   { value: 'US', label: 'United States', countryCode: 'US' },
-  { value: 'UK', label: 'United Kingdom', countryCode: 'GB' },
+  { value: 'GB', label: 'United Kingdom', countryCode: 'GB' },
   { value: 'CA', label: 'Canada', countryCode: 'CA' },
   { value: 'AU', label: 'Australia', countryCode: 'AU' },
   { value: 'DE', label: 'Germany', countryCode: 'DE' },

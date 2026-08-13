@@ -13,7 +13,8 @@ export class AuthResponseDto {
       id: 1,
       nickname: 'johndoe123',
       email: 'user@example.com',
-      name: 'John Doe'
+      name: 'John Doe',
+      country: 'UA',
     }
   })
   user: {
@@ -21,5 +22,6 @@ export class AuthResponseDto {
     nickname: string;
     email: string;
     name?: string;
+    country?: string;
   };
 }

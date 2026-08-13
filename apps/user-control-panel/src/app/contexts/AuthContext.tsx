@@ -10,6 +10,7 @@ interface User {
   email: string;
   nickname: string;
   name?: string;
+  country?: string;
 }
 
 interface LoginResult {

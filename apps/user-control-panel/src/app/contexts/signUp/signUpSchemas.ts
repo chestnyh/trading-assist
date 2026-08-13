@@ -12,7 +12,13 @@ import {
 export const SignUpStep1Schema = z.object({
     firstName: CreateUserDtoSchema.shape.firstName,
     lastName: CreateUserDtoSchema.shape.lastName,
-    country: z.string().min(1, "Country is required"),
+    country: z.union([
+        z.literal(""),
+        CreateUserDtoSchema.shape.country,
+    ]),
+}).refine((data) => data.country !== "", {
+    message: "Country is required",
+    path: ["country"],
 });
 
 // ---------- Step 2: Trading Preferences ----------
