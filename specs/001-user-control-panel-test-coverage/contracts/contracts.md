@@ -1,7 +1,7 @@
 # Contracts: User-Control-Panel Test Coverage
 
 **Date**: 2026-08-14
-**Feature**: [spec.md](./spec.md)
+**Feature**: [spec.md](../spec.md)
 
 ## Purpose
 
