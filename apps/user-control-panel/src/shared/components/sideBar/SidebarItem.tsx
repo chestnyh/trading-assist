@@ -12,7 +12,7 @@ type SidebarItemProps = {
 
 function SidebarItem({ icon, label, collapsed, to, active, variant = "primary" }: SidebarItemProps) {
     const location = useLocation();
-    const isActive = active !== null ? active : location.pathname === to;
+    const isActive = active !== undefined && active !== null ? active : location.pathname === to;
     return (
         <Link
             to={to}

@@ -74,7 +74,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [token]);
 
-  const getRuleById = async (id: string): Promise<Rule | null> => {
+  const getRuleById = useCallback(async (id: string): Promise<Rule | null> => {
     try {
       const response = await customInstance<{ status: number; data: any }>(
         `/api/v1/rules/${id}`,
@@ -88,9 +88,9 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
       
       return null;
     }
-  };
+  }, []);
 
-  const addRule = async (rule: Omit<Rule, "id">): Promise<boolean> => {
+  const addRule = useCallback(async (rule: Omit<Rule, "id">): Promise<boolean> => {
     if (!token) {
       return false;
     }
@@ -103,9 +103,9 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token, fetchRules, currentPage]);
 
-  const updateRule = async (id: string, updatedRule: Partial<Rule>): Promise<boolean> => {
+  const updateRule = useCallback(async (id: string, updatedRule: Partial<Rule>): Promise<boolean> => {
     if (!token) {
       return false;
     }
@@ -123,9 +123,9 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token, fetchRules, currentPage]);
 
-  const deleteRule = async (id: string): Promise<boolean> => {
+  const deleteRule = useCallback(async (id: string): Promise<boolean> => {
     if (!token) {
       return false;
     }
@@ -143,7 +143,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token, fetchRules, currentPage]);
 
   useEffect(() => {
     fetchRules(currentPage);

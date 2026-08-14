@@ -29,7 +29,7 @@
     "user-control-panel:build": "nx run user-control-panel:build",
     "user-control-panel:build:dev": "nx run user-control-panel:build:development",
     "user-control-panel:test": "nx run user-control-panel:test",
-    "user-control-panel:test-coverage": "pnpm user-control-panel:test-coverage",
+    "user-control-panel:test-coverage": "nx run user-control-panel:test --coverage",
     "user-control-panel:lint": "nx run user-control-panel:lint",
     "//object-navigator": "Object navigator is a tool that is responsible for the object navigator of the trading assist.",
     "object-navigator:show": "nx show project object-navigator",

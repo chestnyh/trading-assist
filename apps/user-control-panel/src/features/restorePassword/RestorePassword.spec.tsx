@@ -996,6 +996,103 @@ describe('RestorePassword', () => {
             // There should be no back button on step 1
             expect(screen.queryByRole('button', { name: BUTTON_LABELS.BACK })).not.toBeInTheDocument();
         });
+
+        it('shows "Request New Code" and returns to step 1 after max attempts exceeded', async () => {
+            localStorageMock.setItem('password_reset_token', 'test-token-123');
+            mockCustomInstance
+                .mockResolvedValueOnce({
+                    token: 'test-token-123',
+                    message: 'Password reset code sent to your email',
+                })
+                .mockRejectedValueOnce({
+                    status: 429,
+                    message: 'Maximum attempts exceeded. This session has been invalidated.',
+                });
+
+            const { user } = await setup();
+
+            const emailInput = screen.getByLabelText(/email/i);
+            await user.type(emailInput, 'test@example.com');
+            const submitButton1 = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
+            await user.click(submitButton1);
+
+            await waitFor(() => {
+                expect(screen.getByText(/insert code/i)).toBeInTheDocument();
+            });
+
+            const codeInput = screen.getByLabelText(/secret code/i);
+            await user.type(codeInput, '123456');
+            const submitButton2 = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
+            await user.click(submitButton2);
+
+            await waitFor(() => {
+                expect(screen.getByText(/maximum attempts exceeded/i)).toBeInTheDocument();
+            });
+
+            // Session is invalidated and the "Request New Code" button replaces the form
+            expect(localStorageMock.getItem('password_reset_token')).toBeNull();
+            const requestNewCodeButton = screen.getByRole('button', { name: /request new code/i });
+            expect(requestNewCodeButton).toBeInTheDocument();
+
+            await user.click(requestNewCodeButton);
+
+            await waitFor(() => {
+                expect(screen.getByText(/insert your email/i)).toBeInTheDocument();
+            });
+        });
+
+        it('shows token validation error on step 3 when API returns token error', async () => {
+            localStorageMock.setItem('password_reset_token', 'test-token-123');
+            mockCustomInstance
+                .mockResolvedValueOnce({
+                    token: 'test-token-123',
+                    message: 'Password reset code sent to your email',
+                })
+                .mockResolvedValueOnce({
+                    message: 'Code verified successfully',
+                })
+                .mockRejectedValueOnce({
+                    message: 'Validation failed',
+                    errors: [
+                        {
+                            path: ['token'],
+                            message: 'Invalid or expired token',
+                        },
+                    ],
+                });
+
+            const { user } = await setup();
+
+            const emailInput = screen.getByLabelText(/email/i);
+            await user.type(emailInput, 'test@example.com');
+            const submitButton1 = screen.getByRole('button', { name: BUTTON_LABELS.SEND_CODE_ON_EMAIL });
+            await user.click(submitButton1);
+
+            await waitFor(() => {
+                expect(screen.getByText(/insert code/i)).toBeInTheDocument();
+            });
+
+            const codeInput = screen.getByLabelText(/secret code/i);
+            await user.type(codeInput, '123456');
+            const submitButton2 = screen.getByRole('button', { name: BUTTON_LABELS.RESET_PASSWORD });
+            await user.click(submitButton2);
+
+            await waitFor(() => {
+                expect(screen.getByText(/enter new password/i)).toBeInTheDocument();
+            });
+
+            const passwordInput = screen.getByPlaceholderText(/enter new password/i);
+            await user.type(passwordInput, 'NewPassword123*');
+            const confirmPasswordInput = screen.getByPlaceholderText(/confirm new password/i);
+            await user.type(confirmPasswordInput, 'NewPassword123*');
+
+            const submitButton3 = screen.getByRole('button', { name: BUTTON_LABELS.SET_UP_NEW_PASSWORD });
+            await user.click(submitButton3);
+
+            await waitFor(() => {
+                expect(screen.getByText(/invalid or expired token/i)).toBeInTheDocument();
+            });
+        });
     });
 });
 

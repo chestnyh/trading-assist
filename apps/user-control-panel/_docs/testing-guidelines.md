@@ -454,12 +454,15 @@ screen.getByTestId('submit-button');
 pnpm user-control-panel:test-coverage
 ```
 
+(equivalent to `nx run user-control-panel:test --coverage`)
+
 ### Coverage Rules
 
-- **Global minimum:** 70%
-- **Critical components** (auth, forms): 80%+
-- **Regular components:** 70%+
-- **Utility functions:** 60%+
+- **Global minimum:** 90% across statements, branches, functions, and lines
+- **Critical components** (auth, forms): 90%+
+- **Regular components:** 90%+
+- **Utility functions:** 90%+
+- Thresholds are enforced in `apps/user-control-panel/jest.config.ts`.
 
 ### What to Focus On
 
