@@ -79,6 +79,7 @@ export default function SimpleServiceSettingsGroup({
                 name={s.name}
                 code={s.code}
                 tags={s.tags}
+                description={s.description}
                 details={s.details}
                 detailsSchema={fieldsSchema}
                 mode={s.isNew || s.isEditing ? "edit" : "view"}

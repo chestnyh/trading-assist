@@ -23,13 +23,20 @@ interface RuleSettingProps {
   name: string;
   code: string;
   tags?: string[];
+  description?: string;
   details?: DetailItem[];
   initiallyExpanded?: boolean;
   mode?: "view" | "edit";
   detailsSchema?: DetailField[];
   topSlot?: JSX.Element | null;
   extraSlot?: JSX.Element | null;
-  onSave?: (data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }) => void;
+  onSave?: (data: {
+    name: string;
+    code: string;
+    tags: string[];
+    description?: string;
+    details: { label: string; value: string }[];
+  }) => void;
   onCancel?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -39,6 +46,7 @@ export default function RuleSetting({
   name,
   code,
   tags = [],
+  description,
   details = [],
   initiallyExpanded,
   mode: controlledMode,
@@ -71,6 +79,7 @@ export default function RuleSetting({
         initialName={name}
         initialCode={code}
         initialTags={tags}
+        initialDescription={description}
         detailsSchema={detailsSchema}
         initialDetails={initialDetails}
         onCancel={() => {
@@ -103,6 +112,7 @@ export default function RuleSetting({
       name={name}
       code={code}
       tags={tags}
+      description={description}
       details={details}
       initiallyExpanded={initiallyExpanded}
       topSlot={topSlot}
