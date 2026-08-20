@@ -7,7 +7,7 @@ const ServiceCodeSchema = z.nativeEnum(ServiceCode);
 export const CreateUserRuleSettingDtoSchema = z.object({
   name: z.string().min(3),
   code: z.string().min(1),
-  description: z.string().min(10).optional(),
+  description: z.string().optional(),
   serviceCode: ServiceCodeSchema,
   tags: z.array(z.string()).optional(),
   configuration: z.record(z.string(), z.unknown()),

@@ -11,6 +11,7 @@ interface RuleSettingViewProps {
   name: string;
   code: string;
   tags: string[];
+  description?: string;
   details: DetailItem[];
   initiallyExpanded?: boolean;
   topSlot?: JSX.Element | null;
@@ -23,6 +24,7 @@ export default function RuleSettingView({
   name,
   code,
   tags,
+  description,
   details,
   initiallyExpanded,
   topSlot,
@@ -137,8 +139,13 @@ export default function RuleSettingView({
         </div>
       </div>
 
-      {expanded && (details.length > 0 || Boolean(extraSlot)) && (
+      {expanded && (details.length > 0 || Boolean(extraSlot) || Boolean(description?.trim())) && (
         <div className="px-4 pb-4">
+          {description?.trim() && (
+            <div className="text-primary text-sm whitespace-pre-line leading-relaxed mb-3">
+              {description.trim()}
+            </div>
+          )}
           {details.length > 0 && (
             <div className="flex flex-col gap-2 text-primary text-sm">
               {details.map((d, idx) => (

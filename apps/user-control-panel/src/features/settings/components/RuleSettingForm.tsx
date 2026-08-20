@@ -18,6 +18,7 @@ interface RuleSettingFormProps {
   initialName?: string;
   initialCode?: string;
   initialTags?: string[];
+  initialDescription?: string;
   detailsSchema: DetailField[];
   initialDetails?: Record<string, string>;
   onCancel?: () => void;
@@ -25,6 +26,7 @@ interface RuleSettingFormProps {
     name: string;
     code: string;
     tags: string[];
+    description?: string;
     details: { label: string; value: string }[];
   }) => void;
 }
@@ -33,6 +35,7 @@ export default function RuleSettingForm({
   initialName,
   initialCode,
   initialTags,
+  initialDescription,
   detailsSchema,
   initialDetails,
   onCancel,
@@ -41,6 +44,7 @@ export default function RuleSettingForm({
   const [name, setName] = useState(initialName || "");
   const [code, setCode] = useState(initialCode || "");
   const [tags, setTags] = useState<string[]>(initialTags || []);
+  const [description, setDescription] = useState(initialDescription || "");
   const [detailValues, setDetailValues] = useState<Record<string, string>>(() => {
     const obj: Record<string, string> = {};
     detailsSchema.forEach((f) => {
@@ -109,6 +113,7 @@ export default function RuleSettingForm({
       name: name.trim(),
       code: code.trim(),
       tags,
+      description: description.trim(),
       details,
     });
   };
@@ -145,6 +150,17 @@ export default function RuleSettingForm({
       <div className="mt-3">
         <div className="text-primary text-xs mb-1">Setting Tags</div>
         <TagPicker token={token} value={tags} onChange={setTags} />
+      </div>
+
+      <div className="mt-3">
+        <div className="text-primary text-xs mb-1">Description</div>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={3}
+          className="w-full rounded-md border border-border bg-background text-primary px-3 py-2 resize-y"
+          placeholder="Describe this rule setting (optional)…"
+        />
       </div>
 
       <div className="mt-3 flex flex-col gap-2">

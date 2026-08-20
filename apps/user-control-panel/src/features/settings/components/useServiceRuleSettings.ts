@@ -20,9 +20,18 @@ export type SettingItem = {
   name: string;
   code: string;
   tags: string[];
+  description?: string;
   details: { label: string; value: string }[];
   isNew?: boolean;
   isEditing?: boolean;
+};
+
+export type RuleSettingFormData = {
+  name: string;
+  code: string;
+  tags: string[];
+  description?: string;
+  details: { label: string; value: string }[];
 };
 
 const LIMIT = 20;
@@ -53,6 +62,7 @@ export function useServiceRuleSettings(serviceCode: ServiceCodeValue, fieldsSche
         name: rule.name,
         code: rule.code,
         tags: rule.tags || [],
+        description: rule.description || "",
         details,
         isNew: false,
         isEditing: false,
@@ -112,7 +122,7 @@ export function useServiceRuleSettings(serviceCode: ServiceCodeValue, fieldsSche
   const saveNewSetting = async (
     s: SettingItem,
     i: number,
-    data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }
+    data: RuleSettingFormData
   ) => {
     if (!token) return;
 
@@ -123,6 +133,7 @@ export function useServiceRuleSettings(serviceCode: ServiceCodeValue, fieldsSche
       serviceCode,
       configuration,
       tags: data.tags,
+      description: data.description,
     } 
 
     const res = await rulesSettingsControllerCreateSetting(dto);
@@ -139,7 +150,7 @@ export function useServiceRuleSettings(serviceCode: ServiceCodeValue, fieldsSche
   const saveExistingSetting = async (
     s: SettingItem,
     i: number,
-    data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }
+    data: RuleSettingFormData
   ) => {
     if (!token) return;
     if (!s.id) {
@@ -153,6 +164,7 @@ export function useServiceRuleSettings(serviceCode: ServiceCodeValue, fieldsSche
       code: data.code,
       configuration,
       tags: data.tags,
+      description: data.description,
     };
 
     const res = await rulesSettingsControllerUpdateSetting(s.id, dto);
@@ -169,7 +181,7 @@ export function useServiceRuleSettings(serviceCode: ServiceCodeValue, fieldsSche
   const saveSetting = async (
     s: SettingItem,
     i: number,
-    data: { name: string; code: string; tags: string[]; details: { label: string; value: string }[] }
+    data: RuleSettingFormData
   ) => {
     try {
       if (!token) return;
@@ -213,7 +225,7 @@ export function useServiceRuleSettings(serviceCode: ServiceCodeValue, fieldsSche
       typeof crypto !== "undefined" && "randomUUID" in crypto
         ? (crypto as any).randomUUID()
         : `tmp-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    setSettings((prev) => [...prev, { clientId, name: "", code: "", tags: [], details: [], isNew: true }]);
+    setSettings((prev) => [...prev, { clientId, name: "", code: "", tags: [], description: "", details: [], isNew: true }]);
   };
 
   const deleteSetting = async (id: number | undefined, index: number) => {

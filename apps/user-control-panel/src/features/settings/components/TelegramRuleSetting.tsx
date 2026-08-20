@@ -237,6 +237,7 @@ export default function TelegramRuleSetting(props: {
       name={setting.name}
       code={setting.code}
       tags={setting.tags}
+      description={setting.description}
       details={visibleDetails}
       detailsSchema={visibleFieldsSchema}
       initiallyExpanded={stage === "receive" || stage === "waiting" || stage === "confirm"}
