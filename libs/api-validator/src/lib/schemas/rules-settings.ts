@@ -1,8 +1,6 @@
 import { z } from 'zod';
 import { createSchemaValidator } from '../core';
-import { ServiceCode } from '@prisma/client';
-
-const ServiceCodeSchema = z.nativeEnum(ServiceCode);
+import { ServiceCodeSchema } from '../enum/service-code';
 
 export const CreateUserRuleSettingDtoSchema = z.object({
   name: z.string().min(3),

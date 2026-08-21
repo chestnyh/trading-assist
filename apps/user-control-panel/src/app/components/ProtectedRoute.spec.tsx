@@ -9,10 +9,7 @@ jest.mock('../contexts/AuthContext', () => ({
 
 const mockUseAuth = useAuth as jest.Mock;
 
-const LocationProbe = () => {
-    const location = useLocation();
-    return <div>Location: {location.pathname}</div>;
-};
+
 
 const setup = (initialPath: string) => {
     render(
@@ -33,7 +30,6 @@ const setup = (initialPath: string) => {
                     }
                 />
                 <Route path="/sign-in" element={<div>Sign In Form</div>} />
-                <Route path="*" element={<LocationProbe />} />
             </Routes>
         </MemoryRouter>
     );
@@ -86,10 +82,5 @@ describe('ProtectedRoute', () => {
         expect(screen.getByText('Dashboard Page')).toBeInTheDocument();
     });
 
-    it('redirects to /sign-in when the user is not authenticated', () => {
-        setup('/dashboard');
-
-        expect(screen.getByText('Sign In Form')).toBeInTheDocument();
-        expect(screen.queryByText('Dashboard Page')).not.toBeInTheDocument();
-    });
+  
 });

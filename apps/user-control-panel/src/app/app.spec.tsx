@@ -1,24 +1,131 @@
 import { render } from '@testing-library/react';
-
 import App from './app';
 
-// Mock the AuthContext to provide a default authenticated state
 jest.mock('./contexts/AuthContext', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => children,
-  useAuth: () => ({
-    isAuthenticated: false,
-    isLoading: false,
-    user: null,
-    login: jest.fn(),
-    signUp: jest.fn(),
-    logout: jest.fn(),
-    token: null,
-  }),
+  useAuth: jest.fn(),
 }));
 
+jest.mock('./contexts/RulesContext', () => ({
+  RulesProvider: ({ children }: { children: React.ReactNode }) => children,
+  useRules: jest.fn(() => ({
+    rules: [],
+    isLoading: false,
+    error: null,
+  })),
+}));
+
+import { useAuth } from './contexts/AuthContext';
+
+const mockedUseAuth = useAuth as jest.Mock;
+
 describe('App', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should render successfully', () => {
+    mockedUseAuth.mockReturnValue({
+      isAuthenticated: false,
+      isLoading: false,
+      user: null,
+      login: jest.fn(),
+      signUp: jest.fn(),
+      logout: jest.fn(),
+      token: null,
+    });
+
     const { baseElement } = render(<App />);
     expect(baseElement).toBeTruthy();
   });
-})
+
+  it('redirects an unauthenticated user from an unknown route to /sign-in', () => {
+    mockedUseAuth.mockReturnValue({
+      isAuthenticated: false,
+      isLoading: false,
+      user: null,
+      login: jest.fn(),
+      signUp: jest.fn(),
+      logout: jest.fn(),
+      token: null,
+    });
+
+    window.history.pushState({}, '', '/some/unknown/path');
+
+    render(<App />);
+
+    expect(window.location.pathname).toBe('/sign-in');
+  });
+
+  it('shows NotFound for an unknown route when the user is authenticated', () => {
+    mockedUseAuth.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      user: { id: '1' },
+      login: jest.fn(),
+      signUp: jest.fn(),
+      logout: jest.fn(),
+      token: 'token',
+    });
+
+    window.history.pushState({}, '', '/some/unknown/path');
+
+    render(<App />);
+
+    expect(window.location.pathname).toBe('/some/unknown/path');
+  });
+
+  it('redirects an already authenticated user away from /sign-in to /dashboard', () => {
+    mockedUseAuth.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      user: { id: '1' },
+      login: jest.fn(),
+      signUp: jest.fn(),
+      logout: jest.fn(),
+      token: 'token',
+    });
+ 
+    window.history.pushState({}, '', '/sign-in');
+ 
+    render(<App />);
+ 
+    expect(window.location.pathname).toBe('/dashboard');
+  });
+ 
+  it('lets an authenticated user access a protected route', () => {
+    mockedUseAuth.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      user: { id: '1' },
+      login: jest.fn(),
+      signUp: jest.fn(),
+      logout: jest.fn(),
+      token: 'token',
+    });
+ 
+    window.history.pushState({}, '', '/dashboard');
+ 
+    render(<App />);
+ 
+    expect(window.location.pathname).toBe('/dashboard');
+  });
+ 
+  it('redirects an unauthenticated user away from a protected route to /sign-in', () => {
+    mockedUseAuth.mockReturnValue({
+      isAuthenticated: false,
+      isLoading: false,
+      user: null,
+      login: jest.fn(),
+      signUp: jest.fn(),
+      logout: jest.fn(),
+      token: null,
+    });
+ 
+    window.history.pushState({}, '', '/dashboard');
+ 
+    render(<App />);
+ 
+    expect(window.location.pathname).toBe('/sign-in');
+  });
+});

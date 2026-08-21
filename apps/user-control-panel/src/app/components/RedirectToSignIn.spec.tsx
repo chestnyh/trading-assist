@@ -1,27 +1,21 @@
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { render } from '@testing-library/react';
+import { Navigate } from 'react-router-dom';
 import { RedirectToSignIn } from './RedirectToSignIn';
-
-const setup = () => {
-    render(
-        <MemoryRouter
-            initialEntries={['/some/unknown/path']}
-            future={{
-                v7_startTransition: true,
-                v7_relativeSplatPath: true,
-            }}
-        >
-            <Routes>
-                <Route path="*" element={<RedirectToSignIn />} />
-                <Route path="/sign-in" element={<div>Sign In Form</div>} />
-            </Routes>
-        </MemoryRouter>
-    );
-};
-
+ 
+jest.mock('react-router-dom', () => ({
+  Navigate: jest.fn(() => null),
+}));
+ 
+const mockedNavigate = Navigate as jest.Mock;
+ 
 describe('RedirectToSignIn', () => {
-    it('redirects to /sign-in', () => {
-        setup();
-        expect(screen.getByText('Sign In Form')).toBeInTheDocument();
-    });
+  it('renders a Navigate to /sign-in with replace', () => {
+    render(<RedirectToSignIn />);
+ 
+    expect(mockedNavigate).toHaveBeenCalledWith(
+      expect.objectContaining({ to: '/sign-in', replace: true }),
+      undefined,
+    );
+  });
 });
+ 

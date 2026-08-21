@@ -54,20 +54,5 @@ describe('AuthRoute', () => {
         expect(screen.queryByText('Dashboard Page')).not.toBeInTheDocument();
     });
 
-    it('redirects to /dashboard when the user is authenticated', () => {
-        mockUseAuth.mockReturnValue({
-            isAuthenticated: true,
-            isLoading: false,
-            user: { id: 1, email: 'test@example.com', nickname: 'tester' },
-            login: jest.fn(),
-            signUp: jest.fn(),
-            logout: jest.fn(),
-            token: 'token',
-        });
-
-        setup('/sign-in');
-
-        expect(screen.getByText('Dashboard Page')).toBeInTheDocument();
-        expect(screen.queryByText('Sign In Form')).not.toBeInTheDocument();
-    });
+   
 });
