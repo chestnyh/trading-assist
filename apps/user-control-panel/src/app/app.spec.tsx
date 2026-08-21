@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react';
 import App from './app';
+import { useAuth } from './contexts/AuthContext';
 
 jest.mock('./contexts/AuthContext', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => children,
@@ -15,7 +16,6 @@ jest.mock('./contexts/RulesContext', () => ({
   })),
 }));
 
-import { useAuth } from './contexts/AuthContext';
 
 const mockedUseAuth = useAuth as jest.Mock;
 
