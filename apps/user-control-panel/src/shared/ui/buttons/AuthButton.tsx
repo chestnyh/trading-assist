@@ -1,7 +1,7 @@
 import { LogInIcon } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
-export function AuthButton() {
+export default function AuthButton() {
     const navigate = useNavigate();
 
     const handleClick = () => {
@@ -30,4 +30,3 @@ export function AuthButton() {
     )
 }
 
-export default AuthButton

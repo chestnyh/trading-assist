@@ -1,0 +1,23 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": ["-lintignore"],
+  "workspaces": {
+    ".": {
+      "entry": [
+        "tools/devops/src/main.ts",
+        "tools/devops/src/methods/**/*.ts",
+        "tools/devops/src/projects/**/*.ts",
+        "tools/devops/src/scripts/*.ts",
+        "tools/development/scripts/*.ts",
+        "tools/development/jest.config.ts",
+        "apps/*-e2e/**/*.ts"
+      ]
+    },
+    "libs/models": {
+      "entry": [
+        "src/migrations/*.ts",
+        "seeds/**/*.ts"
+      ]
+    }
+  }
+}

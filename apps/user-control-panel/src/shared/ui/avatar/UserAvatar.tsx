@@ -17,7 +17,7 @@ function getInitials(name?: string): string {
     return name.substring(0, 2).toUpperCase();
 }
 
-export function UserAvatar({
+export default function UserAvatar({
     src,
     alt = "User avatar",
     name,
@@ -61,4 +61,4 @@ export function UserAvatar({
     );
 };
 
-export default UserAvatar;
+
