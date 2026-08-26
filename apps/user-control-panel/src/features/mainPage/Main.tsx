@@ -1,6 +1,6 @@
 export function Main() {
   return (
-    <>
+    <main>
       {/* Hero Section*/}
       <section className="bg-white dark:bg-[var(--color-background-dark)]">
         <div className="mx-auto px-[100px]">
@@ -613,6 +613,6 @@ export function Main() {
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }
