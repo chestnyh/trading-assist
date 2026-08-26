@@ -72,7 +72,8 @@
     "development:external-up": "nx run development:external-up",
     "development:sleep": "nx run development:sleep",
     "prepare": "husky",
-    "all:knip": "knip --no-config-hints"
+    "all:knip": "knip",
+    "all:knip:ci": "knip --no-config-hints"
   },
   "author": "",
   "license": "ISC",
