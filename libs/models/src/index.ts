@@ -5,7 +5,7 @@ export * from "./lib/models.options";
 export * from "./types";
 
 // Re-export PrismaClient and $Enums from @prisma/client
-export { PrismaClient, $Enums } from '@prisma/client';
+;
 
 // Export enum values for DTO compatibility
 import { $Enums } from '@prisma/client';

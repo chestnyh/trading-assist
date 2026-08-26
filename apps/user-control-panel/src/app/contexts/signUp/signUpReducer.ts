@@ -19,7 +19,7 @@ export const LS_KEY_CURRENT_STEP = 'signUp.currentStep';
 
 // ---------- Initial Values ----------
 
-export const initialStep1Values: SignUpStep1FormData = {
+const initialStep1Values: SignUpStep1FormData = {
   firstName: '',
   lastName: '',
   country: '',
@@ -32,7 +32,7 @@ export const initialStep2Values: SignUpStep2FormData = {
   preferredTradingPlatforms: undefined,
 };
 
-export const initialStep3Values: SignUpStep3FormData = {
+const initialStep3Values: SignUpStep3FormData = {
   email: '',
   nickname: '',
   password: '',
@@ -41,7 +41,7 @@ export const initialStep3Values: SignUpStep3FormData = {
   tosPrivacy: false,
 };
 
-export const initialState: SignUpState = {
+const initialState: SignUpState = {
   ...initialStep1Values,
   ...initialStep2Values,
   ...initialStep3Values,

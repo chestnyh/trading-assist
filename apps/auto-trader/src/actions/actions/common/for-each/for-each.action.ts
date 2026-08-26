@@ -1,6 +1,6 @@
 import ObjectNavigator from '@trading-bot/object-navigator';
 
-import getValue from '../../../utils/get-value.util';
+import {getValue} from '../../../utils';
 
 
 /**

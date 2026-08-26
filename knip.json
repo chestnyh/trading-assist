@@ -3,20 +3,35 @@
   "tags": ["-lintignore"],
   "workspaces": {
     ".": {
+      "ignoreDependencies": [".*"],
       "entry": [
-        "tools/devops/src/main.ts",
-        "tools/devops/src/methods/**/*.ts",
-        "tools/devops/src/projects/**/*.ts",
-        "tools/devops/src/scripts/*.ts",
-        "tools/development/scripts/*.ts",
-        "tools/development/jest.config.ts",
+        "tools/devops/**/*.ts",
+        "tools/development/**/*.ts",
+        "jest.config.ts",
         "apps/*-e2e/**/*.ts"
-      ]
+      ],
+      "jest": { "config": [] }
     },
     "libs/models": {
       "entry": [
-        "src/migrations/*.ts",
-        "seeds/**/*.ts"
+          "src/migrations/*.ts",
+          "seeds/**/*.ts",
+          "prisma/**/*"
+          ]
+    },
+    "apps/user-control-panel": {
+      "webpack": { "config": [] },
+      "entry": ["webpack.config.ts","src/main.tsx","src/app/index.tsx"]
+    },
+    "libs/api-client": {
+      "entry": [
+        "src/**/*.ts",
+        "scripts/*.ts"
+      ]
+    },
+    "libs/api-validator": {
+      "entry": [
+        "nest.js"
       ]
     }
   }

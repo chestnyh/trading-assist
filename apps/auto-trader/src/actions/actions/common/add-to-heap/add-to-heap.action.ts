@@ -1,4 +1,4 @@
-import getValue from '../../../utils/get-value.util';
+import {getValue} from '../../../utils';
 
 /**
  * Action that adds items to the heap storage.

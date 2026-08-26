@@ -27,7 +27,7 @@ export type ActionNode = {
   arguments: Record<string, unknown>;
 };
 
-export type ActionFieldType = 'text' | 'number' | 'select' | 'json' | 'keyValueList' | 'stringList';
+type ActionFieldType = 'text' | 'number' | 'select' | 'json' | 'keyValueList' | 'stringList';
 
 export type ActionFieldConfig = {
   key: string;

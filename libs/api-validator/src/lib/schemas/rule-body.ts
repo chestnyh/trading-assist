@@ -228,7 +228,7 @@ export const RuleBodySchema = z.union([
 ]);
 
 // Export the type
-export type RuleBody = z.infer<typeof RuleBodySchema>;
+type RuleBody = z.infer<typeof RuleBodySchema>;
 
 // Export the action schema for external use
 export { ActionSchema };

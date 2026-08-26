@@ -72,11 +72,12 @@
     "development:external-up": "nx run development:external-up",
     "development:sleep": "nx run development:sleep",
     "prepare": "husky",
-    "all:knip": "knip"
+    "all:knip": "knip --no-config-hints"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@trading-bot/configs": "workspace:*",
     "tslib": "^2.8.1"
   },
   "devDependencies": {

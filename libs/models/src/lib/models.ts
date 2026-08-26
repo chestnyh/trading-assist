@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 import { buildDatabaseUrl, type ModelsModuleOptions } from './models.options';
 
-export default class Models extends PrismaClient {
+class Models extends PrismaClient {
   constructor(options: ModelsModuleOptions) {
     super({
       adapter: new PrismaPg({ connectionString: buildDatabaseUrl(options) }),

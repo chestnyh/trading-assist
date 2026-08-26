@@ -7,7 +7,7 @@ export interface StepConfig {
   title: string;
 }
 
-export const stepsConfig: StepConfig[] = [
+const stepsConfig: StepConfig[] = [
   {
     step: 0,
     title: steps.step1Title,

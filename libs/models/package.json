@@ -9,9 +9,7 @@
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@trading-bot/configs": "workspace:*",
-    "@trading-bot/crypto-utils": "workspace:*",
-    "pg": "^8.22.0",
-    "tslib": "^2.3.0"
+    "@trading-bot/crypto-utils": "workspace:*"
   },
   "devDependencies": {
     "prisma": "^7.8.0"
