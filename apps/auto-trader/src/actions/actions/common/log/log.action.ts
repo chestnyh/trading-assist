@@ -1,4 +1,4 @@
-import renderMessage from '../../../utils/render-message.util'
+import {renderMessage} from '../../../utils'
 import type { RuleLogEntry } from '../../../../auto-trader/rule-log-entry.interface';
 
 type LogArgs = Pick<RuleLogEntry, 'level' | 'data'> & { message?: string; };

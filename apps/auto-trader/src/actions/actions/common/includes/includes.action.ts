@@ -1,4 +1,4 @@
-import getValue from '../../../utils/get-value.util';
+import {getValue} from '../../../utils';
 
 /**
  * Checks whether an array includes a value.

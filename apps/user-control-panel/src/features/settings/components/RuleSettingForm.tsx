@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useAuth } from "../../../app/contexts/AuthContext";
 import TagPicker from "./TagPicker";
 
-export type DetailField = {
+type DetailField = {
   key: string;
   label: string;
   required?: boolean;

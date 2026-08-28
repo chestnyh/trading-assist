@@ -31,7 +31,7 @@ export const countries: CountryOption[] = [
   { value: 'UA', label: 'Ukraine', countryCode: 'UA' },
 ];
 
-export const countriesForSelect = countries.map((country) => ({
+const countriesForSelect = countries.map((country) => ({
   value: country.value,
   label: country.label,
 }));

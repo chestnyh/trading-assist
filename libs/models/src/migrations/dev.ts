@@ -7,4 +7,4 @@ if(!migrationName) {
     throw new Error('Migration name is required');
 }
 
-execSync(`DB_URL=${process.env.DB_URL} pnpm prisma migrate dev --schema ./libs/models/prisma/schema.prisma --name ${migrationName}`, { stdio: 'inherit' });
+execSync(`DB_URL=${process.env.DB_URL} pnpm --filter @trading-bot/models exec prisma migrate dev --schema ./prisma/schema.prisma --name ${migrationName}`, { stdio: 'inherit' });

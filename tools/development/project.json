@@ -5,6 +5,13 @@
   "projectType": "application",
   "tags": [],
   "targets": {
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint scripts",
+        "cwd": "tools/development"
+      }
+    },
     "check-env-file": {
       "executor": "nx:run-commands",
       "options": {

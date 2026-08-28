@@ -16,7 +16,7 @@ export class ActionsRunner {
         private ruleLogsService: RuleLogsService,
     ){
         this.actionsHub = new ActionsHub(this.ruleId, this.userId, this.ruleBody, this.settings, this.runId, this.ruleLogsService);
-    };
+    }
 
     run(){
         this.actionsHub.run();

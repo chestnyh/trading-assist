@@ -13,7 +13,7 @@ export default class DevopsProject {
   
     getImageRepoUrl(): string {
         throw new Error('Not implemented');
-    };
+    }
 
     async getUsername(): Promise<string> {
         throw new Error('Not implemented');

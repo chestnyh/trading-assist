@@ -6,8 +6,12 @@
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "dependencies": {
+    "@trading-bot/api-validator": "workspace:*",
     "tslib": "^2.3.0",
-    "zod": "^4.1.13",
-    "@trading-bot/api-validator": "workspace:*"
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@nestjs/core": "^10.4.15",
+    "@nestjs/swagger": "^8.1.1"
   }
 }

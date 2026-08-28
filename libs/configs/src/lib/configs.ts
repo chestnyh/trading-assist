@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import * as dotenvExpand from 'dotenv-expand';
 import * as path from 'path';
 
-export function loadEnvFile(envFilePath: string): void {
+function loadEnvFile(envFilePath: string): void {
   const result = dotenv.config({ path: envFilePath, override: true });
   dotenvExpand.expand(result);
 }

@@ -8,6 +8,7 @@ import WhatsappBusinessSettingsGroup from "./components/service-groups/WhatsappB
 import BinanceSettingsGroup from "./components/service-groups/BinanceSettingsGroup";
 import BybitSettingsGroup from "./components/service-groups/BybitSettingsGroup";
 import KrakenSettingsGroup from "./components/service-groups/KrakenSettingsGroup";
+import WebhooksSettingsGroup from "./components/service-groups/WebhooksSettingsGroup";
 
 export default function Settings() {
   return (
@@ -24,6 +25,7 @@ export default function Settings() {
         <BinanceSettingsGroup />
         <BybitSettingsGroup />
         <KrakenSettingsGroup />
+        <WebhooksSettingsGroup/>
       </div>
     </div>
   );

@@ -1,0 +1,15 @@
+{
+    "name": "devops",
+    "version": "0.0.1",
+    "private": true,
+    "type": "commonjs",
+    "dependencies": {
+        "@aws-sdk/client-ecr": "^3.864.0",
+        "@trading-bot/configs": "workspace:*",
+        "ssh2-promise": "^1.0.3"
+    },
+    "devDependencies": {
+        "ts-node": "10.9.1",
+        "tsconfig-paths": "^4.2.0"
+    }
+}

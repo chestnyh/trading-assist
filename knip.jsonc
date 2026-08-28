@@ -1,0 +1,98 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": [
+    "-lintignore"
+  ],
+  "ignoreDependencies": [
+    "eslint-plugin-import",
+    "eslint-plugin-jsx-a11y",
+    "eslint-plugin-react",
+    "eslint-plugin-react-hooks",
+    "webpack-cli",
+    "@typescript-eslint/eslint-plugin"
+  ],
+  "workspaces": {
+    ".": {
+      "jest": {
+        "config": [
+          "jest.preset.cjs"
+        ]
+      },
+      "ignore": [
+        "jest.config.ts"
+      ]
+    },
+    "libs/models": {
+      "entry": [
+        "src/migrations/*.ts",
+        "seeds/**/*.ts",
+        "prisma/**/*"
+      ],
+      "ignore": [
+        ".eslintrc.json"
+      ]
+    },
+    "apps/user-control-panel": {
+      "webpack": {
+        "config": []
+      },
+      "entry": [
+        "webpack.config.ts",
+        "src/main.tsx",
+        "src/app/index.tsx"
+      ]
+    },
+    "apps/api": {
+      "entry": [
+        "src/**/*.ts"
+      ]
+    },
+    "apps/auto-trader": {
+      "entry": [
+        "src/**/*.ts"
+      ]
+    },
+    "libs/api-client": {
+      "entry": [
+        "src/index.ts",
+        "scripts/*.ts"
+      ],
+      "ignore": [
+        ".eslintrc.json"
+      ]
+    },
+    "libs/api-validator": {
+      "entry": [
+        "nest.js"
+      ],
+      "ignore": [
+        ".eslintrc.json"
+      ]
+    },
+    "libs/configs": {
+      "ignore": [
+        ".eslintrc.json"
+      ]
+    },
+    "libs/object-navigator": {
+      "ignore": [
+        ".eslintrc.json"
+      ]
+    },
+    "libs/service-comm": {
+      "ignore": [
+        ".eslintrc.json"
+      ]
+    },
+    "tools/devops": {
+      "entry": [
+        "src/**/*.ts"
+      ]
+    },
+    "tools/development": {
+      "entry": [
+        "scripts/*.ts"
+      ]
+    }
+  }
+}

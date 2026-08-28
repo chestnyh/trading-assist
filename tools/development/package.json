@@ -1,0 +1,14 @@
+{
+    "name": "development",
+    "version": "0.0.1",
+    "private": true,
+    "type": "commonjs",
+    "dependencies": {
+        "@trading-bot/configs": "workspace:*",
+        "dotenv": "^16.6.1"
+    },
+    "devDependencies": {
+        "ts-node": "10.9.1",
+        "tsconfig-paths": "^4.2.0"
+    }
+}

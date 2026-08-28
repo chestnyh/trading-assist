@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import renderMessage from '../../utils/render-message.util'
+import {renderMessage} from '../../utils'
 
 /**
  * Sends a message to a Telegram chat using the specified bot configuration.
