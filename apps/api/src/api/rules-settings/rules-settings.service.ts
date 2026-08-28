@@ -9,13 +9,13 @@ export class RulesSettingsService {
   constructor(
     private modelsService: ModelsService,
     private telegramHelper: TelegramHelperService
-  ) {}
+  ) { }
 
   /**
    * Creating a universal rule setting (Binance, Telegram, etc.)
    */
   async createSetting(userId: number, dto: CreateUserRuleSettingDto) {
-  const created = await this.modelsService.userRuleSettings.create({
+    const created = await this.modelsService.userRuleSettings.create({
       data: {
         name: dto.name,
         code: dto.code,
@@ -45,9 +45,9 @@ export class RulesSettingsService {
   /**
    * Getting all universal user settings with optional filtering and pagination
    */
-  async findAllSettingsByUser(userId: number,serviceCode?: ServiceCode, page?: number, limit?: number) {
+  async findAllSettingsByUser(userId: number, serviceCode?: ServiceCode, page?: number, limit?: number) {
     const where: any = { authorId: userId };
-    if (serviceCode){
+    if (serviceCode) {
       where.serviceCode = serviceCode;
     }
 
@@ -117,13 +117,13 @@ export class RulesSettingsService {
    * Remote setting
    */
   async removeSetting(id: number, userId: number) {
-	const setting = await this.modelsService.userRuleSettings.findFirst({
-	  where: { id, authorId: userId }
-	});
+    const setting = await this.modelsService.userRuleSettings.findFirst({
+      where: { id, authorId: userId }
+    });
 
-	if (!setting) throw new NotFoundException('Setting not found');
+    if (!setting) throw new NotFoundException('Setting not found');
 
-	return this.modelsService.userRuleSettings.delete({ where: { id } });
+    return this.modelsService.userRuleSettings.delete({ where: { id } });
   }
 
   /**

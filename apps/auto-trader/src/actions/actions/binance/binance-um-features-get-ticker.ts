@@ -46,4 +46,4 @@ export default async function binance_um_features_get_ticker (
             },
         } satisfies ActionError);
     }
-};
+}

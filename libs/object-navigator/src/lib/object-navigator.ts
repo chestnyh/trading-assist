@@ -91,7 +91,7 @@ class ObjectNavigator {
     const index = parseInt(match[0], 10);
     if(current[index] === undefined){
       throw new Error("Index does not exist");
-    };
+    }
     return current[index];
   }
 

@@ -70,4 +70,4 @@ export default async function binance_spot_get_ticker (
             },
         } satisfies ActionError);
     }
-};
+}

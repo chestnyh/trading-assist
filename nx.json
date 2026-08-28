@@ -20,22 +20,6 @@
       "plugin": "@nx/jest/plugin",
       "options": {
         "targetName": "test"
-      },
-      "exclude": [
-        "apps/binance-api-imitation-e2e/**/*",
-        "apps/binance-api-info-collector-e2e/**/*",
-        "apps/api-e2e/**/*",
-        "apps/auto-trader-e2e/**/*",
-        "apps/migrations-e2e/**/*"
-      ]
-    },
-    {
-      "plugin": "@nx/cypress/plugin",
-      "options": {
-        "targetName": "e2e",
-        "openTargetName": "open-cypress",
-        "componentTestingTargetName": "component-test",
-        "ciTargetName": "e2e-ci"
       }
     }
   ],
@@ -45,9 +29,6 @@
       "analyzeSourceFiles": true,
       "dependsOn": ["^build"],
       "inputs": ["default", "^default"]
-    },
-    "e2e-ci--**/*": {
-      "dependsOn": ["^build"]
     },
     "@nx/esbuild:esbuild": {
       "cache": true,

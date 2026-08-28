@@ -34,4 +34,4 @@ export default async function binance_um_features_exchange_info (
             },
         } satisfies ActionError);
     }
-};
+}

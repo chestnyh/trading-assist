@@ -44,7 +44,8 @@ if(!args?.values?.project_name) {
 const projectName = args?.values?.project_name;
 
 // import configs from project file
-const { default: Project } = await require(`../projects/${projectName}/project`);
+/* eslint @typescript-eslint/no-var-requires: "off" */
+const { default: Project } = require(`../projects/${projectName}/project`);
 
 const project = new Project();
 

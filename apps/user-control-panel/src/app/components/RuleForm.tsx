@@ -91,15 +91,15 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
   // Validate rule body for empty items in Add to Heap
   const validateRuleBody = useCallback((ruleBody: unknown): string | null => {
     if (typeof ruleBody !== 'object' || ruleBody === null) return null;
-    
+
     const body = ruleBody as Record<string, unknown>;
-    
+
     // Check if it's an add_to_heap action with empty items
     if (body.type === 'add_to_heap' && body.arguments) {
       const args = body.arguments as Record<string, unknown>;
       const items = args.items as Array<{ key?: string; value?: string }> | undefined;
       if (items && items.length > 0) {
-        const hasEmptyItem = items.some(item => 
+        const hasEmptyItem = items.some(item =>
           !item || String(item.key ?? '').trim() === '' || String(item.value ?? '').trim() === ''
         );
         if (hasEmptyItem) {
@@ -107,7 +107,7 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
         }
       }
     }
-    
+
     // Recursively check nested actions (sequence, parallel, if_then, etc.)
     if (body.arguments && typeof body.arguments === 'object') {
       const args = body.arguments as Record<string, unknown>;
@@ -124,7 +124,7 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
         }
       }
     }
-    
+
     return null;
   }, []);
 
@@ -215,16 +215,16 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
     <div className="px-4 md:px-8 lg:px-12 py-6 max-w-5xl mx-auto">
       <h1 className="text-h4 text-primary mb-6">{title}</h1>
 
-	  {errors.form && (
-				<div className="mb-4 p-3 bg-error/10 border border-error text-error rounded">
-				{errors.form}
-				</div>
-			)}
+      {errors.form && (
+        <div className="mb-4 p-3 bg-error/10 border border-error text-error rounded">
+          {errors.form}
+        </div>
+      )}
 
       <Input
         label="Rule Name"
-		id="rule-name"
-		name="rule-name"
+        id="rule-name"
+        name="rule-name"
         value={formData.name}
         onChange={(e) => {
           setFormData({ ...formData, name: e.target.value });
@@ -236,8 +236,8 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
 
       <TextArea
         label="Rule Description"
-		id="rule-description"
-		name="rule-description"
+        id="rule-description"
+        name="rule-description"
         value={formData.description}
         onChange={(e) => {
           setFormData({ ...formData, description: e.target.value });

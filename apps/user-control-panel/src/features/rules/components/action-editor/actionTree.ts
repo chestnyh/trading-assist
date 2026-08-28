@@ -1,8 +1,6 @@
 import { ACTION_TYPES } from './actionDefinitions';
 import { ActionNode, ActionType, ActionTypeConfig } from './types';
 
-;
-
 export function createActionNode(type: ActionType = ''): ActionNode {
   return {
     id: Math.random().toString(36).substr(2, 9),
