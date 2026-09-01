@@ -1,7 +1,5 @@
-
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-
 import { RulesPage } from "./RulesPage";
 import { AddRulePage } from "./AddRulePage";
 import { UpdateRulePage } from "./UpdateRulePage";
@@ -177,7 +175,7 @@ describe("AddRulePage", () => {
 
 describe("UpdateRulePage", () => {
   it("shows a spinner while fetching the rule", () => {
-    mockGetRuleById.mockReturnValue(new Promise(() => {})); 
+    mockGetRuleById.mockReturnValue(new Promise(() => undefined)); 
     render(<UpdateRulePage />);
     expect(screen.getByTestId("spinner")).toBeInTheDocument();
   });
@@ -238,7 +236,7 @@ describe("UpdateRulePage", () => {
 
 describe("RuleDetailsPage", () => {
   it("shows a spinner while loading", () => {
-    mockGetRuleById.mockReturnValue(new Promise(() => {}));
+    mockGetRuleById.mockReturnValue(new Promise(() => undefined));
     render(<RuleDetailsPage />);
     expect(screen.getByTestId("spinner")).toBeInTheDocument();
   });
