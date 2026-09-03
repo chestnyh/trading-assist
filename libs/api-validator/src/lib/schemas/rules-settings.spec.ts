@@ -16,7 +16,7 @@ const ServiceCode = {
   PUSH_NOTIFICATIONS_ONESIGNAL: 'PUSH_NOTIFICATIONS_ONESIGNAL',
   WHATSAPP_BUSINESS: 'WHATSAPP_BUSINESS',
   WEBHOOKS: 'WEBHOOKS',
-}
+} as const;
 
 const validBase = {
   name: 'My Binance Bot',
