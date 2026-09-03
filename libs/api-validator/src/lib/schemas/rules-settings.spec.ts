@@ -2,7 +2,21 @@ import {
   CreateUserRuleSettingDtoSchema,
   UpdateUserRuleSettingDtoSchema,
 } from './rules-settings';
-import { ServiceCode } from '@prisma/client';
+
+
+const ServiceCode = {
+  BINANCE: 'BINANCE',
+  BYBIT: 'BYBIT',
+  KRAKEN: 'KRAKEN',
+  TELEGRAM: 'TELEGRAM',
+  EMAIL: 'EMAIL',
+  DISCORD_WEBHOOKS: 'DISCORD_WEBHOOKS',
+  SLACK_WEBHOOKS: 'SLACK_WEBHOOKS',
+  SMS_TWILIO: 'SMS_TWILIO',
+  PUSH_NOTIFICATIONS_ONESIGNAL: 'PUSH_NOTIFICATIONS_ONESIGNAL',
+  WHATSAPP_BUSINESS: 'WHATSAPP_BUSINESS',
+  WEBHOOKS: 'WEBHOOKS',
+}
 
 const validBase = {
   name: 'My Binance Bot',
