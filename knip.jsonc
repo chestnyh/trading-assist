@@ -9,7 +9,8 @@
     "eslint-plugin-react",
     "eslint-plugin-react-hooks",
     "webpack-cli",
-    "@typescript-eslint/eslint-plugin"
+    "@typescript-eslint/eslint-plugin",
+    "@prisma/client"
   ],
   "workspaces": {
     ".": {

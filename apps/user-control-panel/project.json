@@ -30,6 +30,12 @@
         "command": "eslint src",
         "cwd": "apps/user-control-panel"
       }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "apps/user-control-panel/jest.config.ts"
+      }
     }
   }
 }
