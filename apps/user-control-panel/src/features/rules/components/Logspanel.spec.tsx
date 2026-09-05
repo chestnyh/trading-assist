@@ -88,4 +88,22 @@ describe("LogsPanel", () => {
     fireEvent.click(resumeButton);
     expect(screen.getByTitle("Pause auto-scroll")).toBeInTheDocument();
   });
+  it("updates auto-scroll state based on scroll position", () => {
+    const logs = Array.from({ length: 5 }, (_, i) => makeLog({ message: `log ${i}` }));
+    const { container } = render(
+      <LogsPanel logs={logs} isConnected isReconnecting={false} error={null} />
+    );
+    const scrollEl = container.querySelector(".overflow-y-auto") as HTMLElement;
+
+    Object.defineProperty(scrollEl, "scrollHeight", { value: 1000, configurable: true, writable: true });
+    Object.defineProperty(scrollEl, "clientHeight", { value: 300, configurable: true, writable: true });
+    Object.defineProperty(scrollEl, "scrollTop", { value: 0, configurable: true, writable: true });
+
+    fireEvent.scroll(scrollEl);
+    expect(screen.getByText("Resume auto-scroll")).toBeInTheDocument();
+
+    Object.defineProperty(scrollEl, "scrollTop", { value: 700, configurable: true, writable: true });
+    fireEvent.scroll(scrollEl);
+    expect(screen.queryByText("Resume auto-scroll")).not.toBeInTheDocument();
+  });
 });

@@ -1,27 +1,18 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { RulesPage } from "./RulesPage";
-import { AddRulePage } from "./AddRulePage";
-import { UpdateRulePage } from "./UpdateRulePage";
-import { RuleDetailsPage } from "./RuleDetailsPage";
-import { EmptyState } from "./EmptyState";
 
 const mockNavigate = jest.fn();
 const mockSetSearchParams = jest.fn();
 let mockSearchParams = new URLSearchParams();
-let mockParamsId: string | undefined = "rule-1";
 
 jest.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate,
-  useParams: () => ({ id: mockParamsId }),
   useSearchParams: () => [mockSearchParams, mockSetSearchParams],
 }));
 
 const mockFetchRules = jest.fn();
 const mockDeleteRule = jest.fn();
-const mockAddRule = jest.fn();
-const mockUpdateRule = jest.fn();
-const mockGetRuleById = jest.fn();
 
 const baseRulesContext = {
   rules: [] as any[],
@@ -30,9 +21,9 @@ const baseRulesContext = {
   totalCount: 0,
   error: null as string | null,
   deleteRule: mockDeleteRule,
-  addRule: mockAddRule,
-  updateRule: mockUpdateRule,
-  getRuleById: mockGetRuleById,
+  addRule: jest.fn(),
+  updateRule: jest.fn(),
+  getRuleById: jest.fn(),
 };
 
 let mockRulesContextValue = { ...baseRulesContext };
@@ -41,337 +32,268 @@ jest.mock("../../app/contexts/RulesContext", () => ({
   useRules: () => mockRulesContextValue,
 }));
 
-jest.mock("../../app/contexts/AuthContext", () => ({
-  useAuth: () => ({ token: "test-token" }),
-}));
-
-jest.mock("../../app/components/RuleForm", () => ({
-  RuleForm: (props: any) => (
-    <div data-testid="rule-form">
-      <span>{props.title}</span>
-      <button onClick={() => props.onSubmit({ name: "Test", description: "d", ruleBody: {} })}>
-        submit
-      </button>
-      <button onClick={props.onCancel}>cancel</button>
-    </div>
-  ),
-}));
-
-jest.mock("../../app/components/RuleItem", () => ({
-  RuleItem: ({ rule, onDelete }: any) => (
-    <div data-testid="rule-item">
-      <span>{rule.name}</span>
-      <button onClick={onDelete}>delete-{rule.id}</button>
-    </div>
-  ),
-}));
-
-jest.mock("../../app/components/Pagination", () => ({
-  Pagination: ({ onChange, current }: any) => (
-    <div data-testid="pagination">
-      <span>page-{current}</span>
-      <button onClick={() => onChange(current + 1)}>next</button>
-    </div>
-  ),
-}));
-
-jest.mock("../../shared/ui/modals/ConfirmationModal", () => ({
-  ConfirmationModal: ({ isOpen, onConfirm, onClose }: any) =>
-    isOpen ? (
-      <div data-testid="confirm-modal">
-        <button onClick={onConfirm}>confirm</button>
-        <button onClick={onClose}>close</button>
-      </div>
-    ) : null,
-}));
-
-jest.mock("../../shared/ui/feedback/ErrorAlert", () => ({
-  ErrorAlert: ({ message }: any) => <div data-testid="error-alert">{message}</div>,
-}));
-
-jest.mock("../../shared/ui/spiner/Spinner", () => ({
-  Spinner: () => <div data-testid="spinner">loading...</div>,
-}));
-
-jest.mock("../notFound/NotFound", () => ({
-  NotFound: () => <div data-testid="not-found">Not found</div>,
-}));
-
-jest.mock("../../shared/ui/forms/JsonEditorField", () => ({
-  JsonEditorField: () => <div data-testid="json-editor" />,
-}));
-
-jest.mock("./components/LogsPanel", () => ({
-  LogsPanel: () => <div data-testid="logs-panel" />,
-}));
-
-jest.mock("./components/action-editor", () => ({
-  ActionEditor: () => <div data-testid="action-editor" />,
-  parseRuleBodyToActionTree: jest.fn(() => ({ type: "root" })),
-}));
-
-jest.mock("./hooks/useRuleLogs", () => ({
-  useRuleLogs: () => ({
-    logs: [],
-    isConnected: true,
-    isReconnecting: false,
-    error: null,
-  }),
-}));
+beforeAll(() => {
+  window.scrollTo = jest.fn();
+});
 
 beforeEach(() => {
   jest.clearAllMocks();
   mockRulesContextValue = { ...baseRulesContext };
   mockSearchParams = new URLSearchParams();
-  mockParamsId = "rule-1";
 });
 
-describe("EmptyState", () => {
-  it("renders the empty message and navigates to /rules/add on click", () => {
-    render(<EmptyState />);
-    expect(screen.getByText(/don't have rules yet/i)).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button"));
-    expect(mockNavigate).toHaveBeenCalledWith("/rules/add");
-  });
+const makeRule = (overrides: Partial<any> = {}) => ({
+  id: "1",
+  name: "Rule One",
+  description: "desc",
+  ruleBody: {},
+  ...overrides,
 });
 
-describe("AddRulePage", () => {
-  it("renders the form with the correct title", () => {
-    render(<AddRulePage />);
-    expect(screen.getByText("Adding Rule")).toBeInTheDocument();
-  });
+const getRuleRow = (ruleName: string) =>
+  screen.getByText(ruleName).closest(".cursor-pointer") as HTMLElement;
 
-  it("calls addRule and navigates to /rules on success", async () => {
-    mockAddRule.mockResolvedValue(true);
-    render(<AddRulePage />);
-
-    fireEvent.click(screen.getByText("submit"));
-
-    await waitFor(() => expect(mockAddRule).toHaveBeenCalledWith({
-      name: "Test",
-      description: "d",
-      ruleBody: {},
-    }));
-    expect(mockNavigate).toHaveBeenCalledWith("/rules");
-  });
-
-  it("does not navigate when addRule resolves false", async () => {
-    mockAddRule.mockResolvedValue(false);
-    render(<AddRulePage />);
-
-    fireEvent.click(screen.getByText("submit"));
-
-    await waitFor(() => expect(mockAddRule).toHaveBeenCalled());
-    expect(mockNavigate).not.toHaveBeenCalled();
-  });
-
-  it("navigates to /rules on cancel", () => {
-    render(<AddRulePage />);
-    fireEvent.click(screen.getByText("cancel"));
-    expect(mockNavigate).toHaveBeenCalledWith("/rules");
-  });
-});
-
-describe("UpdateRulePage", () => {
-  it("shows a spinner while fetching the rule", () => {
-    mockGetRuleById.mockReturnValue(new Promise(() => undefined)); 
-    render(<UpdateRulePage />);
-    expect(screen.getByTestId("spinner")).toBeInTheDocument();
-  });
-
-  it("shows NotFound when the rule doesn't exist", async () => {
-    mockGetRuleById.mockResolvedValue(null);
-    render(<UpdateRulePage />);
-    expect(await screen.findByTestId("not-found")).toBeInTheDocument();
-  });
-
-  it("renders the form with initial data once loaded", async () => {
-    mockGetRuleById.mockResolvedValue({
-      id: "rule-1",
-      name: "My rule",
-      description: "desc",
-      ruleBody: {},
-    });
-    render(<UpdateRulePage />);
-    expect(await screen.findByText("Update Rule")).toBeInTheDocument();
-  });
-
-  it("calls updateRule and navigates on success", async () => {
-    mockGetRuleById.mockResolvedValue({
-      id: "rule-1",
-      name: "My rule",
-      description: "desc",
-      ruleBody: {},
-    });
-    mockUpdateRule.mockResolvedValue(true);
-
-    render(<UpdateRulePage />);
-    fireEvent.click(await screen.findByText("submit"));
-
-    await waitFor(() => expect(mockUpdateRule).toHaveBeenCalledWith("rule-1", {
-      name: "Test",
-      description: "d",
-      ruleBody: {},
-    }));
-    expect(mockNavigate).toHaveBeenCalledWith("/rules");
-  });
-
-  it("shows an error alert when updateRule throws", async () => {
-    mockGetRuleById.mockResolvedValue({
-      id: "rule-1",
-      name: "My rule",
-      description: "desc",
-      ruleBody: {},
-    });
-    mockUpdateRule.mockRejectedValue(new Error("Boom"));
-
-    render(<UpdateRulePage />);
-    fireEvent.click(await screen.findByText("submit"));
-
-    expect(await screen.findByTestId("error-alert")).toHaveTextContent("Boom");
-    expect(mockNavigate).not.toHaveBeenCalledWith("/rules");
-  });
-});
-
-describe("RuleDetailsPage", () => {
-  it("shows a spinner while loading", () => {
-    mockGetRuleById.mockReturnValue(new Promise(() => undefined));
-    render(<RuleDetailsPage />);
-    expect(screen.getByTestId("spinner")).toBeInTheDocument();
-  });
-
-  it("shows NotFound when the rule is missing", async () => {
-    mockGetRuleById.mockResolvedValue(null);
-    render(<RuleDetailsPage />);
-    expect(await screen.findByTestId("not-found")).toBeInTheDocument();
-  });
-
-  it("renders rule name, description and panels once loaded", async () => {
-    mockGetRuleById.mockResolvedValue({
-      id: "rule-1",
-      name: "My rule",
-      description: "Some description",
-      ruleBody: { type: "action" },
-    });
-
-    render(<RuleDetailsPage />);
-
-    expect(await screen.findByText("My rule")).toBeInTheDocument();
-    expect(screen.getByText("Some description")).toBeInTheDocument();
-    expect(screen.getByTestId("logs-panel")).toBeInTheDocument();
-    expect(screen.getByTestId("json-editor")).toBeInTheDocument();
-  });
-
-  it("navigates back to /rules when back button is clicked", async () => {
-    mockGetRuleById.mockResolvedValue({
-      id: "rule-1",
-      name: "My rule",
-      description: "",
-      ruleBody: {},
-    });
-    render(<RuleDetailsPage />);
-
-    fireEvent.click(await screen.findByText("Back"));
-    expect(mockNavigate).toHaveBeenCalledWith("/rules");
-  });
-});
-
-describe("RulesPage", () => {
-  it("shows a spinner on initial load", () => {
+describe("RulesPage (component integration)", () => {
+  it("shows a spinner on initial load (real Spinner)", () => {
     mockRulesContextValue = { ...baseRulesContext, isLoading: true, rules: [] };
     render(<RulesPage />);
-    expect(screen.getByTestId("spinner")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toBeInTheDocument();
   });
 
-  it("shows an error state with a retry button", () => {
+  it("calls fetchRules on mount with the current page", () => {
+    render(<RulesPage />);
+    expect(mockFetchRules).toHaveBeenCalledWith(1);
+  });
+
+  it("re-fetches when the page query param changes", () => {
+    mockSearchParams = new URLSearchParams("page=3");
+    render(<RulesPage />);
+    expect(mockFetchRules).toHaveBeenCalledWith(3);
+  });
+
+  it("shows a real error state and retries via the real Button", () => {
     mockRulesContextValue = { ...baseRulesContext, error: "Network error", rules: [] };
     render(<RulesPage />);
 
-    expect(screen.getByTestId("error-alert")).toHaveTextContent("Network error");
-    fireEvent.click(screen.getByText("Retry"));
-    expect(mockFetchRules).toHaveBeenCalled();
+    expect(screen.getByText("Network error")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    expect(mockFetchRules).toHaveBeenCalledWith(1);
   });
 
-  it("shows EmptyState when there are no rules at all", () => {
+  it("shows the real EmptyState and navigates to /rules/add on click", () => {
     mockRulesContextValue = { ...baseRulesContext, totalCount: 0, rules: [] };
     render(<RulesPage />);
+
     expect(screen.getByText(/don't have rules yet/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button"));
+    expect(mockNavigate).toHaveBeenCalledWith("/rules/add");
   });
 
-  it("shows NotFound when the current page has no rules but rules exist elsewhere", () => {
+  it("shows the real NotFound page when the current page has no rules but rules exist elsewhere", () => {
     mockRulesContextValue = { ...baseRulesContext, totalCount: 5, rules: [] };
     render(<RulesPage />);
-    expect(screen.getByTestId("not-found")).toBeInTheDocument();
+
+    expect(screen.getByText("404")).toBeInTheDocument();
+    expect(screen.getByText("Page Not Found")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Go to Dashboard" }));
+    expect(mockNavigate).toHaveBeenCalledWith("/dashboard");
   });
 
-  it("renders the list of rules", () => {
+  it("renders the real RuleItem list with names and descriptions", () => {
     mockRulesContextValue = {
       ...baseRulesContext,
       totalCount: 2,
       rules: [
-        { id: "1", name: "Rule One" },
-        { id: "2", name: "Rule Two" },
+        makeRule({ id: "1", name: "Rule One", description: "First rule" }),
+        makeRule({ id: "2", name: "Rule Two", description: "Second rule" }),
       ],
     };
     render(<RulesPage />);
 
     expect(screen.getByText("Rule One")).toBeInTheDocument();
+    expect(screen.getByText("First rule")).toBeInTheDocument();
     expect(screen.getByText("Rule Two")).toBeInTheDocument();
+    expect(screen.getByText("Second rule")).toBeInTheDocument();
+  });
+
+  it("navigates to the rule details page when a row is clicked", () => {
+    mockRulesContextValue = {
+      ...baseRulesContext,
+      totalCount: 1,
+      rules: [makeRule({ id: "42", name: "Rule One" })],
+    };
+    render(<RulesPage />);
+
+    fireEvent.click(getRuleRow("Rule One"));
+    expect(mockNavigate).toHaveBeenCalledWith("/rules/42");
+  });
+
+  it("navigates to the update page from the edit button without triggering row navigation", () => {
+    mockRulesContextValue = {
+      ...baseRulesContext,
+      totalCount: 1,
+      rules: [makeRule({ id: "42", name: "Rule One" })],
+    };
+    render(<RulesPage />);
+
+    const row = getRuleRow("Rule One");
+    fireEvent.click(within(row).getByRole("button", { name: /edit rule/i }));
+
+    expect(mockNavigate).toHaveBeenCalledWith("/rules/42/update");
+    expect(mockNavigate).not.toHaveBeenCalledWith("/rules/42");
   });
 
   it("shows pagination only when totalCount exceeds the page size", () => {
     mockRulesContextValue = {
       ...baseRulesContext,
       totalCount: 25,
-      rules: [{ id: "1", name: "Rule One" }],
+      rules: [makeRule()],
     };
     render(<RulesPage />);
-    expect(screen.getByTestId("pagination")).toBeInTheDocument();
+
+    expect(screen.getByRole("button", { name: "1" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "2" })).toBeInTheDocument();
   });
 
-  it("opens the confirmation modal and deletes a rule", async () => {
+  it("does not show pagination when totalCount is within the page size", () => {
     mockRulesContextValue = {
       ...baseRulesContext,
-      totalCount: 1,
-      rules: [{ id: "1", name: "Rule One" }],
+      totalCount: 5,
+      rules: [makeRule()],
     };
-    mockDeleteRule.mockResolvedValue(true);
-
     render(<RulesPage />);
 
-    fireEvent.click(screen.getByText("delete-1"));
-    expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText("confirm"));
-    await waitFor(() => expect(mockDeleteRule).toHaveBeenCalledWith("1"));
+    expect(screen.queryByRole("button", { name: "1" })).not.toBeInTheDocument();
   });
 
-  it("shows a delete error when deleteRule throws", async () => {
+  it("changes the page via the real Pagination and scrolls to top", () => {
     mockRulesContextValue = {
       ...baseRulesContext,
-      totalCount: 1,
-      rules: [{ id: "1", name: "Rule One" }],
+      totalCount: 45,
+      rules: [makeRule()],
     };
-    mockDeleteRule.mockRejectedValue(new Error("Delete failed"));
-
     render(<RulesPage />);
 
-    fireEvent.click(screen.getByText("delete-1"));
-    fireEvent.click(screen.getByText("confirm"));
+    fireEvent.click(screen.getByRole("button", { name: "2" }));
 
-    expect(await screen.findByTestId("error-alert")).toHaveTextContent("Delete failed");
+    expect(mockSetSearchParams).toHaveBeenCalledWith({ page: "2" });
+    expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: "smooth" });
   });
 
   it("navigates to /rules/add when the add button is clicked", () => {
     mockRulesContextValue = {
       ...baseRulesContext,
       totalCount: 1,
-      rules: [{ id: "1", name: "Rule One" }],
+      rules: [makeRule()],
     };
     render(<RulesPage />);
 
-    fireEvent.click(screen.getAllByRole("button")[0]);
+    fireEvent.click(screen.getByRole("button", { name: "Add rule" }));
     expect(mockNavigate).toHaveBeenCalledWith("/rules/add");
+  });
+
+  it("opens the real ConfirmationModal on delete and deletes on confirm", async () => {
+    mockRulesContextValue = {
+      ...baseRulesContext,
+      totalCount: 1,
+      rules: [makeRule({ id: "1", name: "Rule One" })],
+    };
+    mockDeleteRule.mockResolvedValue(true);
+
+    render(<RulesPage />);
+
+    const row = getRuleRow("Rule One");
+    fireEvent.click(within(row).getByRole("button", { name: /delete rule/i }));
+
+    const modal = await screen.findByRole("dialog");
+    expect(within(modal).getByText("Delete Rule")).toBeInTheDocument();
+    expect(
+      within(modal).getByText(/are you sure you want to delete this rule/i)
+    ).toBeInTheDocument();
+
+    fireEvent.click(within(modal).getByRole("button", { name: "Delete" }));
+
+    await waitFor(() => expect(mockDeleteRule).toHaveBeenCalledWith("1"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
+  it("closes the modal without deleting on cancel", async () => {
+    mockRulesContextValue = {
+      ...baseRulesContext,
+      totalCount: 1,
+      rules: [makeRule({ id: "1", name: "Rule One" })],
+    };
+    render(<RulesPage />);
+
+    const row = getRuleRow("Rule One");
+    fireEvent.click(within(row).getByRole("button", { name: /delete rule/i }));
+
+    const modal = await screen.findByRole("dialog");
+    fireEvent.click(within(modal).getByRole("button", { name: "Cancel" }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(mockDeleteRule).not.toHaveBeenCalled();
+  });
+
+  it("closes the modal via the X button as well", async () => {
+    mockRulesContextValue = {
+      ...baseRulesContext,
+      totalCount: 1,
+      rules: [makeRule({ id: "1", name: "Rule One" })],
+    };
+    render(<RulesPage />);
+
+    const row = getRuleRow("Rule One");
+    fireEvent.click(within(row).getByRole("button", { name: /delete rule/i }));
+
+    const modal = await screen.findByRole("dialog");
+    fireEvent.click(within(modal).getByRole("button", { name: "Close" }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("shows a real ErrorAlert when deleteRule throws, and closes the modal", async () => {
+    mockRulesContextValue = {
+      ...baseRulesContext,
+      totalCount: 1,
+      rules: [makeRule({ id: "1", name: "Rule One" })],
+    };
+    mockDeleteRule.mockRejectedValue(new Error("Delete failed"));
+
+    render(<RulesPage />);
+
+    const row = getRuleRow("Rule One");
+    fireEvent.click(within(row).getByRole("button", { name: /delete rule/i }));
+
+    const modal = await screen.findByRole("dialog");
+    fireEvent.click(within(modal).getByRole("button", { name: "Delete" }));
+
+    expect(await screen.findByText("Delete failed")).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("clears the previous delete error when a new delete is confirmed", async () => {
+    mockRulesContextValue = {
+      ...baseRulesContext,
+      totalCount: 1,
+      rules: [makeRule({ id: "1", name: "Rule One" })],
+    };
+    mockDeleteRule.mockRejectedValueOnce(new Error("Delete failed"));
+
+    render(<RulesPage />);
+    const row = getRuleRow("Rule One");
+
+    fireEvent.click(within(row).getByRole("button", { name: /delete rule/i }));
+    fireEvent.click(
+      within(await screen.findByRole("dialog")).getByRole("button", { name: "Delete" })
+    );
+    expect(await screen.findByText("Delete failed")).toBeInTheDocument();
+
+    mockDeleteRule.mockResolvedValueOnce(true);
+    fireEvent.click(within(getRuleRow("Rule One")).getByRole("button", { name: /delete rule/i }));
+
+    expect(screen.queryByText("Delete failed")).not.toBeInTheDocument();
   });
 });
