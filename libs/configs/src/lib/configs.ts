@@ -1,36 +1,13 @@
-import * as dotenv from 'dotenv';
-import * as dotenvExpand from 'dotenv-expand';
-import * as path from 'path';
-
-function loadEnvFile(envFilePath: string): void {
-  const result = dotenv.config({ path: envFilePath, override: true });
-  dotenvExpand.expand(result);
-}
-
 export abstract class Configs {
+  protected initialConfig: Record<string, string | undefined> = {};
   protected configs: Record<string, string | boolean | undefined> = {};
 
-  constructor(envBasePath?: string){
+  constructor(){
+    this.loadConfig();
+  }
 
-    const base = envBasePath ?? '.';
-
-    const nodeEnv = process.env['NODE_ENV'];
-    let envFile: string | undefined;
-    if (nodeEnv === 'api-int-tests') {
-      envFile = path.join(base, '.env.api-int-tests');
-    } else if (nodeEnv === 'devops') {
-      envFile = path.join(base, '.env.devops');
-    } else if (nodeEnv !== 'production') {
-      envFile = path.join(base, '.env.dev');
-    }
-
-    this.configs['ENV_FILE'] = envFile;
-    this.configs['NODE_ENV'] = nodeEnv;
-
-    if (envFile) {
-      loadEnvFile(envFile);
-    }
-
+  loadConfig(){
+    throw new Error(`${this.constructor.name} must implement loadConfig()`);
   }
 
   get(configName: string): string | boolean | undefined {

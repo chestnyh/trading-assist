@@ -6,7 +6,7 @@ const webpack = require('webpack');
 const { ServicesConfigs } = require('@trading-bot/configs');
 
 const getConfigs = () => {
-  return new ServicesConfigs(join(__dirname, '../..'));
+  return new ServicesConfigs();
 };
 
 module.exports = {
@@ -32,7 +32,6 @@ module.exports = {
       index: './src/index.html',
       baseHref: '/',
       assets: ['./src/favicon.ico', './src/assets'],
-      // styles: ['./src/styles.scss'],
       styles: ['./src/index.css'],
     }),
     new NxReactWebpackPlugin({

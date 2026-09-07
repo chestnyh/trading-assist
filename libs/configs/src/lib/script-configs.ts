@@ -8,10 +8,10 @@ export class ScriptConfigs extends Configs {
     super();
     this.configs = {
       ...this.configs,
-      DOCKER_PROJECT_NAME: process.env['DOCKER_PROJECT_NAME'],
-      DOCKER_DB_VOLUME: process.env['DOCKER_DB_VOLUME'],
-      DOCKER_RMQ_VOLUME: process.env['DOCKER_RMQ_VOLUME'],
-      DOCKER_PROFILE: process.env['DOCKER_PROFILE'] || 'external',
+      DOCKER_PROJECT_NAME: this.initialConfig['DOCKER_PROJECT_NAME'],
+      DOCKER_DB_VOLUME: this.initialConfig['DOCKER_DB_VOLUME'],
+      DOCKER_RMQ_VOLUME: this.initialConfig['DOCKER_RMQ_VOLUME'],
+      DOCKER_PROFILE: this.initialConfig['DOCKER_PROFILE'] || 'external',
     };
   }
 }
