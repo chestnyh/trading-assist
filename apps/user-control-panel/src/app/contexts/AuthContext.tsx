@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import {
   authControllerLogin,
+  authControllerLogout,
+  authControllerMe,
   extractFieldToMessageFromValidationError,
   isValidationError,
 } from '@trading-bot/api-client';
@@ -10,6 +12,7 @@ interface User {
   email: string;
   nickname: string;
   name?: string;
+  role?: string;
   country?: string;
 }
 
@@ -28,11 +31,24 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string, rememberMe?: boolean) => Promise<LoginResult>;
   signUp: (email: string, password: string, name: string, nickname: string) => Promise<boolean>;
-  logout: () => void;
-  token: string | null;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const AUTH_CHANNEL_NAME = 'trading-bot-auth';
+const LEGACY_STORAGE_KEYS = ['auth_token', 'user_data'];
+
+const clearLegacyStorage = (): void => {
+  try {
+    for (const key of LEGACY_STORAGE_KEYS) {
+      window.localStorage.removeItem(key);
+      window.sessionStorage.removeItem(key);
+    }
+  } catch {
+    // Storage can be unavailable; the credential is no longer stored there regardless.
+  }
+};
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -40,34 +56,69 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const channelRef = useRef<BroadcastChannel | null>(null);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
-    const storedUser = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
-
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+  const refreshSession = useCallback(async () => {
+    try {
+      const response = await authControllerMe();
+      if ('status' in response && response.status === 200 && 'data' in response) {
+        setUser(response.data as unknown as User);
+      } else {
+        setUser(null);
+      }
+    } catch {
+      setUser(null);
     }
-    setIsLoading(false);
   }, []);
 
   useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key !== 'auth_token' && e.key !== 'user_data') return;
+    // FR-014: stale credentials from the previous mechanism must never be trusted again.
+    clearLegacyStorage();
 
-      const nextToken = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
-      const nextUser = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
+    let active = true;
+    void (async () => {
+      try {
+        const response = await authControllerMe();
+        if (active && 'status' in response && response.status === 200 && 'data' in response) {
+          setUser(response.data as unknown as User);
+        }
+      } catch {
+        if (active) {
+          setUser(null);
+        }
+      } finally {
+        if (active) {
+          setIsLoading(false);
+        }
+      }
+    })();
 
-      setToken(nextToken);
-      setUser(nextUser ? (JSON.parse(nextUser) as User) : null);
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof BroadcastChannel === 'undefined') {
+      return;
+    }
+
+    const channel = new BroadcastChannel(AUTH_CHANNEL_NAME);
+    channelRef.current = channel;
+    channel.onmessage = (event: MessageEvent) => {
+      if (event.data?.type === 'logout') {
+        setUser(null);
+      } else if (event.data?.type === 'login') {
+        void refreshSession();
+      }
     };
 
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
+    return () => {
+      channel.close();
+      channelRef.current = null;
+    };
+  }, [refreshSession]);
 
   const login = async (email: string, password: string, rememberMe?: boolean): Promise<LoginResult> => {
     try {
@@ -79,38 +130,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       const response = await authControllerLogin(loginData);
 
-      let access_token: string | undefined;
-      let userData: User | undefined;
-
-      if ('status' in response && (response.status === 200 || (response.status as number) === 201) && 'data' in response && response.data) {
-        access_token = response.data.access_token;
-        userData = response.data.user as unknown as User;
-      } else if ('access_token' in response && 'user' in response && typeof response === 'object' && response !== null) {
-        const directResponse = response as unknown as { access_token: string; user: User };
-        access_token = directResponse.access_token;
-        userData = directResponse.user;
-      } else if ('status' in response && response.status === 401) {
-        return { success: false, error: "Invalid credentials" };
-      } else {
-        return { success: false, error: "Unexpected response format from server" };
-      }
-
-      if (access_token && userData) {
-        setToken(access_token);
-        setUser(userData);
-
-        if (rememberMe) {
-          localStorage.setItem('auth_token', access_token);
-          localStorage.setItem('user_data', JSON.stringify(userData));
-        } else {
-          sessionStorage.setItem('auth_token', access_token);
-          sessionStorage.setItem('user_data', JSON.stringify(userData));
-        }
-
+      if (
+        'status' in response &&
+        response.status === 200 &&
+        'data' in response &&
+        response.data &&
+        'user' in response.data
+      ) {
+        setUser(response.data.user as unknown as User);
+        channelRef.current?.postMessage({ type: 'login' });
         return { success: true };
-      } else {
-        return { success: false, error: "Invalid response from server" };
       }
+
+      if ('status' in response && response.status === 401) {
+        return { success: false, error: "Invalid credentials" };
+      }
+
+      if ('status' in response && response.status === 400) {
+        return {
+          success: false,
+          error:
+            "Please verify your email address before logging in. Check your email for the verification code.",
+        };
+      }
+
+      return { success: false, error: "Unexpected response format from server" };
     } catch (caughtError: unknown) {
       let errorMessage = "Login failed. Please try again.";
 
@@ -169,20 +213,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    setToken(null);
+  const logout = useCallback(async (): Promise<void> => {
+    try {
+      await authControllerLogout();
+    } catch {
+      // Sign-out is best effort; the local state is cleared regardless.
+    }
+
     setUser(null);
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_data');
-    sessionStorage.removeItem('auth_token');
-    sessionStorage.removeItem('user_data');
-  };
+    channelRef.current?.postMessage({ type: 'logout' });
+  }, []);
 
   const signUp = async (email: string, password: string, name: string, nickname: string): Promise<boolean> => {
     try {
       // Call your API sign up endpoint
       const response = await fetch(`${process.env.API_BASE_URL}/api/v1/users`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -204,12 +251,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value: AuthContextType = {
     user,
-    isAuthenticated: !!token,
+    isAuthenticated: !!user,
     isLoading,
     login,
     signUp,
     logout,
-    token,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

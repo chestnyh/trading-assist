@@ -44,7 +44,7 @@ const serverRule = {
 describe('useServiceRuleSettings', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseAuth.mockReturnValue({ token: 'test-token' });
+    mockUseAuth.mockReturnValue({ isAuthenticated: true });
   });
 
   it('maps rule.description into SettingItem on fetch', async () => {

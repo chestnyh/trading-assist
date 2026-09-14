@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserProfileDto } from './user-profile.dto';
 
-export class AuthResponseDto {
+export class RefreshResponseDto {
   @ApiProperty({
-    description: 'Non-sensitive user profile. The session credential is delivered only as an HttpOnly cookie.',
+    description: 'Non-sensitive user profile. New session credentials are delivered only as HttpOnly cookies.',
     type: UserProfileDto,
   })
   user: UserProfileDto;

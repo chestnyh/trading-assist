@@ -59,7 +59,15 @@ The following configuration keys are available:
 - `DB_PASSWORD`: Database password
 - `DB_NAME`: Database name
 - `JWT_SECRET`: JWT secret key (default: 'your-secret-key')
-- `JWT_EXPIRES_IN`: JWT expiration time (default: '24h')
+- `JWT_EXPIRES_IN`: JWT expiration time for the log-stream module (default: '24h')
+- `JWT_ACCESS_EXPIRES_IN`: Session access credential lifetime (default: '15m')
+- `JWT_REFRESH_EXPIRES_IN`: Renewal credential lifetime without "Remember me" (default: '24h')
+- `JWT_REFRESH_REMEMBER_EXPIRES_IN`: Renewal credential lifetime with "Remember me" (default: '30d')
+- `JWT_STREAM_TICKET_EXPIRES_IN`: Log-stream ticket lifetime (default: '60s')
+- `AUTH_REFRESH_GRACE_MS`: Concurrent-renewal grace window before reuse detection (default: '10000')
+- `AUTH_COOKIE_SECURE`: Send auth cookies over HTTPS only (default: `false`; set `true` in production)
+- `AUTH_COOKIE_SAME_SITE`: `SameSite` policy for auth cookies (default: 'lax')
+- `AUTH_COOKIE_DOMAIN`: Optional cookie domain; unset means host-only cookies
 
 ### 4. Environment File Loading
 

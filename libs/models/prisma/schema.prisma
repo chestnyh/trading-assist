@@ -64,6 +64,7 @@ model User {
   passwordResets PasswordReset[]
   ruleSettings UserRuleSettings[]
   tags         RuleSettingsTags[]
+  sessions     Session[]
 }
 
 enum ServiceCode {
@@ -138,6 +139,23 @@ model UserRules {
   authorId  Int
   author    User    @relation(fields: [authorId], references: [id])
   ruleBody  Json @default("{}")
+}
+
+model Session {
+  id           String    @id @default(uuid())
+  userId       Int
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  familyId     String
+  tokenHash    String    @unique
+  rememberMe   Boolean   @default(false)
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?
+  createdAt    DateTime  @default(now())
+  lastUsedAt   DateTime?
+
+  @@index([familyId])
+  @@index([userId])
 }
 
 model OutboxMessage {
