@@ -1,22 +1,30 @@
 import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
+import type { ReactElement } from "react";
 import "@testing-library/jest-dom";
 import { AddRulePage } from "./AddRulePage";
-import { isValidationError, extractFieldToMessageFromValidationError } from "@trading-bot/api-client";
+import { RulesProvider } from "../../app/contexts/RulesContext";
+import {
+  isValidationError,
+  extractFieldToMessageFromValidationError,
+  customInstance,
+  rulesControllerCreate,
+} from "@trading-bot/api-client";
 
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate,
 }));
 
-const mockAddRule = jest.fn();
-let mockRulesContextValue = { addRule: mockAddRule, isLoading: false };
-jest.mock("../../app/contexts/RulesContext", () => ({
-  useRules: () => mockRulesContextValue,
+const mockUseAuth = jest.fn();
+jest.mock("../../app/contexts/AuthContext", () => ({
+  useAuth: () => mockUseAuth(),
 }));
 
 jest.mock("@trading-bot/api-client", () => ({
   isValidationError: jest.fn(),
   extractFieldToMessageFromValidationError: jest.fn(),
+  customInstance: jest.fn(),
+  rulesControllerCreate: jest.fn(),
 }));
 
 jest.mock("../../shared/ui/forms/JsonEditorField", () => ({
@@ -31,34 +39,31 @@ jest.mock("../../shared/ui/forms/JsonEditorField", () => ({
   ),
 }));
 
-jest.mock("../../shared/ui/forms/Input", () => ({
-  Input: ({ label, id, value, onChange, error, required }: any) => (
-    <div>
-      <label htmlFor={id}>{label}{required ? " *" : ""}</label>
-      <input id={id} value={value} onChange={onChange} />
-      {error && <span data-testid={`${id}-error`}>{error}</span>}
-    </div>
-  ),
-}));
-
-jest.mock("../../shared/ui/forms/TextArea", () => ({
-  TextArea: ({ label, id, value, onChange, error, required }: any) => (
-    <div>
-      <label htmlFor={id}>{label}{required ? " *" : ""}</label>
-      <textarea id={id} value={value} onChange={onChange} />
-      {error && <span data-testid={`${id}-error`}>{error}</span>}
-    </div>
-  ),
-}));
-
 const mockIsValidationError = isValidationError as unknown as jest.Mock;
 const mockExtractFieldToMessage = extractFieldToMessageFromValidationError as unknown as jest.Mock;
+const mockCustomInstance = customInstance as unknown as jest.Mock;
+const mockRulesControllerCreate = rulesControllerCreate as unknown as jest.Mock;
+
+const buildAuthValue = (token: string | null) => ({
+  token,
+  user: token ? { id: 1, email: "test@example.com", nickname: "tester" } : null,
+  isAuthenticated: !!token,
+  isLoading: false,
+  login: jest.fn(),
+  signUp: jest.fn(),
+  logout: jest.fn(),
+});
+
+const renderWithProviders = (ui: ReactElement) =>
+  render(<RulesProvider>{ui}</RulesProvider>);
 
 beforeEach(() => {
   jest.clearAllMocks();
-  mockRulesContextValue = { addRule: mockAddRule, isLoading: false };
+  mockUseAuth.mockReturnValue(buildAuthValue("test-token"));
   mockIsValidationError.mockReturnValue(false);
   mockExtractFieldToMessage.mockReturnValue({});
+  mockCustomInstance.mockResolvedValue({ status: 200, data: { rules: [], total: 0 } });
+  mockRulesControllerCreate.mockReset();
 });
 
 const selectFirstActionType = () => {
@@ -72,27 +77,29 @@ const selectFirstActionType = () => {
 
 describe("AddRulePage (component integration, real RuleForm/ActionEditor)", () => {
 
-  it("keeps Save disabled until the form becomes dirty", () => {
-    render(<AddRulePage />);
-    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+  it("keeps Save disabled until the form becomes dirty", async () => {
+    renderWithProviders(<AddRulePage />);
+    expect(await screen.findByRole("button", { name: "Save" })).toBeDisabled();
 
     fireEvent.change(screen.getByLabelText(/rule name/i), { target: { value: "My rule" } });
     expect(screen.getByRole("button", { name: "Save" })).not.toBeDisabled();
   });
 
   it("shows a validation error and does not call addRule while no action type is selected", async () => {
-    render(<AddRulePage />);
+    renderWithProviders(<AddRulePage />);
+    await screen.findByRole("button", { name: "Save" });
 
     fireEvent.change(screen.getByLabelText(/rule name/i), { target: { value: "My rule" } });
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     expect(await screen.findByText("Rule body is required")).toBeInTheDocument();
-    expect(mockAddRule).not.toHaveBeenCalled();
+    expect(mockRulesControllerCreate).not.toHaveBeenCalled();
   });
 
   it("builds a rule body via the real ActionEditor and submits it", async () => {
-    mockAddRule.mockResolvedValue(true);
-    render(<AddRulePage />);
+    mockRulesControllerCreate.mockResolvedValue({ status: 201, data: {} });
+    renderWithProviders(<AddRulePage />);
+    await screen.findByRole("button", { name: "Save" });
 
     fireEvent.change(screen.getByLabelText(/rule name/i), { target: { value: "My rule" } });
     fireEvent.change(screen.getByLabelText(/rule description/i), { target: { value: "Desc" } });
@@ -101,15 +108,16 @@ describe("AddRulePage (component integration, real RuleForm/ActionEditor)", () =
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
     await waitFor(() =>
-      expect(mockAddRule).toHaveBeenCalledWith(
+      expect(mockRulesControllerCreate).toHaveBeenCalledWith(
         expect.objectContaining({ name: "My rule", description: "Desc" })
       )
     );
-    expect(mockNavigate).toHaveBeenCalledWith("/rules");
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/rules"));
   });
 
-  it("switches to JSON mode and renders the mocked json editor", () => {
-    render(<AddRulePage />);
+  it("switches to JSON mode and renders the mocked json editor", async () => {
+    renderWithProviders(<AddRulePage />);
+    await screen.findByRole("button", { name: "Save" });
 
     fireEvent.click(screen.getByRole("button", { name: "JSON" }));
 
@@ -117,39 +125,40 @@ describe("AddRulePage (component integration, real RuleForm/ActionEditor)", () =
     expect(screen.getByTestId("json-value")).toBeInTheDocument();
   });
 
-  it("does not navigate when addRule resolves false", async () => {
-    mockAddRule.mockResolvedValue(false);
-    render(<AddRulePage />);
+  it("does not navigate when there is no auth token", async () => {
+    mockUseAuth.mockReturnValue(buildAuthValue(null));
+    renderWithProviders(<AddRulePage />);
 
     fireEvent.change(screen.getByLabelText(/rule name/i), { target: { value: "My rule" } });
     selectFirstActionType();
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
-    await waitFor(() => expect(mockAddRule).toHaveBeenCalled());
-    expect(mockNavigate).not.toHaveBeenCalled();
+    await waitFor(() => expect(mockNavigate).not.toHaveBeenCalled());
+    expect(mockRulesControllerCreate).not.toHaveBeenCalled();
   });
-  
 
   it("shows field-level errors from a validation error thrown by addRule", async () => {
     const validationError = new Error("Validation failed");
-    mockAddRule.mockRejectedValue(validationError);
+    mockRulesControllerCreate.mockRejectedValue(validationError);
     mockIsValidationError.mockReturnValue(true);
     mockExtractFieldToMessage.mockReturnValue({ name: "Name already exists" });
 
-    render(<AddRulePage />);
+    renderWithProviders(<AddRulePage />);
+    await screen.findByRole("button", { name: "Save" });
     fireEvent.change(screen.getByLabelText(/rule name/i), { target: { value: "Dup" } });
     selectFirstActionType();
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
-    expect(await screen.findByTestId("rule-name-error")).toHaveTextContent("Name already exists");
+    expect(await screen.findByText("Name already exists")).toBeInTheDocument();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("shows a generic form error when addRule throws a non-validation error", async () => {
-    mockAddRule.mockRejectedValue(new Error("Server exploded"));
+    mockRulesControllerCreate.mockRejectedValue(new Error("Server exploded"));
     mockIsValidationError.mockReturnValue(false);
 
-    render(<AddRulePage />);
+    renderWithProviders(<AddRulePage />);
+    await screen.findByRole("button", { name: "Save" });
     fireEvent.change(screen.getByLabelText(/rule name/i), { target: { value: "X" } });
     selectFirstActionType();
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
@@ -157,17 +166,30 @@ describe("AddRulePage (component integration, real RuleForm/ActionEditor)", () =
     expect(await screen.findByText("Server exploded")).toBeInTheDocument();
   });
 
-  it("navigates to /rules on cancel", () => {
-    render(<AddRulePage />);
+  it("navigates to /rules on cancel", async () => {
+    renderWithProviders(<AddRulePage />);
+    await screen.findByRole("button", { name: "Save" });
+
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
     expect(mockNavigate).toHaveBeenCalledWith("/rules");
   });
 
-  it("shows 'Processing...' and disables buttons while isLoading", () => {
-    mockRulesContextValue = { addRule: mockAddRule, isLoading: true };
-    render(<AddRulePage />);
+  it("shows 'Processing...' and disables buttons while isLoading", async () => {
+    renderWithProviders(<AddRulePage />);
+    await screen.findByRole("button", { name: "Save" });
 
-    expect(screen.getByRole("button", { name: "Processing..." })).toBeDisabled();
+    let resolveCreate!: (value: unknown) => void;
+    mockRulesControllerCreate.mockReturnValue(
+      new Promise((resolve) => { resolveCreate = resolve; })
+    );
+
+    fireEvent.change(screen.getByLabelText(/rule name/i), { target: { value: "My rule" } });
+    selectFirstActionType();
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(await screen.findByRole("button", { name: "Processing..." })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
+
+    resolveCreate({ status: 201, data: {} });
   });
 });
