@@ -1,63 +1,46 @@
 import { render, screen } from "@testing-library/react";
 import Settings from "./Settings";
-
-jest.mock("./components/service-groups/TelegramSettingsGroup", () => ({
-  __esModule: true,
+jest.mock('./components/service-groups/TelegramSettingsGroup', () => ({
   default: () => <div data-testid="group-telegram" />,
 }));
 
-jest.mock("./components/service-groups/EmailSettingsGroup", () => ({
-  __esModule: true,
+jest.mock('./components/service-groups/EmailSettingsGroup', () => ({
   default: () => <div data-testid="group-email" />,
 }));
 
-jest.mock("./components/service-groups/DiscordSettingsGroup", () => ({
-  __esModule: true,
+jest.mock('./components/service-groups/DiscordSettingsGroup', () => ({
   default: () => <div data-testid="group-discord" />,
 }));
 
-jest.mock("./components/service-groups/SlackSettingsGroup", () => ({
-  __esModule: true,
+jest.mock('./components/service-groups/SlackSettingsGroup', () => ({
   default: () => <div data-testid="group-slack" />,
 }));
 
-jest.mock("./components/service-groups/SmsTwilioSettingsGroup", () => ({
-  __esModule: true,
+jest.mock('./components/service-groups/SmsTwilioSettingsGroup', () => ({
   default: () => <div data-testid="group-sms-twilio" />,
 }));
 
-jest.mock("./components/service-groups/OneSignalSettingsGroup", () => ({
-  __esModule: true,
+jest.mock('./components/service-groups/OneSignalSettingsGroup', () => ({
   default: () => <div data-testid="group-one-signal" />,
 }));
 
-jest.mock("./components/service-groups/WhatsappBusinessSettingsGroup", () => ({
-  __esModule: true,
+jest.mock('./components/service-groups/WhatsappBusinessSettingsGroup', () => ({
   default: () => <div data-testid="group-whatsapp-business" />,
 }));
 
-jest.mock("./components/service-groups/BinanceSettingsGroup", () => ({
-  __esModule: true,
+jest.mock('./components/service-groups/BinanceSettingsGroup', () => ({
   default: () => <div data-testid="group-binance" />,
 }));
 
-jest.mock("./components/service-groups/BybitSettingsGroup", () => ({
-  __esModule: true,
+jest.mock('./components/service-groups/BybitSettingsGroup', () => ({
   default: () => <div data-testid="group-bybit" />,
 }));
 
-jest.mock("./components/service-groups/KrakenSettingsGroup", () => ({
-  __esModule: true,
+jest.mock('./components/service-groups/KrakenSettingsGroup', () => ({
   default: () => <div data-testid="group-kraken" />,
 }));
 
-jest.mock("./components/service-groups/WebhooksSettingsGroup", () => ({
-  __esModule: true,
-  default: () => <div data-testid="group-webhooks" />,
-}));
-
 const EXPECTED_GROUP = [
-  "group-webhooks",
   "group-telegram",
   "group-email",
   "group-discord",

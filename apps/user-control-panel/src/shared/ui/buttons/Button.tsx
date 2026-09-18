@@ -9,7 +9,6 @@ interface ButtonProps {
     variant?: "primary" | "outline" | "error" | "text";
     leftIcon?: ReactNode;
     rightIcon?: ReactNode;
-    ariaLabel?: string;
 }
 
 export function Button({
@@ -21,7 +20,6 @@ export function Button({
     variant = "primary",
     leftIcon,
     rightIcon,
-    ariaLabel,
 }: ButtonProps) {
     const isTextVariant = variant === "text";
 
@@ -31,7 +29,6 @@ export function Button({
                 type={type}
                 onClick={onClick}
                 disabled={disabled}
-                aria-label={ariaLabel}
                 className={`
           ${isTextVariant ? "" : "w-full rounded-md"}
           font-sans font-medium
