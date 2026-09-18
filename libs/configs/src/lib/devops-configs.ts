@@ -1,4 +1,9 @@
+import { join } from 'node:path';
+
 import { Configs } from "./configs";
+import { findWorkspaceRoot } from "./workspace-root";
+
+import { EnvFileConfigSource } from './sources/env-file';
 
 /**
  * TODO add description
@@ -14,10 +19,10 @@ export class DevopsConfigs extends Configs {
       AWS_ECR_ACCESS_KEY_ID: this.initialConfig['AWS_ECR_ACCESS_KEY_ID'],
       AWS_ECR_SECRET_ACCESS_KEY: this.initialConfig['AWS_ECR_SECRET_ACCESS_KEY'],
 
-      AWS_EC2_SSH_HOST:this.initialConfig['AWS_EC2_SSH_HOST'],
-      AWS_EC2_SSH_USER:this.initialConfig['AWS_EC2_SSH_USER'],
-      AWS_EC2_SSH_PORT:this.initialConfig['AWS_EC2_SSH_PORT'],
-      AWS_EC2_SSH_PEM_PATH:this.initialConfig['AWS_EC2_SSH_PEM_PATH'],
+      AWS_EC2_SSH_HOST: this.initialConfig['AWS_EC2_SSH_HOST'],
+      AWS_EC2_SSH_USER: this.initialConfig['AWS_EC2_SSH_USER'],
+      AWS_EC2_SSH_PORT: this.initialConfig['AWS_EC2_SSH_PORT'],
+      AWS_EC2_SSH_PEM_PATH: this.initialConfig['AWS_EC2_SSH_PEM_PATH'],
 
       DB_USER: this.initialConfig['DB_USER'],
       DB_PASSWORD: this.initialConfig['DB_PASSWORD'],
@@ -27,5 +32,9 @@ export class DevopsConfigs extends Configs {
       DB_MIGRATION_USER: this.initialConfig['DB_MIGRATION_USER'],
       DB_MIGRATION_PASSWORD: this.initialConfig['DB_MIGRATION_PASSWORD'],
     };
+  }
+
+  setUpConfigSource() {
+    return new EnvFileConfigSource(join(findWorkspaceRoot(), ".env.devops"));
   }
 }

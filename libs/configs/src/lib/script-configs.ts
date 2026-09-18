@@ -1,5 +1,9 @@
-import { Configs } from "./configs";
+import { join } from 'node:path';
 
+import { Configs } from "./configs";
+import { findWorkspaceRoot } from "./workspace-root";
+
+import { EnvFileConfigSource } from './sources/env-file';
 /**
  * TODO add description
  */
@@ -13,5 +17,9 @@ export class ScriptConfigs extends Configs {
       DOCKER_RMQ_VOLUME: this.initialConfig['DOCKER_RMQ_VOLUME'],
       DOCKER_PROFILE: this.initialConfig['DOCKER_PROFILE'] || 'external',
     };
+  }
+
+  setUpConfigSource() {
+    return new EnvFileConfigSource(join(findWorkspaceRoot(), ".env.devops"));
   }
 }

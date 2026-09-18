@@ -10,7 +10,7 @@ import type { ConfigSource } from './config-source';
 export class EnvFileConfigSource implements ConfigSource {
   constructor(readonly envFilePath: string) {}
 
-  load(): Record<string, string | undefined> {
+  async load(): Promise<Record<string, string>> {
     // Lazy, synchronous require on purpose: keeps `dotenv` / `dotenv-expand` as
     // dev-only packages that production (ProcessEnvConfigSource) never resolves.
     /* eslint-disable @typescript-eslint/no-var-requires */
@@ -22,7 +22,7 @@ export class EnvFileConfigSource implements ConfigSource {
     if(result.error){
       throw result.error;
     }
-    return result.parsed;
+    return result.parsed ?? {};
   }
 
   checkEnv

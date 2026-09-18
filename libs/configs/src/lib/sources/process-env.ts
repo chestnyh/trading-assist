@@ -8,8 +8,7 @@ import type { ConfigSource } from './config-source';
 export class ProcessEnvConfigSource implements ConfigSource {
   readonly envFilePath = undefined;
 
-  load(): Record<string, string | undefined> {
-    // TODO
-    return {};
+  async load(): Promise<Record<string, string>> {
+    return process.env;
   }
 }

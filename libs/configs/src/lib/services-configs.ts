@@ -2,6 +2,7 @@ import { join } from 'node:path';
 
 import { Configs } from "./configs";
 import { getFiniteNumber } from "./utils";
+import { findWorkspaceRoot } from "./workspace-root";
 
 import { ProcessEnvConfigSource } from './sources/process-env';
 import { EnvFileConfigSource } from './sources/env-file';
@@ -29,19 +30,15 @@ export class ServicesConfigs extends Configs {
         : '15672',
       RMQ_USER: this.initialConfig['RMQ_USER'] || 'guest',
       RMQ_PASSWORD: this.initialConfig['RMQ_PASSWORD'] || 'guest',
-      LOG_ENABLE_CONSOLE: this.initialConfig['LOG_ENABLE_CONSOLE']
-        ? this.initialConfig['LOG_ENABLE_CONSOLE'].trim().toLowerCase() !== 'false'
-        : true,
-      LOG_ENABLE_ELASTICSEARCH: this.initialConfig['LOG_ENABLE_ELASTICSEARCH']
-        ? this.initialConfig['LOG_ENABLE_ELASTICSEARCH'].trim().toLowerCase() === 'true'
-        : false,
+      LOG_ENABLE_CONSOLE: this.initialConfig['LOG_ENABLE_CONSOLE'],
+      LOG_ENABLE_ELASTICSEARCH: this.initialConfig['LOG_ENABLE_ELASTICSEARCH'],
       LOG_ELASTICSEARCH_NODE: this.initialConfig['LOG_ELASTICSEARCH_NODE'],
       LOG_ELASTICSEARCH_INDEX: this.initialConfig['LOG_ELASTICSEARCH_INDEX'],
       LOG_ELASTICSEARCH_AUTH_HEADER: this.initialConfig['LOG_ELASTICSEARCH_AUTH_HEADER'],
       LOG_ELASTICSEARCH_API_KEY: this.initialConfig['LOG_ELASTICSEARCH_API_KEY'],
       LOG_ELASTICSEARCH_USERNAME: this.initialConfig['LOG_ELASTICSEARCH_USERNAME'],
       LOG_ELASTICSEARCH_PASSWORD: this.initialConfig['LOG_ELASTICSEARCH_PASSWORD'],
-      JWT_SECRET: this.initialConfig['JWT_SECRET'] || 'your-secret-key',
+      JWT_SECRET: this.initialConfig['JWT_SECRET'],
       JWT_EXPIRES_IN: this.initialConfig['JWT_EXPIRES_IN'] || '24h',
       MAX_PASSWORD_RESET_ATTEMPTS: this.initialConfig['MAX_PASSWORD_RESET_ATTEMPTS'] || '5',
 
@@ -56,7 +53,7 @@ export class ServicesConfigs extends Configs {
     };
   }
 
-  loadConfig() {
+  setUpConfigSource() {
 
     const nodeEnv = process.env['NODE_ENV'];
 
@@ -67,16 +64,13 @@ export class ServicesConfigs extends Configs {
           configSource = new ProcessEnvConfigSource();
           break;
         case 'api-int-tests':
-          configSource = new EnvFileConfigSource(join(__dirname, "..", "..", "..", "..", "..", ".env.api-int-tests")); 
+          configSource = new EnvFileConfigSource(join(findWorkspaceRoot(), ".env.api-int-tests")); 
           break;
         default:
-          configSource = new EnvFileConfigSource(join(__dirname, "..", "..", "..", "..", "..", ".env.dev"));   
+          configSource = new EnvFileConfigSource(join(findWorkspaceRoot(), ".env.dev"));   
     }
 
-    this.initialConfig = configSource.load();
-
+    return configSource;
   }
-
-  
 
 }

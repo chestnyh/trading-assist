@@ -1,14 +1,20 @@
+import { ConfigSource } from "./sources/config-source";
+
 export abstract class Configs {
-  protected initialConfig: Record<string, string | undefined> = {};
-  protected configs: Record<string, string | boolean | undefined> = {};
+  protected initialConfig: Record<string, string> = {};
+  protected configs: Record<string, string> = {};
+  private configSource: ConfigSource;
 
   constructor(){
-    this.loadConfig();
+    this.configSource = this.setUpConfigSource();
   }
 
-  loadConfig(){
-    throw new Error(`${this.constructor.name} must implement loadConfig()`);
+  async setUp(): Promise<Configs>{
+    await this.configSource.load();
+    return this;
   }
+
+  protected abstract setUpConfigSource(): ConfigSource;
 
   get(configName: string): string | boolean | undefined {
     return this.configs[configName];
@@ -22,13 +28,41 @@ export abstract class Configs {
     return value;
   }
 
-  getAll(): Record<string, string | boolean> {
-    const result: Record<string, string | boolean> = {};
-    for (const [key, value] of Object.entries(this.configs)) {
-      if (typeof value === 'string' || typeof value === 'boolean') {
-        result[key] = value;
-      }
-    }
-    return result;
+  getAll(): Record<string, string> {
+    return {...this.configs};
   }
+
+  getBoolean(configName: string): boolean {
+    
+    const config = this.configs[configName];
+    if(config === undefined){
+      return;  
+    }
+    if(config[configName] === 'true'){
+      return true;
+    }
+    if(config[configName] === 'false'){
+      return false;
+    }
+
+    
+    
+  }
+
+  getString(configName: string): string{
+
+  }
+
+  getNumber(configName: string): number{
+
+  }
+
+  getArray(configName: string): [] {
+    
+  }
+
+  getObjet(configName: string): {} {
+
+  }
+
 }

@@ -1,6 +1,6 @@
 import { ServicesConfigs } from '@trading-bot/configs';
 
-const cfg = new ServicesConfigs();
+const cfg = await (new ServicesConfigs()).setUp();
 const apiHost = cfg.getRequired('API_HOST');
 const apiPort = cfg.getRequired('API_PORT');
 
@@ -21,7 +21,8 @@ function getApiBaseUrl(host: string, port: string): URL {
 }
 
 async function main() {
-  const base = getApiBaseUrl(apiHost, apiPort);
+  // TODO solve this `as` statement 
+  const base = getApiBaseUrl(apiHost as string, apiPort as string);
   const url = new URL('/api/v1/users', base).toString();
   const startedAt = Date.now();
 

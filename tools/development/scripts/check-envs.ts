@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { parse } from 'dotenv';
+import { ScriptConfigs } from '@trading-bot/configs';
 import * as readline from 'readline';
+
+const scriptConfigs = await (new ScriptConfigs()).setUp();
 
 const ENV_FILES = [
   { local: '.env.api-int-tests', example: '.env.api-int-tests.example' },
