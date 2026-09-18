@@ -3,7 +3,7 @@ import * as path from 'path';
 import { ScriptConfigs } from '@trading-bot/configs';
 import * as readline from 'readline';
 
-const scriptConfigs = await (new ScriptConfigs()).setUp();
+
 
 const ENV_FILES = [
   { local: '.env.api-int-tests', example: '.env.api-int-tests.example' },
@@ -17,9 +17,8 @@ const args = process.argv.slice(2);
 const mode = args.find((arg): arg is CheckMode => arg === 'examples-check' || arg === 'local-checks');
 
 const getEnvData = (filePath: string): Record<string, string> => {
-  const fullPath = path.resolve(process.cwd(), filePath);
-  if (!fs.existsSync(fullPath)) return {};
-  return parse(fs.readFileSync(fullPath));
+  const scriptConfigs = new ScriptConfigs().;
+  scriptConfigs.setUpInitial();
 };
 
 const getDifference = (source: string[], target: string[]): string[] => {

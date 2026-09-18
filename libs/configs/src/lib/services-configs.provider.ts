@@ -9,6 +9,7 @@ export class ServicesConfigsProvider {
     this.configs = new ServicesConfigs();
   }
 
+  // TODO redo this
   get(key: string): string | boolean | undefined {
     return this.configs.get(key);
   }

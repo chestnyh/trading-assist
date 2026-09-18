@@ -9,14 +9,20 @@ export abstract class Configs {
     this.configSource = this.setUpConfigSource();
   }
 
+  async setUpInitial(){
+    this.initialConfig = await this.configSource.load();
+  }
+
   async setUp(): Promise<Configs>{
-    await this.configSource.load();
+    this.setUpInitial();
+    this.setUpConfigsFromInit();
     return this;
   }
 
   protected abstract setUpConfigSource(): ConfigSource;
+  protected abstract setUpConfigsFromInit()
 
-  get(configName: string): string | boolean | undefined {
+  get(configName: string): string {
     return this.configs[configName];
   }
 
@@ -28,41 +34,28 @@ export abstract class Configs {
     return value;
   }
 
+  getAllInitial(): Record<string, string>{
+    return {...this.initialConfig};
+  }
+
   getAll(): Record<string, string> {
     return {...this.configs};
   }
 
   getBoolean(configName: string): boolean {
-    
-    const config = this.configs[configName];
-    if(config === undefined){
-      return;  
-    }
-    if(config[configName] === 'true'){
-      return true;
-    }
-    if(config[configName] === 'false'){
-      return false;
-    }
-
-    
-    
+    const value = this.configs[configName];
+    if (value === undefined) return undefined;
+    const normalized = String(value).trim().toLowerCase();
+    if (normalized === 'true') return true;
+    if (normalized === 'false') return false;
+    return undefined;
   }
 
-  getString(configName: string): string{
-
-  }
-
-  getNumber(configName: string): number{
-
-  }
-
-  getArray(configName: string): [] {
-    
-  }
-
-  getObjet(configName: string): {} {
-
+  getNumber(configName: string): number {
+    const value = this.configs[configName];
+    if (value === undefined) return undefined;
+    const parsed = Number(String(value).trim());
+    return Number.isFinite(parsed) ? parsed : undefined;
   }
 
 }

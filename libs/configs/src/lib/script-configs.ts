@@ -3,13 +3,13 @@ import { join } from 'node:path';
 import { Configs } from "./configs";
 import { findWorkspaceRoot } from "./workspace-root";
 
-import { EnvFileConfigSource } from './sources/env-file';
+import { EnvFileConfigSource } from './sources/env-file.source';
 /**
  * TODO add description
  */
 export class ScriptConfigs extends Configs {
-  constructor() {
-    super();
+
+  setUpConfigsFromInit() {
     this.configs = {
       ...this.configs,
       DOCKER_PROJECT_NAME: this.initialConfig['DOCKER_PROJECT_NAME'],

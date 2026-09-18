@@ -6,8 +6,8 @@ import { ServicesConfigs } from './services-configs';
   providers: [
     {
       provide: ServicesConfigs,
-      useFactory: () => {
-        return new ServicesConfigs();
+      useFactory: async() => {
+        return (new ServicesConfigs()).setUp();
       },
     },
   ],

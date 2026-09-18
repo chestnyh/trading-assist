@@ -3,15 +3,14 @@ import { join } from 'node:path';
 import { Configs } from "./configs";
 import { findWorkspaceRoot } from "./workspace-root";
 
-import { EnvFileConfigSource } from './sources/env-file';
+import { EnvFileConfigSource } from './sources/env-file.source';
 
 /**
  * TODO add description
  */
 export class DevopsConfigs extends Configs {
-  constructor() {
-    super();
-    this.configs = {
+  setUpConfigsFromInit() {
+     this.configs = {
       ...this.configs,
       AWS_ECR_REGION: this.initialConfig['AWS_ECR_REGION'],
       AWS_ECR_ACCOUNT_ID: this.initialConfig['AWS_ECR_ACCOUNT_ID'],

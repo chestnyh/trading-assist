@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { setTimeout } from 'node:timers/promises';
-import { getFiniteNumber, ServicesConfigs } from '@trading-bot/configs';
+import { ServicesConfigs } from '@trading-bot/configs';
 import { ModelsService } from '@trading-bot/models';
 
 @Injectable()
@@ -22,22 +22,12 @@ export class OutboxCleanupService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   private getPositiveNumber(configName: string): number | undefined {
-    const raw = this.cfg.get(configName);
-    if (typeof raw !== 'string') {
-      return undefined;
-    }
-
-    const value = getFiniteNumber(raw);
+    const value = this.cfg.getNumber(configName);
     return value !== undefined && value > 0 ? value : undefined;
   }
 
   private getNonNegativeNumber(configName: string): number | undefined {
-    const raw = this.cfg.get(configName);
-    if (typeof raw !== 'string') {
-      return undefined;
-    }
-
-    const value = getFiniteNumber(raw);
+    const value = this.cfg.getNumber(configName);
     return value !== undefined && value >= 0 ? value : undefined;
   }
 

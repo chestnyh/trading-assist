@@ -19,22 +19,22 @@ const config = new ServicesConfigs();
       inject: [ServicesConfigs],
       useFactory: (cfg: ServicesConfigs) => ({
         service: 'log-stream',
-        environment: cfg.get('NODE_ENV') as string,
-        enableConsole: cfg.get('LOG_ENABLE_CONSOLE') as boolean,
-        enableElasticsearch: cfg.get('LOG_ENABLE_ELASTICSEARCH') as boolean,
+        environment: cfg.get('NODE_ENV'),
+        enableConsole: cfg.getBoolean('LOG_ENABLE_CONSOLE'),
+        enableElasticsearch: cfg.getBoolean('LOG_ENABLE_ELASTICSEARCH'),
         elasticsearch:
           cfg.get('LOG_ELASTICSEARCH_NODE') && cfg.get('LOG_ELASTICSEARCH_INDEX')
             ? {
-                node: cfg.get('LOG_ELASTICSEARCH_NODE') as string,
-                index: cfg.get('LOG_ELASTICSEARCH_INDEX') as string,
+                node: cfg.get('LOG_ELASTICSEARCH_NODE'),
+                index: cfg.get('LOG_ELASTICSEARCH_INDEX'),
                 auth: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER')
-                  ? { header: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER') as string }
+                  ? { header: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER') }
                   : cfg.get('LOG_ELASTICSEARCH_API_KEY')
-                    ? { apiKey: cfg.get('LOG_ELASTICSEARCH_API_KEY') as string }
+                    ? { apiKey: cfg.get('LOG_ELASTICSEARCH_API_KEY') }
                     : cfg.get('LOG_ELASTICSEARCH_USERNAME') && cfg.get('LOG_ELASTICSEARCH_PASSWORD')
                       ? {
-                          username: cfg.get('LOG_ELASTICSEARCH_USERNAME') as string,
-                          password: cfg.get('LOG_ELASTICSEARCH_PASSWORD') as string,
+                          username: cfg.get('LOG_ELASTICSEARCH_USERNAME'),
+                          password: cfg.get('LOG_ELASTICSEARCH_PASSWORD'),
                         }
                       : undefined,
               }
@@ -44,20 +44,20 @@ const config = new ServicesConfigs();
     ModelsModule.forRootAsync({
       inject: [ServicesConfigs],
       useFactory: (cfg: ServicesConfigs) => ({
-        host: cfg.get('DB_HOST') as string,
+        host: cfg.get('DB_HOST'),
         port: Number(cfg.get('DB_PORT')),
-        username: cfg.get('DB_USER') as string,
-        password: cfg.get('DB_PASSWORD') as string,
-        database: cfg.get('DB_NAME') as string,
+        username: cfg.get('DB_USER'),
+        password: cfg.get('DB_PASSWORD'),
+        database: cfg.get('DB_NAME'),
       }),
     }),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ServicesConfigsModule],
       useFactory: (cfg: ServicesConfigs) => ({
-        secret: cfg.get('JWT_SECRET') as string,
+        secret: cfg.get('JWT_SECRET'),
         signOptions: {
-          expiresIn: cfg.get('JWT_EXPIRES_IN') as string,
+          expiresIn: cfg.get('JWT_EXPIRES_IN'),
         },
       }),
       inject: [ServicesConfigs],
