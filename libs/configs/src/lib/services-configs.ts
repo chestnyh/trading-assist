@@ -39,6 +39,18 @@ export class ServicesConfigs extends Configs {
       LOG_ELASTICSEARCH_PASSWORD: process.env['LOG_ELASTICSEARCH_PASSWORD'],
       JWT_SECRET: process.env['JWT_SECRET'] || 'your-secret-key',
       JWT_EXPIRES_IN: process.env['JWT_EXPIRES_IN'] || '24h',
+      JWT_ACCESS_EXPIRES_IN: process.env['JWT_ACCESS_EXPIRES_IN'] || '15m',
+      JWT_REFRESH_EXPIRES_IN: process.env['JWT_REFRESH_EXPIRES_IN'] || '24h',
+      JWT_REFRESH_REMEMBER_EXPIRES_IN: process.env['JWT_REFRESH_REMEMBER_EXPIRES_IN'] || '30d',
+      JWT_STREAM_TICKET_EXPIRES_IN: process.env['JWT_STREAM_TICKET_EXPIRES_IN'] || '60s',
+      AUTH_COOKIE_SECURE: process.env['AUTH_COOKIE_SECURE']
+        ? process.env['AUTH_COOKIE_SECURE'].trim().toLowerCase() === 'true'
+        : false,
+      AUTH_COOKIE_SAME_SITE: process.env['AUTH_COOKIE_SAME_SITE'] || 'lax',
+      AUTH_COOKIE_DOMAIN: process.env['AUTH_COOKIE_DOMAIN'],
+      AUTH_REFRESH_GRACE_MS: String(
+        getFiniteNumber(process.env['AUTH_REFRESH_GRACE_MS'] ?? '10000') ?? 10_000
+      ),
       MAX_PASSWORD_RESET_ATTEMPTS: process.env['MAX_PASSWORD_RESET_ATTEMPTS'] || '5',
 
       OUTBOX_CLEANUP_BATCH_SIZE: String(getFiniteNumber(process.env['OUTBOX_CLEANUP_BATCH_SIZE'] ?? '500') ?? 500),

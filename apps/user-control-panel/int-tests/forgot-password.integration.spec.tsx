@@ -52,6 +52,10 @@ describe("Forgot / Restore Password Flow (Integration)", () => {
       if (rule) {
         return createMockResponse(rule.response.status, rule.response.data);
       }
+      // The session-lookup bootstrap runs on every mount; default to "not signed in".
+      if (/\/api\/v1\/auth\/me$/.test(urlStr)) {
+        return createMockResponse(401, { statusCode: 401, message: "Unauthorized" });
+      }
       return createMockResponse(200, {});
     });
 

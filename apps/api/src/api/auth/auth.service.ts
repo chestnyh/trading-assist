@@ -1,8 +1,35 @@
-import { Injectable, BadRequestException, NotFoundException, UnauthorizedException, HttpException, HttpStatus } from '@nestjs/common';import { JwtService } from '@nestjs/jwt';
+import { Injectable, BadRequestException, UnauthorizedException, HttpException, HttpStatus } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { ModelsService } from '@trading-bot/models';
 import { ServicesConfigs } from '@trading-bot/configs';
 import { CryptoUtilsService } from '@trading-bot/crypto-utils';
-import { randomUUID, randomInt } from 'crypto';
+import { randomBytes, randomUUID, randomInt } from 'crypto';
+import { SessionService, IssuedRefreshCredential } from './session.service';
+import { CookieJar } from './http';
+import {
+  clearAuthCookies,
+  setAccessCookie,
+  setCsrfCookie,
+  setRefreshCookie,
+} from './cookies';
+import { parseDurationToMs } from './duration';
+import { API_JWT_AUDIENCE } from './strategies/jwt.strategy';
+import { UserProfileDto } from './dto/user-profile.dto';
+
+export const STREAM_JWT_AUDIENCE = 'log-stream';
+export const STREAM_TICKET_PURPOSE = 'stream';
+
+const DEFAULT_STREAM_TICKET_MS = 60_000;
+
+type SessionUser = {
+  id: number;
+  email: string;
+  nickname: string;
+  role?: string | null;
+  country?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+};
 
 @Injectable()
 export class AuthService {
@@ -12,33 +39,125 @@ export class AuthService {
     private modelsService: ModelsService,
     private configService: ServicesConfigs,
     private cryptoService: CryptoUtilsService,
+    private sessionService: SessionService,
   ) {}
 
-  async login(user: any, rememberMe?: boolean) {
-    const payload = { 
-      email: user.email, 
+  /**
+   * Validates credentials are handled by UsersApiService; this issues the session.
+   * No credential is returned in the body — it is delivered as HttpOnly cookies only.
+   */
+  async login(user: SessionUser, rememberMe?: boolean, res?: CookieJar): Promise<{ user: UserProfileDto }> {
+    const refresh = await this.sessionService.issue(user.id, Boolean(rememberMe));
+
+    if (res) {
+      this.issueSessionCookies(res, user, refresh);
+    }
+
+    return { user: this.toUserProfile(user) };
+  }
+
+  getSessionUser(user: SessionUser): UserProfileDto {
+    return this.toUserProfile(user);
+  }
+
+  /**
+   * Revokes the presented refresh token's entire family and clears cookies. Idempotent.
+   */
+  async logout(refreshToken: string | undefined, res: CookieJar): Promise<{ success: boolean }> {
+    if (refreshToken) {
+      await this.sessionService.revokeByToken(refreshToken);
+    }
+
+    clearAuthCookies(res, this.configService);
+    return { success: true };
+  }
+
+  /**
+   * Rotates the refresh credential and reissues the cookie set.
+   */
+  async refresh(
+    refreshToken: string | undefined,
+    res: CookieJar
+  ): Promise<{ user: UserProfileDto }> {
+    if (!refreshToken) {
+      throw new UnauthorizedException('Missing refresh token');
+    }
+
+    const rotated = await this.sessionService.rotate(refreshToken);
+    const user = await this.loadUser(rotated.userId);
+
+    this.issueSessionCookies(res, user, rotated);
+
+    return { user: this.toUserProfile(user) };
+  }
+
+  /**
+   * Issues a short-lived, narrowly-scoped ticket for the log-stream service. The ticket
+   * cannot authorize API calls (different audience).
+   */
+  issueStreamTicket(user: SessionUser): { ticket: string; expiresIn: number } {
+    const ttlMs = parseDurationToMs(
+      this.configService.get('JWT_STREAM_TICKET_EXPIRES_IN'),
+      DEFAULT_STREAM_TICKET_MS
+    );
+    const expiresIn = Math.max(1, Math.floor(ttlMs / 1000));
+
+    const ticket = this.jwtService.sign(
+      { sub: user.id, email: user.email, purpose: STREAM_TICKET_PURPOSE },
+      { expiresIn, audience: STREAM_JWT_AUDIENCE }
+    );
+
+    return { ticket, expiresIn };
+  }
+
+  private async loadUser(id: number): Promise<SessionUser> {
+    const user = await this.modelsService.user.findUnique({ where: { id } });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return user;
+  }
+
+  private issueSessionCookies(
+    res: CookieJar,
+    user: SessionUser,
+    refresh: IssuedRefreshCredential
+  ): void {
+    const payload = {
+      email: user.email,
       sub: user.id,
       nickname: user.nickname,
       role: user.role,
-      country: user.country
+      country: user.country,
     };
-    
-    // Set token expiration based on rememberMe option
-    // If rememberMe is true, use 30 days, otherwise use default from config (24h)
-    const expiresIn = rememberMe
-      ? '30d'
-      : (this.configService.get('JWT_EXPIRES_IN') as string) || '24h';
-    
+
+    const accessTtlMs = this.sessionService.getAccessTtlMs();
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: Math.floor(accessTtlMs / 1000),
+      audience: API_JWT_AUDIENCE,
+    });
+
+    setAccessCookie(res, accessToken, accessTtlMs, this.configService);
+    setRefreshCookie(res, refresh.token, refresh.maxAgeMs, this.configService);
+    setCsrfCookie(res, this.generateCsrfToken(), refresh.maxAgeMs, this.configService);
+  }
+
+  private generateCsrfToken(): string {
+    return randomBytes(32).toString('base64url');
+  }
+
+  private toUserProfile(user: SessionUser): UserProfileDto {
+    const name = [user.firstName, user.lastName].filter(Boolean).join(' ');
+
     return {
-      access_token: this.jwtService.sign(payload, { expiresIn }),
-      user: {
-        id: user.id,
-        nickname: user.nickname,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        country: user.country
-      },
+      id: user.id,
+      nickname: user.nickname,
+      email: user.email,
+      ...(name ? { name } : {}),
+      role: String(user.role ?? 'USER'),
+      ...(user.country ? { country: user.country } : {}),
     };
   }
 
@@ -224,7 +343,7 @@ export class AuthService {
 
   /**
    * Reset password - Step 3
-   * Validates token, updates user password, invalidates token
+   * Validates token, updates user password, invalidates token and all sessions
    */
   async resetPassword(token: string, newPassword: string) {
     // Find password reset record by token
@@ -256,17 +375,20 @@ export class AuthService {
     // Hash the new password
     const hashedPassword = await this.cryptoService.hashPassword(newPassword);
 
-    // Update user password
-    await this.modelsService.user.update({
-      where: { id: passwordReset.userId },
-      data: {
-        password: hashedPassword,
-      },
-    });
+    // Update password, consume the reset token, and end every existing session atomically
+    await this.modelsService.runInTransaction(async (tx) => {
+      await tx.user.update({
+        where: { id: passwordReset.userId },
+        data: {
+          password: hashedPassword,
+        },
+      });
 
-    // Invalidate password reset token (delete the record)
-    await this.modelsService.passwordReset.delete({
-      where: { id: passwordReset.id },
+      await tx.passwordReset.delete({
+        where: { id: passwordReset.id },
+      });
+
+      await this.sessionService.revokeAllForUser(passwordReset.userId, tx);
     });
 
     return {

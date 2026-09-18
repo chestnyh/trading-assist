@@ -5,6 +5,7 @@
 
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import { createSwaggerConfig } from './swagger.config'
 import { ApiModule } from './api/api.module';
 import { ServicesConfigs } from '@trading-bot/configs';
@@ -16,6 +17,8 @@ async function bootstrap() {
   const app = await NestFactory.create(ApiModule, { bufferLogs: true });
   app.useLogger(app.get(LoggerService));
 
+  app.use(cookieParser());
+
   // Enable CORS
   app.enableCors({
     origin: [
@@ -26,7 +29,7 @@ async function bootstrap() {
       // Add production URLs here when deploying
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-CSRF-Token'],
     credentials: true,
   });
 
