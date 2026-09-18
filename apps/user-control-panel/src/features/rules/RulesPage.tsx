@@ -80,7 +80,6 @@ export function RulesPage() {
           variant="primary"
           onClick={() => navigate("/rules/add")}
           leftIcon={<Plus size={32} strokeWidth={2.5} />}
-          ariaLabel="Add rule"
         />
       </div>
 

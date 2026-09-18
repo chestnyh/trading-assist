@@ -28,8 +28,12 @@ describe('sequence with stop_sequence', () => {
         const executed: string[] = [];
 
         // Mock debug action
-        (actionsHub as any)['debug'] = async (args: any) => {
+        const originalDebug = (actionsHub as any)['debug'];
+        (actionsHub as any)['debug'] = async (args: any, ctx: any) => {
             executed.push(`debug: ${args.message}`);
+            if (originalDebug) {
+                return originalDebug.call(actionsHub, args, ctx);
+            }
         };
 
         const config = {
