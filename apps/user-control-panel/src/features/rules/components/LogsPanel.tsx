@@ -150,6 +150,7 @@ export function LogsPanel({ logs, isConnected, isReconnecting, error }: LogsPane
                     <button
                       onClick={() => toggleExpand(id)}
                       className="shrink-0 p-0.5 rounded hover:bg-bg-tertiary/50 transition-colors"
+                      aria-label={isExpanded ? 'Collapse log details' : 'Expand log details'}
                     >
                       {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                     </button>
