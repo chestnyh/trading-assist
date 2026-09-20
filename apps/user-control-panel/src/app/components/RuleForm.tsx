@@ -192,8 +192,8 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
   const handleActionTreeChange = (nextActionTree: ActionNode) => {
     const nextRuleBody = actionTreeToRuleBody(nextActionTree);
     setActionTree(nextActionTree);
-    setFormData({ ...formData, ruleBody: nextRuleBody });
-    if (errors.rule) setErrors({ ...errors, rule: "" });
+    setFormData(prev => ({ ...prev, ruleBody: nextRuleBody }));
+    if (errors.rule) setErrors(prev => (prev.rule ? { ...prev, rule: "" } : prev));
   };
 
   const handleJsonChange = useCallback((nextRuleBody: unknown) => {

@@ -5,6 +5,7 @@ import { RuleForm } from "../../app/components/RuleForm";
 import { NotFound } from "../notFound/NotFound";
 import { ErrorAlert } from "../../shared/ui/feedback/ErrorAlert";
 import { Spinner } from "../../shared/ui/spiner/Spinner";
+import { isValidationError } from "@trading-bot/api-client";
 
 export function UpdateRulePage() {
   const { id } = useParams<{ id: string }>();
@@ -32,18 +33,20 @@ export function UpdateRulePage() {
   }, [id, getRuleById]);
 
   const handleUpdate = async (data: any) => {
+    setUpdateError(null);
     if (!id) return;
 
     try {
-      setUpdateError(null);
+      
       const success = await updateRule(id, data);
 
       if (success) {
         navigate("/rules");
       }
     } catch (e: any) {
-      const message = e?.message || "Failed to update rule";
-      setUpdateError(message);
+     if (isValidationError(e)) {
+        throw e;
+      }
     }
   };
 
