@@ -27,9 +27,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string, rememberMe?: boolean) => Promise<LoginResult>;
-  signUp: (email: string, password: string, name: string, nickname: string) => Promise<boolean>;
-  logout: () => void;
-  token: string | null;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -178,36 +176,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     sessionStorage.removeItem('user_data');
   };
 
-  const signUp = async (email: string, password: string, name: string, nickname: string): Promise<boolean> => {
-    try {
-      // Call your API sign up endpoint
-      const response = await fetch(`${process.env.API_BASE_URL}/api/v1/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password, name, nickname }),
-      });
-      setIsLoading(true);
-
-      if (response.ok) {
-        return true;
-      }
-
-      return false;
-    } catch (error) {
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  };
+ 
 
   const value: AuthContextType = {
     user,
     isAuthenticated: !!token,
     isLoading,
     login,
-    signUp,
     logout,
     token,
   };

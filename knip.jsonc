@@ -10,6 +10,7 @@
     "eslint-plugin-react-hooks",
     "webpack-cli",
     "@typescript-eslint/eslint-plugin",
+    "markdown-link-check",
     "@prisma/client"
   ],
   "workspaces": {
