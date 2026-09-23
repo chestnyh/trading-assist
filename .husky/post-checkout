@@ -1,0 +1,2 @@
+exec < /dev/tty
+pnpm development:check-envs:local-checks
