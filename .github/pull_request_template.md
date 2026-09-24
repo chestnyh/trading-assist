@@ -1,4 +1,6 @@
-## Ticket url - [link](<!-- url here -->).
+## Ticket url 
+
+<!-- url here -->
 
 ## Description
 
