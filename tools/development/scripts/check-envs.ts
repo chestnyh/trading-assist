@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { ScriptConfigs } from '@trading-bot/configs';
+import * as dotenv from 'dotenv';
 import * as readline from 'readline';
 
 
@@ -16,9 +16,14 @@ type CheckMode = 'examples-check' | 'local-checks';
 const args = process.argv.slice(2);
 const mode = args.find((arg): arg is CheckMode => arg === 'examples-check' || arg === 'local-checks');
 
+/**
+ * Reads an env file (relative to the current working directory) as raw key/value pairs.
+ * Returns an empty object if the file doesn't exist.
+ */
 const getEnvData = (filePath: string): Record<string, string> => {
-  const scriptConfigs = new ScriptConfigs().;
-  scriptConfigs.setUpInitial();
+  const fullPath = path.resolve(process.cwd(), filePath);
+  if (!fs.existsSync(fullPath)) return {};
+  return dotenv.parse(fs.readFileSync(fullPath));
 };
 
 const getDifference = (source: string[], target: string[]): string[] => {

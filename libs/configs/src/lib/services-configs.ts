@@ -7,7 +7,10 @@ import { ProcessEnvConfigSource } from './sources/process-env.source';
 import { EnvFileConfigSource } from './sources/env-file.source';
 
 /**
- * TODO add description
+ * Configuration for backend services: API, database, RabbitMQ, Redis, logging, auth, etc.
+ *
+ * Values are loaded from `process.env` in production, from `.env.api-int-tests`
+ * for API integration tests, and from `.env.dev` otherwise.
  */
 export class ServicesConfigs extends Configs {
 

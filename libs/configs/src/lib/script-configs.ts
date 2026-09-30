@@ -5,7 +5,9 @@ import { findWorkspaceRoot } from "./workspace-root";
 
 import { EnvFileConfigSource } from './sources/env-file.source';
 /**
- * TODO add description
+ * Configuration for local helper script
+ *
+ * Values are loaded from the `.env.dev` file in the workspace root.
  */
 export class ScriptConfigs extends Configs {
 
@@ -20,6 +22,6 @@ export class ScriptConfigs extends Configs {
   }
 
   setUpConfigSource() {
-    return new EnvFileConfigSource(join(findWorkspaceRoot(), ".env.devops"));
+    return new EnvFileConfigSource(join(findWorkspaceRoot(), ".env.dev"));
   }
 }

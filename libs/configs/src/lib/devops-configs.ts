@@ -6,7 +6,9 @@ import { findWorkspaceRoot } from "./workspace-root";
 import { EnvFileConfigSource } from './sources/env-file.source';
 
 /**
- * TODO add description
+ * Configuration for DevOps tooling: deployment, migrations, etc.
+ *
+ * Values are loaded from the `.env.devops` file in the workspace root.
  */
 export class DevopsConfigs extends Configs {
   setUpConfigsFromInit() {

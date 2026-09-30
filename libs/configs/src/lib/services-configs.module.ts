@@ -1,16 +1,10 @@
-import { Module, Global } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ServicesConfigs } from './services-configs';
+import { servicesConfigsProvider } from './services-configs.provider';
 
 @Global()
 @Module({
-  providers: [
-    {
-      provide: ServicesConfigs,
-      useFactory: async() => {
-        return (new ServicesConfigs()).setUp();
-      },
-    },
-  ],
+  providers: [servicesConfigsProvider],
   exports: [ServicesConfigs],
 })
 export class ServicesConfigsModule {}

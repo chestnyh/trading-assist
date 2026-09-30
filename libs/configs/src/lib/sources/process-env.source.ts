@@ -1,4 +1,4 @@
-import type { ConfigSource } from './config-source';
+import type { ConfigSource, ConfigValues } from './config-source';
 
 /**
  * No-op source for environments where the values are already present in
@@ -8,7 +8,7 @@ import type { ConfigSource } from './config-source';
 export class ProcessEnvConfigSource implements ConfigSource {
   readonly envFilePath = undefined;
 
-  async load(): Promise<Record<string, string>> {
+  async load(): Promise<ConfigValues> {
     return process.env;
   }
 }

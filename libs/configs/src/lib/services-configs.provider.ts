@@ -1,17 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Provider } from '@nestjs/common';
 import { ServicesConfigs } from './services-configs';
 
-@Injectable()
-export class ServicesConfigsProvider {
-  private readonly configs: ServicesConfigs;
-
-  constructor() {
-    this.configs = new ServicesConfigs();
-  }
-
-  // TODO redo this
-  get(key: string): string | boolean | undefined {
-    return this.configs.get(key);
-  }
-
-}
+/**
+ * NestJS provider that creates a single, fully loaded `ServicesConfigs` instance.
+ * Nest waits for `setUp()` to finish before injecting it anywhere.
+ */
+export const servicesConfigsProvider: Provider = {
+  provide: ServicesConfigs,
+  useFactory: () => new ServicesConfigs().setUp(),
+};

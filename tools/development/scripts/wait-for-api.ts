@@ -1,8 +1,8 @@
 import { ServicesConfigs } from '@trading-bot/configs';
 
 const cfg = await (new ServicesConfigs()).setUp();
-const apiHost = cfg.getRequired('API_HOST');
-const apiPort = cfg.getRequired('API_PORT');
+const apiHost = cfg.required.get('API_HOST');
+const apiPort = cfg.required.get('API_PORT');
 
 const timeoutSeconds = 60;
 const intervalMs = 1000;

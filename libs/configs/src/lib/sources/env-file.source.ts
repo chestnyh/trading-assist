@@ -1,4 +1,4 @@
-import type { ConfigSource } from './config-source';
+import type { ConfigSource, ConfigValues } from './config-source';
 
 /**
  * Loads configuration from a dotenv file
@@ -10,7 +10,7 @@ import type { ConfigSource } from './config-source';
 export class EnvFileConfigSource implements ConfigSource {
   constructor(readonly envFilePath: string) {}
 
-  async load(): Promise<Record<string, string>> {
+  async load(): Promise<ConfigValues> {
     // Lazy, synchronous require on purpose: keeps `dotenv` / `dotenv-expand` as
     // dev-only packages that production (ProcessEnvConfigSource) never resolves.
     /* eslint-disable @typescript-eslint/no-var-requires */

@@ -1,6 +1,8 @@
 # Trading Bot Configs Library
 
-A NestJS-compatible configuration library for the trading bot system that provides centralized configuration management across all services.
+TODO review the whole documentation
+
+A NestJS-compatible configuration library for the trading asist system that provides centralized configuration management across all services.
 
 ## Features
 
@@ -144,9 +146,9 @@ The core configuration class that:
 - Provides getter methods for configuration values
 - Handles different environments (dev, test, production)
 
-### ServicesConfigsProvider
+### servicesConfigsProvider
 
-An alternative provider that wraps the ServicesConfigs class for more complex scenarios.
+The NestJS provider used by `ServicesConfigsModule`. Its async factory creates `ServicesConfigs` and waits for `setUp()`, so the instance is fully loaded before it's injected anywhere.
 
 ## Environment Variables
 
