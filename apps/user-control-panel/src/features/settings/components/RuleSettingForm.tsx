@@ -53,7 +53,7 @@ export default function RuleSettingForm({
     return obj;
   });
 
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const errors = useMemo(() => {
     const e: Record<string, string> = {};
@@ -149,7 +149,7 @@ export default function RuleSettingForm({
 
       <div className="mt-3">
         <div className="text-primary text-xs mb-1">Setting Tags</div>
-        <TagPicker token={token} value={tags} onChange={setTags} />
+        <TagPicker isAuthenticated={isAuthenticated} value={tags} onChange={setTags} />
       </div>
 
       <div className="mt-3">

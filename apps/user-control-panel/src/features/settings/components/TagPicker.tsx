@@ -9,11 +9,11 @@ const normalizeTag = (v: string) => v.trim();
 const equalsTag = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
 
 export default function TagPicker(props: {
-  token: string | null;
+  isAuthenticated: boolean;
   value: string[];
   onChange: (next: string[]) => void;
 }) {
-  const { token, value, onChange } = props;
+  const { isAuthenticated, value, onChange } = props;
 
   const [allTags, setAllTags] = useState<TagResponseDto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -27,7 +27,7 @@ export default function TagPicker(props: {
 
   useEffect(() => {
     if (!open) return;
-    if (!token) return;
+    if (!isAuthenticated) return;
 
     const raw = normalizeTag(query);
     const search = raw.length >= 2 ? raw : undefined;
@@ -61,7 +61,7 @@ export default function TagPicker(props: {
       canceled = true;
       clearTimeout(t);
     };
-  }, [open, query, token]);
+  }, [open, query, isAuthenticated]);
 
   useEffect(() => {
     const onDocMouseDown = (e: MouseEvent) => {
@@ -117,7 +117,7 @@ export default function TagPicker(props: {
       return;
     }
 
-    if (!token) {
+    if (!isAuthenticated) {
       onChange([...selected, t]);
       setQuery("");
       return;

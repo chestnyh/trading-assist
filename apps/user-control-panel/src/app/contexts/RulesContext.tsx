@@ -36,14 +36,14 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedRule, setSelectedRule] = useState<Rule | null>(null);
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage] = useState<number>(1);
   const LIMIT = 20;
 
   const fetchRules = useCallback(async (page = 1) => {
     setError(null);
-    if (!token) {
+    if (!isAuthenticated) {
       setIsLoading(false);
       return;
     }
@@ -72,7 +72,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [isAuthenticated]);
 
   const getRuleById = async (id: string): Promise<Rule | null> => {
     try {
@@ -91,7 +91,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addRule = async (rule: Omit<Rule, "id">): Promise<boolean> => {
-    if (!token) {
+    if (!isAuthenticated) {
       return false;
     }
 
@@ -106,7 +106,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateRule = async (id: string, updatedRule: Partial<Rule>): Promise<boolean> => {
-    if (!token) {
+    if (!isAuthenticated) {
       return false;
     }
 
@@ -126,7 +126,7 @@ export const RulesProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const deleteRule = async (id: string): Promise<boolean> => {
-    if (!token) {
+    if (!isAuthenticated) {
       return false;
     }
 

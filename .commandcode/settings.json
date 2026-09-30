@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(.specify/scripts/bash/setup-plan.sh:*)"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  }
+}

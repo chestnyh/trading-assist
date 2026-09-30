@@ -5,7 +5,7 @@ export const createSwaggerConfig = () => {
     .setTitle('Trading Bot API')
     .setDescription('API for trading bot user management and authentication')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addCookieAuth('access_token')
     .addTag('auth', 'Authentication endpoints')
     .addTag('users', 'User management endpoints')
     .addTag('rules-settings', 'Endpoints for managing individual user trading rule configurations')

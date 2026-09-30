@@ -17,6 +17,7 @@ export class ServicesConfigs extends Configs {
   setUpConfigsFromInit() {
     this.configs = {
       ...this.configs,
+
       API_BASE_URL: this.initialConfig['API_BASE_URL'],
       API_HOST: this.initialConfig['API_HOST'] ?? 'http://localhost',
       API_PORT: this.initialConfig['API_PORT'] ?? '3001',
@@ -48,7 +49,15 @@ export class ServicesConfigs extends Configs {
       REDIS_PORT: this.initialConfig['REDIS_PORT'] ?? '6379',
       REDIS_PASSWORD: this.initialConfig['REDIS_PASSWORD'] ?? '',
       LOG_STREAM_PORT: this.initialConfig['LOG_STREAM_PORT'] ?? '3002',
-      LOG_STREAM_BASE_URL: this.initialConfig['LOG_STREAM_BASE_URL']
+      LOG_STREAM_BASE_URL: this.initialConfig['LOG_STREAM_BASE_URL'],
+      JWT_ACCESS_EXPIRES_IN: process.env['JWT_ACCESS_EXPIRES_IN'] || '15m',
+      JWT_REFRESH_EXPIRES_IN: process.env['JWT_REFRESH_EXPIRES_IN'] || '24h',
+      JWT_REFRESH_REMEMBER_EXPIRES_IN: process.env['JWT_REFRESH_REMEMBER_EXPIRES_IN'] || '30d',
+      JWT_STREAM_TICKET_EXPIRES_IN: process.env['JWT_STREAM_TICKET_EXPIRES_IN'] || '60s',
+      AUTH_COOKIE_SAME_SITE: process.env['AUTH_COOKIE_SAME_SITE'] || 'lax',
+      AUTH_COOKIE_DOMAIN: process.env['AUTH_COOKIE_DOMAIN'],
+      AUTH_REFRESH_GRACE_MS: process.env['AUTH_REFRESH_GRACE_MS'],
+      
     };
   }
 

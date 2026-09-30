@@ -43,7 +43,7 @@ export function useServiceRuleSettings(serviceCode: ServiceCodeValue, fieldsSche
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const onDetailsChange = (clientId: string, nextDetails: { label: string; value: string }[]) => {
     setSettings((prev) => prev.map((s) => (s.clientId === clientId ? { ...s, details: nextDetails } : s)));
@@ -71,7 +71,7 @@ export function useServiceRuleSettings(serviceCode: ServiceCodeValue, fieldsSche
   };
 
   const fetchSettingsPage = async (nextPage: number) => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     try {
       setError(null);
       setLoading(true);
@@ -124,7 +124,7 @@ export function useServiceRuleSettings(serviceCode: ServiceCodeValue, fieldsSche
     i: number,
     data: RuleSettingFormData
   ) => {
-    if (!token) return;
+    if (!isAuthenticated) return;
 
     const configuration = buildConfigurationFromDetails(data.details);
     const dto: CreateUserRuleSettingDto = {
@@ -152,7 +152,7 @@ export function useServiceRuleSettings(serviceCode: ServiceCodeValue, fieldsSche
     i: number,
     data: RuleSettingFormData
   ) => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     if (!s.id) {
       setError("Setting ID is missing");
       return;
@@ -184,7 +184,7 @@ export function useServiceRuleSettings(serviceCode: ServiceCodeValue, fieldsSche
     data: RuleSettingFormData
   ) => {
     try {
-      if (!token) return;
+      if (!isAuthenticated) return;
       setLoading(true);
       setError(null);
 
@@ -233,7 +233,7 @@ export function useServiceRuleSettings(serviceCode: ServiceCodeValue, fieldsSche
       setSettings((prev) => prev.filter((_, idx) => idx !== index));
       return;
     }
-    if (!token) return;
+    if (!isAuthenticated) return;
     await rulesSettingsControllerRemoveSetting(id);
     setSettings((prev) => prev.filter((_, idx) => idx !== index));
   };

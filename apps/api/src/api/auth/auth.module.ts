@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { SessionService } from './session.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RolesGuard } from './guards/roles.guard';
+import { CsrfGuard } from './guards/csrf.guard';
 import { ServicesConfigsModule, ServicesConfigs } from '@trading-bot/configs';
 import { CryptoUtilsModule } from '@trading-bot/crypto-utils';
 import { UsersApiModule } from '../users/users.api.module';
@@ -27,7 +30,13 @@ import { UsersApiModule } from '../users/users.api.module';
     PassportModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, RolesGuard],
-  exports: [AuthService, RolesGuard],
+  providers: [
+    AuthService,
+    SessionService,
+    JwtStrategy,
+    RolesGuard,
+    { provide: APP_GUARD, useClass: CsrfGuard },
+  ],
+  exports: [AuthService, SessionService, RolesGuard],
 })
 export class AuthModule {}

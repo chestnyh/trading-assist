@@ -25,7 +25,4 @@ export class EnvFileConfigSource implements ConfigSource {
     return result.parsed ?? {};
   }
 
-  bla()
-  {}
-
 }

@@ -21,7 +21,7 @@ const schema = [
 describe('RuleSettingForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseAuth.mockReturnValue({ token: 'test-token' });
+    mockUseAuth.mockReturnValue({ isAuthenticated: true });
   });
 
   it('renders the description textarea', () => {

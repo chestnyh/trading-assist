@@ -14,13 +14,13 @@ export function RuleDetailsPage() {
 	const { id } = useParams<{ id: string }>();
 	const navigate = useNavigate();
 	const { getRuleById } = useRules();
-	const { token } = useAuth();
+	const { isAuthenticated } = useAuth();
 	const [rule, setRule] = useState<Rule | null>(null);
 	const [loading, setLoading] = useState(true);
 
 	const { logs, isConnected, isReconnecting, error } = useRuleLogs({
 		ruleId: id ?? '',
-		token,
+		enabled: isAuthenticated,
 	});
 
 	useEffect(() => {

@@ -115,15 +115,58 @@ export interface LoginDto {
 }
 
 /**
- * User information
+ * Non-sensitive user profile delivered with session responses
  */
-export type AuthResponseDtoUser = { [key: string]: unknown };
+export interface UserProfileDto {
+  /** User identifier */
+  id: number;
+  /** Unique nickname */
+  nickname: string;
+  /** User email address */
+  email: string;
+  /** Full name */
+  name?: string;
+  /** User role */
+  role: string;
+  /** Country code */
+  country?: string;
+}
 
 export interface AuthResponseDto {
-  /** JWT access token */
-  access_token: string;
-  /** User information */
-  user: AuthResponseDtoUser;
+  /** Non-sensitive user profile. The session credential is delivered only as an HttpOnly cookie. */
+  user: UserProfileDto;
+}
+
+export interface MeResponseDto {
+  /** User identifier */
+  id: number;
+  /** Unique nickname */
+  nickname: string;
+  /** User email address */
+  email: string;
+  /** Full name */
+  name?: string;
+  /** User role */
+  role: string;
+  /** Country code */
+  country?: string;
+}
+
+export interface RefreshResponseDto {
+  /** Non-sensitive user profile. New credentials are delivered only as HttpOnly cookies. */
+  user: UserProfileDto;
+}
+
+export interface LogoutResponseDto {
+  /** Always true; sign-out is idempotent */
+  success: boolean;
+}
+
+export interface StreamTicketResponseDto {
+  /** Short-lived, narrowly-scoped JWT accepted only by the log-stream service */
+  ticket: string;
+  /** Ticket lifetime in seconds */
+  expiresIn: number;
 }
 
 export interface VerifyEmailDto {
@@ -634,6 +677,178 @@ export const authControllerResetPassword = async (
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...options?.headers },
       body: JSON.stringify(resetPasswordDto),
+    }
+  );
+};
+
+/**
+ * @summary Get the current session user profile
+ */
+export type authControllerMeResponse200 = {
+  data: MeResponseDto;
+  status: 200;
+};
+
+export type authControllerMeResponse401 = {
+  data: void;
+  status: 401;
+};
+
+export type authControllerMeResponseSuccess = authControllerMeResponse200 & {
+  headers: Headers;
+};
+export type authControllerMeResponseError = authControllerMeResponse401 & {
+  headers: Headers;
+};
+
+export type authControllerMeResponse =
+  | authControllerMeResponseSuccess
+  | authControllerMeResponseError;
+
+export const getAuthControllerMeUrl = () => {
+  return `/api/v1/auth/me`;
+};
+
+export const authControllerMe = async (
+  options?: RequestInit
+): Promise<authControllerMeResponse> => {
+  return customInstance<authControllerMeResponse>(getAuthControllerMeUrl(), {
+    ...options,
+    method: 'GET',
+  });
+};
+
+/**
+ * @summary Rotate the session and issue new credentials
+ */
+export type authControllerRefreshResponse200 = {
+  data: RefreshResponseDto;
+  status: 200;
+};
+
+export type authControllerRefreshResponse401 = {
+  data: void;
+  status: 401;
+};
+
+export type authControllerRefreshResponse403 = {
+  data: void;
+  status: 403;
+};
+
+export type authControllerRefreshResponseSuccess =
+  authControllerRefreshResponse200 & {
+    headers: Headers;
+  };
+export type authControllerRefreshResponseError = (
+  | authControllerRefreshResponse401
+  | authControllerRefreshResponse403
+) & {
+  headers: Headers;
+};
+
+export type authControllerRefreshResponse =
+  | authControllerRefreshResponseSuccess
+  | authControllerRefreshResponseError;
+
+export const getAuthControllerRefreshUrl = () => {
+  return `/api/v1/auth/refresh`;
+};
+
+export const authControllerRefresh = async (
+  options?: RequestInit
+): Promise<authControllerRefreshResponse> => {
+  return customInstance<authControllerRefreshResponse>(
+    getAuthControllerRefreshUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+    }
+  );
+};
+
+/**
+ * @summary Sign out and invalidate the session server-side
+ */
+export type authControllerLogoutResponse200 = {
+  data: LogoutResponseDto;
+  status: 200;
+};
+
+export type authControllerLogoutResponse403 = {
+  data: void;
+  status: 403;
+};
+
+export type authControllerLogoutResponseSuccess =
+  authControllerLogoutResponse200 & {
+    headers: Headers;
+  };
+export type authControllerLogoutResponseError =
+  authControllerLogoutResponse403 & {
+    headers: Headers;
+  };
+
+export type authControllerLogoutResponse =
+  | authControllerLogoutResponseSuccess
+  | authControllerLogoutResponseError;
+
+export const getAuthControllerLogoutUrl = () => {
+  return `/api/v1/auth/logout`;
+};
+
+export const authControllerLogout = async (
+  options?: RequestInit
+): Promise<authControllerLogoutResponse> => {
+  return customInstance<authControllerLogoutResponse>(
+    getAuthControllerLogoutUrl(),
+    {
+      ...options,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...options?.headers },
+    }
+  );
+};
+
+/**
+ * @summary Issue a short-lived ticket for the log-stream service
+ */
+export type authControllerStreamTicketResponse200 = {
+  data: StreamTicketResponseDto;
+  status: 200;
+};
+
+export type authControllerStreamTicketResponse401 = {
+  data: void;
+  status: 401;
+};
+
+export type authControllerStreamTicketResponseSuccess =
+  authControllerStreamTicketResponse200 & {
+    headers: Headers;
+  };
+export type authControllerStreamTicketResponseError =
+  authControllerStreamTicketResponse401 & {
+    headers: Headers;
+  };
+
+export type authControllerStreamTicketResponse =
+  | authControllerStreamTicketResponseSuccess
+  | authControllerStreamTicketResponseError;
+
+export const getAuthControllerStreamTicketUrl = () => {
+  return `/api/v1/auth/stream-ticket`;
+};
+
+export const authControllerStreamTicket = async (
+  options?: RequestInit
+): Promise<authControllerStreamTicketResponse> => {
+  return customInstance<authControllerStreamTicketResponse>(
+    getAuthControllerStreamTicketUrl(),
+    {
+      ...options,
+      method: 'GET',
     }
   );
 };

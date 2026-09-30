@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { authControllerStreamTicket } from '@trading-bot/api-client';
 
 export interface RuleLogEntry {
   ruleId: number;
@@ -13,7 +14,7 @@ export interface RuleLogEntry {
 
 interface UseRuleLogsOptions {
   ruleId: string;
-  token: string | null;
+  enabled: boolean;
   onError?: (error: Error) => void;
 }
 
@@ -27,7 +28,7 @@ interface UseRuleLogsReturn {
 const RECONNECT_DELAY_MS = 3000;
 const MAX_RECONNECT_ATTEMPTS = 10;
 
-export function useRuleLogs({ ruleId, token, onError }: UseRuleLogsOptions): UseRuleLogsReturn {
+export function useRuleLogs({ ruleId, enabled, onError }: UseRuleLogsOptions): UseRuleLogsReturn {
   const [logs, setLogs] = useState<RuleLogEntry[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [isReconnecting, setIsReconnecting] = useState(false);
@@ -38,9 +39,8 @@ export function useRuleLogs({ ruleId, token, onError }: UseRuleLogsOptions): Use
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isManualCloseRef = useRef(false);
 
-  const connect = useCallback(() => {
-    if (!token) {
-      setError(new Error('Authentication required'));
+  const connect = useCallback(async () => {
+    if (!enabled) {
       return;
     }
 
@@ -50,7 +50,25 @@ export function useRuleLogs({ ruleId, token, onError }: UseRuleLogsOptions): Use
 
     isManualCloseRef.current = false;
 
-    const url = `${process.env.LOG_STREAM_BASE_URL}/stream/rules/${ruleId}/logs?token=${encodeURIComponent(token)}`;
+    // The session credential is HttpOnly, so exchange it for a short-lived stream ticket.
+    let ticket: string;
+    try {
+      const response = await authControllerStreamTicket();
+      if (response.status !== 200 || !response.data?.ticket) {
+        setError(new Error('Authentication required'));
+        return;
+      }
+      ticket = response.data.ticket;
+    } catch {
+      setError(new Error('Authentication required'));
+      return;
+    }
+
+    if (isManualCloseRef.current) {
+      return;
+    }
+
+    const url = `${process.env.LOG_STREAM_BASE_URL}/stream/rules/${ruleId}/logs?token=${encodeURIComponent(ticket)}`;
     const es = new EventSource(url);
 
     es.onopen = () => {
@@ -88,16 +106,16 @@ export function useRuleLogs({ ruleId, token, onError }: UseRuleLogsOptions): Use
       reconnectAttemptsRef.current += 1;
 
       reconnectTimeoutRef.current = setTimeout(() => {
-        connect();
+        void connect();
       }, RECONNECT_DELAY_MS);
     };
 
     eventSourceRef.current = es;
-  }, [ruleId, token, onError]);
+  }, [ruleId, enabled, onError]);
 
   useEffect(() => {
-    if (ruleId && token) {
-      connect();
+    if (ruleId && enabled) {
+      void connect();
     }
 
     return () => {
@@ -113,7 +131,7 @@ export function useRuleLogs({ ruleId, token, onError }: UseRuleLogsOptions): Use
         eventSourceRef.current = null;
       }
     };
-  }, [ruleId, token, connect]);
+  }, [ruleId, enabled, connect]);
 
   return { logs, isConnected, isReconnecting, error };
 }

@@ -5,13 +5,10 @@ const { NxReactWebpackPlugin } = require('@nx/react/webpack-plugin');
 const webpack = require('webpack');
 const { ServicesConfigs } = require('@trading-bot/configs');
 
-const getConfigs = async () => {
-  return await (new ServicesConfigs()).setUp();
-};
-
+// Configs load asynchronously, so export an async function:
+// webpack-cli waits for it before building.
 module.exports = async () => {
-
-  const configs = await (new ServicesConfigs()).setUp();
+  const configs = await new ServicesConfigs().setUp();
 
   return {
     output: {
@@ -36,6 +33,7 @@ module.exports = async () => {
         index: './src/index.html',
         baseHref: '/',
         assets: ['./src/favicon.ico', './src/assets'],
+        // styles: ['./src/styles.scss'],
         styles: ['./src/index.css'],
       }),
       new NxReactWebpackPlugin({
@@ -45,7 +43,8 @@ module.exports = async () => {
       }),
       new webpack.DefinePlugin({
         'process.env.API_BASE_URL': JSON.stringify(configs.get('API_BASE_URL') ?? ''),
+        'process.env.LOG_STREAM_BASE_URL': JSON.stringify(configs.get('LOG_STREAM_BASE_URL') ?? ''),
       }),
     ],
-  }
+  };
 };

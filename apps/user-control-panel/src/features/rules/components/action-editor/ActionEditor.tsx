@@ -81,7 +81,8 @@ const ActionEditorComponent = React.memo(function ActionEditor({ action, onChang
           value={action.type}
           disabled={readOnly}
           onChange={(event) => handleTypeChange(event.target.value as ActionType)}
-          className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
+          className={`flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70 
+            ${readOnly ? "appearance-none cursor-default": ""}`}
         >
           <option value="">Select Type</option>
           {categories.map(category => {
@@ -297,7 +298,9 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
           value={String(value ?? field.defaultValue ?? '')}
           disabled={readOnly}
           onChange={(event) => onChange(event.target.value)}
-          className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
+          className={`flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70
+             ${readOnly ? "appearance-none cursor-default": ""}
+            `}
         >
           {(field.options ?? []).map(option => (
             <option key={option} value={option}>{option}</option>
