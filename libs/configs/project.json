@@ -19,6 +19,7 @@
       "options": {
         "outputPath": "libs/configs/dist",
         "main": "libs/configs/src/index.ts",
+        "rootDir": "libs/configs/src",
         "tsConfig": "libs/configs/tsconfig.lib.json",
         "assets": []
       },
@@ -29,11 +30,10 @@
     },
     "build": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/libs/configs/dist"],
+      "outputs": ["{projectRoot}"],
       "options": {
         "commands": [
-          "nx run configs:compile",
-          "node patch-dist-package-json.js"
+          "nx run configs:compile"
         ],
         "parallel": false,
         "cwd": "libs/configs"
