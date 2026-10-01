@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ServiceCode } from '@trading-bot/models';
+import { ServiceCode } from '@trading-assist/models';
 
 export class RuleSettingResponseDto {
   @ApiProperty({ example: 1 })

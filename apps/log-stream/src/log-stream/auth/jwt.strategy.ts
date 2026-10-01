@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { ServicesConfigs } from '@trading-bot/configs';
-import { ModelsService } from '@trading-bot/models';
+import { ServicesConfigs } from '@trading-assist/configs';
+import { ModelsService } from '@trading-assist/models';
 
 export const STREAM_JWT_AUDIENCE = 'log-stream';
 export const STREAM_TICKET_PURPOSE = 'stream';

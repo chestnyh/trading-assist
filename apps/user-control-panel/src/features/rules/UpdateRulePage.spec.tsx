@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { UpdateRulePage } from "./UpdateRulePage";
-import { isValidationError, extractFieldToMessageFromValidationError } from "@trading-bot/api-client";
+import { isValidationError, extractFieldToMessageFromValidationError } from "@trading-assist/api-client";
 
 const mockNavigate = jest.fn();
 let mockParamsId: string | undefined = "rule-1";
@@ -23,7 +23,7 @@ jest.mock("../../app/contexts/RulesContext", () => ({
   useRules: () => mockRulesContextValue,
 }));
 
-jest.mock("@trading-bot/api-client", () => ({
+jest.mock("@trading-assist/api-client", () => ({
   isValidationError: jest.fn(),
   extractFieldToMessageFromValidationError: jest.fn(),
 }));

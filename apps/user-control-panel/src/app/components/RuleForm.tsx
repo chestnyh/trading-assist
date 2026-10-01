@@ -3,7 +3,7 @@ import { Input } from "../../shared/ui/forms/Input";
 import { TextArea } from "../../shared/ui/forms/TextArea";
 import { JsonEditorField } from "../../shared/ui/forms/JsonEditorField";
 import { Button } from "../../shared/ui/buttons/Button";
-import { extractFieldToMessageFromValidationError, isValidationError } from '@trading-bot/api-client';
+import { extractFieldToMessageFromValidationError, isValidationError } from '@trading-assist/api-client';
 import {
   ActionEditor,
   ActionNode,

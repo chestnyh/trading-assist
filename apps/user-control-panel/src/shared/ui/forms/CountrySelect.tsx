@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { FieldLabel } from "./FieldLabel";
 import * as FlagIcons from "country-flag-icons/react/3x2";
 import { CountryOption } from "../../data/countries";
-import type { CountryCode } from "@trading-bot/api-validator";
+import type { CountryCode } from "@trading-assist/api-validator";
 import { ChevronDown } from "lucide-react";
 
 interface CountrySelectProps {

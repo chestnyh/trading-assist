@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ModelsService, ServiceCode } from '@trading-bot/models';
+import { ModelsService, ServiceCode } from '@trading-assist/models';
 import { CreateUserRuleSettingDto } from './dto/create-user-rule-setting.dto';
 import { UpdateUserRuleSettingDto } from './dto/update-user-rule-setting.dto';
 import { TelegramHelperService } from './telegram-helper.service';

@@ -1,5 +1,5 @@
 {
-  "name": "@trading-bot/models",
+  "name": "@trading-assist/models",
   "version": "0.0.1",
   "private": true,
   "main": "./src/index.js",
@@ -9,8 +9,8 @@
     "prisma": "^7.8.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
-    "@trading-bot/configs": "workspace:*",
-    "@trading-bot/crypto-utils": "workspace:*"
+    "@trading-assist/configs": "workspace:*",
+    "@trading-assist/crypto-utils": "workspace:*"
   },
   "devDependencies": {
     

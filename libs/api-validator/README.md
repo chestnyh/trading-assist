@@ -37,7 +37,7 @@ app.useGlobalPipes(
 2) Attach a schema validator to a DTO class:
 
 ```ts
-import { Validate, CreateUserDtoSchemaValidator } from '@trading-bot/api-validator';
+import { Validate, CreateUserDtoSchemaValidator } from '@trading-assist/api-validator';
 
 @Validate(CreateUserDtoSchemaValidator)
 export class CreateUserDto {
@@ -49,11 +49,11 @@ export class CreateUserDto {
 
 ### In `api-client`
 
-`api-client` should import schemas directly from `@trading-bot/api-validator` so both client and server share the same schemas.
+`api-client` should import schemas directly from `@trading-assist/api-validator` so both client and server share the same schemas.
 
 ## Where schemas live
 
-Schemas and validators are exported from `@trading-bot/api-validator`.
+Schemas and validators are exported from `@trading-assist/api-validator`.
 For example, user-related DTO schemas are located in:
 
 `libs/api-validator/src/lib/schemas/user.ts`

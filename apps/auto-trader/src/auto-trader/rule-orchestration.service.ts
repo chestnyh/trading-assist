@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ServiceCommService, type MessageEnvelope, unpackEnvelope } from '@trading-bot/service-comm';
-import { ModelsService } from '@trading-bot/models';
+import { ServiceCommService, type MessageEnvelope, unpackEnvelope } from '@trading-assist/service-comm';
+import { ModelsService } from '@trading-assist/models';
 import { RuleRunnerService } from './rule-runner.service';
 import { RuleLogsService } from './rule-logs.service';
 

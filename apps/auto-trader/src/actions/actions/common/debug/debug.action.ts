@@ -1,5 +1,5 @@
 import {renderMessage} from '../../../utils'
-import { LoggerService } from '@trading-bot/logger'; 
+import { LoggerService } from '@trading-assist/logger'; 
 /**
  * Action that logs messages to the terminal for debugging purposes.
  *

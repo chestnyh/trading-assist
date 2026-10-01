@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { EnvFileConfigSource, type ConfigValues } from '@trading-bot/configs';
+import { EnvFileConfigSource, type ConfigValues } from '@trading-assist/configs';
 import * as readline from 'readline';
 
 

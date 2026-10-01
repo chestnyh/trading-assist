@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TradingExperienceLevel, PrimaryTradingStrategy, RiskTolerance, TradingPlatform} from '@trading-bot/models';
-import { CreateUserDtoSchemaValidator,ISO_COUNTRY_CODES } from '@trading-bot/api-validator';
-import { Validate } from '@trading-bot/api-validator/nest';
+import { TradingExperienceLevel, PrimaryTradingStrategy, RiskTolerance, TradingPlatform} from '@trading-assist/models';
+import { CreateUserDtoSchemaValidator,ISO_COUNTRY_CODES } from '@trading-assist/api-validator';
+import { Validate } from '@trading-assist/api-validator/nest';
 
 export { TradingExperienceLevel, PrimaryTradingStrategy, RiskTolerance, TradingPlatform };
 

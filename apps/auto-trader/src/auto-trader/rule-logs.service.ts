@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy} from '@nestjs/common';
-import { ServicesConfigs } from '@trading-bot/configs';
-import { LoggerService } from '@trading-bot/logger'; 
+import { ServicesConfigs } from '@trading-assist/configs';
+import { LoggerService } from '@trading-assist/logger'; 
 import Redis from 'ioredis';
 
 import type { RuleLogEntry } from './rule-log-entry.interface';

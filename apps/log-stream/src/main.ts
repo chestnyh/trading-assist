@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
-import { LoggerService } from '@trading-bot/logger';
-import { ServicesConfigs } from '@trading-bot/configs';
+import { LoggerService } from '@trading-assist/logger';
+import { ServicesConfigs } from '@trading-assist/configs';
 
 import { LogStreamModule } from './log-stream/log-stream.module';
 

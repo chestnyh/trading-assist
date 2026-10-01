@@ -1,4 +1,4 @@
-# @trading-bot/logger
+# @trading-assist/logger
 
 Shared logger library used by services in this monorepo.
 
@@ -19,7 +19,7 @@ In a NestJS service:
 Example:
 
 ```ts
-import { LoggerModule, LoggerService } from '@trading-bot/logger';
+import { LoggerModule, LoggerService } from '@trading-assist/logger';
 
 LoggerModule.forRoot({
   service: 'api',
@@ -74,7 +74,7 @@ LoggerModule.forRoot({
   enableElasticsearch: true,
   elasticsearch: {
     node: 'https://your-es-host:9200',
-    index: 'logs-trading-bot',
+    index: 'logs-trading-assist',
     auth: {
       header: 'Bearer <token>',
     },
@@ -92,7 +92,7 @@ LoggerModule.forRoot({
   enableElasticsearch: true,
   elasticsearch: {
     node: 'https://your-es-host:9200',
-    index: 'logs-trading-bot',
+    index: 'logs-trading-assist',
     auth: {
       apiKey: '<base64-api-key>',
     },
@@ -110,7 +110,7 @@ LoggerModule.forRoot({
   enableElasticsearch: true,
   elasticsearch: {
     node: 'https://your-es-host:9200',
-    index: 'logs-trading-bot',
+    index: 'logs-trading-assist',
     auth: {
       username: 'elastic',
       password: '<password>',

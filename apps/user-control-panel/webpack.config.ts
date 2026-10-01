@@ -3,7 +3,7 @@ const { join } = require('path');
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { NxReactWebpackPlugin } = require('@nx/react/webpack-plugin');
 const webpack = require('webpack');
-const { ServicesConfigs } = require('@trading-bot/configs');
+const { ServicesConfigs } = require('@trading-assist/configs');
 
 // Configs load asynchronously, so export an async function:
 // webpack-cli waits for it before building.

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateUserRuleSettingDtoSchemaValidator } from '@trading-bot/api-validator';
-import { Validate } from '@trading-bot/api-validator/nest';
-import { ServiceCode } from '@trading-bot/models';
+import { CreateUserRuleSettingDtoSchemaValidator } from '@trading-assist/api-validator';
+import { Validate } from '@trading-assist/api-validator/nest';
+import { ServiceCode } from '@trading-assist/models';
 @Validate(CreateUserRuleSettingDtoSchemaValidator)
 export class CreateUserRuleSettingDto {
   @ApiProperty({ example: 'My Binance Bot' })

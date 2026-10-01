@@ -4,7 +4,7 @@
  */
 
 import { NestFactory } from '@nestjs/core';
-import { LoggerService } from '@trading-bot/logger';
+import { LoggerService } from '@trading-assist/logger';
 
 import { AutoTraderModule } from './auto-trader/auto-trader.module';
 

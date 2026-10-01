@@ -1,5 +1,5 @@
 import { ActionsHub } from '../../../action-hub';
-import ObjectNavigator from '@trading-bot/object-navigator';
+import ObjectNavigator from '@trading-assist/object-navigator';
 
 describe('timeout', () => {
   let sequenceContext;

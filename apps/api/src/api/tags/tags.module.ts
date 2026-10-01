@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ModelsModule } from '@trading-bot/models';
+import { ModelsModule } from '@trading-assist/models';
 import { RulesSettingsTagsController } from './tags.controller';
 import { RuleSettingsTagsService } from './tags.service';
 

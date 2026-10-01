@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateRuleDtoSchemaValidator } from '@trading-bot/api-validator';
-import { Validate } from '@trading-bot/api-validator/nest';
+import { CreateRuleDtoSchemaValidator } from '@trading-assist/api-validator';
+import { Validate } from '@trading-assist/api-validator/nest';
 
 @Validate(CreateRuleDtoSchemaValidator)
 export class CreateRuleDto {

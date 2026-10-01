@@ -4,7 +4,7 @@
     "private": true,
     "type": "commonjs",
     "dependencies": {
-        "@trading-bot/configs": "workspace:*"
+        "@trading-assist/configs": "workspace:*"
     },
     "devDependencies": {
         "ts-node": "10.9.1",

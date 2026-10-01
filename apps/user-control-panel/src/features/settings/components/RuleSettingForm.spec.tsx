@@ -7,7 +7,7 @@ jest.mock('../../../app/contexts/AuthContext', () => ({
   useAuth: jest.fn(),
 }));
 
-jest.mock('@trading-bot/api-client', () => ({
+jest.mock('@trading-assist/api-client', () => ({
   rulesSettingsTagsControllerFindAllTags: jest.fn(),
   rulesSettingsTagsControllerCreateTag: jest.fn(),
 }));

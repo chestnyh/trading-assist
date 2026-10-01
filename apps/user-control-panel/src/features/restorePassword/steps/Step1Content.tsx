@@ -1,6 +1,6 @@
 import { Input } from "../../../shared/ui/forms/Input";
 import { Button } from "../../../shared/ui/buttons/Button";
-import { customInstance } from "@trading-bot/api-client";
+import { customInstance } from "@trading-assist/api-client";
 
 interface Step1ContentProps {
   email: string;

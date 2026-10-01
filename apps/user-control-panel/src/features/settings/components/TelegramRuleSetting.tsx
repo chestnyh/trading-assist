@@ -3,7 +3,7 @@ import {
   rulesSettingsControllerGetTelegramChatId,
   rulesSettingsControllerUpdateSetting,
   UpdateUserRuleSettingDto,
-} from "@trading-bot/api-client";
+} from "@trading-assist/api-client";
 import type { DetailField } from "./RuleSetting";
 import RuleSetting from "./RuleSetting";
 import type { SettingItem } from "./useServiceRuleSettings";

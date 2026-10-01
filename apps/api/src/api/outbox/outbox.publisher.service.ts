@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { ModelsService } from '@trading-bot/models';
-import { getEnvelopeCreator, ServiceCommService } from '@trading-bot/service-comm';
+import { ModelsService } from '@trading-assist/models';
+import { getEnvelopeCreator, ServiceCommService } from '@trading-assist/service-comm';
 
 const DEFAULT_BATCH_SIZE = 50;
 const DEFAULT_IDLE_SLEEP_MS = 2000;

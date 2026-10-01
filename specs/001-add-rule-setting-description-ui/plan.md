@@ -14,11 +14,11 @@ The backend already persists `description` on rule settings end-to-end (DTO → 
 
 **Language/Version**: TypeScript (Nx monorepo); React 18 + Tailwind CSS for the user-control-panel app; NestJS for the API.
 
-**Primary Dependencies**: `@trading-bot/api-client` (orval-generated client + zod-validating fetch mutator), `@trading-bot/api-validator` (shared zod schemas), `lucide-react` (icons). No form library — the settings form uses plain React `useState` with a hand-rolled `useMemo`-computed error object.
+**Primary Dependencies**: `@trading-assist/api-client` (orval-generated client + zod-validating fetch mutator), `@trading-assist/api-validator` (shared zod schemas), `lucide-react` (icons). No form library — the settings form uses plain React `useState` with a hand-rolled `useMemo`-computed error object.
 
 **Storage**: PostgreSQL via Prisma (`UserRuleSettings.description String?` — already present, nullable). No migration required.
 
-**Testing**: Jest 29 + React Testing Library (`userEvent`, never `fireEvent`). Per-app config `apps/user-control-panel/jest.config.ts` (jsdom, 70% global coverage thresholds). API layer is mocked via `jest.mock('@trading-bot/api-client')` (partial-spread pattern from `SignUp.spec.tsx`).
+**Testing**: Jest 29 + React Testing Library (`userEvent`, never `fireEvent`). Per-app config `apps/user-control-panel/jest.config.ts` (jsdom, 70% global coverage thresholds). API layer is mocked via `jest.mock('@trading-assist/api-client')` (partial-spread pattern from `SignUp.spec.tsx`).
 
 **Target Platform**: Web (user-control-panel SPA).
 

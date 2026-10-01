@@ -1,4 +1,4 @@
-import { ServicesConfigs } from '@trading-bot/configs';
+import { ServicesConfigs } from '@trading-assist/configs';
 
 const configs = new ServicesConfigs();
 

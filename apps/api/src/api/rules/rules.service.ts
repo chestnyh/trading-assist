@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ModelsService } from '@trading-bot/models';
+import { ModelsService } from '@trading-assist/models';
 import { CreateRuleDto } from './dto/create-rule.dto';
 import { UpdateRuleDto } from './dto/update-rule.dto';
 import { RuleResponseDto } from './dto/rule-response.dto';

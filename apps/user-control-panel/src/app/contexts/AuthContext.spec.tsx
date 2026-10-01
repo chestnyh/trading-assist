@@ -4,9 +4,9 @@ import {
   authControllerLogin,
   authControllerLogout,
   authControllerMe,
-} from '@trading-bot/api-client';
+} from '@trading-assist/api-client';
 
-jest.mock('@trading-bot/api-client', () => ({
+jest.mock('@trading-assist/api-client', () => ({
   authControllerLogin: jest.fn(),
   authControllerLogout: jest.fn(),
   authControllerMe: jest.fn(),

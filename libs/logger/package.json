@@ -1,5 +1,5 @@
 {
-  "name": "@trading-bot/logger",
+  "name": "@trading-assist/logger",
   "version": "0.0.1",
   "private": true,
   "type": "commonjs",

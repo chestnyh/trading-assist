@@ -2,7 +2,7 @@ import { Input } from "../../../shared/ui/forms/Input";
 import { Button } from "../../../shared/ui/buttons/Button";
 import { ArrowLeft } from "../../signInUp/components/icons/ArrowLeft";
 import { ArrowRight } from "../../signInUp/components/icons/ArrowRight";
-import { customInstance } from "@trading-bot/api-client";
+import { customInstance } from "@trading-assist/api-client";
 
 interface Step2ContentProps {
   code: string;

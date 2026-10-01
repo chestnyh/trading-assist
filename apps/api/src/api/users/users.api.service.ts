@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
-import { ModelsService } from '@trading-bot/models';
-import { CryptoUtilsService } from '@trading-bot/crypto-utils';
+import { ModelsService } from '@trading-assist/models';
+import { CryptoUtilsService } from '@trading-assist/crypto-utils';
 import { CreateUserDto } from './dto/create-user.dto';
 import { randomUUID, randomInt } from 'crypto';
 

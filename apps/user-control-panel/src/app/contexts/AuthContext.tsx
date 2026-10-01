@@ -5,7 +5,7 @@ import {
   authControllerMe,
   extractFieldToMessageFromValidationError,
   isValidationError,
-} from '@trading-bot/api-client';
+} from '@trading-assist/api-client';
 
 interface User {
   id: number;
@@ -35,7 +35,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_CHANNEL_NAME = 'trading-bot-auth';
+const AUTH_CHANNEL_NAME = 'trading-assist-auth';
 const LEGACY_STORAGE_KEYS = ['auth_token', 'user_data'];
 
 const clearLegacyStorage = (): void => {
