@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import { ScriptConfigs } from '@trading-bot/configs'; 
 
-const scriptConfigs = new ScriptConfigs();
+const scriptConfigs = await (new ScriptConfigs()).setUp();
 let fileEnv: Record<string, string>;
 
 try {

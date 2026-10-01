@@ -1,66 +1,80 @@
+import { join } from 'node:path';
+
 import { Configs } from "./configs";
-import { getFiniteNumber } from "./utils";
+import { findWorkspaceRoot } from "./workspace-root";
+
+import { ProcessEnvConfigSource } from './sources/process-env.source';
+import { EnvFileConfigSource } from './sources/env-file.source';
 
 /**
- * TODO add description
+ * Configuration for backend services: API, database, RabbitMQ, Redis, logging, auth, etc.
+ *
+ * Values are loaded from `process.env` in production, from `.env.api-int-tests`
+ * for API integration tests, and from `.env.dev` otherwise.
  */
 export class ServicesConfigs extends Configs {
-  constructor(envBasePath?: string) {
-    super(envBasePath);
-    // console.log('process.env[API_BASE_URL]', process.env['API_BASE_URL']);
+
+  setUpConfigsFromInit() {
     this.configs = {
       ...this.configs,
-      API_BASE_URL: process.env['API_BASE_URL'],
-      API_HOST: process.env['API_HOST'] || 'http://localhost',
-      API_PORT: process.env['API_PORT'] ? parseInt(process.env['API_PORT'], 10).toString() : '3001',
-      DB_USER: process.env['DB_USER'],
-      DB_PASSWORD: process.env['DB_PASSWORD'],
-      DB_NAME: process.env['DB_NAME'],
-      DB_HOST: process.env['DB_HOST'],
-      DB_PORT: process.env['DB_PORT'] ? parseInt(process.env['DB_PORT'], 10).toString() : '5432',
-      RMQ_HOST: process.env['RMQ_HOST'] || 'localhost',
-      RMQ_PORT: process.env['RMQ_PORT'] ? parseInt(process.env['RMQ_PORT'], 10).toString() : '5672',
-      RMQ_MANAGEMENT_PORT: process.env['RMQ_MANAGEMENT_PORT']
-        ? parseInt(process.env['RMQ_MANAGEMENT_PORT'], 10).toString()
-        : '15672',
-      RMQ_USER: process.env['RMQ_USER'] || 'guest',
-      RMQ_PASSWORD: process.env['RMQ_PASSWORD'] || 'guest',
-      LOG_ENABLE_CONSOLE: process.env['LOG_ENABLE_CONSOLE']
-        ? process.env['LOG_ENABLE_CONSOLE'].trim().toLowerCase() !== 'false'
-        : true,
-      LOG_ENABLE_ELASTICSEARCH: process.env['LOG_ENABLE_ELASTICSEARCH']
-        ? process.env['LOG_ENABLE_ELASTICSEARCH'].trim().toLowerCase() === 'true'
-        : false,
-      LOG_ELASTICSEARCH_NODE: process.env['LOG_ELASTICSEARCH_NODE'],
-      LOG_ELASTICSEARCH_INDEX: process.env['LOG_ELASTICSEARCH_INDEX'],
-      LOG_ELASTICSEARCH_AUTH_HEADER: process.env['LOG_ELASTICSEARCH_AUTH_HEADER'],
-      LOG_ELASTICSEARCH_API_KEY: process.env['LOG_ELASTICSEARCH_API_KEY'],
-      LOG_ELASTICSEARCH_USERNAME: process.env['LOG_ELASTICSEARCH_USERNAME'],
-      LOG_ELASTICSEARCH_PASSWORD: process.env['LOG_ELASTICSEARCH_PASSWORD'],
-      JWT_SECRET: process.env['JWT_SECRET'] || 'your-secret-key',
-      JWT_EXPIRES_IN: process.env['JWT_EXPIRES_IN'] || '24h',
+
+      API_BASE_URL: this.initialConfig['API_BASE_URL'],
+      API_HOST: this.initialConfig['API_HOST'] ?? 'http://localhost',
+      API_PORT: this.initialConfig['API_PORT'] ?? '3001',
+      DB_USER: this.initialConfig['DB_USER'],
+      DB_PASSWORD: this.initialConfig['DB_PASSWORD'],
+      DB_NAME: this.initialConfig['DB_NAME'],
+      DB_HOST: this.initialConfig['DB_HOST'],
+      DB_PORT: this.initialConfig['DB_PORT'] ?? '5432',
+      RMQ_HOST: this.initialConfig['RMQ_HOST'] ?? 'localhost',
+      RMQ_PORT: this.initialConfig['RMQ_PORT'] ?? '5672',
+      RMQ_MANAGEMENT_PORT: this.initialConfig['RMQ_MANAGEMENT_PORT'] ?? '15672',
+      RMQ_USER: this.initialConfig['RMQ_USER'] ?? 'guest',
+      RMQ_PASSWORD: this.initialConfig['RMQ_PASSWORD'] ?? 'guest',
+      LOG_ENABLE_CONSOLE: this.initialConfig['LOG_ENABLE_CONSOLE'],
+      LOG_ENABLE_ELASTICSEARCH: this.initialConfig['LOG_ENABLE_ELASTICSEARCH'],
+      LOG_ELASTICSEARCH_NODE: this.initialConfig['LOG_ELASTICSEARCH_NODE'],
+      LOG_ELASTICSEARCH_INDEX: this.initialConfig['LOG_ELASTICSEARCH_INDEX'],
+      LOG_ELASTICSEARCH_AUTH_HEADER: this.initialConfig['LOG_ELASTICSEARCH_AUTH_HEADER'],
+      LOG_ELASTICSEARCH_API_KEY: this.initialConfig['LOG_ELASTICSEARCH_API_KEY'],
+      LOG_ELASTICSEARCH_USERNAME: this.initialConfig['LOG_ELASTICSEARCH_USERNAME'],
+      LOG_ELASTICSEARCH_PASSWORD: this.initialConfig['LOG_ELASTICSEARCH_PASSWORD'],
+      JWT_SECRET: this.initialConfig['JWT_SECRET'],
+      JWT_EXPIRES_IN: this.initialConfig['JWT_EXPIRES_IN'] ?? '24h',
+      MAX_PASSWORD_RESET_ATTEMPTS: this.initialConfig['MAX_PASSWORD_RESET_ATTEMPTS'] ?? '5',
+      OUTBOX_CLEANUP_BATCH_SIZE: this.initialConfig['OUTBOX_CLEANUP_BATCH_SIZE'] ?? '500',
+      OUTBOX_CLEANUP_INTERVAL_MS: this.initialConfig['OUTBOX_CLEANUP_INTERVAL_MS'] ?? '60000',
+      OUTBOX_RETENTION_HOURS: this.initialConfig['OUTBOX_RETENTION_HOURS'] ?? '24',
+      REDIS_HOST: this.initialConfig['REDIS_HOST'] ?? 'localhost',
+      REDIS_PORT: this.initialConfig['REDIS_PORT'] ?? '6379',
+      REDIS_PASSWORD: this.initialConfig['REDIS_PASSWORD'] ?? '',
+      LOG_STREAM_PORT: this.initialConfig['LOG_STREAM_PORT'] ?? '3002',
+      LOG_STREAM_BASE_URL: this.initialConfig['LOG_STREAM_BASE_URL'],
       JWT_ACCESS_EXPIRES_IN: process.env['JWT_ACCESS_EXPIRES_IN'] || '15m',
       JWT_REFRESH_EXPIRES_IN: process.env['JWT_REFRESH_EXPIRES_IN'] || '24h',
       JWT_REFRESH_REMEMBER_EXPIRES_IN: process.env['JWT_REFRESH_REMEMBER_EXPIRES_IN'] || '30d',
       JWT_STREAM_TICKET_EXPIRES_IN: process.env['JWT_STREAM_TICKET_EXPIRES_IN'] || '60s',
-      AUTH_COOKIE_SECURE: process.env['AUTH_COOKIE_SECURE']
-        ? process.env['AUTH_COOKIE_SECURE'].trim().toLowerCase() === 'true'
-        : false,
       AUTH_COOKIE_SAME_SITE: process.env['AUTH_COOKIE_SAME_SITE'] || 'lax',
       AUTH_COOKIE_DOMAIN: process.env['AUTH_COOKIE_DOMAIN'],
-      AUTH_REFRESH_GRACE_MS: String(
-        getFiniteNumber(process.env['AUTH_REFRESH_GRACE_MS'] ?? '10000') ?? 10_000
-      ),
-      MAX_PASSWORD_RESET_ATTEMPTS: process.env['MAX_PASSWORD_RESET_ATTEMPTS'] || '5',
-
-      OUTBOX_CLEANUP_BATCH_SIZE: String(getFiniteNumber(process.env['OUTBOX_CLEANUP_BATCH_SIZE'] ?? '500') ?? 500),
-      OUTBOX_CLEANUP_INTERVAL_MS: String(getFiniteNumber(process.env['OUTBOX_CLEANUP_INTERVAL_MS'] ?? '60000') ?? 60_000),
-      OUTBOX_RETENTION_HOURS: String(getFiniteNumber(process.env['OUTBOX_RETENTION_HOURS'] ?? '24') ?? 24),
-      REDIS_HOST: process.env['REDIS_HOST'] || 'localhost',
-      REDIS_PORT: process.env['REDIS_PORT'] ? parseInt(process.env['REDIS_PORT'], 10).toString() : '6379',
-      REDIS_PASSWORD: process.env['REDIS_PASSWORD'] || '',
-      LOG_STREAM_PORT: process.env['LOG_STREAM_PORT'] ? parseInt(process.env['LOG_STREAM_PORT'], 10).toString() : '3002',
-      LOG_STREAM_BASE_URL: process.env['LOG_STREAM_BASE_URL']
+      AUTH_REFRESH_GRACE_MS: process.env['AUTH_REFRESH_GRACE_MS'],
+      
     };
   }
+
+  setUpConfigSource() {
+    const nodeEnv = process.env['NODE_ENV'];
+    let configSource;
+    switch ( nodeEnv ){
+        case 'production':
+          configSource = new ProcessEnvConfigSource();
+          break;
+        case 'api-int-tests':
+          configSource = new EnvFileConfigSource(join(findWorkspaceRoot(), ".env.api-int-tests")); 
+          break;
+        default:
+          configSource = new EnvFileConfigSource(join(findWorkspaceRoot(), ".env.dev"));   
+    }
+    return configSource;
+  }
+
 }

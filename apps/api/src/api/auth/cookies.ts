@@ -26,7 +26,7 @@ function baseOptions(config: ServicesConfigs): AuthCookieOptions {
 
   return {
     sameSite,
-    secure: config.get('AUTH_COOKIE_SECURE') === true,
+    secure: config.getBoolean('AUTH_COOKIE_SECURE') === true,
     ...(typeof domain === 'string' && domain.length > 0 ? { domain } : {}),
     httpOnly: true,
     path: ACCESS_COOKIE_PATH,

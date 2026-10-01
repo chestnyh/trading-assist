@@ -1,16 +1,16 @@
 import { spawn } from 'child_process';
 import { ScriptConfigs } from '@trading-bot/configs'; 
 
-const scriptConfigs = new ScriptConfigs();
+const scriptConfigs = await (new ScriptConfigs()).setUp();
 
 let ENV_FILE: string;
 let DOCKER_PROFILE: string;
 let DOCKER_PROJECT_NAME: string;
 
 try {
-  ENV_FILE = scriptConfigs.getRequired('ENV_FILE') as string;
-  DOCKER_PROFILE = scriptConfigs.getRequired('DOCKER_PROFILE') as string;
-  DOCKER_PROJECT_NAME = scriptConfigs.getRequired('DOCKER_PROJECT_NAME') as string;
+  ENV_FILE = scriptConfigs.required.get('ENV_FILE');
+  DOCKER_PROFILE = scriptConfigs.required.get('DOCKER_PROFILE');
+  DOCKER_PROJECT_NAME = scriptConfigs.required.get('DOCKER_PROJECT_NAME');
 } catch (error) {
   console.error(`error: ${(error as Error).message}`);
   process.exit(1);

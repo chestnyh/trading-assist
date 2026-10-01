@@ -3,11 +3,13 @@
   "version": "0.0.1",
   "private": true,
   "type": "commonjs",
-  "main": "./dist/src/index.js",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "dependencies": {
-    "@nestjs/common": "^10.4.15",
-    "dotenv": "^16.4.7",
+    "@nestjs/common": "^10.4.15"
+  },
+  "devDependencies": {
+    "dotenv": "^16.6.1",
     "dotenv-expand": "^13.0.0"
   }
 }
