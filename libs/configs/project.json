@@ -12,7 +12,7 @@
         "cwd": "libs/configs"
       }
     },
-    "compile": {
+    "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "development",
@@ -22,21 +22,6 @@
         "rootDir": "libs/configs/src",
         "tsConfig": "libs/configs/tsconfig.lib.json",
         "assets": []
-      },
-      "configurations": {
-        "development": {},
-        "production": {}
-      }
-    },
-    "build": {
-      "executor": "nx:run-commands",
-      "outputs": ["{projectRoot}"],
-      "options": {
-        "commands": [
-          "nx run configs:compile"
-        ],
-        "parallel": false,
-        "cwd": "libs/configs"
       },
       "configurations": {
         "development": {},
