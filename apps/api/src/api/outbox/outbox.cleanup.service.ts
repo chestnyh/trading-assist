@@ -1,7 +1,7 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { setTimeout } from 'node:timers/promises';
-import { getFiniteNumber, ServicesConfigs } from '@trading-bot/configs';
-import { ModelsService } from '@trading-bot/models';
+import { getFiniteNumber, ServicesConfigs } from '@trading-assist/configs';
+import { ModelsService } from '@trading-assist/models';
 
 @Injectable()
 /**

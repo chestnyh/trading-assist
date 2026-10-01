@@ -55,7 +55,7 @@ import {
   ServiceCommClient,
   createRmqTransport,
   type MessageEnvelope,
-} from '@trading-bot/service-comm';
+} from '@trading-assist/service-comm';
 
 const transport = createRmqTransport({
   connection: {
@@ -87,7 +87,7 @@ await client.publish(envelope, { topic: envelope.type });
 import {
   ServiceCommClient,
   createRmqTransport,
-} from '@trading-bot/service-comm';
+} from '@trading-assist/service-comm';
 
 const transport = createRmqTransport({
   connection: {
@@ -119,8 +119,8 @@ await client.subscribe(
 
 ```ts
 import { Module } from '@nestjs/common';
-import { ServicesConfigs, ServicesConfigsModule } from '@trading-bot/configs';
-import { ServiceCommModule } from '@trading-bot/service-comm';
+import { ServicesConfigs, ServicesConfigsModule } from '@trading-assist/configs';
+import { ServiceCommModule } from '@trading-assist/service-comm';
 
 @Module({
   imports: [

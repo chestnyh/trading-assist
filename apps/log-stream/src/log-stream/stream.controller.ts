@@ -9,7 +9,7 @@ import {
   ForbiddenException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { ModelsService } from '@trading-bot/models';
+import { ModelsService } from '@trading-assist/models';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { RuleLogStreamService } from './rule-log-stream.service';
 

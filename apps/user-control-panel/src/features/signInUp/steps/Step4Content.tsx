@@ -1,7 +1,7 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Check } from "lucide-react";
-import { authControllerVerifyEmail } from "@trading-bot/api-client";
+import { authControllerVerifyEmail } from "@trading-assist/api-client";
 
 import { Input } from "../../../shared/ui/forms/Input";
 import { Button } from "../../../shared/ui/buttons/Button";

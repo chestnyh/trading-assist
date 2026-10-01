@@ -18,7 +18,7 @@ In any NestJS module where you need configuration:
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { ServicesConfigsModule, ServicesConfigs } from '@trading-bot/configs';
+import { ServicesConfigsModule, ServicesConfigs } from '@trading-assist/configs';
 
 @Module({
   imports: [ServicesConfigsModule],
@@ -33,7 +33,7 @@ In your service or controller:
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { ServicesConfigs } from '@trading-bot/configs';
+import { ServicesConfigs } from '@trading-assist/configs';
 
 @Injectable()
 export class YourService {
@@ -81,7 +81,7 @@ The module automatically loads environment files based on `NODE_ENV`:
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { ServicesConfigs } from '@trading-bot/configs';
+import { ServicesConfigs } from '@trading-assist/configs';
 
 @Injectable()
 export class DatabaseService {
@@ -113,7 +113,7 @@ For JWT configuration in your modules:
 ```typescript
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { ServicesConfigsModule, ServicesConfigs } from '@trading-bot/configs';
+import { ServicesConfigsModule, ServicesConfigs } from '@trading-assist/configs';
 
 @Module({
   imports: [
@@ -198,7 +198,7 @@ If you were previously using ServicesConfigs directly:
 
 **Before:**
 ```typescript
-import { ServicesConfigs } from '@trading-bot/configs';
+import { ServicesConfigs } from '@trading-assist/configs';
 
 const config = new ServicesConfigs();
 const value = config.get('SOME_KEY');
@@ -207,7 +207,7 @@ const value = config.get('SOME_KEY');
 **After:**
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { ServicesConfigs } from '@trading-bot/configs';
+import { ServicesConfigs } from '@trading-assist/configs';
 
 @Injectable()
 export class YourService {

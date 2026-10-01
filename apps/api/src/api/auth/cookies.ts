@@ -1,4 +1,4 @@
-import { ServicesConfigs } from '@trading-bot/configs';
+import { ServicesConfigs } from '@trading-assist/configs';
 import { CookieJar } from './http';
 
 export const ACCESS_COOKIE = 'access_token';

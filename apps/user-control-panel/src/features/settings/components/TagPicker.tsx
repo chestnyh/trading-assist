@@ -3,7 +3,7 @@ import {
   rulesSettingsTagsControllerCreateTag,
   rulesSettingsTagsControllerFindAllTags,
   TagResponseDto,
-} from "@trading-bot/api-client";
+} from "@trading-assist/api-client";
 
 const normalizeTag = (v: string) => v.trim();
 const equalsTag = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();

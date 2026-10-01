@@ -1,4 +1,4 @@
-import { ScriptConfigs } from '@trading-bot/configs'; 
+import { ScriptConfigs } from '@trading-assist/configs'; 
 import { existsSync, mkdirSync } from 'fs';
 
 const scriptConfigs = new ScriptConfigs();

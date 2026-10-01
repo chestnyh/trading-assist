@@ -1,4 +1,4 @@
-import { DevopsConfigs } from "@trading-bot/configs";
+import { DevopsConfigs } from "@trading-assist/configs";
 import { ECRClient, GetAuthorizationTokenCommand } from "@aws-sdk/client-ecr";
 
 export default async function getECRCredentials(configProvider: DevopsConfigs) {

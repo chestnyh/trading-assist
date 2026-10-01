@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import ObjectNavigator from '@trading-bot/object-navigator';
+import ObjectNavigator from '@trading-assist/object-navigator';
 
 import { RuleLogsService } from '../auto-trader/rule-logs.service';
 

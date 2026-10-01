@@ -5,7 +5,7 @@
     "type": "commonjs",
     "dependencies": {
         "@aws-sdk/client-ecr": "^3.864.0",
-        "@trading-bot/configs": "workspace:*",
+        "@trading-assist/configs": "workspace:*",
         "ssh2-promise": "^1.0.3"
     },
     "devDependencies": {

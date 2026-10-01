@@ -1,5 +1,5 @@
 {
-  "name": "@trading-bot/service-comm",
+  "name": "@trading-assist/service-comm",
   "version": "0.0.1",
   "private": true,
   "type": "commonjs",

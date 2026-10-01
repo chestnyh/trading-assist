@@ -12,7 +12,7 @@ Move the session credential out of browser Web Storage into `HttpOnly` cookies s
 
 **Language/Version**: TypeScript 5.7 (NestJS 10 on Express for `apps/api`; React 19 + react-router-dom 6 SPA for `apps/user-control-panel`)
 
-**Primary Dependencies**: `@nestjs/jwt`, `@nestjs/passport`, `passport-jwt`, `@nestjs/swagger` (API); Orval-generated `fetch` client + Zod (`@trading-bot/api-client`, `@trading-bot/api-validator`); Prisma 7 + `@prisma/adapter-pg` (`@trading-bot/models`). New dependency: `cookie-parser` (+ `@types/cookie-parser`) for `apps/api`; Node's built-in `crypto` for token generation/rotation.
+**Primary Dependencies**: `@nestjs/jwt`, `@nestjs/passport`, `passport-jwt`, `@nestjs/swagger` (API); Orval-generated `fetch` client + Zod (`@trading-assist/api-client`, `@trading-assist/api-validator`); Prisma 7 + `@prisma/adapter-pg` (`@trading-assist/models`). New dependency: `cookie-parser` (+ `@types/cookie-parser`) for `apps/api`; Node's built-in `crypto` for token generation/rotation.
 
 **Storage**: PostgreSQL via Prisma (`libs/models`). New `Session` model stores refresh-token lineage (family) server-side. No new infrastructure (constitution stack); Redis is intentionally not used so the system of record remains PostgreSQL.
 

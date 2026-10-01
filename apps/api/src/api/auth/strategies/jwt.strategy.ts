@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
-import { ServicesConfigs } from '@trading-bot/configs';
+import { ServicesConfigs } from '@trading-assist/configs';
 import { UsersApiService } from '../../users/users.api.service';
 import { ACCESS_COOKIE } from '../cookies';
 import { RequestLike } from '../http';

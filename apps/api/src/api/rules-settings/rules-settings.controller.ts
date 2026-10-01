@@ -26,7 +26,7 @@ import { CreateUserRuleSettingDto } from './dto/create-user-rule-setting.dto';
 import { UpdateUserRuleSettingDto } from './dto/update-user-rule-setting.dto';
 import { RuleSettingResponseDto } from './dto/rule-setting-response.dto';
 import { TelegramChatIdResponseDto } from './dto/telegram-chat-id-response.dto';
-import { ServiceCode } from '@trading-bot/models';
+import { ServiceCode } from '@trading-assist/models';
 
 @ApiTags('rules-settings')
 @Controller('rules-settings')

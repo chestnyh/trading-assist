@@ -1,5 +1,5 @@
 {
-  "name": "@trading-bot/crypto-utils",
+  "name": "@trading-assist/crypto-utils",
   "version": "0.0.1",
   "private": true,
   "type": "commonjs",

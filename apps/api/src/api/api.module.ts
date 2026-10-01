@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ServicesConfigsModule, ServicesConfigs } from '@trading-bot/configs';
-import { ModelsModule } from '@trading-bot/models';
-import { ServiceCommModule } from '@trading-bot/service-comm';
-import { LoggerModule } from '@trading-bot/logger';
+import { ServicesConfigsModule, ServicesConfigs } from '@trading-assist/configs';
+import { ModelsModule } from '@trading-assist/models';
+import { ServiceCommModule } from '@trading-assist/service-comm';
+import { LoggerModule } from '@trading-assist/logger';
 import { OutboxModule } from './outbox/outbox.module';
 
 import { UsersApiModule } from "./users/users.api.module";

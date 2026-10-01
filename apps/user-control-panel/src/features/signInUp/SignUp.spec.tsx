@@ -7,17 +7,17 @@ import {
     usersApiControllerCreateUser, 
     authControllerVerifyEmail, 
     customInstance,
-} from '@trading-bot/api-client';
+} from '@trading-assist/api-client';
 import {
     CreateUserDtoSchema,
     TradingExperienceLevelSchema,
     PrimaryTradingStrategySchema,
     RiskToleranceSchema,
     TradingPlatformSchema,
-} from '@trading-bot/api-validator';
+} from '@trading-assist/api-validator';
 
-jest.mock('@trading-bot/api-client', () => {
-    const actual = jest.requireActual('@trading-bot/api-client');
+jest.mock('@trading-assist/api-client', () => {
+    const actual = jest.requireActual('@trading-assist/api-client');
     return {
         ...actual,
         customInstance: jest.fn(),

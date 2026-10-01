@@ -8,7 +8,7 @@ import {
   CreateUserRuleSettingDto,
   UpdateUserRuleSettingDto,
   ServiceCode,
-} from "@trading-bot/api-client";
+} from "@trading-assist/api-client";
 import { useAuth } from "../../../app/contexts/AuthContext";
 import type { DetailField } from "../components/RuleSetting";
 

@@ -5,7 +5,7 @@ import { RuleForm } from "../../app/components/RuleForm";
 import { NotFound } from "../notFound/NotFound";
 import { ErrorAlert } from "../../shared/ui/feedback/ErrorAlert";
 import { Spinner } from "../../shared/ui/spiner/Spinner";
-import { isValidationError } from "@trading-bot/api-client";
+import { isValidationError } from "@trading-assist/api-client";
 
 export function UpdateRulePage() {
   const { id } = useParams<{ id: string }>();

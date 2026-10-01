@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 
 /// <reference types="@testing-library/jest-dom" />
 
-// Prisma client (via @trading-bot/api-validator) requires TextEncoder/TextDecoder
+// Prisma client (via @trading-assist/api-validator) requires TextEncoder/TextDecoder
 // globals at module load; jsdom does not provide them.
 import { TextDecoder, TextEncoder } from 'node:util';
 

@@ -7,15 +7,15 @@ import {
   rulesSettingsControllerUpdateSetting,
   rulesSettingsControllerFindAllSettings,
   ServiceCode,
-} from '@trading-bot/api-client';
+} from '@trading-assist/api-client';
 import { useAuth } from '../../../app/contexts/AuthContext';
 
 jest.mock('../../../app/contexts/AuthContext', () => ({
   useAuth: jest.fn(),
 }));
 
-jest.mock('@trading-bot/api-client', () => {
-  const actual = jest.requireActual('@trading-bot/api-client');
+jest.mock('@trading-assist/api-client', () => {
+  const actual = jest.requireActual('@trading-assist/api-client');
   return {
     ...actual,
     rulesSettingsControllerCreateSetting: jest.fn(),

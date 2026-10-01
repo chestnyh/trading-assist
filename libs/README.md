@@ -1,6 +1,6 @@
 # Libraries
 
-This folder contains shared libraries that are used — or intended to be used — across multiple services in the monorepo. Each library has a single responsibility and is published under the `@trading-bot` npm scope.
+This folder contains shared libraries that are used — or intended to be used — across multiple services in the monorepo. Each library has a single responsibility and is published under the `@trading-assist` npm scope.
 
 ## Libraries Overview
 
@@ -10,7 +10,7 @@ Auto-generated typed HTTP client produced from the OpenAPI spec of the `api` ser
 
 [Detailed documentation](./api-client/README.md) 
 
-Import path - `@trading-bot/api-client`
+Import path - `@trading-assist/api-client`
 
 ---
 
@@ -20,7 +20,7 @@ The entry point for everything configuration-related in the project. Any service
 
 [Detailed documentation](./configs/README.md)
 
-Import path - `@trading-bot/configs`
+Import path - `@trading-assist/configs`
 
 ---
 
@@ -30,7 +30,7 @@ Password hashing and verification utilities.
 
 [Detailed documentation](./crypto-utils/README.md)
 
-Import path - `@trading-bot/crypto-utils`
+Import path - `@trading-assist/crypto-utils`
 
 ---
 
@@ -40,7 +40,7 @@ Shared database client used across services. Connects using individual parameter
 
 [Detailed documentation](./models/README.md)
 
-Import path - `@trading-bot/models`
+Import path - `@trading-assist/models`
 
 ---
 
@@ -50,7 +50,7 @@ Utility for reading from and writing to deeply nested object structures using pa
 
 [Detailed documentation](./object-navigator/README.md)
 
-Import path - `@trading-bot/object-navigator`
+Import path - `@trading-assist/object-navigator`
 
 ---
 
@@ -60,7 +60,7 @@ Publish/subscribe library for inter-service communication with a transport-agnos
 
 [Detailed documentation](./service-comm/README.md)
 
-Import path - `@trading-bot/service-comm`
+Import path - `@trading-assist/service-comm`
 
 ---
 
@@ -74,6 +74,6 @@ pnpm nx generate @nx/js:library --name=<library-name> --directory=libs/<library-
 
 Follow the same conventions:
 - Export public API through `src/index.ts`
-- Use the `@trading-bot/<library-name>` package name in `package.json`
+- Use the `@trading-assist/<library-name>` package name in `package.json`
 - Keep each library focused on a single concern
 - Update this README with a short description

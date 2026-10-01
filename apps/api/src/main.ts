@@ -8,9 +8,9 @@ import { SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { createSwaggerConfig } from './swagger.config'
 import { ApiModule } from './api/api.module';
-import { ServicesConfigs } from '@trading-bot/configs';
-import { SchemaValidationPipe } from '@trading-bot/api-validator/nest';
-import { LoggerService } from '@trading-bot/logger';
+import { ServicesConfigs } from '@trading-assist/configs';
+import { SchemaValidationPipe } from '@trading-assist/api-validator/nest';
+import { LoggerService } from '@trading-assist/logger';
 const configs = new ServicesConfigs();
 
 async function bootstrap() {

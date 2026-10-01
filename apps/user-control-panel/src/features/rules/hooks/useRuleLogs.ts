@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { authControllerStreamTicket } from '@trading-bot/api-client';
+import { authControllerStreamTicket } from '@trading-assist/api-client';
 
 export interface RuleLogEntry {
   ruleId: number;

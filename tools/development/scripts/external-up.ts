@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import { ScriptConfigs } from '@trading-bot/configs'; 
+import { ScriptConfigs } from '@trading-assist/configs'; 
 
 const scriptConfigs = new ScriptConfigs();
 

@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { createHash, randomBytes, randomUUID } from 'crypto';
-import { ModelsService } from '@trading-bot/models';
-import { ServicesConfigs } from '@trading-bot/configs';
+import { ModelsService } from '@trading-assist/models';
+import { ServicesConfigs } from '@trading-assist/configs';
 import { parseDurationToMs } from './duration';
 
 const DAY_MS = 86_400_000;

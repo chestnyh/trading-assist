@@ -1,4 +1,4 @@
-import type { CountryCode } from '@trading-bot/api-validator';
+import type { CountryCode } from '@trading-assist/api-validator';
 
 export interface CountryOption {
   value: CountryCode;

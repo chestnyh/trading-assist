@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 
-import { ServicesConfigs, ServicesConfigsModule } from '@trading-bot/configs';
-import { ModelsModule } from '@trading-bot/models';
-import { LoggerModule } from '@trading-bot/logger';
+import { ServicesConfigs, ServicesConfigsModule } from '@trading-assist/configs';
+import { ModelsModule } from '@trading-assist/models';
+import { LoggerModule } from '@trading-assist/logger';
 
 import { JwtStrategy } from './auth/jwt.strategy';
 import { RuleLogStreamService } from './rule-log-stream.service';

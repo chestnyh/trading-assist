@@ -9,7 +9,7 @@ import { z } from 'zod';
 
 import type { SchemaValidator } from './core';
 
-const VALIDATOR_METADATA_KEY = 'trading-bot:api-validator:schema-validator';
+const VALIDATOR_METADATA_KEY = 'trading-assist:api-validator:schema-validator';
 
 export function Validate(validator: SchemaValidator): ClassDecorator {
   return (target) => {

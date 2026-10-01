@@ -4,7 +4,7 @@
     "private": true,
     "type": "commonjs",
     "dependencies": {
-        "@trading-bot/configs": "workspace:*",
+        "@trading-assist/configs": "workspace:*",
         "dotenv": "^16.6.1"
     },
     "devDependencies": {

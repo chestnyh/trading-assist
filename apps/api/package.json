@@ -17,11 +17,11 @@
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.14",
     "rxjs": "^7.8.2",
-    "@trading-bot/api-validator": "workspace:*",
-    "@trading-bot/configs": "workspace:*",
-    "@trading-bot/crypto-utils": "workspace:*",
-    "@trading-bot/models": "workspace:*",
-    "@trading-bot/service-comm": "workspace:*"
+    "@trading-assist/api-validator": "workspace:*",
+    "@trading-assist/configs": "workspace:*",
+    "@trading-assist/crypto-utils": "workspace:*",
+    "@trading-assist/models": "workspace:*",
+    "@trading-assist/service-comm": "workspace:*"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",

@@ -1,8 +1,8 @@
 import { Injectable, BadRequestException, UnauthorizedException, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ModelsService } from '@trading-bot/models';
-import { ServicesConfigs } from '@trading-bot/configs';
-import { CryptoUtilsService } from '@trading-bot/crypto-utils';
+import { ModelsService } from '@trading-assist/models';
+import { ServicesConfigs } from '@trading-assist/configs';
+import { CryptoUtilsService } from '@trading-assist/crypto-utils';
 import { randomBytes, randomUUID, randomInt } from 'crypto';
 import { SessionService, IssuedRefreshCredential } from './session.service';
 import { CookieJar } from './http';
