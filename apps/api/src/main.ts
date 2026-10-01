@@ -11,10 +11,10 @@ import { ApiModule } from './api/api.module';
 import { ServicesConfigs } from '@trading-assist/configs';
 import { SchemaValidationPipe } from '@trading-assist/api-validator/nest';
 import { LoggerService } from '@trading-assist/logger';
-const configs = new ServicesConfigs();
 
 async function bootstrap() {
   const app = await NestFactory.create(ApiModule, { bufferLogs: true });
+  const configs = await (new ServicesConfigs()).setUp();
   app.useLogger(app.get(LoggerService));
 
   app.use(cookieParser());
@@ -43,7 +43,7 @@ async function bootstrap() {
   const globalPrefix = 'api/v1';
   app.setGlobalPrefix(globalPrefix);
   const port = configs.get('API_PORT');
-  await app.listen(port as string);
+  await app.listen(port);
 
   app
     .get(LoggerService)

@@ -273,8 +273,7 @@ export class AuthService {
     }
 
     // Get maximum attempts from configuration
-    const maxAttempts = this.configService.get('MAX_PASSWORD_RESET_ATTEMPTS');
-    const maxAttemptsNumber = parseInt(maxAttempts as string, 10);
+    const maxAttemptsNumber = this.configService.getNumber('MAX_PASSWORD_RESET_ATTEMPTS');
 
     // Check if attempts limit has been exceeded
     if (passwordReset.attemptsCount >= maxAttemptsNumber) {

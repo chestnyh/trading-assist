@@ -16,13 +16,13 @@ import { RulesSettingsTagsModule } from './tags/tags.module';
     ServicesConfigsModule,
     ServiceCommModule.forRootAsync({
       inject: [ServicesConfigs],
-      useFactory: (cfg: ServicesConfigs) => ({
+      useFactory: async (cfg: ServicesConfigs) => ({
         rmq: {
           connection: {
-            host: cfg.get('RMQ_HOST') as string,
-            port: Number(cfg.get('RMQ_PORT')),
-            username: cfg.get('RMQ_USER') as string,
-            password: cfg.get('RMQ_PASSWORD') as string,
+            host: cfg.get('RMQ_HOST'),
+            port: cfg.getNumber('RMQ_PORT'),
+            username: cfg.get('RMQ_USER'),
+            password: cfg.get('RMQ_PASSWORD'),
           },
           topology: {
             exchange: 'service_comm.topic',
@@ -34,22 +34,22 @@ import { RulesSettingsTagsModule } from './tags/tags.module';
       inject: [ServicesConfigs],
       useFactory: (cfg: ServicesConfigs) => ({
         service: 'api',
-        environment: cfg.get('NODE_ENV') as string,
-        enableConsole: cfg.get('LOG_ENABLE_CONSOLE') as boolean,
-        enableElasticsearch: cfg.get('LOG_ENABLE_ELASTICSEARCH') as boolean,
+        environment: cfg.get('NODE_ENV'),
+        enableConsole: cfg.getBoolean('LOG_ENABLE_CONSOLE'),
+        enableElasticsearch: cfg.getBoolean('LOG_ENABLE_ELASTICSEARCH'),
         elasticsearch:
           cfg.get('LOG_ELASTICSEARCH_NODE') && cfg.get('LOG_ELASTICSEARCH_INDEX')
             ? {
-                node: cfg.get('LOG_ELASTICSEARCH_NODE') as string,
-                index: cfg.get('LOG_ELASTICSEARCH_INDEX') as string,
+                node: cfg.get('LOG_ELASTICSEARCH_NODE'),
+                index: cfg.get('LOG_ELASTICSEARCH_INDEX'),
                 auth: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER')
-                  ? { header: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER') as string }
+                  ? { header: cfg.get('LOG_ELASTICSEARCH_AUTH_HEADER') }
                   : cfg.get('LOG_ELASTICSEARCH_API_KEY')
-                    ? { apiKey: cfg.get('LOG_ELASTICSEARCH_API_KEY') as string }
+                    ? { apiKey: cfg.get('LOG_ELASTICSEARCH_API_KEY') }
                     : cfg.get('LOG_ELASTICSEARCH_USERNAME') && cfg.get('LOG_ELASTICSEARCH_PASSWORD')
                       ? {
-                          username: cfg.get('LOG_ELASTICSEARCH_USERNAME') as string,
-                          password: cfg.get('LOG_ELASTICSEARCH_PASSWORD') as string,
+                          username: cfg.get('LOG_ELASTICSEARCH_USERNAME'),
+                          password: cfg.get('LOG_ELASTICSEARCH_PASSWORD'),
                         }
                       : undefined,
               }
@@ -60,11 +60,11 @@ import { RulesSettingsTagsModule } from './tags/tags.module';
     ModelsModule.forRootAsync({
       inject: [ServicesConfigs],
       useFactory: (cfg: ServicesConfigs) => ({
-        host: cfg.get('DB_HOST') as string,
-        port: Number(cfg.get('DB_PORT')),
-        username: cfg.get('DB_USER') as string,
-        password: cfg.get('DB_PASSWORD') as string,
-        database: cfg.get('DB_NAME') as string,
+        host: cfg.get('DB_HOST'),
+        port: cfg.getNumber('DB_PORT'),
+        username: cfg.get('DB_USER'),
+        password: cfg.get('DB_PASSWORD'),
+        database: cfg.get('DB_NAME'),
       }),
     }),
     UsersApiModule,

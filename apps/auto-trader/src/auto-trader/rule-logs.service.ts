@@ -29,9 +29,9 @@ export class RuleLogsService implements OnModuleDestroy {
 
     try {
       this.redis = new Redis({
-        host: host as string,
+        host: host,
         port: Number(port),
-        password: (password as string) || undefined,
+        password: (password) || undefined,
         retryStrategy: (times) => {
           if (times > 3) {
             this.logger.warn('[RuleLogsService] Redis connection failed after 3 retries, disabling');

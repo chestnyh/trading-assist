@@ -21,7 +21,7 @@ async function bootstrap() {
   });
 
   const port = app.get(ServicesConfigs).get('LOG_STREAM_PORT') ?? 3002;
-  await app.listen(port as string | number);
+  await app.listen(port);
 
   app.get(LoggerService).log(`🚀 log-stream is running on port ${port}`);
 }

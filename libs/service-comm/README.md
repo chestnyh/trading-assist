@@ -130,10 +130,10 @@ import { ServiceCommModule } from '@trading-assist/service-comm';
       useFactory: (cfg: ServicesConfigs) => ({
         rmq: {
           connection: {
-            host: cfg.get('RMQ_HOST'),
-            port: Number(cfg.get('RMQ_PORT')),
-            username: cfg.get('RMQ_USER'),
-            password: cfg.get('RMQ_PASSWORD'),
+            host: cfg.getString('RMQ_HOST'),
+            port: cfg.getNumber('RMQ_PORT'),
+            username: cfg.getString('RMQ_USER'),
+            password: cfg.getString('RMQ_PASSWORD'),
           },
           topology: {
             exchange: 'service_comm.topic',

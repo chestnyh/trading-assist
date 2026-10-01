@@ -4,8 +4,7 @@
     "private": true,
     "type": "commonjs",
     "dependencies": {
-        "@trading-assist/configs": "workspace:*",
-        "dotenv": "^16.6.1"
+        "@trading-assist/configs": "workspace:*"
     },
     "devDependencies": {
         "ts-node": "10.9.1",

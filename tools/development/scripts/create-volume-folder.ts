@@ -1,7 +1,7 @@
 import { ScriptConfigs } from '@trading-assist/configs'; 
 import { existsSync, mkdirSync } from 'fs';
 
-const scriptConfigs = new ScriptConfigs();
+const scriptConfigs = await (new ScriptConfigs()).setUp();
 
 const DOCKER_DB_VOLUME = scriptConfigs.get('DOCKER_DB_VOLUME');
 const DOCKER_RMQ_VOLUME = scriptConfigs.get('DOCKER_RMQ_VOLUME');
