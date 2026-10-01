@@ -457,9 +457,6 @@ importers:
       '@trading-bot/configs':
         specifier: workspace:*
         version: link:../../libs/configs
-      dotenv:
-        specifier: ^16.6.1
-        version: 16.6.1
     devDependencies:
       ts-node:
         specifier: 10.9.1

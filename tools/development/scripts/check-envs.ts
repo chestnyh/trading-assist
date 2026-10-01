@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as dotenv from 'dotenv';
+import { EnvFileConfigSource, type ConfigValues } from '@trading-bot/configs';
 import * as readline from 'readline';
 
 
@@ -17,25 +17,25 @@ const args = process.argv.slice(2);
 const mode = args.find((arg): arg is CheckMode => arg === 'examples-check' || arg === 'local-checks');
 
 /**
- * Reads an env file (relative to the current working directory) as raw key/value pairs.
+ * Reads an env file (relative to the current working directory) via the configs library.
  * Returns an empty object if the file doesn't exist.
  */
-const getEnvData = (filePath: string): Record<string, string> => {
+const getEnvData = async (filePath: string): Promise<ConfigValues> => {
   const fullPath = path.resolve(process.cwd(), filePath);
   if (!fs.existsSync(fullPath)) return {};
-  return dotenv.parse(fs.readFileSync(fullPath));
+  return new EnvFileConfigSource(fullPath).load();
 };
 
 const getDifference = (source: string[], target: string[]): string[] => {
   return source.filter(key => !target.includes(key));
 };
 
-const runExamplesCheck = (): boolean => {
+const runExamplesCheck = async (): Promise<boolean> => {
   let hasErrors = false;
 
   for (const { local, example } of ENV_FILES) {
-    const exampleData = getEnvData(example);
-    const localData = getEnvData(local);
+    const exampleData = await getEnvData(example);
+    const localData = await getEnvData(local);
     const missingInExample = getDifference(Object.keys(localData), Object.keys(exampleData));
 
     if (missingInExample.length > 0) {
@@ -54,8 +54,8 @@ const runLocalChecks = async (): Promise<boolean> => {
 
   try {
     for (const { local, example } of ENV_FILES) {
-      const exampleData = getEnvData(example);
-      const localData = getEnvData(local);
+      const exampleData = await getEnvData(example);
+      const localData = await getEnvData(local);
       const missingInLocal = getDifference(Object.keys(exampleData), Object.keys(localData));
 
       if (missingInLocal.length === 0) continue;
@@ -97,7 +97,7 @@ const run = async () => {
   console.log(`🔍 Checking envs (${mode})...`);
 
   const success = mode === 'examples-check'
-    ? runExamplesCheck()
+    ? await runExamplesCheck()
     : await runLocalChecks();
 
   if (!success) {
