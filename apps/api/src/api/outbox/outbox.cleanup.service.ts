@@ -1,8 +1,7 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { setTimeout } from 'node:timers/promises';
-import { ServicesConfigs } from '@trading-bot/configs';
-import { ModelsService } from '@trading-bot/models';
-
+import { ServicesConfigs } from '@trading-assist/configs';
+import { ModelsService } from '@trading-assist/models';
 @Injectable()
 /**
  * Periodically removes old published outbox messages to prevent the outbox table from growing indefinitely.

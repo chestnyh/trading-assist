@@ -28,7 +28,7 @@ This ticket does not implement code changes. It documents a plan for follow-up i
 - Rules are executed by `apps/auto-trader` via the actions engine.
 - UI is `apps/user-control-panel`.
 - API is `apps/api`.
-- Internal service communication exists via `@trading-bot/service-comm` (topics, subscribe/publish).
+- Internal service communication exists via `@trading-assist/service-comm` (topics, subscribe/publish).
 
 ## 1) Action semantics (what should this action do?)
 

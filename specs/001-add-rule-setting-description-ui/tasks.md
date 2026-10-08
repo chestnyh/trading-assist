@@ -82,7 +82,7 @@ description: "Task list for rule setting description feature implementation"
 
 ### Tests for User Story 2
 
-- [X] T013 [P] [US2] Add `useServiceRuleSettings.spec.ts` test: `saveExistingSetting` builds an `UpdateUserRuleSettingDto` including `description`; clearing sends `description: ""`; `mapRulesToSettings` surfaces `rule.description` — in `apps/user-control-panel/src/features/settings/components/useServiceRuleSettings.spec.ts` (mock `@trading-bot/api-client` with the partial-spread pattern and mock `useAuth`)
+- [X] T013 [P] [US2] Add `useServiceRuleSettings.spec.ts` test: `saveExistingSetting` builds an `UpdateUserRuleSettingDto` including `description`; clearing sends `description: ""`; `mapRulesToSettings` surfaces `rule.description` — in `apps/user-control-panel/src/features/settings/components/useServiceRuleSettings.spec.ts` (mock `@trading-assist/api-client` with the partial-spread pattern and mock `useAuth`)
 
 ### Implementation for User Story 2
 

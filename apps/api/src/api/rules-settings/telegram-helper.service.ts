@@ -1,5 +1,5 @@
 import { Injectable, RequestTimeoutException } from '@nestjs/common';
-import { LoggerService } from '@trading-bot/logger'; 
+import { LoggerService } from '@trading-assist/logger'; 
 import TelegramBot from 'node-telegram-bot-api';
 
 @Injectable()

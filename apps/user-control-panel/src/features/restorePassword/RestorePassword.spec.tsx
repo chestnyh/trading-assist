@@ -2,9 +2,9 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { RestorePassword } from './RestorePassword';
-import { customInstance } from '@trading-bot/api-client';
+import { customInstance } from '@trading-assist/api-client';
 
-jest.mock('@trading-bot/api-client', () => ({
+jest.mock('@trading-assist/api-client', () => ({
     customInstance: jest.fn(),
 }));
 

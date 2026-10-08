@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ModelsService } from '@trading-bot/models';
+import { ModelsService } from '@trading-assist/models';
 import { CreateTagDto } from './dto/create-tag.dto';
 
 @Injectable()

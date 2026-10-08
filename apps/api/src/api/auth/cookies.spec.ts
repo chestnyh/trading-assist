@@ -1,4 +1,4 @@
-import { ServicesConfigs } from '@trading-bot/configs';
+import { ServicesConfigs } from '@trading-assist/configs';
 import {
   ACCESS_COOKIE,
   ACCESS_COOKIE_PATH,

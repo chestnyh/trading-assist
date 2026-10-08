@@ -15,7 +15,7 @@ import {
   ResetPasswordDtoSchema,
   UpdateRuleDtoSchema,
   UpdateUserRuleSettingDtoSchema,
-} from '@trading-bot/api-validator';
+} from '@trading-assist/api-validator';
 
 type RequestSchemaRule = {
   url: string | RegExp;

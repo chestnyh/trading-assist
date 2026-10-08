@@ -8,8 +8,8 @@ import { SessionService } from './session.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RolesGuard } from './guards/roles.guard';
 import { CsrfGuard } from './guards/csrf.guard';
-import { ServicesConfigsModule, ServicesConfigs } from '@trading-bot/configs';
-import { CryptoUtilsModule } from '@trading-bot/crypto-utils';
+import { ServicesConfigsModule, ServicesConfigs } from '@trading-assist/configs';
+import { CryptoUtilsModule } from '@trading-assist/crypto-utils';
 import { UsersApiModule } from '../users/users.api.module';
 
 @Module({

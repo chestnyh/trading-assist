@@ -1,7 +1,7 @@
 import { Input } from "../../../shared/ui/forms/Input";
 import { Button } from "../../../shared/ui/buttons/Button";
 import { useNavigate } from "react-router-dom";
-import { customInstance } from "@trading-bot/api-client";
+import { customInstance } from "@trading-assist/api-client";
 
 interface Step3ContentProps {
   password: string;

@@ -3,8 +3,8 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "paths": {
-      "@trading-bot/api-validator": ["libs/api-validator/dist/src/index"],
-      "@trading-bot/api-validator/*": ["libs/api-validator/dist/src/*"]
+      "@trading-assist/api-validator": ["libs/api-validator/dist/src/index"],
+      "@trading-assist/api-validator/*": ["libs/api-validator/dist/src/*"]
     },
     "declaration": true,
     "types": ["node"]

@@ -4,11 +4,11 @@ import { RuleRunnerService } from './rule-runner.service';
 import { RuleOrchestrationService } from './rule-orchestration.service';
 import { RuleLogsService } from './rule-logs.service';
 
-import { ModelsModule } from '@trading-bot/models';
-import { ServiceCommModule } from '@trading-bot/service-comm';
-import { LoggerModule } from '@trading-bot/logger';
+import { ModelsModule } from '@trading-assist/models';
+import { ServiceCommModule } from '@trading-assist/service-comm';
+import { LoggerModule } from '@trading-assist/logger';
 
-import { ServicesConfigs, ServicesConfigsModule } from '@trading-bot/configs';
+import { ServicesConfigs, ServicesConfigsModule } from '@trading-assist/configs';
 
 const config = new ServicesConfigs();
 

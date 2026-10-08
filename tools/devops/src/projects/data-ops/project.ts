@@ -1,6 +1,6 @@
 import path from 'path';
 import { Buffer } from "buffer";
-import { DevopsConfigs } from '@trading-bot/configs';
+import { DevopsConfigs } from '@trading-assist/configs';
 import DevopsProject from '../DevopsProject';
 import { awsContainerDeploy, awsImageDeploy, awsGetImageRepoUrl } from '../../methods/aws';
 

@@ -8,7 +8,7 @@ import React, {
 import {
     usersApiControllerCreateUser,
     type CreateUserDto,
-} from "@trading-bot/api-client";
+} from "@trading-assist/api-client";
 
 import { SignUpStep1Schema, SignUpStep2Schema, SignUpStep3Schema } from "./signUpSchemas";
 import {

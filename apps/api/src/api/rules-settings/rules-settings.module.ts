@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ModelsModule } from '@trading-bot/models';
+import { ModelsModule } from '@trading-assist/models';
 import { RulesSettingsController } from './rules-settings.controller';
 import { RulesSettingsService } from './rules-settings.service';
 import { TelegramHelperService } from './telegram-helper.service';

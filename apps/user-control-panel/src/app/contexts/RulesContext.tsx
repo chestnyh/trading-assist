@@ -5,7 +5,7 @@ import {
   rulesControllerCreate,
   rulesControllerRemove,
   rulesControllerUpdate,
-} from "@trading-bot/api-client";
+} from "@trading-assist/api-client";
 
 export type Rule = {
   id: string;

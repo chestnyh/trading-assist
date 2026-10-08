@@ -8,7 +8,7 @@ import {
   extractFieldToMessageFromValidationError,
   customInstance,
   rulesControllerCreate,
-} from "@trading-bot/api-client";
+} from "@trading-assist/api-client";
 
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -20,7 +20,7 @@ jest.mock("../../app/contexts/AuthContext", () => ({
   useAuth: () => mockUseAuth(),
 }));
 
-jest.mock("@trading-bot/api-client", () => ({
+jest.mock("@trading-assist/api-client", () => ({
   isValidationError: jest.fn(),
   extractFieldToMessageFromValidationError: jest.fn(),
   customInstance: jest.fn(),

@@ -8,7 +8,7 @@ import type {
   SignUpFormData,
   FieldErrors,
 } from './signUpTypes';
-import { isCountryCode } from '@trading-bot/api-validator';
+import { isCountryCode } from '@trading-assist/api-validator';
 
 // ---------- LocalStorage Keys ----------
 

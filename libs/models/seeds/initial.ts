@@ -4,7 +4,7 @@ import intervalRule from './units/rules/3-interval';
 import sequenceRule from './units/rules/4-sequence';
 import parallelRule from './units/rules/5-parallel';
 import candlePriceMovementAlertRule from './units/rules/6-candle-price-movement-alert';
-import { CryptoUtilsService } from '@trading-bot/crypto-utils';
+import { CryptoUtilsService } from '@trading-assist/crypto-utils';
 
 const cryptoService = new CryptoUtilsService();
 
@@ -111,7 +111,7 @@ export default async function main() {
                                 description: "Main email notification channel",
                                 serviceCode: 'EMAIL',
                                 configuration: {
-                                    email: "admin.alerts@trading-bot-domain.com"
+                                    email: "admin.alerts@trading-assist-domain.com"
                                 }
                             },
                             {

@@ -1,5 +1,5 @@
 import path from 'path';
-import { DevopsConfigs } from '@trading-bot/configs';
+import { DevopsConfigs } from '@trading-assist/configs';
 import DevopsProject from '../DevopsProject';
 import awsContainerDeploy from '../../methods/aws/aws-container-deploy';
 import awsImageDeploy from '../../methods/aws/aws-image-deploy';

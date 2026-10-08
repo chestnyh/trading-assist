@@ -79,7 +79,7 @@ configs.required.getNumber('API_PORT');  // number
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { ServicesConfigsModule } from '@trading-bot/configs';
+import { ServicesConfigsModule } from '@trading-assist/configs';
 
 @Module({
   imports: [ServicesConfigsModule],
@@ -91,7 +91,7 @@ Then inject `ServicesConfigs` anywhere. It is already loaded when injected:
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { ServicesConfigs } from '@trading-bot/configs';
+import { ServicesConfigs } from '@trading-assist/configs';
 
 @Injectable()
 export class DatabaseService {
@@ -118,7 +118,7 @@ Modules with async setup (`registerAsync`, `forRootAsync`) can inject `ServicesC
 ```typescript
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { ServicesConfigs } from '@trading-bot/configs';
+import { ServicesConfigs } from '@trading-assist/configs';
 
 @Module({
   imports: [
@@ -139,7 +139,7 @@ export class AuthModule {}
 Scripts and build configs create the config set themselves and wait for `setUp()`:
 
 ```typescript
-import { ScriptConfigs } from '@trading-bot/configs';
+import { ScriptConfigs } from '@trading-assist/configs';
 
 const configs = await new ScriptConfigs().setUp();
 const profile = configs.get('DOCKER_PROFILE');

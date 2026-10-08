@@ -13,9 +13,9 @@
     "noEmit": false,
     "baseUrl": ".",
     "paths": {
-      "@trading-bot/api-client": ["src/mocks/api-client.ts"],
-      "@trading-bot/api-validator": ["src/mocks/api-validator.ts"],
-      "@trading-bot/object-navigator": ["../../libs/object-navigator/src/index.ts"]
+      "@trading-assist/api-client": ["src/mocks/api-client.ts"],
+      "@trading-assist/api-validator": ["src/mocks/api-validator.ts"],
+      "@trading-assist/object-navigator": ["../../libs/object-navigator/src/index.ts"]
     }
   },
   "include": ["src/features/test/**/*", "src/mocks/**/*"],

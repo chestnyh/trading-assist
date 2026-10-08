@@ -50,7 +50,7 @@
 
 ### R5: What are the test conventions?
 
-**Decision**: Jest 29 + React Testing Library, `userEvent` only, co-located `ComponentName.spec.tsx` files; mock `@trading-bot/api-client` with the partial-spread pattern; mock `useAuth` from `AuthContext`.
+**Decision**: Jest 29 + React Testing Library, `userEvent` only, co-located `ComponentName.spec.tsx` files; mock `@trading-assist/api-client` with the partial-spread pattern; mock `useAuth` from `AuthContext`.
 
 **Rationale**: `apps/user-control-panel/jest.config.ts` uses jsdom, setupTests, and 70% global coverage thresholds. The settings feature currently has zero tests; existing form tests (SignIn.spec.tsx) demonstrate the pattern. Testing guidelines (`apps/user-control-panel/_docs/testing-guidelines.md`) mandate mocking the API layer, not fetch, and `userEvent` over `fireEvent`. `RuleSettingForm` calls `useAuth()` for the `TagPicker` token, so tests must mock `AuthContext`.
 

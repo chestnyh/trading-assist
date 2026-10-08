@@ -298,11 +298,11 @@ beforeEach(() => {
 **✅ Preferred:** Mock the API layer, not `fetch` or `axios`
 
 ```typescript
-jest.mock('@trading-bot/api-client', () => ({
+jest.mock('@trading-assist/api-client', () => ({
   authControllerLogin: jest.fn(),
 }));
 
-import { authControllerLogin } from '@trading-bot/api-client';
+import { authControllerLogin } from '@trading-assist/api-client';
 
 it('handles successful login', async () => {
   (authControllerLogin as jest.Mock).mockResolvedValue({

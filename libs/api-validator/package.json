@@ -1,5 +1,5 @@
 {
-  "name": "@trading-bot/api-validator",
+  "name": "@trading-assist/api-validator",
   "version": "0.0.1",
   "private": true,
   "type": "commonjs",

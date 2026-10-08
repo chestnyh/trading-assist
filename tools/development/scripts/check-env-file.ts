@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { ScriptConfigs } from '@trading-bot/configs';
+import { ScriptConfigs } from '@trading-assist/configs';
 
 const scriptConfigs = new ScriptConfigs();
 

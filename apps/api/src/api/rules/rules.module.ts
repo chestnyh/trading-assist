@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { RulesController } from './rules.controller';
 import { RulesService } from './rules.service';
-import { ModelsModule } from '@trading-bot/models';
+import { ModelsModule } from '@trading-assist/models';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({

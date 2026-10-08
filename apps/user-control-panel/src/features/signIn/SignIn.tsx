@@ -9,7 +9,7 @@ import { AuthSocialButton } from "./components/AuthSocialButton";
 import { Google } from "./components/icons/Google";
 import { Facebook } from "./components/icons/Facebook";
 import { useAuth } from "../../app/contexts/AuthContext";
-import { LoginDtoSchema } from "@trading-bot/api-validator";
+import { LoginDtoSchema } from "@trading-assist/api-validator";
 
 export function SignIn() {
     const navigate = useNavigate();
