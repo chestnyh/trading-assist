@@ -57,7 +57,8 @@ export class ServicesConfigs extends Configs {
       AUTH_COOKIE_SAME_SITE: process.env['AUTH_COOKIE_SAME_SITE'] || 'lax',
       AUTH_COOKIE_DOMAIN: process.env['AUTH_COOKIE_DOMAIN'],
       AUTH_REFRESH_GRACE_MS: process.env['AUTH_REFRESH_GRACE_MS'],
-      
+      UCP_PORT: process.env['UCP_PORT'],
+      UCP_URL: process.env['UCP_URL'],
     };
   }
 

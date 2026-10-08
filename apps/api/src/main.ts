@@ -19,14 +19,9 @@ async function bootstrap() {
 
   app.use(cookieParser());
 
-  // Enable CORS
   app.enableCors({
     origin: [
-      'http://localhost:4200', // Angular dev server
-      'http://localhost:3000', // React dev server
-      'http://localhost:5173', // Vite dev server
-      'http://localhost:8080', // Vue dev server
-      // Add production URLs here when deploying
+      configs.get('UCP_URL'),
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-CSRF-Token'],
@@ -36,8 +31,8 @@ async function bootstrap() {
   // Enable validation globally
   app.useGlobalPipes(new SchemaValidationPipe());
 
-  const config = createSwaggerConfig();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  const swaggerConfig = createSwaggerConfig();
+  const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, documentFactory);
 
   const globalPrefix = 'api/v1';
@@ -47,7 +42,7 @@ async function bootstrap() {
 
   app
     .get(LoggerService)
-    .log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
+    .log(`🚀 Application is running on port ${port}`);
 }
 
 bootstrap();

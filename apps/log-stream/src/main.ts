@@ -5,15 +5,13 @@ import { ServicesConfigs } from '@trading-assist/configs';
 import { LogStreamModule } from './log-stream/log-stream.module';
 
 async function bootstrap() {
+  const configs = await (new ServicesConfigs()).setUp();
   const app = await NestFactory.create(LogStreamModule, { bufferLogs: true });
   app.useLogger(app.get(LoggerService));
-
+  
   app.enableCors({
     origin: [
-      'http://localhost:4200',
-      'http://localhost:3000',
-      'http://localhost:5173',
-      'http://localhost:8080',
+      configs.get('UCP_URL')
     ],
     methods: ['GET', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
