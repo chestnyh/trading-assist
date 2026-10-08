@@ -60,7 +60,7 @@ const LastNameSchema = z
     'Last name can only contain letters, spaces, hyphens, and apostrophes'
   );
 
-export const CountrySchema = z.enum(ISO_COUNTRY_CODES, {
+const CountrySchema = z.enum(ISO_COUNTRY_CODES, {
   error: 'Please select a valid country',
 });
 

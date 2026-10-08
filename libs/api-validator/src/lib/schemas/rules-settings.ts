@@ -13,16 +13,5 @@ export const CreateUserRuleSettingDtoSchema = z.object({
 
 export const UpdateUserRuleSettingDtoSchema = CreateUserRuleSettingDtoSchema.partial();
 
-export const RuleSettingResponseDtoSchema = z.object({
-  id: z.number().int(),
-  name: z.string(),
-  code: z.string(),
-  description: z.string(),
-  configuration: z.unknown(),
-  authorId: z.number().int(),
-  serviceCode: ServiceCodeSchema.optional(),
-  tags: z.array(z.string()).optional(),
-});
-
 export const CreateUserRuleSettingDtoSchemaValidator = createSchemaValidator(CreateUserRuleSettingDtoSchema);
 export const UpdateUserRuleSettingDtoSchemaValidator = createSchemaValidator(UpdateUserRuleSettingDtoSchema);

@@ -2,8 +2,8 @@
   "name": "@trading-assist/models",
   "version": "0.0.1",
   "private": true,
-  "main": "./src/index.js",
-  "types": "./src/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "dependencies": {
     "@nestjs/common": "^10.4.15",
     "prisma": "^7.8.0",

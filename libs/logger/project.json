@@ -9,8 +9,9 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/logger",
+        "outputPath": "libs/logger/dist",
         "main": "libs/logger/src/index.ts",
+        "rootDir": "libs/logger/src",
         "tsConfig": "libs/logger/tsconfig.lib.json",
         "assets": []
       }

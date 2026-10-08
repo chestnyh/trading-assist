@@ -16,9 +16,9 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "buildLibsFromSource": false,
-        "outputPath": "dist/libs/api-client",
+        "outputPath": "libs/api-client/dist",
         "main": "libs/api-client/src/index.ts",
+        "rootDir": "libs/api-client/src",
         "tsConfig": "libs/api-client/tsconfig.lib.json",
         "assets": ["libs/api-client/*.md"]
       }

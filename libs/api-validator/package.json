@@ -4,7 +4,7 @@
   "private": true,
   "type": "commonjs",
   "main": "./dist/src/index.js",
-  "types": "./src/index.ts",
+  "types": "./dist/index.d.ts",
   "sideEffects": false,
   "dependencies": {
     "@nestjs/common": "^10.4.15",

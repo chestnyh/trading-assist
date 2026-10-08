@@ -15,9 +15,11 @@
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
       "options": {
-        "outputPath": "dist/libs/service-comm",
+        "outputPath": "libs/service-comm/dist",
         "main": "libs/service-comm/src/index.ts",
+        "rootDir": "libs/service-comm/src",
         "tsConfig": "libs/service-comm/tsconfig.lib.json",
         "assets": ["libs/service-comm/*.md"]
       }

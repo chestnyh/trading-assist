@@ -17,8 +17,9 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/crypto-utils",
+        "outputPath": "libs/crypto-utils/dist",
         "main": "libs/crypto-utils/src/index.ts",
+        "rootDir": "libs/crypto-utils/src",
         "tsConfig": "libs/crypto-utils/tsconfig.lib.json",
         "assets": []
       }

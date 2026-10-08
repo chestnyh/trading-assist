@@ -14,14 +14,12 @@
     },
     "build": {
       "executor": "@nx/js:tsc",
-      "outputs": [
-        "{options.outputPath}"
-      ],
-      "dependsOn": [
-        "migrations:generate"
-      ],
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
+      "dependsOn": ["migrations:generate"],
       "options": {
-        "outputPath": "dist/libs/models",
+        "outputPath": "libs/models/dist",
+        "rootDir": "libs/models/src",
         "main": "libs/models/src/index.ts",
         "tsConfig": "libs/models/tsconfig.lib.json",
         "assets": []
