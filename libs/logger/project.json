@@ -13,8 +13,7 @@
         "main": "libs/logger/src/index.ts",
         "rootDir": "libs/logger/src",
         "tsConfig": "libs/logger/tsconfig.lib.json",
-        "assets": [],
-        "generatePackageJson": false
+        "assets": []
       }
     }
   }
