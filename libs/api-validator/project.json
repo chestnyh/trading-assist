@@ -21,7 +21,8 @@
         "main": "libs/api-validator/src/index.ts",
         "rootDir": "libs/api-validator/src",
         "tsConfig": "libs/api-validator/tsconfig.lib.json",
-        "assets": ["libs/api-validator/*.md", "libs/api-validator/nest.js"]
+        "assets": ["libs/api-validator/*.md"],
+        "generatePackageJson": false
       }
     }
   }
