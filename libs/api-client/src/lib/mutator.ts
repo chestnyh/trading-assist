@@ -4,17 +4,17 @@
 
 import { z } from 'zod';
 import {
-  CreateUserDtoSchema,
-  CreateRuleDtoSchema,
-  CreateTagDtoSchema,
-  CreateUserRuleSettingDtoSchema,
-  LoginDtoSchema,
-  VerifyEmailDtoSchema,
-  ForgotPasswordDtoSchema,
-  VerifyPasswordResetDtoSchema,
-  ResetPasswordDtoSchema,
-  UpdateRuleDtoSchema,
-  UpdateUserRuleSettingDtoSchema,
+  CreateUserDtoSchemaValidator,
+  CreateRuleDtoSchemaValidator,
+  CreateTagDtoSchemaValidator,
+  CreateUserRuleSettingDtoSchemaValidator,
+  LoginDtoSchemaValidator,
+  VerifyEmailDtoSchemaValidator,
+  ForgotPasswordDtoSchemaValidator,
+  VerifyPasswordResetDtoSchemaValidator,
+  ResetPasswordDtoSchemaValidator,
+  UpdateRuleDtoSchemaValidator,
+  UpdateUserRuleSettingDtoSchemaValidator,
 } from '@trading-assist/api-validator';
 
 type RequestSchemaRule = {
@@ -23,21 +23,21 @@ type RequestSchemaRule = {
 };
 
 const requestSchemaRules: RequestSchemaRule[] = [
-  { url: '/api/v1/users', schema: CreateUserDtoSchema },
+  { url: '/api/v1/users', schema: CreateUserDtoSchemaValidator.schema },
 
-  { url: '/api/v1/auth/login', schema: LoginDtoSchema },
-  { url: '/api/v1/auth/verify-email', schema: VerifyEmailDtoSchema },
-  { url: '/api/v1/auth/forgot-password', schema: ForgotPasswordDtoSchema },
-  { url: '/api/v1/auth/verify-password-reset', schema: VerifyPasswordResetDtoSchema },
-  { url: '/api/v1/auth/reset-password', schema: ResetPasswordDtoSchema },
+  { url: '/api/v1/auth/login', schema: LoginDtoSchemaValidator.schema },
+  { url: '/api/v1/auth/verify-email', schema: VerifyEmailDtoSchemaValidator.schema },
+  { url: '/api/v1/auth/forgot-password', schema: ForgotPasswordDtoSchemaValidator.schema },
+  { url: '/api/v1/auth/verify-password-reset', schema: VerifyPasswordResetDtoSchemaValidator.schema },
+  { url: '/api/v1/auth/reset-password', schema: ResetPasswordDtoSchemaValidator.schema },
 
-  { url: '/api/v1/rules', schema: CreateRuleDtoSchema },
-  { url: /^\/api\/v1\/rules\/[\w-]+$/, schema: UpdateRuleDtoSchema },
+  { url: '/api/v1/rules', schema: CreateRuleDtoSchemaValidator.schema },
+  { url: /^\/api\/v1\/rules\/[\w-]+$/, schema: UpdateRuleDtoSchemaValidator.schema },
 
-  { url: '/api/v1/rules-settings', schema: CreateUserRuleSettingDtoSchema },
-  { url: /^\/api\/v1\/rules-settings\/[\w-]+$/, schema: UpdateUserRuleSettingDtoSchema },
+  { url: '/api/v1/rules-settings', schema: CreateUserRuleSettingDtoSchemaValidator.schema },
+  { url: /^\/api\/v1\/rules-settings\/[\w-]+$/, schema: UpdateUserRuleSettingDtoSchemaValidator.schema },
 
-  { url: '/api/v1/tags', schema: CreateTagDtoSchema },
+  { url: '/api/v1/tags', schema: CreateTagDtoSchemaValidator.schema },
 ];
 
 const getRequestSchemaForUrl = (url: string): z.ZodSchema<any> | undefined => {
