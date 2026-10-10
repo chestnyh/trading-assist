@@ -1,1 +1,1 @@
-module.exports = require('./dist/nest.js');
+module.exports = require('./dist/src/nest.js');

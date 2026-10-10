@@ -85,7 +85,7 @@ export const LoginDtoSchema = z.object({
   rememberMe: z.boolean().optional(),
 });
 
-const VerifyEmailDtoSchema = z.object({
+export const VerifyEmailDtoSchema = z.object({
   code: z
     .string()
     .min(1, 'Verification code is required')
@@ -94,11 +94,11 @@ const VerifyEmailDtoSchema = z.object({
   token: z.string().uuid('Token must be a valid UUID'),
 });
 
-const ForgotPasswordDtoSchema = z.object({
+export const ForgotPasswordDtoSchema = z.object({
   email: EmailSchema,
 });
 
-const VerifyPasswordResetDtoSchema = z.object({
+export const VerifyPasswordResetDtoSchema = z.object({
   code: z
     .string()
     .min(1, 'Verification code is required')
@@ -107,7 +107,7 @@ const VerifyPasswordResetDtoSchema = z.object({
   token: z.string().uuid('Token must be a valid UUID'),
 });
 
-const ResetPasswordDtoSchema = z.object({
+export const ResetPasswordDtoSchema = z.object({
   password: StrongPasswordSchema,
   token: z.string().uuid('Token must be a valid UUID'),
 });
