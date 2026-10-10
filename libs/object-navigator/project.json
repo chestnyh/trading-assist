@@ -21,7 +21,8 @@
         "main": "libs/object-navigator/src/index.ts",
         "rootDir": "libs/object-navigator/src",
         "tsConfig": "libs/object-navigator/tsconfig.lib.json",
-        "assets": ["libs/object-navigator/*.md"]
+        "assets": ["libs/object-navigator/*.md"],
+        "generatePackageJson": false
       }
     }
   }

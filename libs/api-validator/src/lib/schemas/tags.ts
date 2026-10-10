@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createSchemaValidator } from '../core';
 
-export const CreateTagDtoSchema = z.object({
+const CreateTagDtoSchema = z.object({
   name: z.string().min(2).max(20),
 });
 

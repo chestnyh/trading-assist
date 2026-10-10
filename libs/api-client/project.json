@@ -20,7 +20,9 @@
         "main": "libs/api-client/src/index.ts",
         "rootDir": "libs/api-client/src",
         "tsConfig": "libs/api-client/tsconfig.lib.json",
-        "assets": ["libs/api-client/*.md"]
+        "assets": ["libs/api-client/*.md"],
+        "generatePackageJson": false
+
       }
     },
     "generate-openapi": {

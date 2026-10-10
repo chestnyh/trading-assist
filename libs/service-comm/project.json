@@ -21,7 +21,8 @@
         "main": "libs/service-comm/src/index.ts",
         "rootDir": "libs/service-comm/src",
         "tsConfig": "libs/service-comm/tsconfig.lib.json",
-        "assets": ["libs/service-comm/*.md"]
+        "assets": ["libs/service-comm/*.md"],
+        "generatePackageJson": false
       }
     }
   }
