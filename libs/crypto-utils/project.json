@@ -21,7 +21,8 @@
         "main": "libs/crypto-utils/src/index.ts",
         "rootDir": "libs/crypto-utils/src",
         "tsConfig": "libs/crypto-utils/tsconfig.lib.json",
-        "assets": []
+        "assets": [],
+        "generatePackageJson": false
       }
     }
   }

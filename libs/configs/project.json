@@ -21,7 +21,9 @@
         "main": "libs/configs/src/index.ts",
         "rootDir": "libs/configs/src",
         "tsConfig": "libs/configs/tsconfig.lib.json",
-        "assets": []
+        "assets": [],
+        "generatePackageJson": false
+
       },
       "configurations": {
         "development": {},
