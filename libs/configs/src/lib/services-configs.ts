@@ -66,15 +66,16 @@ export class ServicesConfigs extends Configs {
     const nodeEnv = process.env['NODE_ENV'];
     let configSource;
     switch ( nodeEnv ){
-        case 'production':
-        case 'test':  
-          configSource = new ProcessEnvConfigSource();
-          break; 
+        
         case 'api-int-tests':
           configSource = new EnvFileConfigSource(join(findWorkspaceRoot(), ".env.api-int-tests")); 
           break;
+        case 'development':
+          configSource = new EnvFileConfigSource(join(findWorkspaceRoot(), ".env.dev"));
+          break;
+        case 'production':
         default:
-          configSource = new EnvFileConfigSource(join(findWorkspaceRoot(), ".env.dev"));   
+          configSource = new ProcessEnvConfigSource();  
     }
     return configSource;
   }
