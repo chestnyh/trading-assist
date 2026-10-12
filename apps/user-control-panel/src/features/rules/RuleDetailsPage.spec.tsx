@@ -15,8 +15,9 @@ jest.mock("../../app/contexts/RulesContext", () => ({
   useRules: () => ({ getRuleById: mockGetRuleById }),
 }));
 
+let mockIsAuthenticated = true;
 jest.mock("../../app/contexts/AuthContext", () => ({
-  useAuth: () => ({ token: "test-token" }),
+  useAuth: () => ({ isAuthenticated: mockIsAuthenticated }),
 }));
 
 const mockUseRuleLogs = jest.fn();
@@ -36,6 +37,7 @@ jest.mock("../../shared/ui/forms/JsonEditorField", () => ({
 beforeEach(() => {
   jest.clearAllMocks();
   mockParamsId = "rule-1";
+  mockIsAuthenticated = true;
   mockUseRuleLogs.mockReturnValue({
     logs: [],
     isConnected: true,
@@ -75,13 +77,23 @@ describe("RuleDetailsPage (component integration)", () => {
     await waitFor(() => expect(mockGetRuleById).toHaveBeenCalledWith("rule-7"));
   });
 
-  it("passes ruleId and token through to useRuleLogs", async () => {
+  it("passes ruleId to useRuleLogs and enables streaming for an authenticated user", async () => {
     mockParamsId = "rule-7";
     mockGetRuleById.mockResolvedValue({ ...existingRule, id: "rule-7" });
     render(<RuleDetailsPage />);
 
     await screen.findByText(existingRule.name);
-    expect(mockUseRuleLogs).toHaveBeenCalledWith({ ruleId: "rule-7", token: "test-token" });
+    expect(mockUseRuleLogs).toHaveBeenCalledWith({ ruleId: "rule-7", enabled: true });
+  });
+
+  it("disables log streaming when the user is not authenticated", async () => {
+    mockIsAuthenticated = false;
+    mockParamsId = "rule-7";
+    mockGetRuleById.mockResolvedValue({ ...existingRule, id: "rule-7" });
+    render(<RuleDetailsPage />);
+
+    await screen.findByText(existingRule.name);
+    expect(mockUseRuleLogs).toHaveBeenCalledWith({ ruleId: "rule-7", enabled: false });
   });
 
   it("renders rule name, description, structured view and JSON view once loaded", async () => {

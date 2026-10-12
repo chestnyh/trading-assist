@@ -12,16 +12,21 @@ import {
   setRefreshCookie,
 } from './cookies';
 
-const createConfig = (overrides: Record<string, unknown> = {}) =>
-  ({
-    get: (key: string) =>
-      ({
-        AUTH_COOKIE_SAME_SITE: 'lax',
-        AUTH_COOKIE_SECURE: false,
-        AUTH_COOKIE_DOMAIN: undefined,
-        ...overrides,
-      })[key],
-  }) as unknown as ServicesConfigs;
+// Config values are strings, as they come from env files / process.env.
+const createConfig = (overrides: Record<string, string | undefined> = {}) => {
+  const values: Record<string, string | undefined> = {
+    AUTH_COOKIE_SAME_SITE: 'lax',
+    AUTH_COOKIE_SECURE: 'false',
+    AUTH_COOKIE_DOMAIN: undefined,
+    ...overrides,
+  };
+
+  return {
+    get: (key: string) => values[key],
+    getBoolean: (key: string) =>
+      values[key] === undefined ? undefined : values[key]?.toLowerCase() === 'true',
+  } as unknown as ServicesConfigs;
+};
 
 const createResponse = () => ({ cookie: jest.fn(), clearCookie: jest.fn() }) as never;
 
@@ -74,7 +79,7 @@ describe('auth cookies', () => {
       res as never,
       'access-value',
       1000,
-      createConfig({ AUTH_COOKIE_SECURE: true, AUTH_COOKIE_SAME_SITE: 'strict' })
+      createConfig({ AUTH_COOKIE_SECURE: 'true', AUTH_COOKIE_SAME_SITE: 'strict' })
     );
 
     expect(res.cookie).toHaveBeenCalledWith(

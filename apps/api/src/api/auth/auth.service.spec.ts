@@ -48,11 +48,16 @@ const createHarness = () => {
     fn(modelsService)
   );
 
+  const configValues: Record<string, string> = {
+    JWT_STREAM_TICKET_EXPIRES_IN: '60s',
+  };
+  // Mirrors the ServicesConfigs getters used by AuthService and the cookie helpers.
   const configService = {
-    get: (key: string) =>
-      ({
-        JWT_STREAM_TICKET_EXPIRES_IN: '60s',
-      })[key],
+    get: (key: string) => configValues[key],
+    getNumber: (key: string) =>
+      configValues[key] === undefined ? undefined : Number(configValues[key]),
+    getBoolean: (key: string) =>
+      configValues[key] === undefined ? undefined : configValues[key].toLowerCase() === 'true',
   };
 
   const service = new AuthService(
