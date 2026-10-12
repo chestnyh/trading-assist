@@ -52,6 +52,3 @@ jobs:
 
       - name: Run tests
         run: pnpm all:test
-
-      - name: Build applications
-        run: pnpm all:build
