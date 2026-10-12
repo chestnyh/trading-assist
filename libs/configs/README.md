@@ -197,6 +197,7 @@ Loaded from `process.env` in production, `.env.api-int-tests` for API integratio
 | `JWT_REFRESH_REMEMBER_EXPIRES_IN` | `30d` | Renewal credential lifetime with "Remember me" |
 | `JWT_STREAM_TICKET_EXPIRES_IN` | `60s` | Log-stream ticket lifetime |
 | `AUTH_REFRESH_GRACE_MS` | | Concurrent-renewal grace window before reuse detection |
+| `AUTH_COOKIE_SECURE` | `false` | Send auth cookies over HTTPS only (`true` / `false`); set `true` in production |
 | `AUTH_COOKIE_SAME_SITE` | `lax` | `SameSite` policy for auth cookies |
 | `AUTH_COOKIE_DOMAIN` | | Cookie domain; unset means host-only cookies |
 | `MAX_PASSWORD_RESET_ATTEMPTS` | `5` | Password reset attempts allowed |

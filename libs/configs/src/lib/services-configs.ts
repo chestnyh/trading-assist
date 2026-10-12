@@ -54,6 +54,7 @@ export class ServicesConfigs extends Configs {
       JWT_REFRESH_EXPIRES_IN: process.env['JWT_REFRESH_EXPIRES_IN'] || '24h',
       JWT_REFRESH_REMEMBER_EXPIRES_IN: process.env['JWT_REFRESH_REMEMBER_EXPIRES_IN'] || '30d',
       JWT_STREAM_TICKET_EXPIRES_IN: process.env['JWT_STREAM_TICKET_EXPIRES_IN'] || '60s',
+      AUTH_COOKIE_SECURE: this.initialConfig['AUTH_COOKIE_SECURE'] || 'false',
       AUTH_COOKIE_SAME_SITE: process.env['AUTH_COOKIE_SAME_SITE'] || 'lax',
       AUTH_COOKIE_DOMAIN: process.env['AUTH_COOKIE_DOMAIN'],
       AUTH_REFRESH_GRACE_MS: process.env['AUTH_REFRESH_GRACE_MS'],
