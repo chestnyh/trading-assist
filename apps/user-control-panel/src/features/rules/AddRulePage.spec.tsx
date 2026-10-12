@@ -107,12 +107,12 @@ describe("AddRulePage (component integration, real RuleForm/ActionEditor)", () =
 
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
-    await waitFor(() =>
-      expect(mockRulesControllerCreate).toHaveBeenCalledWith(
-        expect.objectContaining({ name: "My rule", description: "Desc" })
-      )
-    );
+    // Wait for the end of the save flow (create -> rules refetch -> navigate),
+    // so every RulesProvider state update happens while the test is waiting.
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/rules"));
+    expect(mockRulesControllerCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "My rule", description: "Desc" })
+    );
   });
 
   it("switches to JSON mode and renders the mocked json editor", async () => {
@@ -190,6 +190,9 @@ describe("AddRulePage (component integration, real RuleForm/ActionEditor)", () =
     expect(await screen.findByRole("button", { name: "Processing..." })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
 
+    // Let the save finish before the test ends, so the rules refetch doesn't
+    // update RulesProvider after the test is done.
     resolveCreate({ status: 201, data: {} });
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith("/rules"));
   });
 });

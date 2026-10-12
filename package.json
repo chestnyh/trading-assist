@@ -61,7 +61,7 @@
     "all:build": "nx run-many --target=build --all",
     "all:start": "nx run-many --target=serve --all --parallel=5",
     "all:test": "nx run-many --target=test --all",
-    "all:lint": "nx run-many --target=lint --all",
+    "all:lint": "NODE_OPTIONS=--trace-deprecation NODE_OPTIONS=--disable-warning=DEP0180 nx run-many --target=lint --all --verbose",
     "//development": "Docker is a tool that is responsible for the docker of the trading assist.",
     "development:check-env-file": "nx run development:check-env-file",
     "development:check-envs:examples-check": "nx run development:check-envs -- examples-check",
@@ -115,12 +115,6 @@
     "typescript": "5.7.3"
   },
   "pnpm": {
-    "overrides": {
-      "marked": "4.3.0",
-      "undici": "6.21.3",
-      "prisma": "^7.8.0",
-      "@prisma/client": "^7.8.0"
-    },
     "ignoredBuiltDependencies": [
       "@nestjs/core",
       "@parcel/watcher",

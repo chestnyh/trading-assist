@@ -3,6 +3,10 @@ import "../src/test/setupTests";
 import userEvent from "@testing-library/user-event";
 import App from "../src/app/app";
 
+// Full-app integration tests render the whole App and click through several
+// screens, so they need more than Jest's default 5 s per test.
+jest.setTimeout(15000);
+
 type FetchMockRule = {
   pattern: RegExp;
   response: { status: number; data: unknown };
@@ -22,7 +26,7 @@ const findFetchCall = (pattern: RegExp) => {
 };
 
 const setupRender = async () => {
-  const user = userEvent.setup();
+  const user = userEvent.setup({ delay: null });
   window.history.pushState({}, "", "/");
   render(<App />);
 

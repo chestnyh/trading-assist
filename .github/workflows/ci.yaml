@@ -6,14 +6,15 @@ on:
     branches: [ dev ]
 
 env:
-  NODE_VERSION: '22'
-  PNPM_VERSION: '9'
+  NODE_VERSION: '24'
+  PNPM_VERSION: '12'
 
 jobs:
   test:
     name: Test & Lint
     runs-on: ubuntu-latest
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -43,11 +44,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build applications
+        run: pnpm all:build
+
       - name: Run linting
         run: pnpm all:lint
 
       - name: Run tests
         run: pnpm all:test
-
-      - name: Build applications
-        run: pnpm all:build
