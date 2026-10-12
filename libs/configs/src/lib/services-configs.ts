@@ -67,8 +67,9 @@ export class ServicesConfigs extends Configs {
     let configSource;
     switch ( nodeEnv ){
         case 'production':
+        case 'test':  
           configSource = new ProcessEnvConfigSource();
-          break;
+          break; 
         case 'api-int-tests':
           configSource = new EnvFileConfigSource(join(findWorkspaceRoot(), ".env.api-int-tests")); 
           break;

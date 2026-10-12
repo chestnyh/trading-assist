@@ -8,12 +8,14 @@ on:
 env:
   NODE_VERSION: '24'
   PNPM_VERSION: '12'
-  
+  NODE_ENV: 'test'
+
 jobs:
   test:
     name: Test & Lint
     runs-on: ubuntu-latest
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v4
 
