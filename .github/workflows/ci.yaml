@@ -8,6 +8,8 @@ on:
 env:
   NODE_VERSION: '24'
   PNPM_VERSION: '12'
+  # should be removed when we give up using ts-node 
+  NODE_OPTIONS: --disable-warning=DEP0180
 
 jobs:
   test:
