@@ -15,7 +15,6 @@
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "development",
       "options": {
         "outputPath": "libs/configs/dist",
         "main": "libs/configs/src/index.ts",
