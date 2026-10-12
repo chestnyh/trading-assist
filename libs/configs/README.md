@@ -12,7 +12,7 @@ It loads raw values from a configuration source (an env file or `process.env`), 
 
 - **Separate config sets**: services, DevOps tooling and scripts each get only the keys they need.
 - **Pluggable sources**: values come from a dotenv file or `process.env`; a new source is one `ConfigSource` implementation.
-- **Per-environment loading**: `ServicesConfigs` picks its source from `NODE_ENV` (`.env.dev`, `.env.api-int-tests`, or `process.env` in production).
+- **Per-environment loading**: `ServicesConfigs` picks its source from `NODE_ENV` (`.env.dev` in development, `.env.api-int-tests` for API integration tests, `process.env` otherwise).
 - **Defaults**: missing values fall back to defaults defined in the config set.
 - **Typed getters**: `getNumber` and `getBoolean` parse values; `required.*` getters throw on missing or invalid values instead of returning `undefined`.
 - **NestJS integration**: `ServicesConfigsModule` is global and injects a fully loaded `ServicesConfigs` anywhere.
@@ -39,8 +39,8 @@ Values are not available until `setUp()` has resolved. In NestJS apps, `Services
 
 | Source | Reads from | Used by |
 |---|---|---|
-| `EnvFileConfigSource` | A dotenv file in the workspace root (`${VAR}` references are expanded) | `ServicesConfigs` outside production, `DevopsConfigs`, `ScriptConfigs` |
-| `ProcessEnvConfigSource` | A copy of `process.env` | `ServicesConfigs` in production |
+| `EnvFileConfigSource` | A dotenv file in the workspace root (`${VAR}` references are expanded) | `ServicesConfigs` in development and API integration tests, `DevopsConfigs`, `ScriptConfigs` |
+| `ProcessEnvConfigSource` | A copy of `process.env` | `ServicesConfigs` in production, CI and when `NODE_ENV` is unset |
 
 To check which source a config set uses, call `usesSource()`:
 
@@ -54,13 +54,13 @@ if (configs.usesSource(ProcessEnvConfigSource)) {
 
 | `NODE_ENV` | Source |
 |---|---|
-| `production` | `process.env` |
 | `api-int-tests` | `.env.api-int-tests` |
-| anything else | `.env.dev` |
+| `development` | `.env.dev` |
+| anything else, or unset (including `production`) | `process.env` |
 
 The workspace root is found by walking up from the library until a directory with `pnpm-workspace.yaml` is found.
 
-`dotenv` and `dotenv-expand` are dev dependencies loaded lazily, so production (which only uses `process.env`) never needs them.
+`dotenv` and `dotenv-expand` are dev dependencies loaded lazily, so environments that only use `process.env` (like production) never need them.
 
 ### Reading values
 
@@ -161,7 +161,7 @@ Keys without a default are `undefined` when not set. Defaults also apply when a 
 
 #### `ServicesConfigs`
 
-Loaded from `process.env` in production, `.env.api-int-tests` for API integration tests, and `.env.dev` otherwise.
+Loaded from `.env.dev` in development, `.env.api-int-tests` for API integration tests, and `process.env` otherwise.
 
 | Key | Default | Description |
 |---|---|---|

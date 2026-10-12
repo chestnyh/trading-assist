@@ -9,8 +9,8 @@ import { EnvFileConfigSource } from './sources/env-file.source';
 /**
  * Configuration for backend services: API, database, RabbitMQ, Redis, logging, auth, etc.
  *
- * Values are loaded from `process.env` in production, from `.env.api-int-tests`
- * for API integration tests, and from `.env.dev` otherwise.
+ * Values are loaded from `.env.dev` in development, from `.env.api-int-tests`
+ * for API integration tests, and from `process.env` otherwise (production, CI, unset).
  */
 export class ServicesConfigs extends Configs {
 
