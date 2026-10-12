@@ -13,7 +13,6 @@ import { EnvFileConfigSource } from './sources/env-file.source';
 export class DevopsConfigs extends Configs {
   setUpConfigsFromInit() {
      this.configs = {
-      ...this.configs,
       AWS_ECR_REGION: this.initialConfig['AWS_ECR_REGION'],
       AWS_ECR_ACCOUNT_ID: this.initialConfig['AWS_ECR_ACCOUNT_ID'],
       AWS_ECR_REPO_NAMESPACE: this.initialConfig['AWS_ECR_REPO_NAMESPACE'],
