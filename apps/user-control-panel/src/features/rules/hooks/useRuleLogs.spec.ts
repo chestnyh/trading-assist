@@ -43,7 +43,7 @@ const latestSource = () => FakeEventSource.instances[FakeEventSource.instances.l
 
 // Lets the async connect() finish: ticket resolves, then EventSource is created.
 // eslint-disable-next-line
-const flushConnect = () => act(async () => {});
+const flushConnect = () => act(async () => {await Promise.resolve();});
 
 describe("useRuleLogs", () => {
   it("does not request a ticket or connect when disabled", async () => {
