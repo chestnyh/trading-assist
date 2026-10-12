@@ -149,7 +149,7 @@ Where top-level `await` isn't available (for example, a webpack config), wrap it
 
 ### 4. Configuration keys
 
-Keys without a default are `undefined` when not set.
+Keys without a default are `undefined` when not set. Defaults also apply when a key is set to an empty value.
 
 #### `ServicesConfigs`
 
@@ -241,7 +241,7 @@ Loaded from `.env.dev`.
 | `DOCKER_PROJECT_NAME` | | Docker Compose project name |
 | `DOCKER_DB_VOLUME` | | Volume for database data |
 | `DOCKER_RMQ_VOLUME` | | Volume for RabbitMQ data |
-| `DOCKER_PROFILE` | `external` | Docker Compose profile to run (also used when set to empty) |
+| `DOCKER_PROFILE` | `external` | Docker Compose profile to run |
 
 ## Extending
 
@@ -249,7 +249,7 @@ Loaded from `.env.dev`.
 
 1. Add it in `setUpConfigsFromInit()` of the config set, with a default if it has one:
    ```typescript
-   NEW_KEY: this.initialConfig['NEW_KEY'] ?? 'default',
+   NEW_KEY: this.initialConfig['NEW_KEY'] || 'default', // `||`, so an empty value also gets the default
    ```
 2. Add it to the matching `.env.*.example` file(s).
 3. List it in the [Configuration keys](#4-configuration-keys) table.
