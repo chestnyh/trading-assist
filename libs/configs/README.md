@@ -40,7 +40,15 @@ Values are not available until `setUp()` has resolved. In NestJS apps, `Services
 | Source | Reads from | Used by |
 |---|---|---|
 | `EnvFileConfigSource` | A dotenv file in the workspace root (`${VAR}` references are expanded) | `ServicesConfigs` outside production, `DevopsConfigs`, `ScriptConfigs` |
-| `ProcessEnvConfigSource` | `process.env` as is | `ServicesConfigs` in production |
+| `ProcessEnvConfigSource` | A copy of `process.env` | `ServicesConfigs` in production |
+
+To check which source a config set uses, call `usesSource()`:
+
+```typescript
+if (configs.usesSource(ProcessEnvConfigSource)) {
+  // values come from process.env
+}
+```
 
 `ServicesConfigs` picks its source from `NODE_ENV`:
 

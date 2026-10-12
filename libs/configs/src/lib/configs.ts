@@ -100,6 +100,17 @@ export abstract class Configs {
   }
 
   /**
+   * Checks which source this config set loads from.
+   *
+   * @example
+   * config.usesSource(EnvFileConfigSource);    // true when values come from an EnvFileConfigSource instance
+   * config.usesSource(ProcessEnvConfigSource); // true when values come from a ProcessEnvConfigSource instance
+   */
+  usesSource(sourceType: abstract new (...args: never[]) => ConfigSource): boolean {
+    return this.configSource instanceof sourceType;
+  }
+
+  /**
    * Returns a shallow copy of the raw config as loaded from the source,
    * before {@link setUpConfigsFromInit} processing.
    */
