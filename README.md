@@ -21,6 +21,8 @@ Key features of the platform include:
 
 In summary, the platform is designed to be a powerful, and extensible solution for automated trading(or treading helper), adaptable to a wide range of strategies and requirements.
 
+TEST
+
 ## Team collaboration services
 - Git repository (Github) - https://github.com/chestnyh/trading-assist
 - Task tracker (Click up) - https://app.clickup.com/90151705756/v/o/s/90157055260
