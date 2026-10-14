@@ -43,7 +43,10 @@ export abstract class Configs {
    * const secret = config.required.get('JWT_SECRET');
    */
   readonly required: RequiredConfigs = {
-    get: (configName) => this.must(configName, this.get(configName) || undefined),
+    get: (configName) => {
+      const value = this.get(configName);
+      return this.must(configName, value?.trim() ? value : undefined);
+    },
     getNumber: (configName) => this.must(configName, this.getNumber(configName)),
     getBoolean: (configName) => this.must(configName, this.getBoolean(configName)),
   };
@@ -97,6 +100,17 @@ export abstract class Configs {
    */
   get(configName: string): string | undefined {
     return this.configs[configName];
+  }
+
+  /**
+   * Checks which source this config set loads from.
+   *
+   * @example
+   * config.usesSource(EnvFileConfigSource);    // true when values come from an EnvFileConfigSource instance
+   * config.usesSource(ProcessEnvConfigSource); // true when values come from a ProcessEnvConfigSource instance
+   */
+  usesSource(sourceType: abstract new (...args: never[]) => ConfigSource): boolean {
+    return this.configSource instanceof sourceType;
   }
 
   /**

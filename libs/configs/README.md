@@ -12,7 +12,7 @@ It loads raw values from a configuration source (an env file or `process.env`), 
 
 - **Separate config sets**: services, DevOps tooling and scripts each get only the keys they need.
 - **Pluggable sources**: values come from a dotenv file or `process.env`; a new source is one `ConfigSource` implementation.
-- **Per-environment loading**: `ServicesConfigs` picks its source from `NODE_ENV` (`.env.dev`, `.env.api-int-tests`, or `process.env` in production).
+- **Per-environment loading**: `ServicesConfigs` picks its source from `NODE_ENV` (`.env.dev` in development, `.env.api-int-tests` for API integration tests, `process.env` otherwise).
 - **Defaults**: missing values fall back to defaults defined in the config set.
 - **Typed getters**: `getNumber` and `getBoolean` parse values; `required.*` getters throw on missing or invalid values instead of returning `undefined`.
 - **NestJS integration**: `ServicesConfigsModule` is global and injects a fully loaded `ServicesConfigs` anywhere.
@@ -39,20 +39,28 @@ Values are not available until `setUp()` has resolved. In NestJS apps, `Services
 
 | Source | Reads from | Used by |
 |---|---|---|
-| `EnvFileConfigSource` | A dotenv file in the workspace root (`${VAR}` references are expanded) | `ServicesConfigs` outside production, `DevopsConfigs`, `ScriptConfigs` |
-| `ProcessEnvConfigSource` | `process.env` as is | `ServicesConfigs` in production |
+| `EnvFileConfigSource` | A dotenv file in the workspace root (`${VAR}` references are expanded) | `ServicesConfigs` in development and API integration tests, `DevopsConfigs`, `ScriptConfigs` |
+| `ProcessEnvConfigSource` | A copy of `process.env` | `ServicesConfigs` in production, CI and when `NODE_ENV` is unset |
+
+To check which source a config set uses, call `usesSource()`:
+
+```typescript
+if (configs.usesSource(ProcessEnvConfigSource)) {
+  // values come from process.env
+}
+```
 
 `ServicesConfigs` picks its source from `NODE_ENV`:
 
 | `NODE_ENV` | Source |
 |---|---|
-| `production` | `process.env` |
 | `api-int-tests` | `.env.api-int-tests` |
-| anything else | `.env.dev` |
+| `development` | `.env.dev` |
+| anything else, or unset (including `production`) | `process.env` |
 
 The workspace root is found by walking up from the library until a directory with `pnpm-workspace.yaml` is found.
 
-`dotenv` and `dotenv-expand` are dev dependencies loaded lazily, so production (which only uses `process.env`) never needs them.
+`dotenv` and `dotenv-expand` are dev dependencies loaded lazily, so environments that only use `process.env` (like production) never need them.
 
 ### Reading values
 
@@ -149,11 +157,11 @@ Where top-level `await` isn't available (for example, a webpack config), wrap it
 
 ### 4. Configuration keys
 
-Keys without a default are `undefined` when not set.
+Keys without a default are `undefined` when not set. Defaults also apply when a key is set to an empty value.
 
 #### `ServicesConfigs`
 
-Loaded from `process.env` in production, `.env.api-int-tests` for API integration tests, and `.env.dev` otherwise.
+Loaded from `.env.dev` in development, `.env.api-int-tests` for API integration tests, and `process.env` otherwise.
 
 | Key | Default | Description |
 |---|---|---|
@@ -197,6 +205,7 @@ Loaded from `process.env` in production, `.env.api-int-tests` for API integratio
 | `JWT_REFRESH_REMEMBER_EXPIRES_IN` | `30d` | Renewal credential lifetime with "Remember me" |
 | `JWT_STREAM_TICKET_EXPIRES_IN` | `60s` | Log-stream ticket lifetime |
 | `AUTH_REFRESH_GRACE_MS` | | Concurrent-renewal grace window before reuse detection |
+| `AUTH_COOKIE_SECURE` | `false` | Send auth cookies over HTTPS only (`true` / `false`); set `true` in production |
 | `AUTH_COOKIE_SAME_SITE` | `lax` | `SameSite` policy for auth cookies |
 | `AUTH_COOKIE_DOMAIN` | | Cookie domain; unset means host-only cookies |
 | `MAX_PASSWORD_RESET_ATTEMPTS` | `5` | Password reset attempts allowed |
@@ -240,7 +249,7 @@ Loaded from `.env.dev`.
 | `DOCKER_PROJECT_NAME` | | Docker Compose project name |
 | `DOCKER_DB_VOLUME` | | Volume for database data |
 | `DOCKER_RMQ_VOLUME` | | Volume for RabbitMQ data |
-| `DOCKER_PROFILE` | `external` | Docker Compose profile to run (also used when set to empty) |
+| `DOCKER_PROFILE` | `external` | Docker Compose profile to run |
 
 ## Extending
 
@@ -248,7 +257,7 @@ Loaded from `.env.dev`.
 
 1. Add it in `setUpConfigsFromInit()` of the config set, with a default if it has one:
    ```typescript
-   NEW_KEY: this.initialConfig['NEW_KEY'] ?? 'default',
+   NEW_KEY: this.initialConfig['NEW_KEY'] || 'default', // `||`, so an empty value also gets the default
    ```
 2. Add it to the matching `.env.*.example` file(s).
 3. List it in the [Configuration keys](#4-configuration-keys) table.
