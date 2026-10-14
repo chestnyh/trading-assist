@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 
 import type { ConfigSource, ConfigValues } from './config-source';
 
@@ -22,12 +22,10 @@ export class EnvFileConfigSource implements ConfigSource {
     const dotenv = require('dotenv') as typeof import('dotenv');
     const dotenvExpand = require('dotenv-expand') as typeof import('dotenv-expand');
     /* eslint-enable @typescript-eslint/no-var-requires */
-    const parsed = dotenv.parse(readFileSync(this.envFilePath));
+    const fileContent = await readFile(this.envFilePath);
+    const parsed = dotenv.parse(fileContent);
     //`processEnv: {}` makes dotenv-expand write into a throwaway object instead of `process.env`.
     const result = dotenvExpand.expand({ parsed, processEnv: {} });
-    if(result.error) {
-      throw result.error;
-    }
     return result.parsed ?? {};
   }
 }

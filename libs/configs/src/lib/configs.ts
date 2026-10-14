@@ -43,7 +43,10 @@ export abstract class Configs {
    * const secret = config.required.get('JWT_SECRET');
    */
   readonly required: RequiredConfigs = {
-    get: (configName) => this.must(configName, this.get(configName) || undefined),
+    get: (configName) => {
+      const value = this.get(configName);
+      return this.must(configName, value?.trim() ? value : undefined);
+    },
     getNumber: (configName) => this.must(configName, this.getNumber(configName)),
     getBoolean: (configName) => this.must(configName, this.getBoolean(configName)),
   };

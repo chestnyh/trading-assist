@@ -55,6 +55,7 @@
     "models:migrations:migrate-and-seed": "nx run models:migrations:run; nx run models:migrations:seed seed/initial.js",
     "//configs": "Configs is a library that is responsible for the configs of the trading assist.",
     "configs:build": "nx run configs:build",
+    "configs:test": "nx run configs:test",
     "check:md-links": "ts-node -P scripts/tsconfig.scripts.json scripts/check-markdown-links.ts --all",
     "check:md-links:staged": "ts-node -P scripts/tsconfig.scripts.json scripts/check-markdown-links.ts",
     "//all": "All is a tool that is responsible for the command that can be run for all services of the trading assist.",

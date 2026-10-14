@@ -16,6 +16,7 @@ export class ServicesConfigs extends Configs {
 
   setUpConfigsFromInit() {
     this.configs = {
+      ...this.configs,
       API_BASE_URL: this.initialConfig['API_BASE_URL'],
       API_HOST: this.initialConfig['API_HOST'] || 'http://localhost',
       API_PORT: this.initialConfig['API_PORT'] || '3001',
