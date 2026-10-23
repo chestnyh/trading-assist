@@ -9,11 +9,15 @@ import BinanceSettingsGroup from "./components/service-groups/BinanceSettingsGro
 import BybitSettingsGroup from "./components/service-groups/BybitSettingsGroup";
 import KrakenSettingsGroup from "./components/service-groups/KrakenSettingsGroup";
 import WebhooksSettingsGroup from "./components/service-groups/WebhooksSettingsGroup";
+import { PAGE, PAGE_LEAD, PAGE_TITLE } from "../../shared/ui/styles";
 
 export default function Settings() {
   return (
-    <div className="px-4 md:px-8 lg:px-12 py-6 max-w-5xl mx-auto">
-      <h1 className="text-h4 text-primary mb-6">Rules Settings</h1>
+    <div className={PAGE}>
+      <h1 className={PAGE_TITLE}>Rules Settings</h1>
+      <p className={`${PAGE_LEAD} mb-8`}>
+        Connect your exchanges and the channels where your rules notify you.
+      </p>
       <div className="flex flex-col gap-3">
         <TelegramSettingsGroup />
         <EmailSettingsGroup />

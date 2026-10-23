@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronDown, LogOut } from "lucide-react";
 import UserAvatar from "../avatar/UserAvatar";
 import { useAuth } from "../../../app/contexts/AuthContext";
+import { FOCUS_RING } from "../styles";
 
 const UserMenuButton = () => {
     const { user, logout } = useAuth();
@@ -63,32 +64,33 @@ const UserMenuButton = () => {
                 ref={buttonRef}
                 type="button"
                 onClick={handleToggle}
-                className="
-                    flex items-center gap-2
-                    px-2 py-1 
-                    rounded-md
+                className={`
+                    flex items-center gap-1.5
+                    p-0.5 pr-2
+                    rounded-full
+                    border border-neutral-200 dark:border-neutral-800
                     cursor-pointer
-                    hover:bg-accent-hover/40
+                    hover:bg-neutral-50 dark:hover:bg-neutral-900
                     transition-colors
-                "
+                    ${FOCUS_RING}
+                `}
                 aria-label="User menu"
                 aria-expanded={isOpen}
             >
                 <UserAvatar
-                    size={40}
+                    size={32}
                     name={user?.name || user?.nickname || user?.email}
                     alt={user?.nickname || user?.email || "User"}
                 />
                 <ChevronDown
-                    className={`w-4 h-4 text-text-secondary hover:text-primary-hover transition-all ${isOpen ? "rotate-180" : ""
-                        }`}
+                    className={`w-4 h-4 text-neutral-500 dark:text-neutral-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
                 />
             </button>
 
             {isOpen && typeof document !== 'undefined' && createPortal(
                 <div
                     ref={dropdownMenuRef}
-                    className="fixed z-[9999] bg-background border-2 border-border rounded-md shadow-lg overflow-hidden min-w-[200px]"
+                    className="fixed z-[9999] font-inter-tight bg-white border border-neutral-200 rounded-xl shadow-lg overflow-hidden min-w-[200px] dark:bg-neutral-900 dark:border-neutral-800"
                     style={{
                         top: `${dropdownPosition.top}px`,
                         left: `${dropdownPosition.left}px`,
@@ -96,11 +98,11 @@ const UserMenuButton = () => {
                     }}
                 >
                     <div className="py-1">
-                        <div className="px-4 py-3 border-b border-border">
-                            <div className="text-sm font-semibold text-text">
+                        <div className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-800">
+                            <div className="text-sm font-semibold text-neutral-950 dark:text-white">
                                 {user?.name || user?.nickname || "User"}
                             </div>
-                            <div className="text-xs text-text-secondary mt-1">
+                            <div className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 truncate">
                                 {user?.email}
                             </div>
                         </div>
@@ -111,13 +113,13 @@ const UserMenuButton = () => {
                                 w-full
                                 flex items-center gap-3
                                 px-4 py-3
-                                text-sm text-text
-                                hover:bg-accent-hover/40
+                                text-sm font-medium text-neutral-900 dark:text-white
+                                hover:bg-neutral-50 dark:hover:bg-neutral-800
                                 transition-colors
                                 cursor-pointer
                             "
                         >
-                            <LogOut className="w-4 h-4 text-text-secondary" />
+                            <LogOut className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
                             <span>Logout</span>
                         </button>
                     </div>

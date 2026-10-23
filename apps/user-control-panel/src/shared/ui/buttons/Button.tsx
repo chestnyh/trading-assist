@@ -33,16 +33,17 @@ export function Button({
                 disabled={disabled}
                 aria-label={ariaLabel}
                 className={`
-          ${isTextVariant ? "" : "w-full rounded-md"}
-          font-sans font-medium
+          ${isTextVariant ? "rounded-md" : "w-full rounded-full"}
+          font-inter-tight
           transition-colors
+          focus-visible:outline-2 focus-visible:outline-offset-2
+          focus-visible:outline-forest-300 dark:focus-visible:outline-brand-300
           ${isTextVariant ? "inline-flex items-center gap-2" : "flex items-center justify-center gap-2"}
-          ${isTextVariant ? "text-body-md" : "h-8 px-4 text-btn-sm md:h-10 md:px-5 md:text-btn-md lg:h-12 lg:px-6 lg:text-btn-lg"}
-          ${variant === "primary" ? "bg-primary text-text hover:bg-primary-active active:bg-primary-hover" : ""} 
-          ${variant === "outline" ? "border-2 border-border text-primary bg-transparent hover:bg-primary hover:text-text active:bg-primary-active" : ""}
-
-          ${variant === "error" ? "bg-error text-text  " : ""}
-          ${variant === "text" ? "text-primary   hover:text-accent dark:hover:text-accent bg-transparent" : ""}
+          ${isTextVariant ? "text-base font-medium" : "h-12 px-6 text-base font-semibold [&_svg]:w-5 [&_svg]:h-5"}
+          ${variant === "primary" ? `bg-brand-300 text-forest-300 ${disabled ? "" : "hover:bg-brand-200"}` : ""}
+          ${variant === "outline" ? `border border-neutral-200 bg-white text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-white ${disabled ? "" : "hover:bg-neutral-50 dark:hover:bg-neutral-800"}` : ""}
+          ${variant === "error" ? "bg-error text-white" : ""}
+          ${variant === "text" ? "text-forest-200 hover:text-forest-300 dark:text-brand-300 dark:hover:text-brand-200 hover:underline underline-offset-4 bg-transparent" : ""}
           ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
           ${className}
         `}

@@ -20,15 +20,17 @@ export function AuthSocialButton({
             className={`
                 w-full
                 flex items-center justify-center gap-3
-                px-4 py-3
-                rounded-md
-                border border-text dark:border-[var(--color-text-dark)]
-                 bg-bg-secondary dark:bg-[var(--color-bg-secondary-dark)]
-                text-text dark:text-[var(--color-text-dark)]
-                font-sans font-medium text-body-md
+                h-12 px-4
+                rounded-full
+                border border-neutral-200 dark:border-neutral-800
+                bg-white dark:bg-neutral-900
+                text-neutral-900 dark:text-white
+                font-inter-tight font-semibold text-base
                 transition-colors
-                hover:bg-bgSecondary dark:hover:bg-[var(--color-bg-secondary-dark)]
+                hover:bg-neutral-50 dark:hover:bg-neutral-800
                 cursor-pointer
+                focus-visible:outline-2 focus-visible:outline-offset-2
+                focus-visible:outline-forest-300 dark:focus-visible:outline-brand-300
                 ${className}
             `}
         >

@@ -2,6 +2,14 @@ import React from 'react';
 import { ACTION_TYPES } from './actionDefinitions';
 import { createActionNode, getActionConfig, getDefaultArguments } from './actionTree';
 import { ActionChildSlotConfig, ActionFieldConfig, ActionNode, ActionType } from './types';
+import {
+  CARD,
+  COMPACT_FIELD,
+  FIELD_LABEL,
+  SMALL_BUTTON_DANGER,
+  SMALL_BUTTON_PRIMARY,
+  SUBTLE_SURFACE,
+} from '../../../../shared/ui/styles';
 
 type ActionEditorProps = {
   action: ActionNode;
@@ -73,16 +81,15 @@ const ActionEditorComponent = React.memo(function ActionEditor({ action, onChang
   };
 
   return (
-    <div className="rounded-xl border-2 border-border bg-bg-secondary/30 p-4 my-3" style={{ marginLeft: depth ? 16 : 0 }}>
+    <div className={`${depth % 2 === 0 ? SUBTLE_SURFACE : CARD} p-4 my-3`} style={{ marginLeft: depth ? 16 : 0 }}>
       <div className="flex flex-col md:flex-row gap-3 md:items-center mb-3">
-        <label className="font-medium text-primary md:w-32" htmlFor={`action-type-${action.id}`}>Action Type</label>
+        <label className={`${FIELD_LABEL} md:w-32 shrink-0`} htmlFor={`action-type-${action.id}`}>Action Type</label>
         <select
           id={`action-type-${action.id}`}
           value={action.type}
           disabled={readOnly}
           onChange={(event) => handleTypeChange(event.target.value as ActionType)}
-          className={`flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70 
-            ${readOnly ? "appearance-none cursor-default": ""}`}
+          className={`${COMPACT_FIELD} flex-1 ${readOnly ? "appearance-none cursor-default" : "cursor-pointer"}`}
         >
           <option value="">Select Type</option>
           {categories.map(category => {
@@ -103,7 +110,7 @@ const ActionEditorComponent = React.memo(function ActionEditor({ action, onChang
           <button
             type="button"
             onClick={onDelete}
-            className="rounded-md border border-error px-4 py-2 text-error hover:bg-error/10"
+            className={SMALL_BUTTON_DANGER}
           >
             Delete
           </button>
@@ -163,13 +170,13 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
   if (field.type === 'json') {
     return (
       <div className="flex flex-col gap-2 mb-3">
-        <label className="font-medium text-primary" htmlFor={inputId}>{field.label}</label>
+        <label className={FIELD_LABEL} htmlFor={inputId}>{field.label}</label>
         <textarea
           id={inputId}
           value={formatJsonValue(value ?? field.defaultValue)}
           disabled={readOnly}
           onChange={(event) => onChange(parseJsonValue(event.target.value, value ?? field.defaultValue))}
-          className="min-h-28 rounded-md border-2 border-border bg-background px-3 py-2 font-mono text-sm text-primary disabled:opacity-70"
+          className={`${COMPACT_FIELD} min-h-28 font-mono`}
         />
       </div>
     );
@@ -186,7 +193,7 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
     });
     return (
       <div className="flex flex-col gap-2 mb-3">
-        <label className="font-medium text-primary">{field.label}</label>
+        <label className={FIELD_LABEL}>{field.label}</label>
         {items.map((item, index) => (
           <div key={index} className="flex gap-2">
             <input
@@ -199,7 +206,7 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
                 nextItems[index] = { ...nextItems[index], key: event.target.value };
                 onChange(nextItems);
               }}
-              className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
+              className={`${COMPACT_FIELD} flex-1`}
             />
             <input
               type="text"
@@ -211,7 +218,7 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
                 nextItems[index] = { ...nextItems[index], value: event.target.value };
                 onChange(nextItems);
               }}
-              className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
+              className={`${COMPACT_FIELD} flex-1`}
             />
             {!readOnly && (
               <button
@@ -220,7 +227,7 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
                   const nextItems = items.filter((_, i) => i !== index);
                   onChange(nextItems);
                 }}
-                className="rounded-md border border-error px-3 py-2 text-error hover:bg-error/10"
+                className={`${SMALL_BUTTON_DANGER} !h-auto shrink-0`}
               >
                 Remove
               </button>
@@ -232,7 +239,7 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
             type="button"
             onClick={() => onChange([...items, { key: '', value: '' }])}
             disabled={hasEmptyItem}
-            className="rounded-md bg-primary px-4 py-2 text-background hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`${SMALL_BUTTON_PRIMARY} w-fit`}
           >
             Add Item
           </button>
@@ -247,7 +254,7 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
     const hasEmptyItem = items.some(item => String(item).trim() === '');
     return (
       <div className="flex flex-col gap-2 mb-3">
-        <label className="font-medium text-primary">{field.label}</label>
+        <label className={FIELD_LABEL}>{field.label}</label>
         {items.map((item, index) => (
           <div key={index} className="flex gap-2">
             <input
@@ -259,7 +266,7 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
                 nextItems[index] = event.target.value;
                 onChange(nextItems);
               }}
-              className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
+              className={`${COMPACT_FIELD} flex-1`}
             />
             {!readOnly && (
               <button
@@ -268,7 +275,7 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
                   const nextItems = items.filter((_, i) => i !== index);
                   onChange(nextItems);
                 }}
-                className="rounded-md border border-error px-3 py-2 text-error hover:bg-error/10"
+                className={`${SMALL_BUTTON_DANGER} !h-auto shrink-0`}
               >
                 Remove
               </button>
@@ -280,7 +287,7 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
             type="button"
             onClick={() => onChange([...items, ''])}
             disabled={hasEmptyItem}
-            className="rounded-md bg-primary px-4 py-2 text-background hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`${SMALL_BUTTON_PRIMARY} w-fit`}
           >
             Add Item
           </button>
@@ -291,16 +298,14 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
 
   return (
     <div className="flex flex-col md:flex-row gap-3 md:items-center mb-3">
-      <label className="font-medium text-primary md:w-32" htmlFor={inputId}>{field.label}</label>
+      <label className={`${FIELD_LABEL} md:w-32 shrink-0`} htmlFor={inputId}>{field.label}</label>
       {field.type === 'select' ? (
         <select
           id={inputId}
           value={String(value ?? field.defaultValue ?? '')}
           disabled={readOnly}
           onChange={(event) => onChange(event.target.value)}
-          className={`flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70
-             ${readOnly ? "appearance-none cursor-default": ""}
-            `}
+          className={`${COMPACT_FIELD} flex-1 ${readOnly ? "appearance-none cursor-default" : "cursor-pointer"}`}
         >
           {(field.options ?? []).map(option => (
             <option key={option} value={option}>{option}</option>
@@ -313,7 +318,7 @@ const ActionField = React.memo(function ActionFieldComponent({ field, actionId, 
           value={String(value ?? field.defaultValue ?? '')}
           disabled={readOnly}
           onChange={(event) => onChange(field.type === 'number' ? Number(event.target.value) || 0 : event.target.value)}
-          className="flex-1 rounded-md border-2 border-border bg-background px-3 py-2 text-primary disabled:opacity-70"
+          className={`${COMPACT_FIELD} flex-1`}
         />
       )}
     </div>
@@ -342,14 +347,14 @@ function ActionChildSlot({ slot, value, readOnly, depth, onAdd, onChange, onDele
     : isActionNode(value) ? [value] : [];
 
   return (
-    <div className="mt-4 border-t border-border pt-4">
+    <div className="mt-4 border-t border-neutral-200 dark:border-neutral-800 pt-4">
       <div className="flex items-center justify-between gap-3 mb-3">
-        <span className="font-medium text-primary">{slot.label}</span>
+        <span className="text-sm font-semibold text-neutral-950 dark:text-white">{slot.label}</span>
         {!readOnly && (slot.multiple || children.length === 0) && (
           <button
             type="button"
             onClick={onAdd}
-            className="rounded-md bg-primary px-4 py-2 text-background hover:opacity-90"
+            className={SMALL_BUTTON_PRIMARY}
           >
             Add Action
           </button>

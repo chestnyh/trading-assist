@@ -1,8 +1,15 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
+import { ICON_BUTTON } from "../styles";
 
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+    className?: string;
+}
+
+const DEFAULT_CLASS_NAME = ICON_BUTTON;
+
+export function ThemeToggle({ className = DEFAULT_CLASS_NAME }: ThemeToggleProps) {
     const [isDark, setIsDark] = useState<boolean>(() => {
         if (typeof window === "undefined") return false;
 
@@ -31,7 +38,7 @@ export function ThemeToggle() {
         <button
             type="button"
             onClick={() => setIsDark((prev) => !prev)}
-            className="flex items-center justify-center gap-2 text-primary   hover:text-accent dark:hover:text-accent bg-transparent"
+            className={className}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         >
             {isDark ? <Sun /> : <Moon />}

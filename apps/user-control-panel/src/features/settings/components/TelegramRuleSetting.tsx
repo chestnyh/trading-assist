@@ -7,6 +7,7 @@ import {
 import type { DetailField } from "./RuleSetting";
 import RuleSetting from "./RuleSetting";
 import type { SettingItem } from "./useServiceRuleSettings";
+import { COMPACT_FIELD, NOTE, SMALL_BUTTON_PRIMARY } from "../../../shared/ui/styles";
 
 type TelegramStage = "create" | "receive" | "waiting" | "confirm" | "success";
 
@@ -100,8 +101,8 @@ export default function TelegramRuleSetting(props: {
     const total = 4;
     const pct = Math.min(100, Math.max(0, Math.round((stepIndex / total) * 100)));
     return (
-      <div className="h-3 w-full rounded-md border border-border bg-background overflow-hidden">
-        <div className="h-full bg-blue-500" style={{ width: `${pct}%` }} />
+      <div className="h-2 w-full rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
+        <div className="h-full rounded-full bg-forest-300 dark:bg-brand-300 transition-[width] duration-300" style={{ width: `${pct}%` }} />
       </div>
     );
   })();
@@ -113,12 +114,12 @@ export default function TelegramRuleSetting(props: {
       <div>
         {stage === "receive" && (
           <div className="flex flex-col gap-3">
-            <div className="text-gray-100 text-sm bg-black/30 rounded px-2 py-2">
+            <div className={NOTE}>
               Now we should provide Chat Id to bot so it can send you a message
             </div>
             <button
               type="button"
-              className="px-3 py-1.5 w-fit rounded border border-border bg-black/20 hover:bg-black/30 text-gray-100 text-sm"
+              className={`${SMALL_BUTTON_PRIMARY} w-fit`}
               onClick={async () => {
                 
                 setStage("waiting");
@@ -146,14 +147,14 @@ export default function TelegramRuleSetting(props: {
         )}
 
         {stage === "waiting" && (
-          <div className="text-gray-100 text-sm bg-black/30 rounded px-2 py-2">
+          <div className={NOTE}>
             Please send any message to the Telegram bot from the account you use to communicate with it.
           </div>
         )}
 
         {stage === "confirm" && (
           <div className="flex flex-col gap-2">
-            <div className="text-gray-100 text-sm bg-black/30 rounded px-2 py-2">
+            <div className={NOTE}>
               Check if chatId the same you received in telegram. If yes press Send, if not insert that one from telegram
             </div>
             <input
@@ -162,13 +163,13 @@ export default function TelegramRuleSetting(props: {
                 const v = e.target.value;
                 setChatIdDraft(v);
               }}
-              className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
+              className={COMPACT_FIELD}
               placeholder="Chat Id…"
             />
             <div className="flex items-center justify-start gap-2">
               <button
                 type="button"
-                className="px-4 py-2 w-40 rounded-md border-2 border-border bg-accent-hover/50 hover:bg-accent-hover text-primary transition"
+                className={`${SMALL_BUTTON_PRIMARY} w-40`}
                 onClick={async () => {
                   
 
@@ -220,7 +221,7 @@ export default function TelegramRuleSetting(props: {
         )}
 
         {stage === "success" && (
-          <div className="text-gray-100 text-sm bg-black/30 rounded px-2 py-2">
+          <div className={NOTE}>
             Your settings completely saved you can use it now
           </div>
         )}

@@ -42,16 +42,16 @@ export function HeroRuleMockup() {
       </figcaption>
 
       {/* Rule card */}
-      <div className="rounded-2xl border border-gray-200 dark:border-[var(--color-border-dark)] bg-white dark:bg-[var(--color-bg-secondary-dark)] shadow-xl p-6 pb-16">
+      <div className="rounded-2xl border border-neutral-200 bg-white shadow-xl p-6 pb-16 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-[var(--color-text-secondary-dark)]">
+            <p className="text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
               Rule
             </p>
-            <p className="text-lg font-semibold text-gray-900 dark:text-[var(--color-text-dark)]">BTC trend alert</p>
+            <p className="text-lg font-semibold text-neutral-950 dark:text-white">BTC trend alert</p>
           </div>
-          <span className="flex items-center gap-2 rounded-full bg-green-50 dark:bg-green-900/30 px-3 py-1 text-sm font-medium text-green-700 dark:text-green-400">
-            <span className="w-2 h-2 rounded-full bg-green-500" aria-hidden="true" />
+          <span className="flex items-center gap-2 rounded-full bg-brand-0 px-3 py-1 text-sm font-medium text-forest-200 dark:bg-forest-300 dark:text-brand-300">
+            <span className="w-2 h-2 rounded-full bg-brand-300" aria-hidden="true" />
             Active
           </span>
         </div>
@@ -62,18 +62,18 @@ export function HeroRuleMockup() {
               {/* Connector between blocks */}
               {index < RULE_BLOCKS.length - 1 && (
                 <span
-                  className="absolute left-5 top-[calc(50%+20px)] h-6 w-px bg-gray-300 dark:bg-[var(--color-border-dark)]"
+                  className="absolute left-5 top-[calc(50%+20px)] h-6 w-px bg-neutral-300 dark:bg-neutral-700"
                   aria-hidden="true"
                 />
               )}
-              <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 dark:bg-[var(--color-background-dark)] text-gray-900 dark:text-[var(--color-text-dark)] shrink-0">
+              <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-brand-0 text-forest-300 dark:bg-forest-300 dark:text-brand-300 shrink-0">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={block.iconPath} />
                 </svg>
               </span>
-              <div className="flex-1 rounded-lg border border-gray-200 dark:border-[var(--color-border-dark)] px-4 py-2">
-                <p className="text-xs text-gray-500 dark:text-[var(--color-text-secondary-dark)]">{block.kind}</p>
-                <p className="text-sm font-medium text-gray-900 dark:text-[var(--color-text-dark)]">{block.text}</p>
+              <div className="flex-1 rounded-lg border border-neutral-200 dark:border-neutral-800 px-4 py-2">
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">{block.kind}</p>
+                <p className="text-sm font-medium text-neutral-950 dark:text-white">{block.text}</p>
               </div>
             </li>
           ))}
@@ -81,19 +81,19 @@ export function HeroRuleMockup() {
       </div>
 
       {/* Notification produced by the rule */}
-      <div className="absolute bottom-0 right-4 sm:-right-6 w-72 rounded-xl border border-gray-200 dark:border-[var(--color-border-dark)] bg-white dark:bg-[var(--color-bg-secondary-dark)] shadow-2xl p-4">
+      <div className="absolute bottom-0 right-4 sm:-right-6 w-72 rounded-xl border border-neutral-200 bg-white shadow-2xl p-4 dark:border-neutral-800 dark:bg-neutral-900">
         <div className="flex items-center gap-3 mb-2">
-          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-black text-white dark:bg-white dark:text-black shrink-0">
+          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-300 text-forest-300 shrink-0">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={NOTIFY_ICON_PATH} />
             </svg>
           </span>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-gray-900 dark:text-[var(--color-text-dark)]">Trading Assist</p>
-            <p className="text-xs text-gray-500 dark:text-[var(--color-text-secondary-dark)]">Notification · now</p>
+            <p className="text-sm font-semibold text-neutral-950 dark:text-white">Trading Assist</p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">Notification · now</p>
           </div>
         </div>
-        <p className="text-sm text-gray-700 dark:text-[var(--color-text-secondary-dark)]">BTCUSDT grows for 10 days 📈</p>
+        <p className="text-sm text-neutral-700 dark:text-neutral-300">BTCUSDT grows for 10 days 📈</p>
       </div>
     </figure>
   );

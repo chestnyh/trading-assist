@@ -101,20 +101,29 @@ const FAQ_ITEMS = [
   },
 ];
 
+// Shared Monefy-style class sets for the landing page sections
+const SECTION = 'py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-neutral-950';
+const SECTION_TITLE = 'text-4xl md:text-5xl font-semibold tracking-tight text-neutral-950 dark:text-white';
+const SECTION_LEAD = 'text-lg text-neutral-600 dark:text-neutral-400';
+const CARD = 'rounded-xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900';
+const FOCUS_RING =
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-300 dark:focus-visible:outline-brand-300';
+// Focus ring for controls placed on the dark forest-green panel
+const ON_FOREST_FOCUS_RING = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300';
+const PRIMARY_BUTTON_BASE =
+  'inline-flex items-center justify-center gap-2 rounded-full bg-brand-300 px-8 py-3 font-semibold text-forest-300 transition-colors hover:bg-brand-200';
+const PRIMARY_BUTTON = `${PRIMARY_BUTTON_BASE} ${FOCUS_RING}`;
+const SECONDARY_BUTTON = `inline-flex items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-8 py-3 font-semibold text-neutral-900 transition-colors hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800 ${FOCUS_RING}`;
+
 function ServiceList({ label, services }: { label: string; services: { name: string; logoUrl: string }[] }) {
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-[var(--color-text-secondary-dark)]">
-        {label}
-      </h3>
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{label}</h3>
       <ul aria-label={label} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {services.map((service) => (
-          <li
-            key={service.name}
-            className="flex flex-col items-center gap-2 rounded-lg border border-gray-200 dark:border-[var(--color-border-dark)] bg-gray-50 dark:bg-[var(--color-bg-secondary-dark)] px-3 py-4"
-          >
+          <li key={service.name} className={`${CARD} flex flex-col items-center gap-2 px-3 py-4`}>
             <img src={service.logoUrl} alt="" className="w-8 h-8 object-contain rounded-md" />
-            <span className="text-sm font-medium text-gray-900 dark:text-[var(--color-text-dark)]">{service.name}</span>
+            <span className="text-sm font-medium text-neutral-900 dark:text-white">{service.name}</span>
           </li>
         ))}
       </ul>
@@ -124,33 +133,26 @@ function ServiceList({ label, services }: { label: string; services: { name: str
 
 export function Main() {
   return (
-    <main>
+    <main className="font-inter-tight">
       {/* Hero Section*/}
-      <section className="py-12 lg:py-16 bg-white dark:bg-[var(--color-background-dark)]">
+      <section className="py-12 lg:py-16 bg-white dark:bg-neutral-950">
         <div className="mx-auto px-4 sm:px-8 lg:px-[100px]">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             {/* Left Column - Text Content */}
             <div className="flex-1 space-y-6">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-gray-900 dark:text-[var(--color-text-dark)] leading-tight">
-                Automate Your{' '}
-                <span className="font-bold">Trading Strategy</span>
-                {' '}Without Code
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-neutral-950 dark:text-white leading-tight">
+                Automate Your <span className="text-forest-200 dark:text-brand-300">Trading Strategy</span> Without
+                Code
               </h1>
-              <p className="text-lg text-gray-700 dark:text-[var(--color-text-secondary-dark)] max-w-2xl">
+              <p className={`${SECTION_LEAD} max-w-2xl`}>
                 Build rules from ready-made blocks: schedules, price checks, conditions, notifications and orders.
                 Trading Assist watches the market for you and acts when your conditions are met.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Link
-                  to="/sign-up"
-                  className="bg-black text-white dark:bg-white dark:text-black px-8 py-3 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors text-center"
-                >
+                <Link to="/sign-up" className={PRIMARY_BUTTON}>
                   Get Started
                 </Link>
-                <a
-                  href="#how-it-works"
-                  className="bg-gray-100 text-gray-900 dark:bg-[var(--color-bg-secondary-dark)] dark:text-[var(--color-text-dark)] px-8 py-3 rounded-lg font-medium hover:bg-gray-200 dark:hover:opacity-80 transition-colors flex items-center justify-center gap-2"
-                >
+                <a href="#how-it-works" className={SECONDARY_BUTTON}>
                   See How It Works
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -168,38 +170,27 @@ export function Main() {
       </section>
 
       {/* How it works?  */}
-      <section id="how-it-works" className="scroll-mt-16 py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
+      <section id="how-it-works" className={`scroll-mt-16 ${SECTION}`}>
         <div className="mx-auto lg:px-[100px]">
-          <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
-            How it works
-          </h2>
-          <p className="text-lg text-center text-gray-600 dark:text-[var(--color-text-secondary-dark)] max-w-2xl mx-auto mb-12">
+          <h2 className={`${SECTION_TITLE} text-center mb-4`}>How it works</h2>
+          <p className={`${SECTION_LEAD} text-center max-w-2xl mx-auto mb-12`}>
             From idea to a running strategy in three steps.
           </p>
-          <ol className="flex flex-col md:flex-row justify-center gap-8">
+          <ol className="flex flex-col md:flex-row justify-center gap-6">
             {HOW_IT_WORKS_STEPS.map((step, index) => (
-              <li
-                key={step.title}
-                className="bg-gray-100 dark:bg-[var(--color-bg-secondary-dark)] p-8 rounded-lg shadow-md flex-1"
-              >
+              <li key={step.title} className={`${CARD} p-8 flex-1`}>
                 <div className="flex items-center gap-4 mb-4">
-                  <span className="flex items-center justify-center w-12 h-12 rounded-full bg-black text-white dark:bg-white dark:text-black shrink-0">
+                  <span className="flex items-center justify-center w-12 h-12 rounded-full bg-forest-300 text-brand-300 dark:bg-brand-300 dark:text-forest-300 shrink-0">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={step.iconPath} />
                     </svg>
                   </span>
                   <div>
-                    <p className="text-sm font-medium text-gray-500 dark:text-[var(--color-text-secondary-dark)]">
-                      Step {index + 1}
-                    </p>
-                    <h3 className="text-2xl font-semibold text-gray-900 dark:text-[var(--color-text-dark)]">
-                      {step.title}
-                    </h3>
+                    <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Step {index + 1}</p>
+                    <h3 className="text-2xl font-semibold text-neutral-950 dark:text-white">{step.title}</h3>
                   </div>
                 </div>
-                <p className="text-gray-600 dark:text-[var(--color-text-secondary-dark)] text-lg">
-                  {step.description}
-                </p>
+                <p className="text-lg text-neutral-600 dark:text-neutral-400">{step.description}</p>
               </li>
             ))}
           </ol>
@@ -207,7 +198,7 @@ export function Main() {
       </section>
 
       {/* Notifications */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
+      <section className={SECTION}>
         <div className="mx-auto lg:px-[100px]">
           <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-24">
             {/* Left Section - Mobile Phone Mockup */}
@@ -217,10 +208,8 @@ export function Main() {
 
             {/* Right Section - Notification Channels */}
             <div className="max-w-xl space-y-6">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-[var(--color-text-dark)]">
-                Never miss a signal
-              </h2>
-              <p className="text-lg text-gray-600 dark:text-[var(--color-text-secondary-dark)]">
+              <h2 className={SECTION_TITLE}>Never miss a signal</h2>
+              <p className={SECTION_LEAD}>
                 Connect your exchange and your rules watch the market for you. You are notified the moment conditions
                 are met, wherever you already are. No need to keep a chart open.
               </p>
@@ -228,10 +217,7 @@ export function Main() {
               <ServiceList label="Exchanges" services={EXCHANGES} />
               <ServiceList label="Notification channels" services={NOTIFICATION_CHANNELS} />
 
-              <Link
-                to="/sign-up"
-                className="inline-block bg-black text-white dark:bg-white dark:text-black px-8 py-3 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-              >
+              <Link to="/sign-up" className={PRIMARY_BUTTON}>
                 Set Up Alerts
               </Link>
             </div>
@@ -240,31 +226,24 @@ export function Main() {
       </section>
 
       {/* Use cases */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
+      <section className={SECTION}>
         <div className="mx-auto lg:px-[100px]">
-          <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
-            What you can automate
-          </h2>
-          <p className="text-lg text-center text-gray-600 dark:text-[var(--color-text-secondary-dark)] max-w-2xl mx-auto mb-12">
+          <h2 className={`${SECTION_TITLE} text-center mb-4`}>What you can automate</h2>
+          <p className={`${SECTION_LEAD} text-center max-w-2xl mx-auto mb-12`}>
             A few examples of rules you can build from the same blocks.
           </p>
-          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {USE_CASES.map((useCase) => (
-              <li
-                key={useCase.title}
-                className="flex flex-col bg-gray-50 dark:bg-[var(--color-bg-secondary-dark)] p-6 rounded-lg shadow-sm"
-              >
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-[var(--color-text-dark)] mb-2">
-                  {useCase.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-gray-700 dark:text-[var(--color-text-secondary-dark)] mb-6">
+              <li key={useCase.title} className={`${CARD} flex flex-col p-6`}>
+                <h3 className="text-lg font-semibold text-neutral-950 dark:text-white mb-2">{useCase.title}</h3>
+                <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400 mb-6">
                   {useCase.description}
                 </p>
                 <ul aria-label={`${useCase.title} blocks`} className="mt-auto flex flex-wrap gap-2">
                   {useCase.blocks.map((block) => (
                     <li
                       key={block}
-                      className="rounded-full border border-gray-200 dark:border-[var(--color-border-dark)] bg-white dark:bg-[var(--color-background-dark)] px-3 py-1 text-xs font-medium text-gray-700 dark:text-[var(--color-text-secondary-dark)]"
+                      className="rounded-full bg-brand-0 px-3 py-1 text-xs font-medium text-forest-200 dark:bg-forest-300 dark:text-brand-200"
                     >
                       {block}
                     </li>
@@ -277,23 +256,19 @@ export function Main() {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
+      <section className={SECTION}>
         <div className="mx-auto lg:px-[100px]">
-          <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
-            Frequently asked questions
-          </h2>
-          <p className="text-lg text-center text-gray-600 dark:text-[var(--color-text-secondary-dark)] max-w-2xl mx-auto mb-12">
+          <h2 className={`${SECTION_TITLE} text-center mb-4`}>Frequently asked questions</h2>
+          <p className={`${SECTION_LEAD} text-center max-w-2xl mx-auto mb-12`}>
             The basics of building and running rules with Trading Assist.
           </p>
-          <div className="max-w-4xl mx-auto divide-y divide-gray-200 dark:divide-[var(--color-border-dark)]">
+          <div className="max-w-4xl mx-auto divide-y divide-neutral-200 dark:divide-neutral-800">
             {FAQ_ITEMS.map((item, index) => (
               <details key={item.question} open={index === 0} className="group py-4">
                 <summary className="flex justify-between items-center gap-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-[var(--color-text-dark)]">
-                    {item.question}
-                  </h3>
+                  <h3 className="text-lg font-semibold text-neutral-950 dark:text-white">{item.question}</h3>
                   <svg
-                    className="w-5 h-5 shrink-0 text-gray-500 dark:text-[var(--color-text-secondary-dark)] transition-transform group-open:rotate-180"
+                    className="w-5 h-5 shrink-0 text-neutral-500 dark:text-neutral-400 transition-transform group-open:rotate-180"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -302,7 +277,7 @@ export function Main() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </summary>
-                <p className="mt-3 text-gray-600 dark:text-[var(--color-text-secondary-dark)]">{item.answer}</p>
+                <p className="mt-3 text-neutral-600 dark:text-neutral-400">{item.answer}</p>
               </details>
             ))}
           </div>
@@ -310,25 +285,22 @@ export function Main() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
-        <div className="max-w-3xl mx-auto text-center rounded-2xl bg-gray-50 dark:bg-[var(--color-bg-secondary-dark)] px-6 py-12 sm:px-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
+      <section className={SECTION}>
+        <div className="max-w-3xl mx-auto text-center rounded-2xl bg-forest-300 px-6 py-12 sm:px-12">
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-white mb-4">
             Your first rule is a few minutes away
           </h2>
-          <p className="text-lg text-gray-600 dark:text-[var(--color-text-secondary-dark)] mb-8">
+          <p className="text-lg text-forest-25 mb-8">
             Create an account, connect your exchange and notifications, and let your first rule watch the market for
             you.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              to="/sign-up"
-              className="bg-black text-white dark:bg-white dark:text-black px-8 py-3 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
-            >
+            <Link to="/sign-up" className={`${PRIMARY_BUTTON_BASE} ${ON_FOREST_FOCUS_RING}`}>
               Create Your First Rule
             </Link>
             <Link
               to="/sign-in"
-              className="px-4 py-3 font-medium text-gray-700 dark:text-[var(--color-text-secondary-dark)] hover:text-gray-900 dark:hover:text-[var(--color-text-dark)] transition-colors"
+              className={`rounded-full px-4 py-3 font-medium text-forest-25 hover:text-white transition-colors ${ON_FOREST_FOCUS_RING}`}
             >
               Already have an account? Sign in
             </Link>

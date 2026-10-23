@@ -28,7 +28,7 @@ describe("LogsPanel", () => {
     expect(screen.getByText("(2 entries)")).toBeInTheDocument();
     expect(screen.getByText("first")).toBeInTheDocument();
     expect(screen.getByText("second")).toBeInTheDocument();
-    expect(screen.getByText("[ERROR]")).toBeInTheDocument();
+    expect(screen.getByText("ERROR")).toBeInTheDocument();
   });
 
   it("shows 'Live' when connected", () => {

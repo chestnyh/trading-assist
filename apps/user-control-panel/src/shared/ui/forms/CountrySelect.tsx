@@ -1,6 +1,7 @@
 import { ChangeEvent, useState, useRef, useEffect, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import { FieldLabel } from "./FieldLabel";
+import { FIELD_BASE, FIELD_DEFAULT, FIELD_TEXT, FIELD_PLACEHOLDER_TEXT, FIELD_ERROR, FIELD_ERROR_TEXT } from "./fieldStyles";
 import * as FlagIcons from "country-flag-icons/react/3x2";
 import { CountryOption } from "../../data/countries";
 import type { CountryCode } from "@trading-assist/api-validator";
@@ -121,7 +122,7 @@ export function CountrySelect({
     return (
         <div className="w-full pt-5">
             <FieldLabel label={label} id={id} required={required} />
-            <div className="relative mt-2" ref={containerRef}>
+            <div className="relative" ref={containerRef}>
                 <input type="hidden" name={name} value={value || ""} />
                 <button
                     ref={buttonRef}
@@ -130,20 +131,12 @@ export function CountrySelect({
                         setIsOpen(!isOpen);
                     }}
                     className={`
-                        w-full h-12
-                        px-4 pr-10
-                        text-body-md
-                        rounded-md
-                        appearance-none
-                        transition-colors
-                        focus:outline-none
+                        ${FIELD_BASE}
+                        ${FIELD_TEXT}
+                        pr-4
+                        cursor-pointer
                         flex items-center justify-between
-                        ${error
-                            ? "border-2 border-error text-text bg-background focus:border-error focus:ring-2 focus:ring-error"
-                            : !value
-                                ? "border-2 border-accent text-text-secondary bg-background hover:bg-background hover:text-text focus:border-primary focus:bg-background focus:text-text focus:ring-2 focus:ring-primary"
-                                : "border-2 border-accent text-accent bg-background hover:bg-background hover:text-text focus:border-primary focus:bg-background focus:text-text focus:ring-2 focus:ring-primary"
-                        }
+                        ${error ? FIELD_ERROR : FIELD_DEFAULT}
                     `}
                 >
                     <span className="flex items-center gap-2">
@@ -162,16 +155,16 @@ export function CountrySelect({
                                 <span>{selectedOption.label}</span>
                             </>
                         ) : (
-                            <span className="text-text-secondary">{placeholder}</span>
+                            <span className={FIELD_PLACEHOLDER_TEXT}>{placeholder}</span>
                         )}
                     </span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                    <ChevronDown className={`w-4 h-4 text-neutral-500 dark:text-neutral-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
                 </button>
 
                 {isOpen && typeof document !== 'undefined' && createPortal(
                     <div
                         ref={dropdownMenuRef}
-                        className="country-select-dropdown fixed z-[9999] bg-background border-2 border-border rounded-md shadow-lg overflow-auto min-w-[200px]"
+                        className="country-select-dropdown fixed z-[9999] py-1 font-inter-tight bg-white border border-neutral-200 rounded-xl shadow-lg overflow-auto min-w-[200px] dark:bg-neutral-900 dark:border-neutral-800"
                         style={{
                             top: `${dropdownPosition.top || 0}px`,
                             left: `${dropdownPosition.left || 0}px`,
@@ -194,10 +187,13 @@ export function CountrySelect({
                                         w-full px-4 py-3
                                         text-left
                                         flex items-center gap-2
-                                        text-body-md
+                                        text-base
                                         transition-colors
-                                        hover:bg-primary hover:text-text
-                                        ${selectedOption?.value === option.value ? "bg-primary text-text" : "text-text"}
+                                        cursor-pointer
+                                        ${selectedOption?.value === option.value
+                                            ? "bg-brand-0 text-forest-300 font-medium dark:bg-forest-300 dark:text-brand-200"
+                                            : "text-neutral-900 hover:bg-neutral-50 dark:text-white dark:hover:bg-neutral-800"
+                                        }
                                     `}
                                 >
                                     {Flag && (
@@ -212,7 +208,7 @@ export function CountrySelect({
                 )}
             </div>
             {error && (
-                <p className="mt-2 text-body-sm text-error">
+                <p className={FIELD_ERROR_TEXT}>
                     {error}
                 </p>
             )}

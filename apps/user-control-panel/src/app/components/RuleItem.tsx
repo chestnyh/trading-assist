@@ -1,7 +1,7 @@
-import React from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, ChevronRight } from "lucide-react";
 import { Rule } from "../contexts/RulesContext";
 import { useNavigate } from "react-router-dom";
+import { CARD, ICON_BUTTON, ICON_BUTTON_DANGER } from "../../shared/ui/styles";
 
 interface RuleItemProps {
   rule: Rule;
@@ -18,25 +18,28 @@ export function RuleItem({ rule, onDelete }: RuleItemProps) {
     return (
     <div
       onClick={handleRowClick}
-      className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50 transition-all hover:border-primary/30 cursor-pointer select-none"
+      className={`${CARD} group transition-colors hover:border-neutral-300 dark:hover:border-neutral-700 cursor-pointer select-none`}
     >
-      <div className="flex items-center gap-4 px-4 py-3">
+      <div className="flex items-center gap-4 px-5 py-4">
 
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="text-primary font-medium text-sm md:text-base whitespace-nowrap flex-shrink-0">
+        <div className="min-w-0 flex-1">
+          <div className="font-semibold text-base text-neutral-950 dark:text-white truncate">
             {rule.name}
           </div>
-          <div className="text-text-secondary text-xs md:text-sm truncate italic">
-            {rule.description}
-          </div>
+          {rule.description && (
+            <div className="mt-0.5 text-sm text-neutral-600 dark:text-neutral-400 truncate">
+              {rule.description}
+            </div>
+          )}
         </div>
 
-        <div className="flex items-center gap-2 ml-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
           <button
             type="button"
-            className="h-8 w-8 flex items-center justify-center rounded-md border border-border hover:bg-accent-hover/40 text-accent transition"
+            className={ICON_BUTTON}
             title="Edit rule"
-            onClick={(e) => {
+            aria-label="Edit rule"
+            onClick={() => {
               navigate(`/rules/${rule.id}/update`);
             }}
           >
@@ -45,8 +48,9 @@ export function RuleItem({ rule, onDelete }: RuleItemProps) {
 
           <button
             type="button"
-            className="h-8 w-8 flex items-center justify-center rounded-md border border-border hover:bg-error/10 text-error transition"
+            className={ICON_BUTTON_DANGER}
             title="Delete rule"
+            aria-label="Delete rule"
             onClick={() => {
               onDelete(rule.id);
             }}
@@ -54,6 +58,8 @@ export function RuleItem({ rule, onDelete }: RuleItemProps) {
             <Trash2 className="w-4 h-4" />
           </button>
         </div>
+
+        <ChevronRight className="w-5 h-5 text-neutral-400 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useAuth } from "../../../app/contexts/AuthContext";
 import TagPicker from "./TagPicker";
+import { COMPACT_FIELD, FIELD_LABEL, SMALL_BUTTON_PRIMARY, SMALL_BUTTON_SECONDARY, SUBTLE_SURFACE } from "../../../shared/ui/styles";
 
 type DetailField = {
   key: string;
@@ -119,54 +120,54 @@ export default function RuleSettingForm({
   };
 
   return (
-    <div className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50 p-4">
+    <div className={`${SUBTLE_SURFACE} p-4 md:p-5`}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
-          <div className="text-primary text-xs mb-1">Setting Name *</div>
+          <div className={`${FIELD_LABEL} mb-1.5`}>Setting Name *</div>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
+            className={COMPACT_FIELD}
             placeholder="Insert Name here…"
           />
           {errors.name && (
-            <div className="text-error text-xs mt-1">{errors.name}</div>
+            <div className="text-error text-xs mt-1.5">{errors.name}</div>
           )}
         </div>
         <div>
-          <div className="text-primary text-xs mb-1">Setting Code *</div>
+          <div className={`${FIELD_LABEL} mb-1.5`}>Setting Code *</div>
           <input
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
+            className={COMPACT_FIELD}
             placeholder="Insert Code here…"
           />
           {errors.code && (
-            <div className="text-error text-xs mt-1">{errors.code}</div>
+            <div className="text-error text-xs mt-1.5">{errors.code}</div>
           )}
         </div>
       </div>
 
-      <div className="mt-3">
-        <div className="text-primary text-xs mb-1">Setting Tags</div>
+      <div className="mt-4">
+        <div className={`${FIELD_LABEL} mb-1.5`}>Setting Tags</div>
         <TagPicker isAuthenticated={isAuthenticated} value={tags} onChange={setTags} />
       </div>
 
-      <div className="mt-3">
-        <div className="text-primary text-xs mb-1">Description</div>
+      <div className="mt-4">
+        <div className={`${FIELD_LABEL} mb-1.5`}>Description</div>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
-          className="w-full rounded-md border border-border bg-background text-primary px-3 py-2 resize-y"
+          className={`${COMPACT_FIELD} resize-y`}
           placeholder="Describe this rule setting (optional)…"
         />
       </div>
 
-      <div className="mt-3 flex flex-col gap-2">
+      <div className="mt-4 flex flex-col gap-4">
         {detailsSchema.map((f) => (
           <div key={f.key}>
-            <div className="text-primary text-xs mb-1">
+            <div className={`${FIELD_LABEL} mb-1.5`}>
               {f.label} {f.required ? "*" : ""}
             </div>
             <input
@@ -174,22 +175,22 @@ export default function RuleSettingForm({
               onChange={(e) =>
                 setDetailValues((prev) => ({ ...prev, [f.key]: e.target.value }))
               }
-              className="w-full rounded-md border border-border bg-background text-primary px-3 py-2"
+              className={COMPACT_FIELD}
               placeholder={f.placeholder || ""}
             />
             {errors[f.key] && (
-              <div className="text-error text-xs mt-1">{errors[f.key]}</div>
+              <div className="text-error text-xs mt-1.5">{errors[f.key]}</div>
             )}
           </div>
         ))}
       </div>
 
-      <div className="mt-4 flex items-center gap-2">
+      <div className="mt-5 flex items-center gap-2">
         <button
           type="button"
           onClick={handleSave}
           disabled={!isValid}
-          className={`px-4 py-2 rounded-md border-2 border-border ${isValid ? "bg-accent-hover/50 hover:bg-accent-hover cursor-pointer" : "bg-background opacity-60 cursor-not-allowed"} text-primary transition`}
+          className={SMALL_BUTTON_PRIMARY}
         >
           Save
         </button>
@@ -197,7 +198,7 @@ export default function RuleSettingForm({
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 rounded-md border-2 border-border bg-background text-primary hover:bg-accent-hover/40 transition"
+            className={SMALL_BUTTON_SECONDARY}
           >
             Cancel
           </button>

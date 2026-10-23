@@ -1,5 +1,6 @@
 import { ChangeEvent } from "react";
 import { FieldLabel } from "./FieldLabel";
+import { FIELD_BASE, FIELD_DEFAULT, FIELD_TEXT, FIELD_PLACEHOLDER_TEXT, FIELD_ERROR, FIELD_ERROR_TEXT } from "./fieldStyles";
 
 interface SelectOption {
     value: string;
@@ -33,27 +34,19 @@ export function Select({
         <div className="w-full pt-5">
             <FieldLabel label={label} id={id} required={required} />
 
-            <div className="relative mt-2">
+            <div className="relative">
                 <select
                     id={id}
                     name={name}
                     value={value || ""}
                     onChange={onChange}
                     className={`
-                        w-full h-12
-                        px-4 pr-10
-                        text-body-md
-                        rounded-md
-                        appearance-none
-                        transition-colors
-                        focus:outline-none
-                        ${error
-                            ? "border-2 border-error text-text bg-background focus:border-error focus:ring-2 focus:ring-error"
-                            : !value || value === ""
-                                ? "border-2 border-accent text-text-secondary bg-background hover:bg-background hover:text-text focus:border-primary focus:bg-background focus:text-text focus:ring-2 focus:ring-primary"
-                                : "border-2 border-accent text-accent bg-background hover:bg-background hover:text-text focus:border-primary focus:bg-background focus:text-text focus:ring-2 focus:ring-primary"
-                        }
-                         `}
+                        ${FIELD_BASE}
+                        pr-10
+                        cursor-pointer
+                        ${error ? FIELD_ERROR : FIELD_DEFAULT}
+                        ${value ? FIELD_TEXT : FIELD_PLACEHOLDER_TEXT}
+                    `}
                 >
                     <option value="" disabled={value !== "" && value !== undefined && value !== null}>
                         {placeholder}
@@ -62,7 +55,7 @@ export function Select({
                         <option
                             key={option.value}
                             value={option.value}
-                            className="bg-background text-text cursor-pointer"
+                            className="bg-white text-neutral-950 dark:bg-neutral-900 dark:text-white"
                         >
                             {option.label}
                         </option>
@@ -71,7 +64,7 @@ export function Select({
 
                 <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
                     <svg
-                        className="h-3 w-3 text-text"
+                        className="h-3 w-3 text-neutral-500 dark:text-neutral-400"
                         viewBox="0 0 12 12"
                         aria-hidden="true"
                     >
@@ -87,7 +80,7 @@ export function Select({
                 </span>
             </div>
             {error && (
-                <p className="mt-2 text-body-sm text-error">
+                <p className={FIELD_ERROR_TEXT}>
                     {error}
                 </p>
             )}

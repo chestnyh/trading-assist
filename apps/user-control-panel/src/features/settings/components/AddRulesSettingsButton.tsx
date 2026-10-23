@@ -1,4 +1,5 @@
 import { Plus } from "lucide-react";
+import { FOCUS_RING } from "../../../shared/ui/styles";
 
 interface AddRulesSettingsButtonProps {
   onClick?: () => void;
@@ -11,24 +12,22 @@ export default function AddRulesSettingsButton({ onClick, disabled }: AddRulesSe
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="
+      className={`
         w-full
-        text-primary
-        rounded-lg
-        py-6
-        text-xl
-        font-medium
+        rounded-xl
+        py-4
+        text-sm
+        font-semibold
         flex items-center justify-center
-        border-2 border-border
-        transition
-      "
-      style={{
-        backgroundColor: disabled ? "var(--background)" : "color-mix(in oklab, var(--accent-hover), transparent 50%)",
-        opacity: disabled ? 0.6 : 1,
-        cursor: disabled ? "not-allowed" : "pointer",
-      }}
+        border border-dashed border-neutral-300 dark:border-neutral-700
+        text-forest-200 dark:text-brand-300
+        hover:bg-brand-0 hover:border-forest-100 dark:hover:bg-forest-300/40 dark:hover:border-brand-300/60
+        transition-colors cursor-pointer
+        disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-transparent
+        ${FOCUS_RING}
+      `}
     >
-      <Plus className="w-6 h-6 mr-2" />
+      <Plus className="w-4 h-4 mr-2" />
       Add settings rules
     </button>
   );

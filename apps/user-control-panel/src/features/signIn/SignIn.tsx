@@ -163,7 +163,7 @@ export function SignIn() {
                 />
             </div>
 
-            <div className="mt-4 text-body-md text-text-secondary dark:text-[var(--color-text-secondary-dark)]">
+            <div className="mt-4 text-base text-neutral-600 dark:text-neutral-400">
                 Don't have an account ?{" "}
                 <Button
                     text="Create account"

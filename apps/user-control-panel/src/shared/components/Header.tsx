@@ -4,11 +4,19 @@ import { ThemeToggle } from '../ui/buttons/ThemeToggle';
 import UserMenuButton from '../ui/buttons/UserMenuButton';
 import AuthButton from '../ui/buttons/AuthButton';
 import { useAuth } from '../../app/contexts/AuthContext';
-import logo from "./logo.svg";
+import { LogoMark } from "./LogoMark";
 
 interface HeaderProps {
     className?: string;
 }
+
+const NAV_LINK = `
+    text-sm font-medium
+    text-neutral-600 hover:text-neutral-950
+    dark:text-neutral-400 dark:hover:text-white
+    transition-colors
+`;
+
 
 export function Header({ className = "" }: HeaderProps) {
     const { isAuthenticated } = useAuth();
@@ -17,61 +25,56 @@ export function Header({ className = "" }: HeaderProps) {
             className={`
         sticky top-0 z-10
         flex flex-col
-        transition-all duration-300 ease-in-out 
-        bg-bg-secondary/70 backdrop-blur-xl  
-        overflow-hidden 
+        font-inter-tight
+        bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl
+        border-b border-neutral-200 dark:border-neutral-800
+        transition-colors duration-300 ease-in-out
         ${className}
       `}
         >
             <div className="px-4 md:px-8 lg:px-[100px]">
-                <div className="flex items-center justify-between gap-6 py-4">
+                <div className="flex items-center justify-between gap-6 py-3">
 
                     {!isAuthenticated && (
                         <Link
                             to="/"
-                            className="flex items-center gap-3 flex-shrink-0 hover:opacity-80 transition-opacity"
+                            className="flex items-center gap-2.5 flex-shrink-0 mr-4 hover:opacity-80 transition-opacity"
                         >
-                            <img src={logo} alt="Logo" className="w-8 h-8" />
+                            <LogoMark />
 
-                            <span className="text-primary text-h5 font-semibold mr-4">
+                            <span className="text-lg font-semibold tracking-tight text-neutral-950 dark:text-white">
                                 Trading Assist
                             </span>
                         </Link>
                     )}
 
                     <nav className="hidden md:flex items-center gap-8">
-                        <Link
-                            to="/about"
-                            className="text-text-secondary hover:text-primary-hover transition-colors"
-                        >
+                        <Link to="/about" className={NAV_LINK}>
                             About
                         </Link>
-                        <Link
-                            to="/documents"
-                            className="text-text-secondary hover:text-primary-hover transition-colors"
-                        >
+                        <Link to="/documents" className={NAV_LINK}>
                             See documentation
                         </Link>
-                        <Link
-                            to="/contact"
-                            className="text-text-secondary hover:text-primary-hover transition-colors"
-                        >
+                        <Link to="/contact" className={NAV_LINK}>
                             Contact us
                         </Link>
                     </nav>
 
 
-                    <div className="flex items-center gap-4 flex-1 justify-end">
+                    <div className="flex items-center gap-3 flex-1 justify-end">
 
-                        <div className="hidden md:flex items-center gap-2 w-full max-w-md rounded-full 
-                            border border-primary/60 bg-bg-secondary/60 
-                            px-4 py-2 shadow-[0_0_0_1px_rgba(59,130,246,0.3)]">
+                        <div className="hidden md:flex items-center gap-2 w-full max-w-xs rounded-full
+                            border border-neutral-200 dark:border-neutral-800
+                            bg-neutral-50 dark:bg-neutral-900
+                            px-4 py-2
+                            focus-within:border-forest-100 dark:focus-within:border-brand-300
+                            transition-colors">
+                            <Search className="w-4 h-4 flex-shrink-0 text-neutral-400" />
                             <input
                                 type="text"
                                 placeholder="Search here"
-                                className="w-full bg-transparent outline-none text-text placeholder:text-text-secondary text-sm"
+                                className="w-full bg-transparent outline-none text-sm text-neutral-950 dark:text-white placeholder:text-neutral-400"
                             />
-                            <Search className="w-4 h-4 text-primary" />
                         </div>
 
 
@@ -81,7 +84,18 @@ export function Header({ className = "" }: HeaderProps) {
                             <AuthButton />
                         )}
 
-                        <ThemeToggle />
+                        <ThemeToggle
+                            className="
+                                flex items-center justify-center w-9 h-9 flex-shrink-0 rounded-full
+                                border border-neutral-200 dark:border-neutral-800
+                                text-neutral-700 dark:text-neutral-300
+                                hover:bg-neutral-50 dark:hover:bg-neutral-900
+                                transition-colors
+                                [&>svg]:w-4 [&>svg]:h-4
+                                focus-visible:outline-2 focus-visible:outline-offset-2
+                                focus-visible:outline-forest-300 dark:focus-visible:outline-brand-300
+                            "
+                        />
                     </div>
                 </div>
             </div>

@@ -78,7 +78,7 @@ export function Step2Content() {
                 options={tradingExperienceLevelOptions}
             />
             {state.errors.tradingExperienceLevel && (
-                <p className="mt-2 text-body-sm text-error">{state.errors.tradingExperienceLevel}</p>
+                <p className="mt-2 text-sm text-error">{state.errors.tradingExperienceLevel}</p>
             )}
 
             <Select
@@ -100,7 +100,7 @@ export function Step2Content() {
                 options={riskToleranceOptions}
             />
             {state.errors.riskTolerance && (
-                <p className="mt-2 text-body-sm text-error">{state.errors.riskTolerance}</p>
+                <p className="mt-2 text-sm text-error">{state.errors.riskTolerance}</p>
             )}
 
             <CheckboxGroup
@@ -111,7 +111,7 @@ export function Step2Content() {
                 options={preferredTradingPlatformsOptions}
             />
             {state.errors.preferredTradingPlatforms && (
-                <p className="mt-2 text-body-sm text-error">{state.errors.preferredTradingPlatforms}</p>
+                <p className="mt-2 text-sm text-error">{state.errors.preferredTradingPlatforms}</p>
             )}
 
             <div className="mt-8 flex justify-between gap-3">

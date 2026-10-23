@@ -1,5 +1,6 @@
 import { ChangeEvent } from "react";
 import { FieldLabel } from "./FieldLabel";
+import { FIELD_DEFAULT, FIELD_ERROR, FIELD_ERROR_TEXT, FIELD_TEXT } from "./fieldStyles";
 
 interface TextAreaProps {
     label: string;
@@ -30,7 +31,7 @@ export function TextArea({
         <div className="w-full pt-5">
             <FieldLabel label={label} id={id} required={required} />
 
-            <div className="relative mt-2">
+            <div className="relative">
                 <textarea
                     id={id}
                     name={name}
@@ -42,23 +43,23 @@ export function TextArea({
                     className={`
                         w-full
                         px-4 py-3
-                        text-body-md
-                        rounded-md
+                        text-base
+                        rounded-xl
+                        border
                         appearance-none
                         transition-colors
-                        focus:outline-none
+                        focus:outline-none focus:ring-2
                         resize-y
-                        ${disabled ? "opacity-50 cursor-not-allowed bg-gray-100" : ""}
-                        ${error
-                            ? "border-2 border-error text-text bg-background focus:border-error focus:ring-2 focus:ring-error"
-                            : "border-2 border-accent text-accent bg-background hover:bg-background hover:text-text focus:border-primary focus:bg-background focus:text-text focus:ring-2 focus:ring-primary"
-                        }
-                        placeholder:text-text-secondary
+                        bg-white placeholder:text-neutral-400
+                        dark:bg-neutral-900 dark:placeholder:text-neutral-500
+                        ${FIELD_TEXT}
+                        ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+                        ${error ? FIELD_ERROR : FIELD_DEFAULT}
                     `}
                 />
             </div>
             {error && (
-                <p className="mt-2 text-body-sm text-error dark:text-error">
+                <p className={FIELD_ERROR_TEXT}>
                     {error}
                 </p>
             )}

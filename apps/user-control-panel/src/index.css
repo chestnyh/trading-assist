@@ -15,6 +15,23 @@ html.dark body {
 }
 
 @theme {
+    /* Monefy palette and font, used by the landing page */
+    --color-brand-0: #f5fdf1;
+    --color-brand-25: #ecfae2;
+    --color-brand-50: #d9f6c6;
+    --color-brand-100: #c5f1a9;
+    --color-brand-200: #b2ed8d;
+    --color-brand-300: #9fe870;
+
+    --color-forest-0: #e8ebe6;
+    --color-forest-25: #d0d6cc;
+    --color-forest-50: #a2ad99;
+    --color-forest-100: #738566;
+    --color-forest-200: #455c33;
+    --color-forest-300: #163300;
+
+    --font-inter-tight: 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+
     /* Colors - Light Theme */
     --color-primary: #1e6aff;
     --color-primary-hover: #4c8dff;
@@ -164,21 +181,28 @@ html.dark body {
 }
 
 .country-select-dropdown::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
-  border-radius: 4px;
+  background: transparent;
 }
 
 .country-select-dropdown::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
+  background: var(--color-neutral-300);
   border-radius: 4px;
 }
 
 .country-select-dropdown::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-hover);
+  background: var(--color-neutral-400);
+}
+
+.dark .country-select-dropdown::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-700);
 }
 
 /* Firefox scrollbar */
 .country-select-dropdown {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-primary) var(--color-bg-secondary);
+  scrollbar-color: var(--color-neutral-300) transparent;
+}
+
+.dark .country-select-dropdown {
+  scrollbar-color: var(--color-neutral-700) transparent;
 }

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import JSONEditor, { JSONEditorOptions } from 'jsoneditor';
 
 import { FieldLabel } from './FieldLabel';
+import { FIELD_ERROR_TEXT } from './fieldStyles';
 
 
 interface JsonEditorFieldProps {
@@ -133,12 +134,10 @@ export function JsonEditorField({
 
             <div
                 id={id}
-                className={`relative mt-2 rounded-md border-2 overflow-hidden ${
-                    disabled ? 'opacity-60 bg-gray-100 cursor-not-allowed' : ''
-                } ${
+                className={`relative rounded-xl border overflow-hidden bg-white dark:bg-neutral-900 ${
                     error
                         ? 'border-error'
-                        : 'border-accent hover:bg-background focus-within:border-primary'
+                        : 'border-neutral-200 dark:border-neutral-800 focus-within:border-forest-300 dark:focus-within:border-brand-300'
                 }`}
             >
                 <div ref={containerRef} className="w-full" style={{ height: heightPx }} />
@@ -177,7 +176,7 @@ export function JsonEditorField({
             </div>
 
             {error && (
-                <p className="mt-2 text-body-sm text-error dark:text-error">{error}</p>
+                <p className={FIELD_ERROR_TEXT}>{error}</p>
             )}
         </div>
     );

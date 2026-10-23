@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChevronRight, ChevronDown, Pencil, Trash2 } from "lucide-react";
 import type { DetailField } from "./RuleSetting";
+import { CHIP, CHIP_NEUTRAL, ICON_BUTTON, ICON_BUTTON_DANGER, SUBTLE_SURFACE } from "../../../shared/ui/styles";
 
 type DetailItem = {
   label: string;
@@ -41,21 +42,13 @@ export default function RuleSettingView({
   }, [initiallyExpanded]);
 
   return (
-    <div className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50">
-      {topSlot && <div className="px-4 pt-3">{topSlot}</div>}
+    <div className={SUBTLE_SURFACE}>
+      {topSlot && <div className="px-4 pt-4">{topSlot}</div>}
       <div className="flex items-center gap-3 px-4 py-3">
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="
-            h-8 w-8
-            flex items-center justify-center
-            rounded-md
-            hover:bg-accent-hover/40
-            text-accent
-            transition
-            border border-border
-          "
+          className={`${ICON_BUTTON} !h-8 !w-8`}
           aria-label={expanded ? "Collapse rule setting" : "Expand rule setting"}
         >
           {expanded ? (
@@ -67,34 +60,15 @@ export default function RuleSettingView({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3">
-            <div className="text-primary text-sm md:text-base font-medium truncate">
+            <div className="text-sm md:text-base font-semibold text-neutral-950 dark:text-white truncate">
               {name}
             </div>
-            <span
-              className="
-                px-2 py-0.5
-                rounded-md
-                text-xs
-                border border-border
-                bg-accent-hover/40
-                text-accent
-              "
-            >
+            <span className={`${CHIP_NEUTRAL} font-mono`}>
               {code}
             </span>
             <div className="flex items-center gap-2 flex-wrap">
               {tags.map((t, i) => (
-                <span
-                  key={`${t}-${i}`}
-                  className="
-                    px-2 py-0.5
-                    rounded-md
-                    text-xs
-                    border border-border
-                    bg-accent-hover/30
-                    text-primary
-                  "
-                >
+                <span key={`${t}-${i}`} className={CHIP}>
                   {t}
                 </span>
               ))}
@@ -106,15 +80,7 @@ export default function RuleSettingView({
           <button
             type="button"
             onClick={onEdit}
-            className="
-              h-8 w-8
-              flex items-center justify-center
-              rounded-md
-              hover:bg-accent-hover/40
-              text-accent
-              transition
-              border border-border
-            "
+            className={`${ICON_BUTTON} !h-8 !w-8`}
             aria-label="Edit rule setting"
           >
             <Pencil className="w-4 h-4" />
@@ -122,16 +88,7 @@ export default function RuleSettingView({
           <button
             type="button"
             onClick={onDelete}
-            className="
-              h-8 w-8
-              flex items-center justify-center
-              rounded-md
-              bg-red-500/20
-              text-red-500
-              transition
-              border border-red-500
-              hover:bg-red-500/40
-            "
+            className={`${ICON_BUTTON_DANGER} !h-8 !w-8`}
             aria-label="Delete rule setting"
           >
             <Trash2 className="w-4 h-4" />
@@ -142,16 +99,16 @@ export default function RuleSettingView({
       {expanded && (details.length > 0 || Boolean(extraSlot) || Boolean(description?.trim())) && (
         <div className="px-4 pb-4">
           {description?.trim() && (
-            <div className="text-primary text-sm whitespace-pre-line leading-relaxed mb-3">
+            <div className="text-sm text-neutral-600 dark:text-neutral-400 whitespace-pre-line leading-relaxed mb-3">
               {description.trim()}
             </div>
           )}
           {details.length > 0 && (
-            <div className="flex flex-col gap-2 text-primary text-sm">
+            <div className="flex flex-col gap-2 text-sm text-neutral-900 dark:text-neutral-100">
               {details.map((d, idx) => (
                 <div key={`${d.label}-${idx}`} className="leading-relaxed">
-                  <span className="font-medium">{d.label}:</span>{" "}
-                  <span className="break-all">{d.value}</span>
+                  <span className="font-medium text-neutral-500 dark:text-neutral-400">{d.label}:</span>{" "}
+                  <span className="break-all font-mono text-xs">{d.value}</span>
                 </div>
               ))}
             </div>

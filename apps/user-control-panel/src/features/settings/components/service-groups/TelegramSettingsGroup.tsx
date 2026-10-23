@@ -6,6 +6,7 @@ import { ConfirmationModal } from "../../../../shared/ui/modals/ConfirmationModa
 import TelegramRuleSetting from "../TelegramRuleSetting";
 import type { DetailField } from "../RuleSetting";
 import { useServiceRuleSettings } from "../useServiceRuleSettings";
+import { CARD, ICON_BUTTON, SMALL_BUTTON_SECONDARY } from "../../../../shared/ui/styles";
 
 const TELEGRAM_FIELDS_SCHEMA: DetailField[] = [
   { key: "botToken", label: "BotToken", required: true, minLength: 45, maxLength: 50, placeholder: "Insert bot token…" },
@@ -35,9 +36,9 @@ export default function TelegramSettingsGroup() {
   } = useServiceRuleSettings("TELEGRAM", TELEGRAM_FIELDS_SCHEMA);
 
   return (
-    <div className="border-2 border-border rounded-lg overflow-hidden bg-bg-secondary/50">
-      <div className="flex items-center gap-4 px-4 py-3">
-        <div className="w-10 h-10 flex items-center justify-center rounded-md bg-background border border-border overflow-hidden">
+    <div className={CARD}>
+      <div className="flex items-center gap-4 px-5 py-4">
+        <div className="w-10 h-10 p-1.5 flex items-center justify-center rounded-xl bg-white border border-neutral-200 dark:border-neutral-800 overflow-hidden">
           {!showPlaceholder ? (
             <img
               src="/logos/telegram.png"
@@ -46,16 +47,16 @@ export default function TelegramSettingsGroup() {
               onError={() => setShowPlaceholder(true)}
             />
           ) : (
-            <span className="text-xs text-primary" data-logo-tag="logo-telegram">Logo</span>
+            <span className="text-xs text-neutral-500" data-logo-tag="logo-telegram">Logo</span>
           )}
         </div>
 
-        <div className="flex-1 text-primary text-sm md:text-base">Telegram</div>
+        <div className="flex-1 text-base font-semibold text-neutral-950 dark:text-white">Telegram</div>
 
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="ml-auto h-8 w-8 flex items-center justify-center rounded-md hover:bg-accent-hover/40 text-accent transition border border-border"
+          className={`ml-auto ${ICON_BUTTON}`}
           aria-label={expanded ? "Collapse service group" : "Expand service group"}
         >
           {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
@@ -63,9 +64,9 @@ export default function TelegramSettingsGroup() {
       </div>
 
       {expanded && (
-        <div className="px-4 pb-4">
-          {loading && <div className="text-secondary text-sm">Loading settings…</div>}
-          {error && <div className="text-error text-sm">{error}</div>}
+        <div className="px-5 pb-5">
+          {loading && <div className="mb-3 text-sm text-neutral-500 dark:text-neutral-400">Loading settings…</div>}
+          {error && <div className="mb-3 text-sm text-error">{error}</div>}
 
           <div className="flex flex-col gap-3">
             {settings.map((s, i) => (
@@ -86,10 +87,10 @@ export default function TelegramSettingsGroup() {
           </div>
 
           {hasMore && (
-            <div className="mt-2">
+            <div className="mt-3">
               <button
                 type="button"
-                className="px-3 py-1 text-sm rounded-md border border-border hover:bg-accent-hover/40 text-accent transition"
+                className={SMALL_BUTTON_SECONDARY}
                 onClick={() => fetchSettingsPage(page + 1)}
                 disabled={loading}
               >

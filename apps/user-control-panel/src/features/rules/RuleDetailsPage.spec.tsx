@@ -102,7 +102,7 @@ describe("RuleDetailsPage (component integration)", () => {
 
     expect(await screen.findByText("My rule")).toBeInTheDocument();
     expect(screen.getByText("Some description")).toBeInTheDocument();
-    expect(screen.getByText("Structured View:")).toBeInTheDocument();
+    expect(screen.getByText("Structured view")).toBeInTheDocument();
     expect(screen.getByTestId("action-editor")).toBeInTheDocument();
     expect(screen.getByTestId("json-view")).toBeInTheDocument();
   });
@@ -119,7 +119,7 @@ describe("RuleDetailsPage (component integration)", () => {
     render(<RuleDetailsPage />);
 
     await screen.findByText("My rule");
-    expect(screen.queryByText("Structured View:")).not.toBeInTheDocument();
+    expect(screen.queryByText("Structured view")).not.toBeInTheDocument();
     expect(screen.getByTestId("json-view")).toBeInTheDocument();
   });
 
@@ -128,7 +128,7 @@ describe("RuleDetailsPage (component integration)", () => {
     render(<RuleDetailsPage />);
 
     await screen.findByText("My rule");
-    expect(screen.getByText("Execution Logs:")).toBeInTheDocument();
+    expect(screen.getByText("Execution logs")).toBeInTheDocument();
     expect(screen.getByText("Live")).toBeInTheDocument();
     expect(screen.getByText("(0 entries)")).toBeInTheDocument();
   });
@@ -157,7 +157,7 @@ describe("RuleDetailsPage (component integration)", () => {
     await screen.findByText("My rule");
     expect(screen.getByText("(1 entries)")).toBeInTheDocument();
     expect(screen.getByText("Something happened")).toBeInTheDocument();
-    expect(screen.getByText("[WARN]")).toBeInTheDocument();
+    expect(screen.getByText("WARN")).toBeInTheDocument();
   });
 
   it("shows the real LogsPanel disconnected/error state", async () => {

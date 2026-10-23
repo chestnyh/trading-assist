@@ -20,7 +20,7 @@ const PagesLayout = ({ children }: PagesLayoutProps) => {
     }
 
     return (
-        <div className="min-h-screen flex flex-col bg-background">
+        <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-950">
             <div className="flex flex-1">
                 {isAuthenticated && <Sidebar />}
 

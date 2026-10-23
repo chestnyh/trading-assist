@@ -1,6 +1,7 @@
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Trash2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { SMALL_BUTTON_SECONDARY } from "../styles";
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -51,10 +52,10 @@ export function ConfirmationModal({
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/50 backdrop-blur-sm animate-in fade-in duration-200">
       <div
         ref={modalRef}
-        className="relative w-full max-w-sm bg-white dark:bg-bg-secondary rounded-lg shadow-xl p-6 flex flex-col items-center text-center animate-in zoom-in-95 duration-200"
+        className="relative w-full max-w-sm font-inter-tight bg-white border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-800 rounded-2xl shadow-xl p-6 flex flex-col items-center text-center animate-in zoom-in-95 duration-200"
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
@@ -63,21 +64,21 @@ export function ConfirmationModal({
         {/* Close X button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          className="absolute top-4 right-4 rounded-full p-1 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
           aria-label="Close"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Icon */}
-        <div className="w-16 h-16 rounded-full border-4 border-red-100 dark:border-red-900/30 flex items-center justify-center mb-4 text-red-500">
-          <X className="w-8 h-8" />
+        <div className="w-14 h-14 rounded-full bg-error/10 flex items-center justify-center mb-4 text-error">
+          <Trash2 className="w-6 h-6" aria-hidden="true" />
         </div>
 
         {/* Title */}
         <h3
           id="modal-title"
-          className="text-xl font-semibold text-gray-900 dark:text-primary mb-2"
+          className="text-xl font-semibold tracking-tight text-neutral-950 dark:text-white mb-2"
         >
           {title}
         </h3>
@@ -85,7 +86,7 @@ export function ConfirmationModal({
         {/* Message */}
         <p
           id="modal-description"
-          className="text-gray-500 dark:text-secondary mb-6 text-sm"
+          className="text-neutral-600 dark:text-neutral-400 mb-6 text-sm"
         >
           {message}
         </p>
@@ -95,7 +96,7 @@ export function ConfirmationModal({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-md transition-colors min-w-[100px] disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`${SMALL_BUTTON_SECONDARY} h-10 flex-1`}
           >
             {cancelLabel}
           </button>
@@ -104,7 +105,7 @@ export function ConfirmationModal({
               onConfirm();
             }}
             disabled={isLoading}
-            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors min-w-[100px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="flex-1 h-10 px-4 inline-flex items-center justify-center rounded-full bg-error text-white text-sm font-semibold hover:bg-error/90 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error"
           >
             {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : confirmLabel}
           </button>

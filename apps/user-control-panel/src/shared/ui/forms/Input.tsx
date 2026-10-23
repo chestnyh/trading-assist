@@ -1,6 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import { FieldLabel } from "./FieldLabel";
 import { Eye, EyeOff } from "lucide-react";
+import { FIELD_BASE, FIELD_DEFAULT, FIELD_TEXT, FIELD_ERROR, FIELD_ERROR_TEXT } from "./fieldStyles";
 
 interface InputProps {
     label: string;
@@ -35,7 +36,7 @@ export function Input({
         <div className="w-full pt-5">
             <FieldLabel label={label} id={id} required={required} />
 
-            <div className="relative mt-2">
+            <div className="relative">
                 <input
                     type={inputType}
                     id={id}
@@ -45,20 +46,11 @@ export function Input({
                     onChange={onChange}
                     disabled={disabled}
                     className={`
-          w-full h-12
-          px-4
+          ${FIELD_BASE}
+          ${FIELD_TEXT}
           ${isPassword ? "pr-12" : ""}
-          text-body-md
-          rounded-md
-          appearance-none
-          transition-colors
-          focus:outline-none
-          ${disabled ? "opacity-50 cursor-not-allowed bg-gray-100" : ""} 
-          ${error
-                            ? "border-2 border-error text-text bg-background focus:border-error focus:ring-2 focus:ring-error"
-                            : "border-2 border-accent text-accent bg-background hover:bg-background hover:text-text focus:border-primary focus:bg-background focus:text-text focus:ring-2 focus:ring-primary"
-                        }
-          placeholder:text-text-secondary
+          ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+          ${error ? FIELD_ERROR : FIELD_DEFAULT}
         `}
                 />
                 {isPassword && !disabled && (
@@ -69,8 +61,11 @@ export function Input({
               absolute inset-y-0 right-0
               flex items-center justify-center
               px-4
-                    transition-colors
+              text-neutral-500 hover:text-neutral-900
+              dark:text-neutral-400 dark:hover:text-white
+              transition-colors
               cursor-pointer
+              [&>svg]:w-5 [&>svg]:h-5
             "
                         aria-label={showPassword ? "Show password" : "Hide password"}
                     >
@@ -83,7 +78,7 @@ export function Input({
                 )}
             </div>
             {error && (
-                <p className="mt-2 text-body-sm text-error dark:text-error">
+                <p className={FIELD_ERROR_TEXT}>
                     {error}
                 </p>
             )}

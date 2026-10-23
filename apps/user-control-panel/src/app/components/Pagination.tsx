@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import { ICON_BUTTON, FOCUS_RING } from "../../shared/ui/styles";
 
 interface PaginationProps {
   current: number;
@@ -39,11 +40,12 @@ export function Pagination({ current, total, pageSize, onChange }: PaginationPro
   const pages = getPages();
 
   return (
-    <div className="flex items-center justify-center gap-2 py-4 mt-4 select-none">
+    <div className="flex items-center justify-center gap-2 select-none">
       {current > 1 && (
         <button
           onClick={() => onChange(current - 1)}
-          className="h-9 w-9 flex items-center justify-center rounded-md border-2 border-border bg-bg-secondary/50 text-accent hover:bg-accent-hover/40 transition"
+          aria-label="Previous page"
+          className={ICON_BUTTON}
         >
           <ChevronLeft size={18} />
         </button>
@@ -53,7 +55,7 @@ export function Pagination({ current, total, pageSize, onChange }: PaginationPro
         {pages.map((page, index) => {
           if (page === "...") {
             return (
-              <div key={`ellipsis-${index}`} className="w-9 h-9 flex items-center justify-center text-text-secondary">
+              <div key={`ellipsis-${index}`} className="w-9 h-9 flex items-center justify-center text-neutral-400">
                 <MoreHorizontal size={16} />
               </div>
             );
@@ -65,13 +67,15 @@ export function Pagination({ current, total, pageSize, onChange }: PaginationPro
             <button
               key={`page-${page}`}
               onClick={() => onChange(page as number)}
+              aria-current={isSelected ? "page" : undefined}
               className={`
                 min-w-[36px] h-9 px-2
                 flex items-center justify-center
-                rounded-md border-2 transition font-medium text-sm
+                rounded-full transition-colors font-semibold text-sm cursor-pointer
+                ${FOCUS_RING}
                 ${isSelected
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border bg-bg-secondary/50 text-text-secondary hover:border-primary/30 hover:text-primary"}
+                  ? "bg-forest-300 text-white dark:bg-brand-300 dark:text-forest-300"
+                  : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-950 dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white"}
               `}
             >
               {page}
@@ -83,7 +87,8 @@ export function Pagination({ current, total, pageSize, onChange }: PaginationPro
       {current < totalPages && (
         <button
           onClick={() => onChange(current + 1)}
-          className="h-9 w-9 flex items-center justify-center rounded-md border-2 border-border bg-bg-secondary/50 text-accent hover:bg-accent-hover/40 transition"
+          aria-label="Next page"
+          className={ICON_BUTTON}
         >
           <ChevronRight size={18} />
         </button>

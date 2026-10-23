@@ -32,7 +32,7 @@ export function Radio({
                 <FieldLabel label={label} id={`${name}-${options[0]?.value || "group"}`} />
             </div>
 
-            <div className="flex justify-between mt-2">
+            <div className="flex flex-wrap justify-between gap-4">
                 {options.map((option) => {
                     const id = `${name}-${option.value}`;
                     const checked = controlledValue === option.value;
@@ -49,11 +49,15 @@ export function Radio({
                                 className="
                   w-5 h-5
                   rounded-full
-                  checked:bg-primary
-                  focus:bg-primary
-                  border border-text-secondary  
+                  border border-neutral-300 dark:border-neutral-700
+                  bg-white dark:bg-neutral-900
+                  checked:border-[6px] checked:border-forest-300
+                  dark:checked:border-brand-300
                   appearance-none
                   cursor-pointer
+                  transition-all
+                  focus-visible:outline-2 focus-visible:outline-offset-2
+                  focus-visible:outline-forest-300 dark:focus-visible:outline-brand-300
                 "
                             />
                             <label
@@ -61,8 +65,8 @@ export function Radio({
                                 className="
                   ml-2
                   select-none
-                  text-body-md
-                  text-text dark:text-text
+                  text-base
+                  text-neutral-900 dark:text-white
                   cursor-pointer
                 "
                             >

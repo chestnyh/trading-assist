@@ -31,9 +31,8 @@ export default function UserAvatar({
             className={`
                 flex items-center justify-center
                 rounded-full
-                border-2 border-border
                 overflow-hidden
-                bg-bg-secondary  
+                bg-forest-300 dark:bg-brand-300
                 ${className}
             `}
             style={{ width: size, height: size }}
@@ -46,14 +45,14 @@ export default function UserAvatar({
                 />
             ) : initials ? (
                 <span
-                    className="text-text-secondary font-semibold"
+                    className="text-brand-300 dark:text-forest-300 font-semibold"
                     style={{ fontSize: size * 0.4 }}
                 >
                     {initials}
                 </span>
             ) : (
                 <User
-                    className="text-text-secondary"
+                    className="text-brand-300 dark:text-forest-300"
                     size={size * 0.6}
                 />
             )}

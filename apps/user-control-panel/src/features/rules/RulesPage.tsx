@@ -10,6 +10,7 @@ import { ErrorAlert } from "../../shared/ui/feedback/ErrorAlert";
 import { NotFound } from "../notFound/NotFound";
 import { ConfirmationModal } from "../../shared/ui/modals/ConfirmationModal";
 import {Spinner} from '../../shared/ui/spiner/Spinner';
+import { PAGE, PAGE_TITLE, PAGE_LEAD } from "../../shared/ui/styles";
 
 export function RulesPage() {
   const { rules, isLoading, fetchRules, totalCount, error, deleteRule } = useRules();
@@ -53,9 +54,12 @@ export function RulesPage() {
 
   if (error && rules.length === 0) {
     return (
-      <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto">
+      <div className={PAGE}>
+        <h1 className={PAGE_TITLE}>Your Rules</h1>
         <ErrorAlert message={error} />
-        <Button text="Retry" onClick={() => fetchRules(currentPage)} className="mt-4" />
+        <div className="mt-4 max-w-xs">
+          <Button text="Retry" onClick={() => fetchRules(currentPage)} />
+        </div>
       </div>
     );
   }
@@ -71,17 +75,22 @@ export function RulesPage() {
   }
 
   return (
-    <div className="px-4 md:px-8 lg:px-12 py-6 max-w-5xl mx-auto">
-      <h1 className="text-h4 text-primary mb-6">Your Rules</h1>
-
-      <div className="mb-6">
-        <Button
-          text=""
-          variant="primary"
-          onClick={() => navigate("/rules/add")}
-          leftIcon={<Plus size={32} strokeWidth={2.5} />}
-          ariaLabel="Add rule"
-        />
+    <div className={PAGE}>
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 className={PAGE_TITLE}>Your Rules</h1>
+          <p className={PAGE_LEAD}>
+            {totalCount} {totalCount === 1 ? "rule" : "rules"} watching the market for you.
+          </p>
+        </div>
+        <div className="sm:w-44">
+          <Button
+            text="Add rule"
+            variant="primary"
+            onClick={() => navigate("/rules/add")}
+            leftIcon={<Plus />}
+          />
+        </div>
       </div>
 
       {deleteError && (
@@ -104,7 +113,7 @@ export function RulesPage() {
       </div>
 
       {totalCount > 20 && (
-        <div className="mt-8 border-t pt-6">
+        <div className="mt-8 border-t border-neutral-200 dark:border-neutral-800 pt-6">
           <Pagination
             current={currentPage}
             total={totalCount}

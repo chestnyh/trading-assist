@@ -4,38 +4,39 @@ interface FooterProps {
     className?: string;
 }
 
+const FOOTER_LINK = `
+    text-sm font-medium
+    text-neutral-600 hover:text-neutral-950
+    dark:text-neutral-400 dark:hover:text-white
+    transition-colors
+`;
+
 export function Footer({ className = "" }: FooterProps) {
     return (
         <footer className={`
-            flex items-center justify-between
-            px-4 md:px-8 lg:px-[100px]
-            transition-all duration-300 ease-in-out 
-            bg-bg-secondary/70 backdrop-blur-xl
-            
-            h-16
+            flex flex-col sm:flex-row items-center justify-between gap-3
+            px-4 md:px-8 lg:px-[100px] py-5
+            font-inter-tight
+            bg-white dark:bg-neutral-950
+            border-t border-neutral-200 dark:border-neutral-800
+            transition-colors duration-300 ease-in-out
             ${className}
         `}>
 
 
-            <nav className="flex items-center gap-14">
-                <Link
-                    to="/privacy-policy"
-                    className="text-text-secondary hover:text-primary-hover transition-colors text-body-lg"
-                >
+            <nav className="flex items-center gap-8">
+                <Link to="/privacy-policy" className={FOOTER_LINK}>
                     Privacy
                 </Link>
-                <Link
-                    to="/terms-of-service"
-                    className="text-text-secondary hover:text-primary-hover transition-colors text-body-lg"
-                >
+                <Link to="/terms-of-service" className={FOOTER_LINK}>
                     Terms
                 </Link>
             </nav>
-            <div className="flex items-center gap-4">
-                <span className="text-text-secondary text-body-md font-medium">
+            <div className="flex items-center gap-3 text-sm text-neutral-500 dark:text-neutral-400">
+                <span>
                     © 2025 Trading Assist. All rights reserved.
                 </span>
-                <span className="text-text-secondary text-body-md font-medium">
+                <span className="rounded-full bg-neutral-100 dark:bg-neutral-900 px-2 py-0.5 text-xs font-medium">
                     v1.0.0
                 </span>
             </div>

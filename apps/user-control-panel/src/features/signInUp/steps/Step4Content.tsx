@@ -128,12 +128,14 @@ export function Step4Content() {
         return (
             <>
                 <div className="text-center py-8">
-                    <div className="text-6xl mb-4">✓</div>
-                    <h2 className="text-h3 font-semibold text-text mb-2">{step4.messages.successTitle}</h2>
-                    <p className="text-body-md text-text-secondary">
+                    <span className="mx-auto mb-6 flex items-center justify-center w-16 h-16 rounded-full bg-forest-300 text-brand-300 dark:bg-brand-300 dark:text-forest-300">
+                        <Check className="w-8 h-8" strokeWidth={3} aria-hidden="true" />
+                    </span>
+                    <h2 className="text-2xl font-semibold tracking-tight text-neutral-950 dark:text-white mb-2">{step4.messages.successTitle}</h2>
+                    <p className="text-lg text-neutral-600 dark:text-neutral-400">
                         {step4.messages.successMessage}
                     </p>
-                    <p className="text-body-sm text-text-secondary mt-2">
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">
                         {step4.messages.redirecting}
                     </p>
                 </div>
@@ -151,7 +153,7 @@ export function Step4Content() {
 
     return (
         <>
-            <p className="text-body-md text-text-secondary mb-4">
+            <p className="text-lg text-neutral-600 dark:text-neutral-400">
                 {step4.messages.instructions}
             </p>
 

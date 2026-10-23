@@ -11,6 +11,7 @@ import {
   createActionNode,
   parseRuleBodyToActionTree,
 } from "../../features/rules/components/action-editor";
+import { CARD, FIELD_LABEL, FOCUS_RING, PAGE, PAGE_TITLE, WARNING_NOTE } from "../../shared/ui/styles";
 
 interface RuleFormProps {
   initialData?: { name: string; description: string; ruleBody: unknown };
@@ -28,6 +29,10 @@ type RuleFormData = {
 };
 
 type RuleBodyMode = 'ui' | 'json';
+
+const MODE_BUTTON = `px-4 py-1.5 rounded-full text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${FOCUS_RING}`;
+const MODE_BUTTON_ACTIVE = 'bg-white text-neutral-950 shadow-sm dark:bg-neutral-950 dark:text-white';
+const MODE_BUTTON_INACTIVE = 'text-neutral-600 hover:text-neutral-950 dark:text-neutral-400 dark:hover:text-white';
 
 // Strip name/description from rule body for parsing (they're stored separately in form fields)
 const stripMetadata = (ruleBody: unknown): unknown => {
@@ -212,99 +217,104 @@ export function RuleForm({ initialData, onSubmit, onCancel, isLoading, submitLab
   }, []);
 
   return (
-    <div className="px-4 md:px-8 lg:px-12 py-6 max-w-5xl mx-auto">
-      <h1 className="text-h4 text-primary mb-6">{title}</h1>
+    <div className={PAGE}>
+      <h1 className={`${PAGE_TITLE} mb-8`}>{title}</h1>
 
       {errors.form && (
-        <div className="mb-4 p-3 bg-error/10 border border-error text-error rounded">
+        <div className="mb-4 p-4 rounded-xl bg-error/10 border border-error/30 text-sm text-error">
           {errors.form}
         </div>
       )}
 
-      <Input
-        label="Rule Name"
-        id="rule-name"
-        name="rule-name"
-        value={formData.name}
-        onChange={(e) => {
-          setFormData({ ...formData, name: e.target.value });
-          if (errors.name) setErrors({ ...errors, name: "" });
-        }}
-        error={errors.name}
-        required
-      />
+      <div className={`${CARD} p-6 md:p-8`}>
 
-      <TextArea
-        label="Rule Description"
-        id="rule-description"
-        name="rule-description"
-        value={formData.description}
-        onChange={(e) => {
-          setFormData({ ...formData, description: e.target.value });
-          if (errors.description) setErrors({ ...errors, description: "" });
-        }}
-        error={errors.description}
-        rows={3}
-        required
-      />
+        <Input
+          label="Rule Name"
+          id="rule-name"
+          name="rule-name"
+          value={formData.name}
+          onChange={(e) => {
+            setFormData({ ...formData, name: e.target.value });
+            if (errors.name) setErrors({ ...errors, name: "" });
+          }}
+          error={errors.name}
+          required
+        />
 
-      <div className="pt-5">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-          <label className="block text-body-md font-medium text-text-secondary">
-            Rule Body <span className="text-error">*</span>
-          </label>
-          <div className="flex rounded-md border-2 border-border overflow-hidden w-fit">
-            <button
-              type="button"
-              onClick={() => handleModeChange('ui')}
-              disabled={isLoading || !!uiModeError}
-              className={`px-4 py-2 text-sm ${mode === 'ui' ? 'bg-primary text-background' : 'bg-background text-primary'} disabled:opacity-50`}
-            >
-              UI
-            </button>
-            <button
-              type="button"
-              onClick={() => handleModeChange('json')}
+        <TextArea
+          label="Rule Description"
+          id="rule-description"
+          name="rule-description"
+          value={formData.description}
+          onChange={(e) => {
+            setFormData({ ...formData, description: e.target.value });
+            if (errors.description) setErrors({ ...errors, description: "" });
+          }}
+          error={errors.description}
+          rows={3}
+          required
+        />
+
+        <div className="pt-5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+            <label className={FIELD_LABEL}>
+              Rule Body <span className="text-error">*</span>
+            </label>
+            <div className="flex gap-1 p-1 rounded-full bg-neutral-100 dark:bg-neutral-800 w-fit">
+              <button
+                type="button"
+                onClick={() => handleModeChange('ui')}
+                disabled={isLoading || !!uiModeError}
+                aria-pressed={mode === 'ui'}
+                className={`${MODE_BUTTON} ${mode === 'ui' ? MODE_BUTTON_ACTIVE : MODE_BUTTON_INACTIVE}`}
+              >
+                UI
+              </button>
+              <button
+                type="button"
+                onClick={() => handleModeChange('json')}
+                disabled={isLoading}
+                aria-pressed={mode === 'json'}
+                className={`${MODE_BUTTON} ${mode === 'json' ? MODE_BUTTON_ACTIVE : MODE_BUTTON_INACTIVE}`}
+              >
+                JSON
+              </button>
+            </div>
+          </div>
+
+          {uiModeError && (
+            <div className={`mb-3 ${WARNING_NOTE}`}>
+              {uiModeError}
+            </div>
+          )}
+
+          {mode === 'ui' ? (
+            <ActionEditor
+              action={actionTree}
+              onChange={handleActionTreeChange}
+              onDelete={() => handleActionTreeChange(createActionNode())}
+              readOnly={isLoading}
+            />
+          ) : (
+            <JsonEditorField
+              label=""
+              id="rule"
+              required
               disabled={isLoading}
-              className={`px-4 py-2 text-sm ${mode === 'json' ? 'bg-primary text-background' : 'bg-background text-primary'}`}
-            >
-              JSON
-            </button>
-          </div>
+              value={formData.ruleBody}
+              onChange={handleJsonChange}
+              error={errors.rule}
+              mode="tree"
+            />
+          )}
+
+          {mode === 'ui' && errors.rule && (
+            <p className="mt-2 text-sm text-error">{errors.rule}</p>
+          )}
         </div>
-
-        {uiModeError && (
-          <div className="mb-3 p-3 rounded-md border border-warning bg-warning/10 text-warning">
-            {uiModeError}
-          </div>
-        )}
-
-        {mode === 'ui' ? (
-          <ActionEditor
-            action={actionTree}
-            onChange={handleActionTreeChange}
-            onDelete={() => handleActionTreeChange(createActionNode())}
-            readOnly={isLoading}
-          />
-        ) : (
-          <JsonEditorField
-            label=""
-            id="rule"
-            required
-            disabled={isLoading}
-            value={formData.ruleBody}
-            onChange={handleJsonChange}
-            error={errors.rule}
-            mode="tree"
-          />
-        )}
-
-        {mode === 'ui' && errors.rule && (
-          <p className="mt-2 text-body-sm text-error dark:text-error">{errors.rule}</p>
-        )}
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-start gap-4 mt-8">
+      <div className="flex flex-col sm:flex-row sm:justify-end gap-3 mt-8 sm:[&>div]:w-40">
         <Button
           text="Cancel"
           variant="outline"

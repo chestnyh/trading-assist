@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { AlertCircle, ChevronDown, ChevronUp, Pause, Play, WifiOff, Loader2 } from 'lucide-react';
 import { RuleLogEntry } from '../hooks/useRuleLogs';
+import { CARD, ICON_BUTTON, FOCUS_RING } from '../../../shared/ui/styles';
 
 interface LogsPanelProps {
   logs: RuleLogEntry[];
@@ -10,17 +11,10 @@ interface LogsPanelProps {
 }
 
 const LOG_COLORS: Record<RuleLogEntry['level'], string> = {
-  info: 'text-blue-400',
-  warn: 'text-yellow-400',
-  error: 'text-red-400',
-  debug: 'text-gray-400',
-};
-
-const LOG_BG_COLORS: Record<RuleLogEntry['level'], string> = {
-  info: 'bg-blue-400/10',
-  warn: 'bg-yellow-400/10',
-  error: 'bg-red-400/10',
-  debug: 'bg-gray-400/10',
+  info: 'bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300',
+  warn: 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300',
+  error: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300',
+  debug: 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400',
 };
 
 export function LogsPanel({ logs, isConnected, isReconnecting, error }: LogsPanelProps) {
@@ -68,38 +62,38 @@ export function LogsPanel({ logs, isConnected, isReconnecting, error }: LogsPane
   };
 
   return (
-    <div className="bg-bg-secondary/30 border-2 border-border rounded-2xl p-4 shadow-sm">
+    <div className={`${CARD} p-4 md:p-5`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <h3 className="text-body-md font-medium text-text-secondary">Logs</h3>
-          <span className="text-sm text-text-tertiary">({logs.length} entries)</span>
+          <h3 className="text-base font-semibold text-neutral-950 dark:text-white">Logs</h3>
+          <span className="text-sm text-neutral-500 dark:text-neutral-400">({logs.length} entries)</span>
         </div>
 
         <div className="flex items-center gap-2">
           {!isConnected && !isReconnecting && (
-            <span className="flex items-center gap-1 text-sm text-red-400">
-              <WifiOff size={16} />
+            <span className="flex items-center gap-1.5 rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300">
+              <WifiOff size={14} />
               Disconnected
             </span>
           )}
 
           {isReconnecting && (
-            <span className="flex items-center gap-1 text-sm text-yellow-400">
-              <Loader2 size={16} className="animate-spin" />
+            <span className="flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800 dark:bg-amber-500/15 dark:text-amber-300">
+              <Loader2 size={14} className="animate-spin" />
               Reconnecting...
             </span>
           )}
 
           {isConnected && (
-            <span className="flex items-center gap-1 text-sm text-green-400">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+            <span className="flex items-center gap-1.5 rounded-full bg-brand-0 px-3 py-1 text-xs font-medium text-forest-200 dark:bg-forest-300 dark:text-brand-200">
+              <span className="w-2 h-2 rounded-full bg-forest-200 dark:bg-brand-300 animate-pulse" />
               Live
             </span>
           )}
 
           <button
             onClick={() => setIsAutoScroll(!isAutoScroll)}
-            className="p-1.5 rounded-md hover:bg-bg-tertiary/50 transition-colors"
+            className={`${ICON_BUTTON} !h-8 !w-8`}
             title={isAutoScroll ? 'Pause auto-scroll' : 'Resume auto-scroll'}
           >
             {isAutoScroll ? <Pause size={16} /> : <Play size={16} />}
@@ -108,7 +102,7 @@ export function LogsPanel({ logs, isConnected, isReconnecting, error }: LogsPane
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-3 mb-3 rounded-lg bg-red-400/10 text-red-400 text-sm">
+        <div className="flex items-center gap-2 p-3 mb-3 rounded-xl border border-error/30 bg-error/10 text-error text-sm">
           <AlertCircle size={16} />
           {error.message}
         </div>
@@ -117,10 +111,10 @@ export function LogsPanel({ logs, isConnected, isReconnecting, error }: LogsPane
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="h-80 overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-border scrollbar-track-bg-secondary"
+        className="h-80 overflow-y-auto space-y-2 pr-1 rounded-xl"
       >
         {logs.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-text-tertiary text-sm">
+          <div className="flex items-center justify-center h-full rounded-xl border border-dashed border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400 text-sm">
             No logs yet. Waiting for rule execution...
           </div>
         ) : (
@@ -131,25 +125,25 @@ export function LogsPanel({ logs, isConnected, isReconnecting, error }: LogsPane
             return (
               <div
                 key={id}
-                className={`p-2 rounded-lg ${LOG_BG_COLORS[log.level]} border border-border/50`}
+                className="px-3 py-2 rounded-xl border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950"
               >
                 <div className="flex items-start gap-2">
-                  <span className={`text-xs font-mono ${LOG_COLORS[log.level]} shrink-0`}>
-                    [{log.level.toUpperCase()}]
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wider ${LOG_COLORS[log.level]} shrink-0`}>
+                    {log.level.toUpperCase()}
                   </span>
-                  <span className="text-xs text-text-tertiary shrink-0">
+                  <span className="mt-0.5 text-xs font-mono text-neutral-500 dark:text-neutral-400 shrink-0">
                     {formatTimestamp(log.timestamp)}
                   </span>
-                  <span className="text-xs text-text-tertiary shrink-0">run:{log.runId.slice(0, 8)}</span>
+                  <span className="mt-0.5 text-xs font-mono text-neutral-400 dark:text-neutral-500 shrink-0">run:{log.runId.slice(0, 8)}</span>
 
-                  <span className="text-sm text-primary flex-1 break-all">
+                  <span className="text-sm text-neutral-900 dark:text-neutral-100 flex-1 break-all">
                     {log.message || (log.data ? JSON.stringify(log.data).slice(0, 100) : 'No message')}
                   </span>
 
                   {log.data && (
                     <button
                       onClick={() => toggleExpand(id)}
-                      className="shrink-0 p-0.5 rounded hover:bg-bg-tertiary/50 transition-colors"
+                      className={`shrink-0 p-0.5 rounded-full text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors ${FOCUS_RING}`}
                       aria-label={isExpanded ? 'Collapse log details' : 'Expand log details'}
                     >
                       {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -158,8 +152,8 @@ export function LogsPanel({ logs, isConnected, isReconnecting, error }: LogsPane
                 </div>
 
                 {isExpanded && log.data && (
-                  <div className="mt-2 p-2 rounded bg-bg-tertiary/50">
-                    <pre className="text-xs text-text-secondary overflow-x-auto">
+                  <div className="mt-2 p-3 rounded-lg bg-white border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-800">
+                    <pre className="text-xs text-neutral-700 dark:text-neutral-300 overflow-x-auto">
                       {JSON.stringify(log.data, null, 2)}
                     </pre>
                   </div>
@@ -176,7 +170,7 @@ export function LogsPanel({ logs, isConnected, isReconnecting, error }: LogsPane
             setIsAutoScroll(true);
             scrollToBottom();
           }}
-          className="mt-2 w-full py-1.5 text-sm text-accent hover:text-primary transition-colors"
+          className={`mt-3 w-full py-1.5 rounded-full text-sm font-medium text-forest-200 hover:text-forest-300 dark:text-brand-300 dark:hover:text-brand-200 transition-colors ${FOCUS_RING}`}
         >
           Resume auto-scroll
         </button>

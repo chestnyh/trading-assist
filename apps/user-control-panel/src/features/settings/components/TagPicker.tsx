@@ -4,6 +4,7 @@ import {
   rulesSettingsTagsControllerFindAllTags,
   TagResponseDto,
 } from "@trading-assist/api-client";
+import { CHIP, COMPACT_FIELD } from "../../../shared/ui/styles";
 
 const normalizeTag = (v: string) => v.trim();
 const equalsTag = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
@@ -145,7 +146,7 @@ export default function TagPicker(props: {
   return (
     <div ref={rootRef} className="relative">
       <div
-        className="w-full rounded-md border border-border bg-background text-primary px-2 py-2 flex flex-wrap gap-2 items-center"
+        className={`${COMPACT_FIELD} !px-2 flex flex-wrap gap-2 items-center cursor-text focus-within:ring-2 focus-within:border-forest-300 focus-within:ring-forest-300/15 dark:focus-within:border-brand-300 dark:focus-within:ring-brand-300/20`}
         onClick={() => {
           setOpen(true);
           inputRef.current?.focus();
@@ -154,12 +155,12 @@ export default function TagPicker(props: {
         {selected.map((t) => (
           <span
             key={t.toLowerCase()}
-            className="inline-flex items-center gap-1 rounded-full bg-accent-hover/40 border border-border px-2 py-0.5 text-sm"
+            className={`${CHIP} inline-flex items-center gap-1 !py-0.5`}
           >
             <span>{t}</span>
             <button
               type="button"
-              className="text-secondary hover:text-primary transition"
+              className="opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 removeTag(t);
@@ -191,22 +192,22 @@ export default function TagPicker(props: {
               setOpen(false);
             }
           }}
-          className="flex-1 min-w-[160px] bg-transparent outline-none text-primary"
+          className="flex-1 min-w-[160px] bg-transparent outline-none text-neutral-950 dark:text-white placeholder:text-neutral-400"
           placeholder={selected.length ? "Search or add tags…" : "Search or add tags…"}
         />
       </div>
 
       {open && (
-        <div className="absolute z-20 mt-1 w-full rounded-md border border-border bg-background shadow-lg overflow-hidden">
+        <div className="absolute z-20 mt-1 w-full py-1 rounded-xl border border-neutral-200 bg-white shadow-lg overflow-hidden dark:border-neutral-800 dark:bg-neutral-900">
           <div className="max-h-56 overflow-auto">
             {loading && (
-              <div className="px-3 py-2 text-sm text-secondary">Loading…</div>
+              <div className="px-3 py-2 text-sm text-neutral-500 dark:text-neutral-400">Loading…</div>
             )}
 
             {!loading && canCreate && (
               <button
                 type="button"
-                className="w-full text-left px-3 py-2 text-sm hover:bg-accent-hover/30 transition"
+                className="w-full text-left px-3 py-2 text-sm text-neutral-900 hover:bg-neutral-50 dark:text-white dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                 onClick={() => {
                   void addTag(query);
                 }}
@@ -219,7 +220,7 @@ export default function TagPicker(props: {
               <button
                 key={t.toLowerCase()}
                 type="button"
-                className="w-full text-left px-3 py-2 text-sm hover:bg-accent-hover/30 transition"
+                className="w-full text-left px-3 py-2 text-sm text-neutral-900 hover:bg-neutral-50 dark:text-white dark:hover:bg-neutral-800 transition-colors cursor-pointer"
                 onClick={() => {
                   onChange([...selected, t]);
                   setQuery("");
@@ -231,7 +232,7 @@ export default function TagPicker(props: {
             ))}
 
             {!loading && !canCreate && filteredOptions.length === 0 && (
-              <div className="px-3 py-2 text-sm text-secondary">No options</div>
+              <div className="px-3 py-2 text-sm text-neutral-500 dark:text-neutral-400">No options</div>
             )}
           </div>
         </div>
