@@ -62,4 +62,21 @@ describe('Main', () => {
                 .map((heading) => heading.textContent)
         ).toEqual(['Trend alert', 'Price level alert', 'Volatility watch', 'Spot vs futures gap']);
     });
+
+    it('answers Trading Assist questions in collapsible FAQ items', () => {
+        renderMain();
+        expect(screen.queryByText(/enigma/i)).not.toBeInTheDocument();
+        const section = screen.getByRole('heading', { name: 'Frequently asked questions' }).closest('section') as HTMLElement;
+        const items = section.querySelectorAll('details');
+        expect(items).toHaveLength(6);
+        expect(items[0]).toHaveAttribute('open');
+        expect(items[1]).not.toHaveAttribute('open');
+        expect(within(section).getByRole('heading', { level: 3, name: 'What is Trading Assist?' })).toBeInTheDocument();
+    });
+
+    it('links the final call to action to sign-up and sign-in', () => {
+        renderMain();
+        expect(screen.getByRole('link', { name: 'Create Your First Rule' })).toHaveAttribute('href', '/sign-up');
+        expect(screen.getByRole('link', { name: 'Already have an account? Sign in' })).toHaveAttribute('href', '/sign-in');
+    });
 });
