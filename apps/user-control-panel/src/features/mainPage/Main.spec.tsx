@@ -28,4 +28,38 @@ describe('Main', () => {
             .map((heading) => heading.textContent);
         expect(steps).toEqual(['Connect your services', 'Create a rule', 'Let it run']);
     });
+
+    it('lists the supported exchanges and notification channels', () => {
+        renderMain();
+        const section = screen.getByRole('heading', { name: 'Never miss a signal' }).closest('section') as HTMLElement;
+        const channels = within(section).getByRole('list', { name: 'Notification channels' });
+        expect(within(channels).getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+            'Telegram',
+            'Discord',
+            'Slack',
+            'Email',
+            'SMS',
+            'WhatsApp',
+            'Push',
+            'Webhooks',
+        ]);
+        const exchanges = within(section).getByRole('list', { name: 'Exchanges' });
+        expect(within(exchanges).getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+            'Binance',
+            'Bybit',
+            'Kraken',
+        ]);
+        expect(within(section).getByRole('link', { name: 'Set Up Alerts' })).toHaveAttribute('href', '/sign-up');
+    });
+
+    it('shows example use cases instead of testimonials', () => {
+        renderMain();
+        expect(screen.queryByText(/lorem ipsum/i)).not.toBeInTheDocument();
+        const section = screen.getByRole('heading', { name: 'What you can automate' }).closest('section') as HTMLElement;
+        expect(
+            within(section)
+                .getAllByRole('heading', { level: 3 })
+                .map((heading) => heading.textContent)
+        ).toEqual(['Trend alert', 'Price level alert', 'Volatility watch', 'Spot vs futures gap']);
+    });
 });

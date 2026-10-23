@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { HeroRuleMockup } from './HeroRuleMockup';
+import { PhoneAlertsMockup } from './PhoneAlertsMockup';
 
 const HOW_IT_WORKS_STEPS = [
   {
@@ -26,6 +27,67 @@ const HOW_IT_WORKS_STEPS = [
     iconPath: 'M13 10V3L4 14h7v7l9-11h-7z',
   },
 ];
+
+const EXCHANGES = [
+  { name: 'Binance', logoUrl: '/logos/binance-mark.svg' },
+  { name: 'Bybit', logoUrl: '/logos/bybit.jpg' },
+  { name: 'Kraken', logoUrl: '/logos/kraken-purple.png' },
+];
+
+const NOTIFICATION_CHANNELS = [
+  { name: 'Telegram', logoUrl: '/logos/telegram.png' },
+  { name: 'Discord', logoUrl: '/logos/discord.svg' },
+  { name: 'Slack', logoUrl: '/logos/slack.png' },
+  { name: 'Email', logoUrl: '/logos/email.png' },
+  { name: 'SMS', logoUrl: '/logos/twilio.svg' },
+  { name: 'WhatsApp', logoUrl: '/logos/whatsapp-business.svg' },
+  { name: 'Push', logoUrl: '/logos/onesignal.svg' },
+  { name: 'Webhooks', logoUrl: '/logos/webhooks.png' },
+];
+
+const USE_CASES = [
+  {
+    title: 'Trend alert',
+    description: 'Every morning, check whether BTCUSDT has closed higher for 10 days in a row and tell you when it has.',
+    blocks: ['Schedule', 'Candles', 'Condition', 'Notify'],
+  },
+  {
+    title: 'Price level alert',
+    description: 'Watch a pair every minute and notify you the moment it crosses the price level you care about.',
+    blocks: ['Interval', 'Price check', 'Condition', 'Notify'],
+  },
+  {
+    title: 'Volatility watch',
+    description: 'Get a heads-up when a coin moves more than 3% within an hour, up or down.',
+    blocks: ['Interval', 'Candles', 'Condition', 'Notify'],
+  },
+  {
+    title: 'Spot vs futures gap',
+    description: 'Compare the spot and futures price of a pair and alert you when the gap gets unusually wide.',
+    blocks: ['Interval', 'Spot price', 'Futures price', 'Condition', 'Notify'],
+  },
+];
+
+function ServiceList({ label, services }: { label: string; services: { name: string; logoUrl: string }[] }) {
+  return (
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-[var(--color-text-secondary-dark)]">
+        {label}
+      </h3>
+      <ul aria-label={label} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {services.map((service) => (
+          <li
+            key={service.name}
+            className="flex flex-col items-center gap-2 rounded-lg border border-gray-200 dark:border-[var(--color-border-dark)] bg-gray-50 dark:bg-[var(--color-bg-secondary-dark)] px-3 py-4"
+          >
+            <img src={service.logoUrl} alt="" className="w-8 h-8 object-contain rounded-md" />
+            <span className="text-sm font-medium text-gray-900 dark:text-[var(--color-text-dark)]">{service.name}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export function Main() {
   return (
@@ -111,255 +173,73 @@ export function Main() {
         </div>
       </section>
 
-      {/* Check on the go  */}
+      {/* Notifications */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
-        <div className="mx-auto px-[100px]">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+        <div className="mx-auto lg:px-[100px]">
+          <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-24">
             {/* Left Section - Mobile Phone Mockup */}
-            <div className="flex-1 flex justify-center lg:justify-start">
-              <div className="relative w-[300px] h-[600px] bg-gray-800 rounded-[40px] p-2 shadow-2xl">
-                {/* Phone Notch */}
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-800 rounded-b-2xl z-10"></div>
-
-                {/* Phone Screen */}
-                <div className="w-full h-full bg-white rounded-[32px] overflow-hidden relative">
-                  {/* Status Bar */}
-                  <div className="bg-white px-4 py-1 flex justify-between items-center text-xs">
-                    <span className="font-semibold">9:41</span>
-                    <div className="flex gap-1">
-                      <div className="w-4 h-2 border border-gray-900 rounded-sm"></div>
-                      <div className="w-4 h-2 border border-gray-900 rounded-sm"></div>
-                    </div>
-                  </div>
-
-                  {/* Chat Header */}
-                  <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                      <span className="text-sm font-medium">Chats</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full"></div>
-                      <div>
-                        <div className="text-sm font-semibold">Trading Assist</div>
-                        <div className="text-xs text-gray-500">last seen just now</div>
-                      </div>
-                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  {/* Chat Messages */}
-                  <div className="h-[400px] bg-gradient-to-b from-gray-100 to-gray-200 p-4 overflow-y-auto">
-                    <div className="space-y-4">
-                      {/* Welcome Message */}
-                      <div className="bg-white rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-[80%]">
-                        <p className="text-sm">Welcome to our store! We're so glad to have you here. 😊</p>
-                      </div>
-
-                      {/* Assistance Message */}
-                      <div className="bg-white rounded-2xl rounded-tl-sm p-4 shadow-sm max-w-[85%]">
-                        <p className="text-sm font-medium mb-2">Here's how we can assist you today:</p>
-                        <ol className="text-sm space-y-1 list-decimal list-inside">
-                          <li>Track Your Order - Easily check the status of your recent purchase.</li>
-                          <li>Browse Products - Discover our range of categories, from electronics to home goods.</li>
-                          <li>Talk to Support - Need help? We're here to assist you with any queries.</li>
-                        </ol>
-                        <p className="text-sm mt-2">Choose one of the options below, or type your question to get started!</p>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="mt-4 space-y-2">
-                      <button className="w-full bg-green-500 text-white rounded-xl py-3 px-4 text-sm font-medium flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                        </svg>
-                        Track my order
-                      </button>
-                      <button className="w-full bg-green-500 text-white rounded-xl py-3 px-4 text-sm font-medium flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        Browse products
-                      </button>
-                      <button className="w-full bg-green-500 text-white rounded-xl py-3 px-4 text-sm font-medium flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                        </svg>
-                        Talk to support
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Input Field */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3">
-                    <div className="text-xs text-gray-400 text-right mb-1">10:15</div>
-                    <div className="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2">
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a2 2 0 000-2.828l-6.414-6.414a2 2 0 10-2.828 2.828L15.172 7z" />
-                      </svg>
-                      <input type="text" placeholder="Message" className="flex-1 bg-transparent text-sm outline-none" />
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="flex justify-center shrink-0">
+              <PhoneAlertsMockup />
             </div>
 
-            {/* Right Section - QR Code and Text */}
-            <div className="flex-1 space-y-6">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
-                Check on the go{' '}
-                <span className="font-bold">anytime anywhere</span>
+            {/* Right Section - Notification Channels */}
+            <div className="max-w-xl space-y-6">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-[var(--color-text-dark)]">
+                Never miss a signal
               </h2>
+              <p className="text-lg text-gray-600 dark:text-[var(--color-text-secondary-dark)]">
+                Connect your exchange and your rules watch the market for you. You are notified the moment conditions
+                are met, wherever you already are. No need to keep a chart open.
+              </p>
 
-              <div className="flex flex-col sm:flex-row items-start gap-6">
-                {/* QR Code */}
-                <div className="bg-white p-4 rounded-lg shadow-lg">
-                  <div className="w-48 h-48 bg-white border-2 border-gray-900 grid grid-cols-8 grid-rows-8">
-                    {/* Simple QR code pattern */}
-                    {Array.from({ length: 64 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className={`${Math.random() > 0.5 ? 'bg-black' : 'bg-white'
-                          }`}
-                      />
-                    ))}
-                  </div>
-                </div>
+              <ServiceList label="Exchanges" services={EXCHANGES} />
+              <ServiceList label="Notification channels" services={NOTIFICATION_CHANNELS} />
 
-                {/* Descriptive Text */}
-                <div className="flex flex-col justify-center">
-                  <p className="text-lg font-medium text-gray-900 mb-2">
-                    Scan to get access to our chatbot
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    IOS & Android
-                  </p>
-                </div>
-              </div>
+              <Link
+                to="/sign-up"
+                className="inline-block bg-black text-white dark:bg-white dark:text-black px-8 py-3 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+              >
+                Set Up Alerts
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Use cases */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
-        <div className="mx-auto px-[100px]">
-          <h2 className="text-4xl font-bold text-center text-gray-900 dark:text-[var(--color-text-dark)] mb-12">
-            Testimonials Section
+        <div className="mx-auto lg:px-[100px]">
+          <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
+            What you can automate
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Testimonial Card 1 - Hadid Khan */}
-            <div className="bg-gray-50 dark:bg-[var(--color-bg-secondary-dark)] p-6 rounded-lg shadow-sm">
-              {/* Star Rating - 5/5 */}
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-700 dark:text-[var(--color-text-secondary-dark)] mb-6 text-sm leading-relaxed">
-                "Great session! Dani was super helpful. She shared some practical advice on how can lorem ip we go about refining our service offerings."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                  HK
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900 dark:text-[var(--color-text-dark)] text-sm">Hadid Khan</p>
-                  <p className="text-xs text-gray-600 dark:text-[var(--color-text-secondary-dark)]">UIUX Designer</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Testimonial Card 2 - Wade Warren */}
-            <div className="bg-gray-50 dark:bg-[var(--color-bg-secondary-dark)] p-6 rounded-lg shadow-sm">
-              {/* Star Rating - 4/5 */}
-              <div className="flex gap-1 mb-4">
-                {[...Array(4)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
-                  </svg>
-                ))}
-                <svg className="w-5 h-5 text-gray-300 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
-                </svg>
-              </div>
-              <p className="text-gray-700 mb-6 text-sm leading-relaxed">
-                "It's is both attractive and highly adaptable. It's exactly what I've been looking forefinitely wo lorem ipsum dolorth the investment."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                  WW
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">Wade Warren</p>
-                  <p className="text-xs text-gray-600">Web Designer</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Testimonial Card 3 - Jenny Wilson */}
-            <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
-              {/* Star Rating - 5/5 */}
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-700 mb-6 text-sm leading-relaxed">
-                "I am really satisfied with it. I'm good to go. It really saves me time and effort. It's is exactly what our business has been lacking."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                  JW
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">Jenny Wilson</p>
-                  <p className="text-xs text-gray-600">Trust Administrator</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Testimonial Card 4 - Max Wieder */}
-            <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
-              {/* Star Rating - 3/5 */}
-              <div className="flex gap-1 mb-4">
-                {[...Array(3)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
-                  </svg>
-                ))}
-                {[...Array(2)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 text-gray-300 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279L12 18.896l-7.416 3.817 1.48-8.279L.004 9.306l8.332-1.151L12 .587z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-gray-700 mb-6 text-sm leading-relaxed">
-                "Great session! Dani was super helpful. She shared some practical advice on how can lorem ip we go about refining our service offerings."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                  MW
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">Max Wieder</p>
-                  <p className="text-xs text-gray-600">Admin</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <p className="text-lg text-center text-gray-600 dark:text-[var(--color-text-secondary-dark)] max-w-2xl mx-auto mb-12">
+            A few examples of rules you can build from the same blocks.
+          </p>
+          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {USE_CASES.map((useCase) => (
+              <li
+                key={useCase.title}
+                className="flex flex-col bg-gray-50 dark:bg-[var(--color-bg-secondary-dark)] p-6 rounded-lg shadow-sm"
+              >
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-[var(--color-text-dark)] mb-2">
+                  {useCase.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-gray-700 dark:text-[var(--color-text-secondary-dark)] mb-6">
+                  {useCase.description}
+                </p>
+                <ul aria-label={`${useCase.title} blocks`} className="mt-auto flex flex-wrap gap-2">
+                  {useCase.blocks.map((block) => (
+                    <li
+                      key={block}
+                      className="rounded-full border border-gray-200 dark:border-[var(--color-border-dark)] bg-white dark:bg-[var(--color-background-dark)] px-3 py-1 text-xs font-medium text-gray-700 dark:text-[var(--color-text-secondary-dark)]"
+                    >
+                      {block}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
