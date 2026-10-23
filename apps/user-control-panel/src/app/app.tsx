@@ -16,7 +16,6 @@ import { RulesPage } from '../features/rules/RulesPage';
 import { AddRulePage } from '../features/rules/AddRulePage';
 import { RuleDetailsPage } from '../features/rules/RuleDetailsPage';
 import { UpdateRulePage } from '../features/rules/UpdateRulePage';
-import DiagramTest from '../features/diagramTest/DiagramTest';
 
 function AppRoutes() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -68,7 +67,6 @@ function AppRoutes() {
               <Route path=":id/update" element={<UpdateRulePage />} />
             </Route>
             <Route path="/settings" element={<Settings />} />
-            <Route path="/diagram-test" element={<DiagramTest />} />
           </Route>
           <Route
             path="*"

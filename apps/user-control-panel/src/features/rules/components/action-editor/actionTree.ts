@@ -162,7 +162,7 @@ function isActionType(value: unknown): value is Exclude<ActionType, ''> {
   return typeof value === 'string' && ACTION_TYPES.some(actionType => actionType.value === value);
 }
 
-function isActionNode(value: unknown): value is ActionNode {
+export function isActionNode(value: unknown): value is ActionNode {
   return isRecord(value) && 'type' in value && 'arguments' in value;
 }
 
