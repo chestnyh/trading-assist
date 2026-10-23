@@ -1,82 +1,113 @@
+import { Link } from 'react-router-dom';
+import { HeroRuleMockup } from './HeroRuleMockup';
+
+const HOW_IT_WORKS_STEPS = [
+  {
+    title: 'Connect your services',
+    description:
+      'Add your exchange accounts (Binance, Bybit, Kraken) and where you want to be notified: Telegram, Discord, Slack, email or webhooks.',
+    // link icon
+    iconPath:
+      'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1',
+  },
+  {
+    title: 'Create a rule',
+    description:
+      'Combine ready-made blocks such as schedules, price checks, conditions, notifications and orders into a rule that describes your strategy.',
+    // adjustments icon
+    iconPath:
+      'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4',
+  },
+  {
+    title: 'Let it run',
+    description:
+      'Trading Assist checks the market for you and acts when your conditions are met. Follow every run in the rule’s execution logs.',
+    // lightning icon
+    iconPath: 'M13 10V3L4 14h7v7l9-11h-7z',
+  },
+];
+
 export function Main() {
   return (
     <main>
       {/* Hero Section*/}
-      <section className="bg-white dark:bg-[var(--color-background-dark)]">
-        <div className="mx-auto px-[100px]">
+      <section className="py-12 lg:py-16 bg-white dark:bg-[var(--color-background-dark)]">
+        <div className="mx-auto px-4 sm:px-8 lg:px-[100px]">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             {/* Left Column - Text Content */}
             <div className="flex-1 space-y-6">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-gray-900 dark:text-[var(--color-text-dark)] leading-tight">
-                Unlock Your{' '}
-                <span className="font-bold">Coding Potential</span>
-                {' '}with Enigma
+                Automate Your{' '}
+                <span className="font-bold">Trading Strategy</span>
+                {' '}Without Code
               </h1>
               <p className="text-lg text-gray-700 dark:text-[var(--color-text-secondary-dark)] max-w-2xl">
-                Learn coding and design with Enigma-AI, your ultimate destination for mastering the art of creating stunning designs and building powerful applications.
+                Build rules from ready-made blocks: schedules, price checks, conditions, notifications and orders.
+                Trading Assist watches the market for you and acts when your conditions are met.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <button className="bg-black text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors">
+                <Link
+                  to="/sign-up"
+                  className="bg-black text-white dark:bg-white dark:text-black px-8 py-3 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors text-center"
+                >
                   Get Started
-                </button>
-                <button className="bg-gray-100 text-gray-900 px-8 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
-                  Start a Free Trial
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                </Link>
+                <a
+                  href="#how-it-works"
+                  className="bg-gray-100 text-gray-900 dark:bg-[var(--color-bg-secondary-dark)] dark:text-[var(--color-text-dark)] px-8 py-3 rounded-lg font-medium hover:bg-gray-200 dark:hover:opacity-80 transition-colors flex items-center justify-center gap-2"
+                >
+                  See How It Works
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
-                </button>
+                </a>
               </div>
             </div>
 
-            {/* Right Column - Chart Image */}
-            <div className="flex-1 flex justify-center lg:justify-end">
-              <img
-                src="../../assets/hero_image.png"
-                alt="Financial Chart"
-                className="max-w-full h-auto rounded-lg shadow-lg"
-              />
+            {/* Right Column - Rule Illustration */}
+            <div className="flex-1 flex justify-center lg:justify-center">
+              <HeroRuleMockup />
             </div>
           </div>
         </div>
       </section>
 
       {/* How it works?  */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
-        <div className="mx-auto px-[100px]">
-          <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 dark:text-[var(--color-text-dark)] mb-12">
-            How it works ?
+      <section id="how-it-works" className="scroll-mt-16 py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[var(--color-background-dark)]">
+        <div className="mx-auto lg:px-[100px]">
+          <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
+            How it works
           </h2>
-          <div className="flex flex-col md:flex-row justify-center gap-8">
-            {/* Step 1 Card */}
-            <div className="bg-gray-100 dark:bg-[var(--color-bg-secondary-dark)] p-8 rounded-lg shadow-md flex-1">
-              <h3 className="text-2xl font-semibold text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
-                Step 1
-              </h3>
-              <p className="text-gray-600 dark:text-[var(--color-text-secondary-dark)] text-lg">
-                Ready to dive in? Here's how you can start contributing to the Enigma Code-ai developer community.
-              </p>
-            </div>
-
-            {/* Step 2 Card */}
-            <div className="bg-gray-100 dark:bg-[var(--color-bg-secondary-dark)] p-8 rounded-lg shadow-md flex-1">
-              <h3 className="text-2xl font-semibold text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
-                Step 2
-              </h3>
-              <p className="text-gray-600 dark:text-[var(--color-text-secondary-dark)] text-lg">
-                Access a wealth of resources to support your development journey with Enigma Code-ai.
-              </p>
-            </div>
-
-            {/* Step 3 Card */}
-            <div className="bg-gray-100 dark:bg-[var(--color-bg-secondary-dark)] p-8 rounded-lg shadow-md flex-1">
-              <h3 className="text-2xl font-semibold text-gray-900 dark:text-[var(--color-text-dark)] mb-4">
-                Step 3
-              </h3>
-              <p className="text-gray-600 dark:text-[var(--color-text-secondary-dark)] text-lg">
-                Access a wealth of resources to support your development journey with Enigma Code-ai.
-              </p>
-            </div>
-          </div>
+          <p className="text-lg text-center text-gray-600 dark:text-[var(--color-text-secondary-dark)] max-w-2xl mx-auto mb-12">
+            From idea to a running strategy in three steps.
+          </p>
+          <ol className="flex flex-col md:flex-row justify-center gap-8">
+            {HOW_IT_WORKS_STEPS.map((step, index) => (
+              <li
+                key={step.title}
+                className="bg-gray-100 dark:bg-[var(--color-bg-secondary-dark)] p-8 rounded-lg shadow-md flex-1"
+              >
+                <div className="flex items-center gap-4 mb-4">
+                  <span className="flex items-center justify-center w-12 h-12 rounded-full bg-black text-white dark:bg-white dark:text-black shrink-0">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={step.iconPath} />
+                    </svg>
+                  </span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500 dark:text-[var(--color-text-secondary-dark)]">
+                      Step {index + 1}
+                    </p>
+                    <h3 className="text-2xl font-semibold text-gray-900 dark:text-[var(--color-text-dark)]">
+                      {step.title}
+                    </h3>
+                  </div>
+                </div>
+                <p className="text-gray-600 dark:text-[var(--color-text-secondary-dark)] text-lg">
+                  {step.description}
+                </p>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
