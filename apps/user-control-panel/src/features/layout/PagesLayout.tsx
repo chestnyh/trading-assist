@@ -11,6 +11,8 @@ interface PagesLayoutProps {
 
 const AUTH_PAGES = ['/sign-in', '/sign-up', '/restore-password-1', '/restore-password-2', '/restore-password-3'];
 
+const MAIN_PAGES = ['/', '/main'];
+
 const PagesLayout = ({ children }: PagesLayoutProps) => {
     const location = useLocation();
     const { isAuthenticated } = useAuth();
@@ -25,7 +27,7 @@ const PagesLayout = ({ children }: PagesLayoutProps) => {
                 {isAuthenticated && <Sidebar />}
 
                 <div className="flex-1 flex flex-col min-w-0">
-                    <Header />
+                    <Header showSearch={!MAIN_PAGES.includes(location.pathname)} />
 
                     <main className="flex-1">
                         {children}

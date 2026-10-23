@@ -8,6 +8,7 @@ import { LogoMark } from "./LogoMark";
 
 interface HeaderProps {
     className?: string;
+    showSearch?: boolean;
 }
 
 const NAV_LINK = `
@@ -18,7 +19,7 @@ const NAV_LINK = `
 `;
 
 
-export function Header({ className = "" }: HeaderProps) {
+export function Header({ className = "", showSearch = true }: HeaderProps) {
     const { isAuthenticated } = useAuth();
     return (
         <header
@@ -63,19 +64,21 @@ export function Header({ className = "" }: HeaderProps) {
 
                     <div className="flex items-center gap-3 flex-1 justify-end">
 
-                        <div className="hidden md:flex items-center gap-2 w-full max-w-xs rounded-full
-                            border border-neutral-200 dark:border-neutral-800
-                            bg-neutral-50 dark:bg-neutral-900
-                            px-4 py-2
-                            focus-within:border-forest-100 dark:focus-within:border-brand-300
-                            transition-colors">
-                            <Search className="w-4 h-4 flex-shrink-0 text-neutral-400" />
-                            <input
-                                type="text"
-                                placeholder="Search here"
-                                className="w-full bg-transparent outline-none text-sm text-neutral-950 dark:text-white placeholder:text-neutral-400"
-                            />
-                        </div>
+                        {showSearch && (
+                            <div className="hidden md:flex items-center gap-2 w-full max-w-xs rounded-full
+                                border border-neutral-200 dark:border-neutral-800
+                                bg-neutral-50 dark:bg-neutral-900
+                                px-4 py-2
+                                focus-within:border-forest-100 dark:focus-within:border-brand-300
+                                transition-colors">
+                                <Search className="w-4 h-4 flex-shrink-0 text-neutral-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Search here"
+                                    className="w-full bg-transparent outline-none text-sm text-neutral-950 dark:text-white placeholder:text-neutral-400"
+                                />
+                            </div>
+                        )}
 
 
                         {isAuthenticated ? (
