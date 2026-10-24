@@ -2,15 +2,17 @@ import { COMPACT_FIELD } from '../../../../../shared/ui/styles';
 import { EditableList } from './EditableList';
 
 type StringListFieldProps = {
+  id: string;
   label: string;
   value: unknown;
   readOnly: boolean;
   onChange: (items: string[]) => void;
 };
 
-export function StringListField({ label, value, readOnly, onChange }: StringListFieldProps) {
+export function StringListField({ id, label, value, readOnly, onChange }: StringListFieldProps) {
   return (
     <EditableList<string>
+      id={id}
       label={label}
       items={Array.isArray(value) ? value.map(String) : []}
       readOnly={readOnly}

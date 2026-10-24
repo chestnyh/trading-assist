@@ -4,15 +4,17 @@ import { EditableList } from './EditableList';
 type KeyValueItem = { key: string; value: string };
 
 type KeyValueListFieldProps = {
+  id: string;
   label: string;
   value: unknown;
   readOnly: boolean;
   onChange: (items: KeyValueItem[]) => void;
 };
 
-export function KeyValueListField({ label, value, readOnly, onChange }: KeyValueListFieldProps) {
+export function KeyValueListField({ id, label, value, readOnly, onChange }: KeyValueListFieldProps) {
   return (
     <EditableList<KeyValueItem>
+      id={id}
       label={label}
       items={Array.isArray(value) ? value.map(toKeyValueItem) : []}
       readOnly={readOnly}

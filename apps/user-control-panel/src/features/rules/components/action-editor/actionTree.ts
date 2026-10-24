@@ -1,7 +1,7 @@
-import { ACTION_TYPES } from './actionDefinitions';
-import { ActionNode, ActionType, ActionTypeConfig } from './types';
+import { ACTION_DEFINITIONS } from './actions';
+import { ActionDefinition, ActionNode, ActionType } from './types';
 
-export function createActionNode(type: ActionType = ''): ActionNode {
+export function createActionNode(type: ActionNode['type'] = ''): ActionNode {
   return {
     id: Math.random().toString(36).substr(2, 9),
     type,
@@ -9,28 +9,12 @@ export function createActionNode(type: ActionType = ''): ActionNode {
   };
 }
 
-export function getActionConfig(type: ActionType): ActionTypeConfig | undefined {
-  return ACTION_TYPES.find(actionType => actionType.value === type);
+export function getActionDefinition(type: unknown): ActionDefinition | undefined {
+  return isActionType(type) ? ACTION_DEFINITIONS[type] : undefined;
 }
 
-export function getDefaultArguments(type: ActionType): Record<string, unknown> {
-  const config = getActionConfig(type);
-  if (!config) {
-    return {};
-  }
-
-  const result: Record<string, unknown> = {};
-  for (const field of config.fields ?? []) {
-    if (!field.optional || field.defaultValue !== '') {
-      result[field.key] = cloneValue(field.defaultValue);
-    }
-  }
-
-  return result;
-}
-
-function canActionHaveChildren(type: ActionType): boolean {
-  return Boolean(getActionConfig(type)?.childSlots?.length);
+export function getDefaultArguments(type: ActionNode['type']): Record<string, unknown> {
+  return cloneValue(getActionDefinition(type)?.defaultArguments ?? {});
 }
 
 export function actionTreeToRuleBody(action: ActionNode): unknown {
@@ -38,22 +22,25 @@ export function actionTreeToRuleBody(action: ActionNode): unknown {
     return null;
   }
 
-  const config = getActionConfig(action.type);
-  if (!config) {
+  const definition = getActionDefinition(action.type);
+  if (!definition) {
     return null;
   }
 
   const args: Record<string, unknown> = {};
 
-  for (const field of config.fields ?? []) {
-    const value = action.arguments[field.key];
-    if (field.optional && (value === '' || value === undefined || value === null)) {
-      continue;
-    }
-    args[field.key] = value ?? cloneValue(field.defaultValue);
+  for (const [key, defaultValue] of Object.entries(definition.defaultArguments)) {
+    args[key] = action.arguments[key] ?? cloneValue(defaultValue);
   }
 
-  for (const slot of config.childSlots ?? []) {
+  for (const key of definition.optionalArguments ?? []) {
+    const value = action.arguments[key];
+    if (value !== '' && value !== undefined && value !== null) {
+      args[key] = value;
+    }
+  }
+
+  for (const slot of definition.childSlots ?? []) {
     const value = action.arguments[slot.key];
     if (!value) {
       args[slot.key] = slot.multiple ? [] : createActionBodyPlaceholder();
@@ -86,44 +73,28 @@ export function parseRuleBodyToActionTree(ruleBody: unknown): ActionNode | null 
 
   const type = ruleBody.type;
   if (!isActionType(type)) {
-    
     return null;
   }
 
-  const config = getActionConfig(type);
-  if (!config) {
-    
-    return null;
-  }
+  const definition = ACTION_DEFINITIONS[type];
 
   const sourceArgs = isRecord(ruleBody.arguments) ? ruleBody.arguments : {};
   const args: Record<string, unknown> = {};
 
-  // Ignore legacy fields like 'name' and 'description' that might be in the rule body
-  const ignoredFields = ['name', 'description'];
-
-  for (const field of config.fields ?? []) {
-    const value = sourceArgs[field.key];
-    if (value === undefined) {
-      if (!field.optional) {
-        args[field.key] = cloneValue(field.defaultValue);
-      }
-      continue;
-    }
-
-    // Skip validation for unknown fields to be more lenient with old configs
-    if (!isValidFieldValue(field.type, value)) {
-      // If the field doesn't match expected type, use default value instead of failing
-      if (!field.optional) {
-        args[field.key] = cloneValue(field.defaultValue);
-      }
-      continue;
-    }
-
-    args[field.key] = value;
+  // Fall back to the default instead of failing, to be lenient with old configs
+  for (const [key, defaultValue] of Object.entries(definition.defaultArguments)) {
+    const value = sourceArgs[key];
+    args[key] = isSameKind(value, defaultValue) ? value : cloneValue(defaultValue);
   }
 
-  for (const slot of config.childSlots ?? []) {
+  for (const key of definition.optionalArguments ?? []) {
+    const value = sourceArgs[key];
+    if (typeof value === 'string') {
+      args[key] = value;
+    }
+  }
+
+  for (const slot of definition.childSlots ?? []) {
     const value = sourceArgs[slot.key];
     if (value === undefined || value === null) {
       continue;
@@ -148,18 +119,14 @@ export function parseRuleBodyToActionTree(ruleBody: unknown): ActionNode | null 
   }
 
   return {
-    id: createActionNode(type).id,
+    id: createActionNode().id,
     type,
     arguments: args,
   };
 }
 
-function isParseableRuleBody(ruleBody: unknown): boolean {
-  return parseRuleBodyToActionTree(ruleBody) !== null;
-}
-
-function isActionType(value: unknown): value is Exclude<ActionType, ''> {
-  return typeof value === 'string' && ACTION_TYPES.some(actionType => actionType.value === value);
+function isActionType(value: unknown): value is ActionType {
+  return typeof value === 'string' && Object.prototype.hasOwnProperty.call(ACTION_DEFINITIONS, value);
 }
 
 export function isActionNode(value: unknown): value is ActionNode {
@@ -170,20 +137,16 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function isValidFieldValue(type: string, value: unknown): boolean {
-  if (type === 'text' || type === 'select') {
-    return typeof value === 'string';
-  }
-
-  if (type === 'number') {
-    return typeof value === 'number' && Number.isFinite(value);
-  }
-
-  if (type === 'keyValueList' || type === 'stringList') {
+function isSameKind(value: unknown, defaultValue: unknown): boolean {
+  if (Array.isArray(defaultValue)) {
     return Array.isArray(value);
   }
 
-  return true;
+  if (typeof defaultValue === 'number') {
+    return typeof value === 'number' && Number.isFinite(value);
+  }
+
+  return typeof value === typeof defaultValue;
 }
 
 function cloneValue<T>(value: T): T {

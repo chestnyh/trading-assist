@@ -1,54 +1,37 @@
-export type ActionType =
-  | ''
-  | 'log'
-  | 'debug'
-  | 'add_to_heap'
-  | 'delete_from_heap'
-  | 'if_then'
-  | 'parallel'
-  | 'sequence'
-  | 'resolve'
-  | 'timeout'
-  | 'interval'
-  | 'for_each'
-  | 'cron'
-  | 'includes'
-  | 'stop_sequence'
-  | 'binance_get_ticker'
-  | 'binance_spot_get_ticker'
-  | 'binance_spot_get_klines'
-  | 'binance_um_futures_get_ticker'
-  | 'binance_um_features_exchange_info'
-  | 'telegram_send_message';
+import { ComponentType } from 'react';
+import type { ACTION_DEFINITIONS } from './actions';
+import type { ActionCategory } from './actions/categories';
+
+export type ActionType = keyof typeof ACTION_DEFINITIONS;
 
 export type ActionNode = {
   id: string;
-  type: ActionType;
+  // '' while no action type has been picked yet
+  type: ActionType | '';
   arguments: Record<string, unknown>;
 };
 
-type ActionFieldType = 'text' | 'number' | 'select' | 'json' | 'keyValueList' | 'stringList';
-
-export type ActionFieldConfig = {
-  key: string;
-  label: string;
-  type: ActionFieldType;
-  defaultValue: unknown;
-  optional?: boolean;
-  options?: string[];
-};
-
-export type ActionChildSlotConfig = {
+export type ActionChildSlot = {
   key: string;
   label: string;
   multiple: boolean;
   allowedActionTypes?: ActionType[];
 };
 
-export type ActionTypeConfig = {
-  value: Exclude<ActionType, ''>;
+export type ActionComponentProps = {
+  action: ActionNode;
+  readOnly: boolean;
+  depth: number;
+  setArgument: (key: string, value: unknown) => void;
+};
+
+export type ActionDefinition = {
   label: string;
-  category: 'Common' | 'Binance' | 'Telegram';
-  fields?: ActionFieldConfig[];
-  childSlots?: ActionChildSlotConfig[];
+  category: ActionCategory;
+  // Required arguments; a stored value of a different kind is replaced by the default when parsing.
+  defaultArguments: Record<string, unknown>;
+  // String arguments that are left out of the rule body when empty.
+  optionalArguments?: string[];
+  childSlots?: ActionChildSlot[];
+  Component: ComponentType<ActionComponentProps>;
 };

@@ -3,6 +3,7 @@ import { FIELD_LABEL, SMALL_BUTTON_DANGER, SMALL_BUTTON_PRIMARY } from '../../..
 import { FIELD_STACK } from './fieldLayout';
 
 type EditableListProps<T> = {
+  id: string;
   label: string;
   items: T[];
   readOnly: boolean;
@@ -12,13 +13,13 @@ type EditableListProps<T> = {
   renderItem: (item: T, update: (item: T) => void) => ReactNode;
 };
 
-export function EditableList<T>({ label, items, readOnly, createItem, isEmpty, onChange, renderItem }: EditableListProps<T>) {
+export function EditableList<T>({ id, label, items, readOnly, createItem, isEmpty, onChange, renderItem }: EditableListProps<T>) {
   const updateAt = (index: number, item: T) => onChange(items.map((current, i) => (i === index ? item : current)));
   const removeAt = (index: number) => onChange(items.filter((_, i) => i !== index));
 
   return (
-    <div className={FIELD_STACK}>
-      <label className={FIELD_LABEL}>{label}</label>
+    <div className={FIELD_STACK} role="group" aria-labelledby={id}>
+      <span id={id} className={FIELD_LABEL}>{label}</span>
       {items.map((item, index) => (
         <div key={index} className="flex gap-2">
           {renderItem(item, (next) => updateAt(index, next))}
